@@ -16,13 +16,13 @@
 
 package io.micronaut.configuration.metrics.binder.cache;
 
-import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 import io.micrometer.core.lang.NonNullApi;
 import io.micrometer.core.lang.NonNullFields;
+import io.micronaut.caffeine.cache.AsyncLoadingCache;
+import io.micronaut.caffeine.cache.Cache;
+import io.micronaut.caffeine.cache.LoadingCache;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +51,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     /**
      * Creates a new {@link MicronautCaffeineCacheMetrics} instance.
      *
-     * @param cache     The cache to be instrumented. You must call {@link com.github.benmanes.caffeine.cache.Caffeine#recordStats()} prior to building the cache
+     * @param cache     The cache to be instrumented. You must call {@link io.micronaut.caffeine.cache.Caffeine} prior to building the cache
      *                  for metrics to be recorded.
      * @param cacheName Will be used to tag metrics with "cache".
      * @param tags      tags to apply to all recorded metrics.
@@ -62,7 +62,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     }
 
     /**
-     * Record metrics on a Caffeine cache. You must call {@link com.github.benmanes.caffeine.cache.Caffeine#recordStats()} prior to building the cache
+     * Record metrics on a Caffeine cache. You must call {@link io.micronaut.caffeine.cache.Caffeine#recordStats()} prior to building the cache
      * for metrics to be recorded.
      *
      * @param registry  The registry to bind metrics to.
@@ -77,7 +77,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     }
 
     /**
-     * Record metrics on a Caffeine cache. You must call {@link com.github.benmanes.caffeine.cache.Caffeine#recordStats()} prior to building the cache
+     * Record metrics on a Caffeine cache. You must call {@link io.micronaut.caffeine.cache.Caffeine#recordStats()} prior to building the cache
      * for metrics to be recorded.
      *
      * @param registry  The registry to bind metrics to.
@@ -86,7 +86,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
      * @param tags      Tags to apply to all recorded metrics.
      * @param <C>       The cache type.
      * @return The instrumented cache, unchanged. The original cache is not wrapped or proxied in any way.
-     * @see com.github.benmanes.caffeine.cache.stats.CacheStats
+     * @see io.micronaut.caffeine.cache.stats.CacheStats
      */
     public static <C extends Cache> C monitor(MeterRegistry registry, C cache, String cacheName, Iterable<Tag> tags) {
         new MicronautCaffeineCacheMetrics(cache, cacheName, tags).bindTo(registry);
@@ -94,7 +94,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     }
 
     /**
-     * Record metrics on a Caffeine cache. You must call {@link com.github.benmanes.caffeine.cache.Caffeine#recordStats()} prior to building the cache
+     * Record metrics on a Caffeine cache. You must call {@link io.micronaut.caffeine.cache.Caffeine#recordStats()} prior to building the cache
      * for metrics to be recorded.
      *
      * @param registry  The registry to bind metrics to.
@@ -109,7 +109,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     }
 
     /**
-     * Record metrics on a Caffeine cache. You must call {@link com.github.benmanes.caffeine.cache.Caffeine#recordStats()} prior to building the cache
+     * Record metrics on a Caffeine cache. You must call {@link io.micronaut.caffeine.cache.Caffeine#recordStats()} prior to building the cache
      * for metrics to be recorded.
      *
      * @param registry  The registry to bind metrics to.
@@ -118,7 +118,7 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
      * @param tags      Tags to apply to all recorded metrics.
      * @param <C>       The cache type.
      * @return The instrumented cache, unchanged. The original cache is not wrapped or proxied in any way.
-     * @see com.github.benmanes.caffeine.cache.stats.CacheStats
+     * @see io.micronaut.caffeine.cache.stats.CacheStats
      */
     public static <C extends AsyncLoadingCache> C monitor(MeterRegistry registry, C cache, String cacheName, Iterable<Tag> tags) {
         monitor(registry, cache.synchronous(), cacheName, tags);

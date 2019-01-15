@@ -1,11 +1,16 @@
 dependencies {
-    compileOnly project(":inject-java")
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
 
-    compile project(":configurations:micrometer-core")
+    compile "io.micrometer:micrometer-core:$micrometerVersion"
+    compile project(":micrometer-core")
 
-    compile dependencyModuleVersion("micrometer", "micrometer-registry-prometheus")
-
-    testCompile project(":inject-groovy")
-    testCompile project(":inject-java")
-    testCompile project(":http-server-netty")
+    compile "javax.validation:validation-api:$validationVersion"
+    compile "io.micrometer:micrometer-registry-prometheus:$micrometerVersion"
+    
+    testCompile "io.micronaut:micronaut-inject-groovy"
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    testRuntime "io.micronaut:micronaut-http-server-netty"    
+    testCompile "io.micronaut:micronaut-http-client"       
 }
+
