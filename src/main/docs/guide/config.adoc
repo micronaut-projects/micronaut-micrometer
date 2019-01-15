@@ -1,0 +1,8 @@
+The `micronaut-runtime-groovy` module adds the ability to use Groovy to define configuration.
+
+To use this module add the `micronaut-runtime-groovy` to your build configuration:
+
+dependency:micronaut-runtime-groovy[]
+
+
+You can then define configuration Groovy config in `src/main/resources/application.groovy` in http://docs.groovy-lang.org/latest/html/gapi/groovy/util/ConfigSlurper.html[ConfigSlurper] format.

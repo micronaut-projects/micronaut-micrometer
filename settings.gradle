@@ -1,0 +1,8 @@
+rootProject.name = 'micrometer'
+
+include 'micrometer-core'
+include 'micrometer-registry-atlas'
+include 'micrometer-registry-graphite'
+include 'micrometer-registry-prometheus'
+include 'micrometer-registry-statsd'
+
