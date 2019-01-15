@@ -1,4 +1,4 @@
 introduction: Introduction
-config: Groovy Configuration
-functions: Groovy Functions
-gorm: GORM Modules
+metricsEndpoint: Metrics Endpoint
+metricsConcepts: Metrics Concepts
+
