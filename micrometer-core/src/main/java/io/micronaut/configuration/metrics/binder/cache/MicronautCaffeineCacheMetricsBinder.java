@@ -56,10 +56,10 @@ public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventList
         MeterRegistry meterRegistry = meterRegistryProvider.get();
         Cache<?> cache = event.getBean();
         Object nativeCache = cache.getNativeCache();
-        if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache) {
+        if (nativeCache instanceof io.micronaut.caffeine.cache.Cache) {
             MicronautCaffeineCacheMetrics.monitor(
                     meterRegistry,
-                    (com.github.benmanes.caffeine.cache.Cache) nativeCache,
+                    (io.micronaut.caffeine.cache.Cache) nativeCache,
                     cache.getName(),
                     Collections.emptyList()
             );
