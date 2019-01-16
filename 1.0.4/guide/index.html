@@ -1,0 +1,1144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Micronaut Micrometer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <link rel="stylesheet" href="../css/highlight/agate.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script src="../js/guide.js"></script>
+    <script src="../js/multi-language-sample.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="stylesheet" href="../css/multi-language-sample.css"/>
+    <script src="../js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+        function addJsClass(el) {
+            var classes = document.body.className.split(" ");
+            classes.push("js");
+            document.body.className = classes.join(" ");
+        }
+    </script>
+
+</head>
+
+<body class="body" id="docs" onload="addJsClass();" onhashchange="highlightMenu()">
+
+<div id="table-of-content-nav-link" class="desktop">
+    <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
+</div>
+
+<div id="main">
+    <div id="navigation" class="no-print">
+        <div class="navTitle">
+            <span id="logo"><a href="http://micronaut.io" title="Go to Micronaut Website"><img src="../img/micronaut-logo-white.svg" alt="Micronaut"/></a></span>
+        </div>
+        <div class="navLinks">
+            <ul>
+                    <li>
+                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsEndpoint"><strong>2</strong><span>Metrics Endpoint</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsConcepts"><strong>3</strong><span>Metrics Concepts</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                <li id="table-of-content-nav-link-mobile" class="mobile">
+                    <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
+                </li>
+    <!--             <li class="desktop">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Configuration Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Conf</a>
+                </li>
+ -->
+            </ul>
+
+        </div>
+    </div>
+    
+    <div id="table-of-content">
+        <div class="toc-content">
+
+        <h2>Table of Contents</h2>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-introduction"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsEndpoint"><a href="#metricsEndpoint"><strong>2</strong><span>Metrics Endpoint</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsConcepts"><a href="#metricsConcepts"><strong>3</strong><span>Metrics Concepts</span></a></div>
+        
+        </div>
+    </div>
+    
+    <div class="docs-content">
+    <div class="project">
+        <h1>Micronaut Micrometer</h1>
+        <p></p>
+        <p>Provides integration between Micronaut and Micrometer</p>
+        <p><strong>Version:</strong> 1.0.4</p>
+    </div>
+    
+
+<h1 id="introduction">1 Introduction</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/introduction.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This project integrates Micronaut and <a href="https://micrometer.io">Micrometer</a> allowing metrics collection for Micronaut applications.</p>
+</div>
+
+
+<h1 id="metricsEndpoint">2 Metrics Endpoint</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply one of <code>micrometer-atlas</code>, <code>micrometer-graphite</code>, <code>micrometer-prometheus</code>, or <code>micrometer-statsd</code> features to enable metrics and preconfigure the selected registery in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features micrometer-atlas</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The metrics endpoint returns information about the "metrics" of the application. To execute the metrics endpoint, send a GET request to <code>/metrics</code>.  This will return a list of the metric names registered with the <code>MeterRegistry</code> bean.</p>
+</div>
+<div class="paragraph">
+<p>You can get specific metrics by using <code>/metrics/[name]</code> such as <code>/metrics/jvm.memory.used</code>.  This would return something like:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.45397552E8
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap",
+        "nonheap"
+      ]
+    },
+    {
+      "tag": "id",
+      "values": [
+        "Compressed Class Space",
+        "PS Survivor Space",
+        "PS Old Gen",
+        "Metaspace",
+        "PS Eden Space",
+        "Code Cache"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can further limit the metric by using a tag like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may even use multiple/nested tags like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&amp;tag=area:heap</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Currently the metrics endpoint will only be enabled if you include the <code>micrometer-core</code> (or one of the typed registries such as <code>micrometer-registry-statsd</code> or <code>micrometer-registry-graphite</code>) AND the <code>management</code> dependencies.  You will also need to have the global metrics flag enabled (true by default).</p>
+</div>
+<div class="listingblock">
+<div class="title">Property</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Gradle</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    compile "io.micronaut.configuration:micronaut-micrometer-core"
+    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
+    compile "io.micronaut.configuration:micronaut-micrometer-registry-statsd"
+    // Also required to enable endpoint
+    compile "io.micronaut:micronaut-management"
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Maven</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- Also required to enable endpoint --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To configure the metrics endpoint, supply configuration through <code>endpoints.metrics</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Metrics Endpoint Configuration Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+    metrics:
+        enabled: Boolean
+        sensitive: Boolean</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<h1 id="metricsConcepts">3 Metrics Concepts</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsConcepts.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_metric_concepts">Metric Concepts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Key <code>Micrometer.io</code> <a href="http://micrometer.io/docs/concepts">concepts</a> include
+a <a href="http://micrometer.io/docs/concepts#_registry">MeterRegistry</a> to register and use
+meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is something that produces metrics.</p>
+</div>
+<div class="paragraph">
+<p>A MeterRegistry can have some customizations automatically applied.</p>
+</div>
+<div class="sect2">
+<h3 id="_meter_registry_configurer">Meter Registry Configurer</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Any bean that implements <code>MeterRegistryConfigurer</code> gets applied to every <em>applicable</em> MeterRegistry bean on creation</p>
+</li>
+<li>
+<p>The implementation of the MeterRegistryConfigurer <code>supports()</code> method determines if the configurer is applied to a particular registry</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you want all registries to get the customization, simply return return <code>true</code></p>
+</li>
+<li>
+<p>Otherwise, you can evaluate the registry for its class type, its class hierarchy, or other criteria.</p>
+</li>
+<li>
+<p>Remember you only get one shot for autoconfiguration; i.e. when the bean context is started.</p>
+</li>
+<li>
+<p>However, in code, you can apply additional customizations to the registry config</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">MeterRegistryConfigurer Interface</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
+ * Copyright 2017-2018 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.micronaut.configuration.metrics.aggregator;
+
+import io.micrometer.core.instrument.MeterRegistry;
+
+/**
+ * Class that will configure meter registries.  This is done on bean added event so that
+ * composite registry can be skipped and non-composite registries can be added to composite.
+ *
+ * @author Christian Oestreich
+ * @param &lt;T&gt; an instance of a meter registry that will be configured
+ * @since 1.0
+ */
+public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; {
+
+    /**
+     * Method to configure a meter registry with binders, filters, etc.
+     *
+     * @param meterRegistry Meter Registry
+     */
+    void configure(T meterRegistry);
+
+    /**
+     * Method to determine if this configurer supports the meter registry type.
+     *
+     * @param meterRegistry a meter registry
+     * @return boolean whether is supported
+     */
+    boolean supports(T meterRegistry);
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
+
+public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer {
+
+    @Override
+    public void configure(MeterRegistry meterRegistry) {
+        meterRegistry.config().commonTags("key", "value");
+    }
+
+    @Override
+    public boolean supports(MeterRegistry meterRegistry) {
+        return meterRegistry instanceof SimpleMeterRegistry;
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_meter_filter">Meter Filter</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>A meter filter can be used to determine if a Meter is to be added to the registry. See <a href="http://micrometer.io/docs/concepts#_meter_filters">Meter Filters</a></p>
+</li>
+<li>
+<p>Any bean that implements MeterFilter will be applied to all registries when the registry is first created</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can create custom filters similar to the following inside your application.  Micrometer&#8217;s <code>MeterFilter</code> class provides several convenience methods to help with the creation of these filters.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Factory;
+
+import javax.inject.Singleton;
+import java.util.Arrays;
+
+@Factory
+public class MeterFilterFactory {
+
+    /**
+     * Exclude metrics starting with jvm
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter jvmExclusionFilter() {
+        return MeterFilter.denyNameStartsWith("jvm");
+    }
+
+    /**
+     * Add global tags to all metrics
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter addCommonTagFilter() {
+        return MeterFilter.commonTags(Arrays.asList(Tag.of("scope", "demo")));
+    }
+
+    /**
+     * Rename a tag key for every metric beginning with a given prefix.
+     * &lt;p&gt;
+     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
+     * &lt;p&gt;
+     * OLD: http.server.requests ['method':'GET", ...]
+     * NEW: http.server.requests ['httpmethod':'GET", ...]
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter renameFilter() {
+        return MeterFilter.renameTag("http.server.requests", "method", "httpmethod");
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_meter_binder">Meter Binder</h3>
+<div class="paragraph">
+<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer.io defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These all extend a simple interface MeterBinder, but these are not auto wired as beans and manual wiring is required given how micrometer is currently implemented.</p>
+</div>
+<div class="sect3">
+<h4 id="_provided_binders">Provided Binders</h4>
+<div class="paragraph">
+<p>The following metrics currently have binders and are enabled by default.  The settings listed below can disable the specific metric binders if you do not with to collect or report the specific metrics.</p>
+</div>
+<div class="sect4">
+<h5 id="_jvm_metrics">Jvm Metrics</h5>
+<div class="paragraph">
+<p>The JVM metrics bindings will provide several jvm metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jvm.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.memory.used</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.total.capacity</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.classes.loaded</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.classes.unloaded</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.live.data.size</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.max.data.size</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.memory.allocated</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.memory.promoted</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.committed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.used</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.daemon</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.live</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.peak</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_web_metrics">Web Metrics</h5>
+<div class="paragraph">
+<p>There is a default web filter provided for web metrics.  All routes, status codes, methods and exceptions will be timed and counted.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.web.enabled</code></p>
+</div>
+<div class="paragraph">
+<div class="title">Filter Path</div>
+<p>If enabled, be default the path <code>/**</code> will be intercepted.  If you wish to change which paths are run through the filter set the following property.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.http.path</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http.server.requests</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http.client.requests</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_system_metrics">System Metrics</h5>
+<div class="paragraph">
+<p>There are multiple metrics that can be separately toggled.</p>
+</div>
+<div class="sect5">
+<h6 id="_uptime_metrics">Uptime Metrics</h6>
+<div class="paragraph">
+<p>The uptime metrics bindings will provide system uptime metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.uptime.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.uptime</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.start.time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_processor_metrics">Processor Metrics</h5>
+<div class="paragraph">
+<p>The processor metrics bindings will provide system processor metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.processor.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 4. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.load.average.1m</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.cpu.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.cpu.count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.cpu.usage</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_file_descriptor_metrics">File Descriptor Metrics</h5>
+<div class="paragraph">
+<p>The file descriptor metrics bindings will provide system file descriptor metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.files.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 5. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.files.open</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.files.max</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_logback_metrics">Logback Metrics</h5>
+<div class="paragraph">
+<p>The logging metrics bindings will provide logging metrics if using Logback.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.logback.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 6. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logback.events</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_hibernate_metrics">Hibernate Metrics</h5>
+<div class="paragraph">
+<p>You can enable metrics for Hibernate by setting the <code>hibernate.generate_statistics</code> property to <code>true</code> in configuration. For example for the default entity manager:</p>
+</div>
+<div class="paragraph">
+<p>Enabling Hibernate Metrics</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jpa:
+    default:
+        properties:
+            hibernate:
+                generate_statistics: true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micrometer will automatically expose Hibernate statistics. See the source code for <a href="https://github.com/micrometer-metrics/micrometer/blob/8b5a2cfd0c8fcc121cb936bb40a04f45571ce073/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jpa/HibernateMetrics.java#L79">HibernateMetrics</a> for the available metrics.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_datasource_metrics">DataSource Metrics</h5>
+<div class="paragraph">
+<p>The data source metrics bindings will provide data source pool metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jdbc.enabled</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+There is a different set of pool metric names for HikariCP and other pool providers.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you are using <code>io.micronaut.configuration:micronaut-jdbc-hikari</code> you will get additional pool metrics as HikariCP has built in support for meter registries.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 7. HikariCP Metrics Provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.idle</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.pending</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.active</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.creation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.min</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.timeout</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.acquire</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If you are using <code>io.micronaut.configuration:micronaut-jdbc-tomcat</code> or <code>io.micronaut.configuration:micronaut-jdbc-dbcp</code> you will get the following metrics</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 8. Generic Pool Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.active</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.min</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_custom_metrics">Adding Custom Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To add metrics to your application you can inject a MeterRegistry bean to your class and use the provided methods to access counters, timers, etc.</p>
+</div>
+<div class="paragraph">
+<p>See the Micrometer.io docs at <a href="https://micrometer.io/docs" class="bare">https://micrometer.io/docs</a> for more information.</p>
+</div>
+<div class="listingblock">
+<div class="title">Custom Metrics Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.reactivex.Single;
+
+import javax.validation.constraints.NotBlank;
+
+@Controller("/")
+public class IndexController {
+
+    private MeterRegistry meterRegistry;
+
+    public IndexController(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
+
+    @Get("/hello/{name}")
+    public Single hello(@NotBlank String name) {
+        meterRegistry
+                .counter("web.access", "controller", "index", "action", "hello")
+                .increment();
+        return Single.just("Hello " + name);
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_metrics_registries_reporters">Metrics Registries &amp; Reporters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default there a metrics endpoint wired up and metrics are provided to it for viewing or retrieving via http.  If you want to register a specific type of reporter you will need to include a typed registry configuration.  The following are the currently supported libraries for reporting metrics.</p>
+</div>
+<div class="sect2">
+<h3 id="_statsd_registry">Statsd Registry</h3>
+<div class="paragraph">
+<p>You can include the statsd reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-statsd:${micronaut.version}</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-statsd'</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.statsd</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java">StatdsConfig</a> for more options</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flavor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of metric to use (datadog, etsy or telegraf). Default: <code>datadog</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The host to communicate to statsd on. Default: <code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The port to communicate to statsd on. Default: <code>8125</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Statsd Config</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      statsd:
+        enabled: true
+        flavor: datadog
+        step: PT1M
+        host: localhost
+        port: 8125</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_graphite_registry">Graphite Registry</h3>
+<div class="paragraph">
+<p>You can include the graphite reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-graphite:${micronaut.version}</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-graphite'</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-graphite&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.graphite</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java">GraphiteConfig</a> for more options</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The host to communicate with graphite. Default: <code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The port to communicate with graphite. Default: <code>2004</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Graphite Config</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      graphite:
+        enabled: true
+        step: PT1M
+        host: localhost
+        port: 2004</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_atlas_registry">Atlas Registry</h3>
+<div class="paragraph">
+<p>You can include the atlas reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-atlas:${micronaut.version}</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-atlas'</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-atlas&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.atlas</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/Netflix/spectator/blob/master/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java">AtlasConfig</a> for more options</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The uri for the atlas backend. Default: <code><a href="http://localhost:7101/api/v1/publish" class="bare">http://localhost:7101/api/v1/publish</a></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Atlas Config</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      atlas:
+        enabled: true
+        uri: http://localhost:7101/api/v1/publish
+        step: PT1M</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prometheus_registry">Prometheus Registry</h3>
+<div class="paragraph">
+<p>You can include the prometheus reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-prometheus:${micronaut.version}</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-prometheus'</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.prometheus</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java">PrometheusConfig</a> for more options</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to Prometheus. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example Prometheus Config</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
