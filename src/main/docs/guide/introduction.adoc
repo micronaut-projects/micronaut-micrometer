@@ -1,3 +1,9 @@
 This project integrates Micronaut and https://micrometer.io[Micrometer] allowing metrics collection for Micronaut applications.
 
 
+=== Release Notes
+
+==== 1.1.0
+
+* Support for JCache Metrics
+* Support for https://micrometer.io/docs/concepts#_the_code_timed_code_annotation[@Timed] annotation
