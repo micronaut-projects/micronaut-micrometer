@@ -82,8 +82,10 @@
 <li><a href="io/micronaut/configuration/metrics/binder/web/package-tree.html">io.micronaut.configuration.metrics.binder.web</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/management/endpoint/package-tree.html">io.micronaut.configuration.metrics.management.endpoint</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/package-tree.html">io.micronaut.configuration.metrics.micrometer</a>, </li>
+<li><a href="io/micronaut/configuration/metrics/micrometer/annotation/package-tree.html">io.micronaut.configuration.metrics.micrometer.annotation</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/atlas/package-tree.html">io.micronaut.configuration.metrics.micrometer.atlas</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/graphite/package-tree.html">io.micronaut.configuration.metrics.micrometer.graphite</a>, </li>
+<li><a href="io/micronaut/configuration/metrics/micrometer/intercept/package-tree.html">io.micronaut.configuration.metrics.micrometer.intercept</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/prometheus/package-tree.html">io.micronaut.configuration.metrics.micrometer.prometheus</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/statsd/package-tree.html">io.micronaut.configuration.metrics.micrometer.statsd</a></li>
 </ul>
@@ -104,6 +106,7 @@
 <li type="circle">io.micronaut.configuration.metrics.binder.datasource.<a href="io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.datasource"><span class="typeNameLink">DataSourcePoolMetricsBinderFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.executor"><span class="typeNameLink">ExecutorServiceMetricsBinder</span></a> (implements io.micronaut.context.event.BeanCreatedEventListener&lt;T&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.graphite.<a href="io/micronaut/configuration/metrics/micrometer/graphite/GraphiteMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.graphite"><span class="typeNameLink">GraphiteMeterRegistryFactory</span></a></li>
+<li type="circle">io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache"><span class="typeNameLink">JCacheMetricsBinder</span></a> (implements io.micronaut.context.event.BeanCreatedEventListener&lt;T&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.binder.jvm.<a href="io/micronaut/configuration/metrics/binder/jvm/JvmMeterRegistryBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.jvm"><span class="typeNameLink">JvmMeterRegistryBinderFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.binder.logging.<a href="io/micronaut/configuration/metrics/binder/logging/LogbackMeterRegistryBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.logging"><span class="typeNameLink">LogbackMeterRegistryBinderFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.<a href="io/micronaut/configuration/metrics/micrometer/MeterRegistryCreationListener.html" title="class in io.micronaut.configuration.metrics.micrometer"><span class="typeNameLink">MeterRegistryCreationListener</span></a> (implements io.micronaut.context.event.BeanCreatedEventListener&lt;T&gt;)</li>
@@ -124,6 +127,7 @@
 <li type="circle">io.micronaut.configuration.metrics.micrometer.<a href="io/micronaut/configuration/metrics/micrometer/SimpleMeterRegistryEventListener.html" title="class in io.micronaut.configuration.metrics.micrometer"><span class="typeNameLink">SimpleMeterRegistryEventListener</span></a> (implements io.micronaut.context.event.ApplicationEventListener&lt;E&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.statsd.<a href="io/micronaut/configuration/metrics/micrometer/statsd/StatsdMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.statsd"><span class="typeNameLink">StatsdMeterRegistryFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.binder.system.<a href="io/micronaut/configuration/metrics/binder/system/SystemMeterRegistryBinderFactoryFactory.html" title="class in io.micronaut.configuration.metrics.binder.system"><span class="typeNameLink">SystemMeterRegistryBinderFactoryFactory</span></a></li>
+<li type="circle">io.micronaut.configuration.metrics.micrometer.intercept.<a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept"><span class="typeNameLink">TimedInterceptor</span></a> (implements io.micronaut.aop.MethodInterceptor&lt;T,R&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.binder.web.<a href="io/micronaut/configuration/metrics/binder/web/WebMetricsPublisher.html" title="class in io.micronaut.configuration.metrics.binder.web"><span class="typeNameLink">WebMetricsPublisher</span></a>&lt;T&gt; (implements org.reactivestreams.Publisher&lt;T&gt;)</li>
 </ul>
 </li>
@@ -134,6 +138,7 @@
 </ul>
 <h2 title="Annotation Type Hierarchy">Annotation Type Hierarchy</h2>
 <ul>
+<li type="circle">io.micronaut.configuration.metrics.micrometer.annotation.<a href="io/micronaut/configuration/metrics/micrometer/annotation/MircometerTimed.html" title="annotation in io.micronaut.configuration.metrics.micrometer.annotation"><span class="typeNameLink">MircometerTimed</span></a> (implements java.lang.annotation.Annotation)</li>
 <li type="circle">io.micronaut.configuration.metrics.annotation.<a href="io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation"><span class="typeNameLink">RequiresMetrics</span></a> (implements java.lang.annotation.Annotation)</li>
 </ul>
 </div>

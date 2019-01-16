@@ -138,6 +138,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinderFactory.html#DataSourcePoolMetricsBinderFactory--">DataSourcePoolMetricsBinderFactory()</a></span> - Constructor for class io.micronaut.configuration.metrics.binder.datasource.<a href="io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.datasource">DataSourcePoolMetricsBinderFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#DEFAULT_METRIC_NAME">DEFAULT_METRIC_NAME</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.intercept.<a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept">TimedInterceptor</a></dt>
+<dd>
+<div class="block">Default metric name.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/web/ClientRequestMetricRegistryFilter.html#doFilter-io.micronaut.http.MutableHttpRequest-io.micronaut.http.filter.ClientFilterChain-">doFilter(MutableHttpRequest&lt;?&gt;, ClientFilterChain)</a></span> - Method in class io.micronaut.configuration.metrics.binder.web.<a href="io/micronaut/configuration/metrics/binder/web/ClientRequestMetricRegistryFilter.html" title="class in io.micronaut.configuration.metrics.binder.web">ClientRequestMetricRegistryFilter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html#doFilterOnce-io.micronaut.http.HttpRequest-io.micronaut.http.filter.ServerFilterChain-">doFilterOnce(HttpRequest&lt;?&gt;, ServerFilterChain)</a></span> - Method in class io.micronaut.configuration.metrics.binder.web.<a href="io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html" title="class in io.micronaut.configuration.metrics.binder.web">ServerRequestMeterRegistryFilter</a></dt>
@@ -156,6 +160,10 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html#evictionCount--">evictionCount()</a></span> - Method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html" title="class in io.micronaut.configuration.metrics.binder.cache">MicronautCaffeineCacheMetrics</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#EXCEPTION_TAG">EXCEPTION_TAG</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.intercept.<a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept">TimedInterceptor</a></dt>
+<dd>
+<div class="block">Tag key for an exception.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.executor"><span class="typeNameLink">ExecutorServiceMetricsBinder</span></a> - Class in <a href="io/micronaut/configuration/metrics/binder/executor/package-summary.html">io.micronaut.configuration.metrics.binder.executor</a></dt>
 <dd>
 <div class="block">Instruments Micronaut related thread pools via Micrometer.</div>
@@ -238,6 +246,8 @@
 </a>
 <h2 class="title">I</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#intercept-io.micronaut.aop.MethodInvocationContext-">intercept(MethodInvocationContext&lt;Object, Object&gt;)</a></span> - Method in class io.micronaut.configuration.metrics.micrometer.intercept.<a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept">TimedInterceptor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/aggregator/package-summary.html">io.micronaut.configuration.metrics.aggregator</a> - package io.micronaut.configuration.metrics.aggregator</dt>
 <dd>
 <div class="block">Metrics aggregation.</div>
@@ -282,6 +292,8 @@
 <dd>
 <div class="block">Configuration for Micrometer metrics.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/annotation/package-summary.html">io.micronaut.configuration.metrics.micrometer.annotation</a> - package io.micronaut.configuration.metrics.micrometer.annotation</dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/atlas/package-summary.html">io.micronaut.configuration.metrics.micrometer.atlas</a> - package io.micronaut.configuration.metrics.micrometer.atlas</dt>
 <dd>
 <div class="block">Configuration for Micrometer-Atlas metrics.</div>
@@ -290,6 +302,8 @@
 <dd>
 <div class="block">Configuration for Micrometer-Graphite metrics.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/intercept/package-summary.html">io.micronaut.configuration.metrics.micrometer.intercept</a> - package io.micronaut.configuration.metrics.micrometer.intercept</dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/prometheus/package-summary.html">io.micronaut.configuration.metrics.micrometer.prometheus</a> - package io.micronaut.configuration.metrics.micrometer.prometheus</dt>
 <dd>
 <div class="block">Configuration for Micrometer-Prometheus metrics.</div>
@@ -304,6 +318,14 @@
 </a>
 <h2 class="title">J</h2>
 <dl>
+<dt><a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache"><span class="typeNameLink">JCacheMetricsBinder</span></a> - Class in <a href="io/micronaut/configuration/metrics/binder/cache/package-summary.html">io.micronaut.configuration.metrics.binder.cache</a></dt>
+<dd>
+<div class="block">Instruments the active JCache manager.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html#JCacheMetricsBinder-javax.inject.Provider-">JCacheMetricsBinder(Provider&lt;MeterRegistry&gt;)</a></span> - Constructor for class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache">JCacheMetricsBinder</a></dt>
+<dd>
+<div class="block">Default constructor.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/jvm/JvmMeterRegistryBinderFactory.html#jvmGcMetrics--">jvmGcMetrics()</a></span> - Method in class io.micronaut.configuration.metrics.binder.jvm.<a href="io/micronaut/configuration/metrics/binder/jvm/JvmMeterRegistryBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.jvm">JvmMeterRegistryBinderFactory</a></dt>
 <dd>
 <div class="block">JVM GC metrics bean.</div>
@@ -425,6 +447,10 @@
 <dd>
 <div class="block">Default constructor.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/annotation/MircometerTimed.html" title="annotation in io.micronaut.configuration.metrics.micrometer.annotation"><span class="typeNameLink">MircometerTimed</span></a> - Annotation Type in <a href="io/micronaut/configuration/metrics/micrometer/annotation/package-summary.html">io.micronaut.configuration.metrics.micrometer.annotation</a></dt>
+<dd>
+<div class="block">This is an internal annotation used to trigger AOP for <code>Timed</code>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html#missCount--">missCount()</a></span> - Method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html" title="class in io.micronaut.configuration.metrics.binder.cache">MicronautCaffeineCacheMetrics</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html#monitor-io.micrometer.core.instrument.MeterRegistry-C-java.lang.String-java.lang.String...-">monitor(MeterRegistry, C, String, String...)</a></span> - Static method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetrics.html" title="class in io.micronaut.configuration.metrics.binder.cache">MicronautCaffeineCacheMetrics</a></dt>
@@ -453,6 +479,8 @@
 <dd>
 <div class="block">Application event method.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html#onCreated-io.micronaut.context.event.BeanCreatedEvent-">onCreated(BeanCreatedEvent&lt;CacheManager&gt;)</a></span> - Method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache">JCacheMetricsBinder</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetricsBinder.html#onCreated-io.micronaut.context.event.BeanCreatedEvent-">onCreated(BeanCreatedEvent&lt;Cache&lt;?&gt;&gt;)</a></span> - Method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache">MicronautCaffeineCacheMetricsBinder</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html#onCreated-io.micronaut.context.event.BeanCreatedEvent-">onCreated(BeanCreatedEvent&lt;ExecutorService&gt;)</a></span> - Method in class io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsBinder</a></dt>
@@ -545,6 +573,14 @@
 </a>
 <h2 class="title">T</h2>
 <dl>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept"><span class="typeNameLink">TimedInterceptor</span></a> - Class in <a href="io/micronaut/configuration/metrics/micrometer/intercept/package-summary.html">io.micronaut.configuration.metrics.micrometer.intercept</a></dt>
+<dd>
+<div class="block">Implements support for <code>Timed</code> as AOP advice.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#TimedInterceptor-io.micrometer.core.instrument.MeterRegistry-">TimedInterceptor(MeterRegistry)</a></span> - Constructor for class io.micronaut.configuration.metrics.micrometer.intercept.<a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html" title="class in io.micronaut.configuration.metrics.micrometer.intercept">TimedInterceptor</a></dt>
+<dd>
+<div class="block">Default constructor.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.Sample.html#toString--">toString()</a></span> - Method in class io.micronaut.configuration.metrics.management.endpoint.<a href="io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.Sample.html" title="class in io.micronaut.configuration.metrics.management.endpoint">MetricsEndpoint.Sample</a></dt>
 <dd>&nbsp;</dd>
 </dl>
