@@ -5,5 +5,6 @@ This project integrates Micronaut and https://micrometer.io[Micrometer] allowing
 
 ==== 1.1.0
 
+* Upgrade to Micrometer `1.1.2`
 * Support for JCache Metrics
 * Support for https://micrometer.io/docs/concepts#_the_code_timed_code_annotation[@Timed] annotation
