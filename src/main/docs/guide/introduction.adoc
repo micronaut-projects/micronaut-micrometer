@@ -8,3 +8,4 @@ This project integrates Micronaut and https://micrometer.io[Micrometer] allowing
 * Upgrade to Micrometer `1.1.2`
 * Support for JCache Metrics
 * Support for https://micrometer.io/docs/concepts#_the_code_timed_code_annotation[@Timed] annotation
+* New `/prometheus` Management Endpoint Added. See api:configuration.metrics.micrometer.prometheus.management.PrometheusEndpoint[]
