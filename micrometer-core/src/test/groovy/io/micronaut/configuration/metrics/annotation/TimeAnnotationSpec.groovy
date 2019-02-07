@@ -6,6 +6,7 @@ import io.micronaut.context.ApplicationContext
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
+import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit
 
 class TimeAnnotationSpec extends Specification {
 
+    @PendingFeature(reason = "This test will pass when the project is upgraded to Micronaut 1.1")
     void "test timed annotation usage"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()
