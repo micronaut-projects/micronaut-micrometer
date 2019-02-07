@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.micrometer.prometheus.management
 
+import groovy.transform.NotYetImplemented
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
@@ -25,7 +26,8 @@ import spock.lang.Specification
 class PrometheusEndpointSpec extends Specification {
 
     @Shared @AutoCleanup EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
-            'endpoints.prometheus.sensitive':false
+            'endpoints.prometheus.sensitive':false,
+            'micronaut.metrics.export.prometheus.descriptions':false
     ])
     @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext
                                                     .createBean(RxHttpClient, embeddedServer.getURL())
@@ -36,4 +38,12 @@ class PrometheusEndpointSpec extends Specification {
         client.retrieve('/prometheus').blockingFirst().contains('jvm_memory_used')
     }
 
+    @NotYetImplemented
+    void "test prometheus scrape no descriptions"() {
+        given:
+        def result = client.retrieve('/prometheus').blockingFirst()
+        expect:
+        result.contains('jvm_memory_used')
+        !result.contains('# TYPE')
+    }
 }
