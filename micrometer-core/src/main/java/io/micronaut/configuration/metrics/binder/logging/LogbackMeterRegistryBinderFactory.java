@@ -23,7 +23,6 @@ import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 import org.slf4j.LoggerFactory;
-
 import javax.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
@@ -35,7 +34,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @since 1.0
  */
 @Factory
-@Requires(classes = LoggerFactory.class)
+@Requires(classes = ch.qos.logback.classic.Logger.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".logback.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
 public class LogbackMeterRegistryBinderFactory {

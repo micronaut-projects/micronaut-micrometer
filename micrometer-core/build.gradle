@@ -8,7 +8,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut:micronaut-jdbc"
     compileOnly "javax.cache:cache-api:$jcacheVersion"    
-
+    compileOnly "ch.qos.logback:logback-classic:1.2.3"
     testCompile "io.micronaut:micronaut-management"
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "io.micronaut:micronaut-function-web"    
