@@ -6,8 +6,8 @@ dependencies {
     compile "io.micronaut:micronaut-inject:$micronautVersion"
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut:micronaut-jdbc"
+    compileOnly "ch.qos.logback:logback-classic:1.2.3"
     
-
     testCompile "io.micronaut:micronaut-management"
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "io.micronaut:micronaut-function-web"    
