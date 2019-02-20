@@ -5,4 +5,5 @@ include 'micrometer-registry-atlas'
 include 'micrometer-registry-graphite'
 include 'micrometer-registry-prometheus'
 include 'micrometer-registry-statsd'
+include 'micrometer-registry-logging'
 
