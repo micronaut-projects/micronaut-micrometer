@@ -46,7 +46,8 @@ class LoggingMeterRegistryFactorySpec extends Specification {
 
     void "verify LoggingMeterRegistry is created by default when this configuration used"() {
         when:
-        ApplicationContext context = ApplicationContext.run()
+        ApplicationContext context = ApplicationContext.run([
+                (LOGGING_ENABLED)           : true])
 
         then:
         context.getBeansOfType(MeterRegistry).size() == 2
@@ -58,7 +59,8 @@ class LoggingMeterRegistryFactorySpec extends Specification {
 
     void "verify CompositeMeterRegistry created by default"() {
         when:
-        ApplicationContext context = ApplicationContext.run()
+        ApplicationContext context = ApplicationContext.run([
+                (LOGGING_ENABLED)           : true])
         CompositeMeterRegistry compositeRegistry = context.getBean(CompositeMeterRegistry)
 
         then:
@@ -83,7 +85,7 @@ class LoggingMeterRegistryFactorySpec extends Specification {
         where:
         cfg                       | setting | result
         MICRONAUT_METRICS_ENABLED | false   | false
-        MICRONAUT_METRICS_ENABLED | true    | true
+        MICRONAUT_METRICS_ENABLED | true    | false
         LOGGING_ENABLED            | true    | true
         LOGGING_ENABLED            | false   | false
     }

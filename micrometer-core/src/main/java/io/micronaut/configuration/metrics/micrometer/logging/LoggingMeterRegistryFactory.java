@@ -51,7 +51,7 @@ public class LoggingMeterRegistryFactory {
 
     /**
      * Create a LoggingMeterRegistry bean if global metrics are enabled
-     * and the logging flag is enabled.  Will be true by default when this
+     * and the logging flag is enabled.  Will be false by default when this
      * configuration is included in project.
      *
      * @return A LoggingMeterRegistry
@@ -60,7 +60,7 @@ public class LoggingMeterRegistryFactory {
     @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = LOGGING_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = LOGGING_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.FALSE)
     @Requires(beans = CompositeMeterRegistry.class)
     LoggingMeterRegistry loggingMeterRegistry() {
         return new LoggingMeterRegistry(loggingConfig, Clock.SYSTEM);
