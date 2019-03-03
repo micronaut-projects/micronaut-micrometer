@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.micrometer.cloudwatch
 
+import com.amazonaws.SDKGlobalConfiguration
 import io.micrometer.cloudwatch.CloudWatchConfig
 import io.micrometer.cloudwatch.CloudWatchMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
@@ -30,6 +31,14 @@ import static io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatc
 import static io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory.CLOUDWATCH_ENABLED
 
 class CloudwatchRegistryFactorySpec extends Specification {
+
+    void setupSpec(){
+        System.setProperty(SDKGlobalConfiguration.AWS_REGION_SYSTEM_PROPERTY, "us-east-1")
+    }
+
+    void cleanupSpec(){
+        System.clearProperty(SDKGlobalConfiguration.AWS_REGION_SYSTEM_PROPERTY)
+    }
 
     void "wireup the bean manually"() {
         setup:
