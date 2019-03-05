@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
 import io.micronaut.core.type.Argument;
 import io.micronaut.management.endpoint.annotation.Endpoint;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
  */
 @Endpoint(value = MetricsEndpoint.NAME, defaultSensitive = MetricsEndpoint.DEFAULT_SENSITIVE)
 @RequiresMetrics
+@Introspected
 public class MetricsEndpoint {
 
     /**
@@ -275,6 +277,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name listing.
      */
+    @Introspected
     public static final class MetricNames {
 
         private final SortedSet<String> names;
@@ -301,6 +304,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name selector.
      */
+    @Introspected
     public static final class MetricDetails {
 
         private final String name;
@@ -355,6 +359,7 @@ public class MetricsEndpoint {
     /**
      * A set of tags for further dimensional drilldown and their potential values.
      */
+    @Introspected
     public static final class AvailableTag {
 
         private final String tag;
@@ -395,6 +400,7 @@ public class MetricsEndpoint {
     /**
      * A measurement sample combining a {@link Statistic statistic} and a value.
      */
+    @Introspected
     public static final class Sample {
 
         private final Statistic statistic;

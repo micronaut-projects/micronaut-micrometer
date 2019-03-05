@@ -5,6 +5,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-inject-java"
     compile "io.micrometer:micrometer-core:$micrometerVersion"
     compile "io.micronaut:micronaut-inject:$micronautVersion"
+    compile "io.micronaut:micronaut-core:$micronautVersion"
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut:micronaut-jdbc"
     compileOnly "javax.cache:cache-api:$jcacheVersion"    
