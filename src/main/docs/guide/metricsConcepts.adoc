@@ -325,6 +325,9 @@ You can configure this reporter using `micronaut.metrics.export.prometheus`.  Th
 .Example Prometheus Config
 [source,yml]
 ----
+endpoints:
+  prometheus:
+    sensitive: false
 micronaut:
   metrics:
     enabled: true
