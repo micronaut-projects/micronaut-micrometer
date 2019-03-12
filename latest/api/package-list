@@ -9,7 +9,12 @@ io.micronaut.configuration.metrics.binder.system
 io.micronaut.configuration.metrics.binder.web
 io.micronaut.configuration.metrics.management.endpoint
 io.micronaut.configuration.metrics.micrometer
+io.micronaut.configuration.metrics.micrometer.annotation
 io.micronaut.configuration.metrics.micrometer.atlas
+io.micronaut.configuration.metrics.micrometer.cloudwatch
 io.micronaut.configuration.metrics.micrometer.graphite
+io.micronaut.configuration.metrics.micrometer.intercept
+io.micronaut.configuration.metrics.micrometer.logging
 io.micronaut.configuration.metrics.micrometer.prometheus
+io.micronaut.configuration.metrics.micrometer.prometheus.management
 io.micronaut.configuration.metrics.micrometer.statsd
