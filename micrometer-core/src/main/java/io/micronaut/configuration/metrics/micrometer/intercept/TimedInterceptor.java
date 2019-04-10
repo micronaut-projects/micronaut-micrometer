@@ -28,6 +28,8 @@ import io.micronaut.core.util.StringUtils;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Action;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.util.concurrent.CompletionStage;
@@ -57,6 +59,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @since 1.1.0
      */
     public static final String EXCEPTION_TAG = "exception";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimedInterceptor.class);
 
     private final MeterRegistry meterRegistry;
 
@@ -167,7 +171,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     .register(meterRegistry);
             sample.stop(timer);
         } catch (Exception e) {
-            // ignoring on purpose
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error registering timer in the registry", e);
+            }
         }
     }
 }

@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit
 
 class TimeAnnotationSpec extends Specification {
 
-    @PendingFeature(reason = "This test will pass when the project is upgraded to Micronaut 1.1")
     void "test timed annotation usage"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()

@@ -4,10 +4,12 @@ dependencies {
 
     compile "io.micrometer:micrometer-core:$micrometerVersion"
     compile project(":micrometer-core")
+    compileOnly "io.micronaut:micronaut-management"
 
     compile "javax.validation:validation-api:$validationVersion"
     compile "io.micrometer:micrometer-registry-graphite:$micrometerVersion"
-    
+
+    testCompile "io.micronaut:micronaut-management"
     testCompile "io.micronaut:micronaut-inject-groovy"
     annotationProcessor "io.micronaut:micronaut-inject-java"
     testRuntime "io.micronaut:micronaut-http-server-netty"    

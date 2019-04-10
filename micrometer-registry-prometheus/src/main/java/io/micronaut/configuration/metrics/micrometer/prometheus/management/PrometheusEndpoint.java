@@ -38,7 +38,7 @@ public class PrometheusEndpoint {
     private PrometheusMeterRegistry prometheusMeterRegistry;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param prometheusMeterRegistry The meter registry
      */
     @Inject
