@@ -45,7 +45,7 @@ import java.util.function.BiConsumer;
  */
 @Singleton
 @RequiresMetrics
-@TypeHint(value = {org.HdrHistogram.Histogram.class,org.HdrHistogram.ConcurrentHistogram.class})
+@TypeHint(value = {org.HdrHistogram.Histogram.class, org.HdrHistogram.ConcurrentHistogram.class})
 public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**

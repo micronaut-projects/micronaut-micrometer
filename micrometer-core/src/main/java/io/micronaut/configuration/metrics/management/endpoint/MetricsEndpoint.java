@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
 import io.micronaut.core.type.Argument;
 import io.micronaut.management.endpoint.annotation.Endpoint;
@@ -52,6 +53,11 @@ import java.util.stream.Collectors;
  */
 @Endpoint(value = MetricsEndpoint.NAME, defaultSensitive = MetricsEndpoint.DEFAULT_SENSITIVE)
 @RequiresMetrics
+@TypeHint(value = {io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.class,
+           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
+           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
+           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
+           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class })
 public class MetricsEndpoint {
 
     /**
