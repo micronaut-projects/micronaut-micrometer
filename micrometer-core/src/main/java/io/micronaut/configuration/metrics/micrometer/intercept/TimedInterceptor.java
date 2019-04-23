@@ -23,6 +23,7 @@ import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
+import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.StringUtils;
 import io.reactivex.Flowable;
@@ -44,6 +45,7 @@ import java.util.function.BiConsumer;
  */
 @Singleton
 @RequiresMetrics
+@TypeHint(value = {org.HdrHistogram.Histogram.class, org.HdrHistogram.ConcurrentHistogram.class})
 public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**
