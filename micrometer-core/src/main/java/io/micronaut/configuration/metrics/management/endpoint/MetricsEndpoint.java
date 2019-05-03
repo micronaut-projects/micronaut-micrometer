@@ -57,7 +57,8 @@ import java.util.stream.Collectors;
            io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
            io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
            io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
-           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class })
+           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class },
+        accessType = {TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS, TypeHint.AccessType.ALL_PUBLIC_METHODS})
 public class MetricsEndpoint {
 
     /**
