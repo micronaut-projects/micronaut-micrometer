@@ -31,6 +31,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  *
  * @author thiagolocatelli
  * @see ElasticConfig
+ * @since 1.2.0
  */
 @ConfigurationProperties(MICRONAUT_METRICS_EXPORT)
 public class ElasticConfigurationProperties implements ElasticConfig {

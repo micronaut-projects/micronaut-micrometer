@@ -18,6 +18,7 @@
  * Configuration for Micrometer-Influx metrics.
  *
  * @author thiagolocatelli
+ * @since 1.2.0
  */
 @Configuration
 @Requires(classes = DatadogMeterRegistry.class)

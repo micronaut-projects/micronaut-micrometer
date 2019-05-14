@@ -35,6 +35,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * The ElasticMeterRegistryFactory that will configure and create a elastic meter registry.
  *
  * @author thiagolocatelli
+ * @since 1.2.0
  */
 @Factory
 public class ElasticMeterRegistryFactory {

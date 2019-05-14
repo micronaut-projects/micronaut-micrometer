@@ -35,6 +35,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * The InfluxMeterRegistryFactory that will configure and create a influx meter registry.
  *
  * @author thiagolocatelli
+ * @since 1.2.0
  */
 @Factory
 public class InfluxMeterRegistryFactory {
