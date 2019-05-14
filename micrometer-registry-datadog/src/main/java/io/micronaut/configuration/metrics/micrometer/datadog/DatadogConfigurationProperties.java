@@ -17,6 +17,7 @@
 package io.micronaut.configuration.metrics.micrometer.datadog;
 
 import io.micrometer.datadog.DatadogConfig;
+import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.NameUtils;
 
@@ -31,6 +32,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author thiagolocatelli
  * @see DatadogConfig
  */
+@ConfigurationProperties(MICRONAUT_METRICS_EXPORT)
 public class DatadogConfigurationProperties implements DatadogConfig {
 
     private final Properties config;
