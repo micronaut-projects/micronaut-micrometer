@@ -1,4 +1,4 @@
-You can include the graphite reporter via `io.micronaut.configuration:micronaut-micrometer-registry-graphite:${micronaut.version}`
+You can include the Graphite reporter via `io.micronaut.configuration:micronaut-micrometer-registry-graphite:${micronaut.version}`
 
 dependency:micronaut-micrometer-registry-graphite[groupId="io.micronaut.configuration"]
 

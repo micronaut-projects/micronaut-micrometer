@@ -1,4 +1,4 @@
-You can include the atlas reporter via `io.micronaut.configuration:micronaut-micrometer-registry-atlas:${micronaut.version}`
+You can include the Atlas reporter via `io.micronaut.configuration:micronaut-micrometer-registry-atlas:${micronaut.version}`
 
 dependency:micronaut-micrometer-registry-atlas[groupId="io.micronaut.configuration"]
 

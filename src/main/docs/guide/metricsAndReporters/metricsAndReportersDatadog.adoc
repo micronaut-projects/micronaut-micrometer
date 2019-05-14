@@ -1,19 +1,20 @@
-You can include the prometheus reporter via `io.micronaut.configuration:micronaut-micrometer-registry-influx:${micronaut.version}`
+You can include the Datadog reporter via `io.micronaut.configuration:micronaut-micrometer-registry-datadog:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-influx[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-datadog[groupId="io.micronaut.configuration"]
 
-You can configure this reporter using `micronaut.metrics.export.influx`.  The most commonly changed configuration properties are listed below, but see
-https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-influx/src/main/java/io/micrometer/influx/InfluxConfig.java[InfluxConfig]
+You can configure this reporter using `micronaut.metrics.export.datadog`.  The most commonly changed configuration properties are listed below, but see
+https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-datadog/src/main/java/io/micrometer/datadog/DatadogConfig.java[DatadogConfig]
 for more options.
 
 |=======
 |*Name* |*Description*
+|apiKey |Datadog Api Key, required
 |enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
 |step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
 |descriptions | Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: `true`
 |=======
 
-.Example InfluxDB Config
+.Example Datadog Config
 [source,yml]
 ----
 endpoints:
@@ -23,8 +24,8 @@ micronaut:
   metrics:
     enabled: true
     export:
-      influx:
+      datadog:
+        apiKey: ${DATADOG_APIKEY}
         enabled: true
         step: PT1M
-        descriptions: true
 ----

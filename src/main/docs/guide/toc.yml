@@ -8,6 +8,6 @@ metricsAndReporters:
   metricsAndReportersDatadog: Datadog Registry
   metricsAndReportersElastic: Elastic Registry
   metricsAndReportersGraphite: Graphite Registry
-  metricsAndReportersInfluxDb: InfluxDB Registry
+  metricsAndReportersInflux: InfluxDB Registry
   metricsAndReportersPrometheus: Prometheus Registry
   metricsAndReportersStatsD: StatsD Registry
