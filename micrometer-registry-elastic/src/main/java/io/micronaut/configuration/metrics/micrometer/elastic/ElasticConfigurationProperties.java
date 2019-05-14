@@ -17,6 +17,7 @@
 package io.micronaut.configuration.metrics.micrometer.elastic;
 
 import io.micrometer.elastic.ElasticConfig;
+import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.NameUtils;
 
@@ -31,6 +32,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author thiagolocatelli
  * @see ElasticConfig
  */
+@ConfigurationProperties(MICRONAUT_METRICS_EXPORT)
 public class ElasticConfigurationProperties implements ElasticConfig {
 
     private final Properties config;

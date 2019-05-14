@@ -47,10 +47,10 @@ public class ElasticMeterRegistryFactory {
     /**
      * Sets the underlying elastic meter registry properties.
      *
-     * @param influxDbConfigurationProperties prometheus properties
+     * @param elasticConfigurationProperties prometheus properties
      */
-    public ElasticMeterRegistryFactory(ElasticConfigurationProperties influxDbConfigurationProperties) {
-        this.elasticConfig = influxDbConfigurationProperties;
+    public ElasticMeterRegistryFactory(ElasticConfigurationProperties elasticConfigurationProperties) {
+        this.elasticConfig = elasticConfigurationProperties;
     }
 
     /**
@@ -66,7 +66,7 @@ public class ElasticMeterRegistryFactory {
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(property = ELASTIC_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(beans = CompositeMeterRegistry.class)
-    ElasticMeterRegistry datadogConfig() {
+    ElasticMeterRegistry elasticConfig() {
         return new ElasticMeterRegistry(elasticConfig, Clock.SYSTEM);
     }
 
