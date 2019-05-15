@@ -1,0 +1,31 @@
+You can include the Stackdriver reporter via `io.micronaut.configuration:micronaut-micrometer-registry-stackdriver:${micronaut.version}`
+
+dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.configuration"]
+
+You can configure this reporter using `micronaut.metrics.export.stackdriver`. The most commonly changed configuration properties are listed below, but see
+https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java[StackdriverConfig]
+for more options.
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
+|projectId |Stackdriver Project Id. Required.
+|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
+|descriptions | Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: `true`
+|=======
+
+.Example Stackdriver Config
+[source,yml]
+----
+endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      stackdriver:
+        enabled: true
+        projectId: ${STACKDRIVER_PROJECT_ID}
+        step: PT1M
+----
