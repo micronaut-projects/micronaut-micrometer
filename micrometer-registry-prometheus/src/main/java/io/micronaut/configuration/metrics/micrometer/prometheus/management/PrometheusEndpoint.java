@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.management;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.MediaType;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 
@@ -50,7 +51,7 @@ public class PrometheusEndpoint {
      * Scrapes the data.
      * @return The data.
      */
-    @Read
+    @Read(produces = MediaType.TEXT_PLAIN)
     public String scrape() {
         return prometheusMeterRegistry.scrape();
     }
