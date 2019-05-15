@@ -15,7 +15,7 @@
  */
 
 /**
- * Configuration for Micrometer-Influx metrics.
+ * Configuration for Micrometer-SignalFx metrics.
  *
  * @author thiagolocatelli
  * @since 1.2.0
