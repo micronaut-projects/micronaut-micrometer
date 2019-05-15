@@ -1,4 +1,13 @@
 introduction: Introduction
 metricsEndpoint: Metrics Endpoint
 metricsConcepts: Metrics Concepts
-
+metricsAndReporters:
+  title: Metrics Registries & Reporters
+  metricsAndReportersAtlas: Atlas Registry
+  metricsAndReportersCloudWatch: CloudWatch Registry
+  metricsAndReportersDatadog: Datadog Registry
+  metricsAndReportersElastic: Elastic Registry
+  metricsAndReportersGraphite: Graphite Registry
+  metricsAndReportersInflux: Influx Registry
+  metricsAndReportersPrometheus: Prometheus Registry
+  metricsAndReportersStatsD: StatsD Registry

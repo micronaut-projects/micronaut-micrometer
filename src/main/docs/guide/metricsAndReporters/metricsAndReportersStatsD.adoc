@@ -1,0 +1,29 @@
+You can include the StatsD reporter via `io.micronaut.configuration:micronaut-micrometer-registry-statsd:${micronaut.version}`
+
+dependency:micronaut-micrometer-registry-statsd[groupId="io.micronaut.configuration"]
+
+You can configure this reporter using `micronaut.metrics.export.statsd`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java[StatdsConfig] for more options
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
+|flavor |The type of metric to use (datadog, etsy or telegraf). Default: `datadog`
+|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
+|host |The host to communicate to statsd on. Default: `localhost`
+|port |The port to communicate to statsd on. Default: `8125`
+|=======
+
+.Example Statsd Config
+[source,yml]
+----
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      statsd:
+        enabled: true
+        flavor: datadog
+        step: PT1M
+        host: localhost
+        port: 8125
+----
