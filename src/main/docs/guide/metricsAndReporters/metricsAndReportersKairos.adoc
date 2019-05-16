@@ -18,9 +18,6 @@ for more options.
 .Example Kairos Config
 [source,yml]
 ----
-endpoints:
-  prometheus:
-    sensitive: false
 micronaut:
   metrics:
     enabled: true

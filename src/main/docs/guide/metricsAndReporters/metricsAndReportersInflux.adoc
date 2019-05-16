@@ -16,9 +16,6 @@ for more options.
 .Example Influx Config
 [source,yml]
 ----
-endpoints:
-  prometheus:
-    sensitive: false
 micronaut:
   metrics:
     enabled: true
