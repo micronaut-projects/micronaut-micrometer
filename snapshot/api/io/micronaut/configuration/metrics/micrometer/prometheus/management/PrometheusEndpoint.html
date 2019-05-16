@@ -253,7 +253,7 @@ public&nbsp;PrometheusEndpoint(io.micrometer.prometheus.PrometheusMeterRegistry&
 <ul class="blockListLast">
 <li class="blockList">
 <h4>scrape</h4>
-<pre>@Read
+<pre>@Read(produces="text/plain; version=0.0.4")
 public&nbsp;java.lang.String&nbsp;scrape()</pre>
 <div class="block">Scrapes the data.</div>
 <dl>
