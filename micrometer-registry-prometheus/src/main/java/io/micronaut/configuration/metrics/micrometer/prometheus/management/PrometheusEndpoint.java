@@ -50,7 +50,7 @@ public class PrometheusEndpoint {
      * Scrapes the data.
      * @return The data.
      */
-    @Read
+    @Read(produces = "text/plain; version=0.0.4")
     public String scrape() {
         return prometheusMeterRegistry.scrape();
     }
