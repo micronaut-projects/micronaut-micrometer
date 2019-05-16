@@ -6,8 +6,14 @@ metricsAndReporters:
   metricsAndReportersAtlas: Atlas Registry
   metricsAndReportersCloudWatch: CloudWatch Registry
   metricsAndReportersDatadog: Datadog Registry
+  metricsAndReportersDynatrace: Dynatrace Registry
   metricsAndReportersElastic: Elastic Registry
   metricsAndReportersGraphite: Graphite Registry
   metricsAndReportersInflux: Influx Registry
+  metricsAndReportersKairos: Kairos Registry
+  metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersPrometheus: Prometheus Registry
+  metricsAndReportersSignalFx: SignalFx Registry
+  metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
+  metricsAndReportersWavefront: Wavefront Registry

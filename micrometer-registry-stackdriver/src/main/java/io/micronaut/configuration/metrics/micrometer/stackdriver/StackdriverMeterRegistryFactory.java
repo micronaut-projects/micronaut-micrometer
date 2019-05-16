@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.micronaut.configuration.metrics.micrometer.datadog;
+package io.micronaut.configuration.metrics.micrometer.stackdriver;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.datadog.DatadogConfig;
-import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micrometer.stackdriver.StackdriverConfig;
+import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -32,43 +32,43 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The DatadogMeterRegistryFactory that will configure and create a datadog meter registry.
+ * The StackdriverMeterRegistryFactory that will configure and create a wavefront meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
  */
 @Factory
-public class DatadogMeterRegistryFactory {
+public class StackdriverMeterRegistryFactory {
 
-    public static final String DATADOG_CONFIG = MICRONAUT_METRICS_EXPORT + ".datadog";
-    public static final String DATADOG_ENABLED = DATADOG_CONFIG + ".enabled";
+    public static final String STACKDRIVER_CONFIG = MICRONAUT_METRICS_EXPORT + ".stackdriver";
+    public static final String STACKDRIVER_ENABLED = STACKDRIVER_CONFIG + ".enabled";
 
-    private final DatadogConfig datadogConfig;
+    private final StackdriverConfig stackdriverConfig;
 
     /**
-     * Sets the underlying datadog meter registry properties.
+     * Sets the underlying stackdriver meter registry properties.
      *
-     * @param influxDbConfigurationProperties prometheus properties
+     * @param stackdriverConfigurationProperties stackdriver properties
      */
-    public DatadogMeterRegistryFactory(DatadogConfigurationProperties influxDbConfigurationProperties) {
-        this.datadogConfig = influxDbConfigurationProperties;
+    public StackdriverMeterRegistryFactory(StackdriverConfigurationProperties stackdriverConfigurationProperties) {
+        this.stackdriverConfig = stackdriverConfigurationProperties;
     }
 
     /**
-     * Create a DatadogMeterRegistry bean if global metrics are enables
-     * and the datadog is enabled.  Will be true by default when this
+     * Create a StackdriverMeterRegistry bean if global metrics are enables
+     * and the stackdriver is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @return A DatadogMeterRegistry
+     * @return A StackdriverMeterRegistry
      */
     @Bean
     @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = DATADOG_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = STACKDRIVER_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(beans = CompositeMeterRegistry.class)
-    DatadogMeterRegistry datadogConfig() {
-        return new DatadogMeterRegistry(datadogConfig, Clock.SYSTEM);
+    StackdriverMeterRegistry stackdriverMeterRegistry() {
+        return new StackdriverMeterRegistry(stackdriverConfig, Clock.SYSTEM);
     }
 
 }

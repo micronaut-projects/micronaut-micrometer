@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.micronaut.configuration.metrics.micrometer.datadog;
+package io.micronaut.configuration.metrics.micrometer.signalfx;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.datadog.DatadogConfig;
-import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micrometer.signalfx.SignalFxConfig;
+import io.micrometer.signalfx.SignalFxMeterRegistry;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -32,43 +32,43 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The DatadogMeterRegistryFactory that will configure and create a datadog meter registry.
+ * The SignalFxMeterRegistryFactory that will configure and create a signalfx meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
  */
 @Factory
-public class DatadogMeterRegistryFactory {
+public class SignalFxMeterRegistryFactory {
 
-    public static final String DATADOG_CONFIG = MICRONAUT_METRICS_EXPORT + ".datadog";
-    public static final String DATADOG_ENABLED = DATADOG_CONFIG + ".enabled";
+    public static final String SIGNALFX_CONFIG = MICRONAUT_METRICS_EXPORT + ".signalfx";
+    public static final String SIGNALFX_ENABLED = SIGNALFX_CONFIG + ".enabled";
 
-    private final DatadogConfig datadogConfig;
+    private final SignalFxConfig signalFxConfig;
 
     /**
-     * Sets the underlying datadog meter registry properties.
+     * Sets the underlying signalfx meter registry properties.
      *
-     * @param influxDbConfigurationProperties prometheus properties
+     * @param signalfxConfigurationProperties signalfx properties
      */
-    public DatadogMeterRegistryFactory(DatadogConfigurationProperties influxDbConfigurationProperties) {
-        this.datadogConfig = influxDbConfigurationProperties;
+    public SignalFxMeterRegistryFactory(SignalFxConfigurationProperties signalfxConfigurationProperties) {
+        this.signalFxConfig = signalfxConfigurationProperties;
     }
 
     /**
-     * Create a DatadogMeterRegistry bean if global metrics are enables
-     * and the datadog is enabled.  Will be true by default when this
+     * Create a StackdriverMeterRegistry bean if global metrics are enables
+     * and the signalfx is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @return A DatadogMeterRegistry
+     * @return A SignalFxMeterRegistry
      */
     @Bean
     @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = DATADOG_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = SIGNALFX_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(beans = CompositeMeterRegistry.class)
-    DatadogMeterRegistry datadogConfig() {
-        return new DatadogMeterRegistry(datadogConfig, Clock.SYSTEM);
+    SignalFxMeterRegistry signalFxMeterRegistry() {
+        return new SignalFxMeterRegistry(signalFxConfig, Clock.SYSTEM);
     }
 
 }

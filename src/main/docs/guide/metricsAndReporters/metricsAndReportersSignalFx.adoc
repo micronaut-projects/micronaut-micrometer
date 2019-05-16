@@ -1,0 +1,31 @@
+You can include the SignalFx reporter via `io.micronaut.configuration:micronaut-micrometer-registry-signalfx:${micronaut.version}`
+
+dependency:micronaut-micrometer-registry-signalfx[groupId="io.micronaut.configuration"]
+
+You can configure this reporter using `micronaut.metrics.export.signalfx`. The most commonly changed configuration properties are listed below, but see
+https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalFxConfig.java[SignalFxConfig]
+for more options.
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
+|accessToken | SignalFX access token. Required.
+|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
+|descriptions | Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: `true`
+|=======
+
+.Example SignalFx Config
+[source,yml]
+----
+endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      signalfx:
+        enabled: true
+        accessToken: ${SIGNALFX_API_TOKEN}
+        step: PT1M
+----

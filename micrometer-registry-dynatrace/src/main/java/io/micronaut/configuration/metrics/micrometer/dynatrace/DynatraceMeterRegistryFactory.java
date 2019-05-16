@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.micronaut.configuration.metrics.micrometer.datadog;
+package io.micronaut.configuration.metrics.micrometer.dynatrace;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.datadog.DatadogConfig;
-import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micrometer.dynatrace.DynatraceConfig;
+import io.micrometer.dynatrace.DynatraceMeterRegistry;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
@@ -32,43 +32,43 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The DatadogMeterRegistryFactory that will configure and create a datadog meter registry.
+ * The DynatraceMeterRegistryFactory that will configure and create a kairos meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
  */
 @Factory
-public class DatadogMeterRegistryFactory {
+public class DynatraceMeterRegistryFactory {
 
-    public static final String DATADOG_CONFIG = MICRONAUT_METRICS_EXPORT + ".datadog";
-    public static final String DATADOG_ENABLED = DATADOG_CONFIG + ".enabled";
+    public static final String DYNATRACE_CONFIG = MICRONAUT_METRICS_EXPORT + ".dynatrace";
+    public static final String DYNATRACE_ENABLED = DYNATRACE_CONFIG + ".enabled";
 
-    private final DatadogConfig datadogConfig;
+    private final DynatraceConfig dynatraceConfig;
 
     /**
-     * Sets the underlying datadog meter registry properties.
+     * Sets the underlying new kairos meter registry properties.
      *
-     * @param influxDbConfigurationProperties prometheus properties
+     * @param dynatraceConfigurationProperties dynatrace properties
      */
-    public DatadogMeterRegistryFactory(DatadogConfigurationProperties influxDbConfigurationProperties) {
-        this.datadogConfig = influxDbConfigurationProperties;
+    public DynatraceMeterRegistryFactory(DynatraceConfigurationProperties dynatraceConfigurationProperties) {
+        this.dynatraceConfig = dynatraceConfigurationProperties;
     }
 
     /**
-     * Create a DatadogMeterRegistry bean if global metrics are enables
-     * and the datadog is enabled.  Will be true by default when this
+     * Create a DynatraceMeterRegistry bean if global metrics are enables
+     * and the dynatrace is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @return A DatadogMeterRegistry
+     * @return A DynatraceMeterRegistry
      */
     @Bean
     @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = DATADOG_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = DYNATRACE_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(beans = CompositeMeterRegistry.class)
-    DatadogMeterRegistry datadogConfig() {
-        return new DatadogMeterRegistry(datadogConfig, Clock.SYSTEM);
+    DynatraceMeterRegistry dynatraceMeterRegistry() {
+        return new DynatraceMeterRegistry(dynatraceConfig, Clock.SYSTEM);
     }
 
 }
