@@ -59,7 +59,7 @@ public class SignalFxMeterRegistryFactory {
      * and the signalfx is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @return A StackdriverMeterRegistry
+     * @return A SignalFxMeterRegistry
      */
     @Bean
     @Primary

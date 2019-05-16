@@ -59,7 +59,7 @@ public class NewRelicMeterRegistryFactory {
      * and the newrelic is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @return A StackdriverMeterRegistry
+     * @return A NewRelicMeterRegistry
      */
     @Bean
     @Primary
