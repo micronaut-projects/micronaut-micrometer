@@ -1,0 +1,20 @@
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+
+    compileOnly "io.micronaut:micronaut-inject-java"
+    compileOnly "io.micronaut:micronaut-management"
+    compile "io.micrometer:micrometer-core:$micrometerVersion"
+    compile project(":micrometer-core")
+
+    compile "javax.validation:validation-api:$validationVersion"
+    compile "io.micrometer:micrometer-registry-azure-monitor:$micrometerVersion"
+
+    testCompile "io.micronaut:micronaut-management"
+    testCompile "io.micronaut:micronaut-inject-groovy"
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    testRuntime "io.micronaut:micronaut-http-server-netty"
+    testRuntimeClasspath 'javax.xml.bind:jaxb-api:2.3.+'
+    testCompile "io.micronaut:micronaut-http-client"
+}
+
