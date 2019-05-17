@@ -17,9 +17,6 @@ for more options.
 .Example SignalFx Config
 [source,yml]
 ----
-endpoints:
-  prometheus:
-    sensitive: false
 micronaut:
   metrics:
     enabled: true

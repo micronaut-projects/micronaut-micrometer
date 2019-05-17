@@ -19,9 +19,6 @@ for more options.
 .Example New Relic Config
 [source,yml]
 ----
-endpoints:
-  prometheus:
-    sensitive: false
 micronaut:
   metrics:
     enabled: true

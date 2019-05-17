@@ -1,0 +1,28 @@
+You can include the AppOptics reporter via `io.micronaut.configuration:micronaut-micrometer-registry-appoptics:${micronaut.version}`
+
+dependency:micronaut-micrometer-registry-appoptics[groupId="io.micronaut.configuration"]
+
+You can configure this reporter using `micronaut.metrics.export.appoptics`. The most commonly changed configuration properties are listed below,
+but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java[AppOpticsConfig] for more options
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
+|apiToken | AppOptics Api token. Required.
+|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
+|uri |The uri for the AppOptics backend. Default: `https://api.appoptics.com/v1/measurements`
+|=======
+
+.Example AppOptics Config
+[source,yml]
+----
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      appoptics:
+        enabled: true
+        apiToken: ${APPOPTICS_API_TOKEN}
+        uri: https://api.appoptics.com/v1/measurements
+        step: PT1M
+----

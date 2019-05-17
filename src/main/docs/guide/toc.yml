@@ -3,13 +3,18 @@ metricsEndpoint: Metrics Endpoint
 metricsConcepts: Metrics Concepts
 metricsAndReporters:
   title: Metrics Registries & Reporters
+  metricsAndReportersAppOptics: AppOptics Registry
   metricsAndReportersAtlas: Atlas Registry
+  metricsAndReportersAzureMonitor: Azure Monitor Registry
   metricsAndReportersCloudWatch: CloudWatch Registry
   metricsAndReportersDatadog: Datadog Registry
   metricsAndReportersDynatrace: Dynatrace Registry
   metricsAndReportersElastic: Elastic Registry
+  metricsAndReportersGanglia: Ganglia Registry
   metricsAndReportersGraphite: Graphite Registry
+  metricsAndReportersHumio: Humio Registry
   metricsAndReportersInflux: Influx Registry
+  metricsAndReportersJmx: Jmx Registry
   metricsAndReportersKairos: Kairos Registry
   metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersPrometheus: Prometheus Registry
