@@ -54,6 +54,13 @@ class HttpMetricsSpec extends Specification {
         serverTimer.count() == 1
         clientTimer.count() == 1
 
+        when:"A request is sent to the root route"
+
+        then:
+        client.root() == 'root'
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri','root').timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','root').timer()
+
         when:"A request is sent with a uri template"
         def result = client.template("foo")
 
@@ -106,31 +113,39 @@ class HttpMetricsSpec extends Specification {
 
 
 
-    @Client('/test-http-metrics')
+    @Client('/')
     static interface TestClient {
         @Get
+        String root()
+
+        @Get('/test-http-metrics')
         String index()
 
-        @Get("/{id}")
+        @Get("/test-http-metrics/{id}")
         String template(String id)
 
-        @Get("/error")
+        @Get("/test-http-metrics/error")
         HttpResponse error()
     }
 
-    @Controller('/test-http-metrics')
+    @Controller('/')
     static class TestController {
         @Get
+        String root() {
+            return "root"
+        }
+
+        @Get('/test-http-metrics')
         String index() {
             return "ok"
         }
 
-        @Get("/{id}")
+        @Get("/test-http-metrics/{id}")
         String template(String id) {
             return "ok " + id
         }
 
-        @Get("/error")
+        @Get("/test-http-metrics/error")
         HttpResponse error() {
             HttpResponse.status(HttpStatus.CONFLICT)
         }
