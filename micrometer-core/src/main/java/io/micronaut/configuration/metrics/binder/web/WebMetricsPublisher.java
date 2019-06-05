@@ -250,7 +250,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      */
     private static String sanitizePath(String path) {
         if (!StringUtils.isEmpty(path)) {
-            return path
+            path = path
                     .replaceAll("//+", "/")
                     .replaceAll("/$", "");
         }
