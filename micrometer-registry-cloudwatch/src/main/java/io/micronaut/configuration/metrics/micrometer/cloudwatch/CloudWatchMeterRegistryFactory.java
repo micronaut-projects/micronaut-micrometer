@@ -20,9 +20,7 @@ import io.micrometer.cloudwatch.CloudWatchConfig;
 import io.micrometer.cloudwatch.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
@@ -58,8 +56,6 @@ public class CloudWatchMeterRegistryFactory {
      *
      * @return A CloudWatchMeterRegistry
      */
-    @Bean
-    @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(property = CLOUDWATCH_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)

@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
@@ -55,8 +53,6 @@ public class PrometheusMeterRegistryFactory {
      *
      * @return A PrometheusMeterRegistry
      */
-    @Bean
-    @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(property = PROMETHEUS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)

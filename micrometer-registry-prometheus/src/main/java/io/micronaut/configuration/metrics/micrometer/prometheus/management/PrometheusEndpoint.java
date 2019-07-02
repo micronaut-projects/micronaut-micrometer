@@ -40,6 +40,10 @@ public class PrometheusEndpoint {
 
     /**
      * Default constructor.
+<<<<<<< HEAD
+=======
+     
+>>>>>>> 1.1.x
      * @param prometheusMeterRegistry The meter registry
      */
     @Inject
