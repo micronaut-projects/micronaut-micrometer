@@ -163,14 +163,29 @@ allprojects {
     apply from: rootProject.file('gradle/license.gradle')
 }
 
+def bintrayUser = System.getenv("BINTRAY_USER") ?: project.hasProperty("bintrayUser") ? project.bintrayUser : ''
+def bintrayKey = System.getenv("BINTRAY_KEY") ?: project.hasProperty("bintrayKey") ? project.bintrayKey : ''
+def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+
 task synchronizeWithMavenCentral() {
     description = "Syncs with Maven Central/Sonatype"
     doLast {
+        boolean ongoing = true
+
         println """
 Synchronizing with Maven central. This may take a few minutes ...
 If this fails, log on to http://oss.sonatype.org/ using the centralUser credentials
 and progress through process manually -> Close -> Publish ... under staging repositories
 """
+        // this hack is here to keep Travis from thinking this is 
+        // a stalled build
+        Thread.start {
+            while(ongoing) {                
+                sleep 5000        
+                println "Still Publishing. Please wait..."
+            }
+        }
         try {
             try {
                 def mavenClent = new RESTClient("https://repo.maven.apache.org/maven2/")
@@ -194,6 +209,8 @@ and progress through process manually -> Close -> Publish ... under staging repo
             println "Message: $e.message"
             println "Body: $e.response.data"
             throw e
+        } finally {
+            ongoing = false
         }
     }
 }
