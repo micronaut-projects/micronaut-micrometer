@@ -142,7 +142,7 @@ class AppOpticsMeterRegistryFactorySpec extends Specification {
                 (APPOPTICS_ENABLED)                   : true,
                 (APPOPTICS_CONFIG + ".apiToken")      : MOCK_APPOPTICS_API_TOKEN,
                 (APPOPTICS_CONFIG + ".numThreads")    : "77",
-                (APPOPTICS_CONFIG + ".uri")           : 'http://micronaut.io',
+                (APPOPTICS_CONFIG + ".uri")           : 'https://micronaut.io',
                 (APPOPTICS_CONFIG + ".batchSize")     : 250,
                 (APPOPTICS_CONFIG + ".hostTag")       : 'micronaut',
                 (APPOPTICS_CONFIG + ".step")          : "PT2M",
@@ -153,7 +153,7 @@ class AppOpticsMeterRegistryFactorySpec extends Specification {
         appOpticsMeterRegistry.isPresent()
         appOpticsMeterRegistry.get().config.enabled()
         appOpticsMeterRegistry.get().config.numThreads() == 77
-        appOpticsMeterRegistry.get().config.uri() == 'http://micronaut.io'
+        appOpticsMeterRegistry.get().config.uri() == 'https://micronaut.io'
         appOpticsMeterRegistry.get().config.batchSize() == 250
         appOpticsMeterRegistry.get().config.hostTag() == 'micronaut'
         appOpticsMeterRegistry.get().config.step() == Duration.ofMinutes(2)

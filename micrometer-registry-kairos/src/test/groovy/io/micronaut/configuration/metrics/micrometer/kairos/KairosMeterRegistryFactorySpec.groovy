@@ -120,7 +120,7 @@ class KairosMeterRegistryFactorySpec extends Specification {
         ApplicationContext context = ApplicationContext.run([
                 (KAIROS_ENABLED)                   : true,
                 (KAIROS_CONFIG + ".numThreads")    : "77",
-                (KAIROS_CONFIG + ".uri")           : 'http://micronaut.io',
+                (KAIROS_CONFIG + ".uri")           : 'https://micronaut.io',
                 (KAIROS_CONFIG + ".step")          : "PT2M",
         ])
         Optional<KairosMeterRegistry> kairosMeterRegistry = context.findBean(KairosMeterRegistry)
@@ -129,7 +129,7 @@ class KairosMeterRegistryFactorySpec extends Specification {
         kairosMeterRegistry.isPresent()
         kairosMeterRegistry.get().config.enabled()
         kairosMeterRegistry.get().config.numThreads() == 77
-        kairosMeterRegistry.get().config.uri() == 'http://micronaut.io'
+        kairosMeterRegistry.get().config.uri() == 'https://micronaut.io'
         kairosMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 
         cleanup:

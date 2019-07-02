@@ -122,7 +122,7 @@ class HumioMeterRegistryFactorySpec extends Specification {
         ApplicationContext context = ApplicationContext.run([
                 (HUMIO_ENABLED)                   : true,
                 (HUMIO_CONFIG + ".numThreads")    : "77",
-                (HUMIO_CONFIG + ".uri")           : 'http://micronaut.io',
+                (HUMIO_CONFIG + ".uri")           : 'https://micronaut.io',
                 (HUMIO_CONFIG + ".repository")    : 'micronaut',
                 (HUMIO_CONFIG + ".step")          : "PT2M",
         ])
@@ -132,7 +132,7 @@ class HumioMeterRegistryFactorySpec extends Specification {
         humioMeterRegistry.isPresent()
         humioMeterRegistry.get().config.enabled()
         humioMeterRegistry.get().config.numThreads() == 77
-        humioMeterRegistry.get().config.uri() == 'http://micronaut.io'
+        humioMeterRegistry.get().config.uri() == 'https://micronaut.io'
         humioMeterRegistry.get().config.repository() == 'micronaut'
         humioMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 

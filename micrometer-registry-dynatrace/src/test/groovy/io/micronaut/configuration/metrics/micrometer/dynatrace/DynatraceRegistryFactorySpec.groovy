@@ -33,7 +33,7 @@ import static io.micronaut.configuration.metrics.micrometer.dynatrace.DynatraceM
 class DynatraceRegistryFactorySpec extends Specification {
 
     private static final String DYNATRACE_MOCK_API_TOKEN = "dynatraceApiToken"
-    private static final String DYNATRACE_MOCK_URI = "http://mock-api-tocken"
+    private static final String DYNATRACE_MOCK_URI = "https://mock-api-tocken"
     private static final String DYNATRACE_MOCK_DEVICE_ID = "dynatraceDeviceId"
 
     void "wireup the bean manually"() {
@@ -145,7 +145,7 @@ class DynatraceRegistryFactorySpec extends Specification {
         ApplicationContext context = ApplicationContext.run([
                 (DYNATRACE_ENABLED)                   : true,
                 (DYNATRACE_CONFIG + ".numThreads")    : "77",
-                (DYNATRACE_CONFIG + ".uri")           : 'http://micronaut.io',
+                (DYNATRACE_CONFIG + ".uri")           : 'https://micronaut.io',
                 (DYNATRACE_CONFIG + ".step")          : "PT2M",
                 (DYNATRACE_CONFIG + ".apiToken")      : DYNATRACE_MOCK_API_TOKEN,
                 (DYNATRACE_CONFIG + ".deviceId")      : DYNATRACE_MOCK_DEVICE_ID,
@@ -158,7 +158,7 @@ class DynatraceRegistryFactorySpec extends Specification {
         dynatraceMeterRegistry.get().config.numThreads() == 77
         dynatraceMeterRegistry.get().config.apiToken() == DYNATRACE_MOCK_API_TOKEN
         dynatraceMeterRegistry.get().config.deviceId() == DYNATRACE_MOCK_DEVICE_ID
-        dynatraceMeterRegistry.get().config.uri() == 'http://micronaut.io'
+        dynatraceMeterRegistry.get().config.uri() == 'https://micronaut.io'
         dynatraceMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 
         cleanup:

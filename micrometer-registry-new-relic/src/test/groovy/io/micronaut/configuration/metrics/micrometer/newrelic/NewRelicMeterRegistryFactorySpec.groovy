@@ -140,7 +140,7 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
                 (NEWRELIC_CONFIG + ".numThreads")    : "77",
                 (NEWRELIC_CONFIG + ".apiKey")        : MOCK_NEWRELIC_API_KEY,
                 (NEWRELIC_CONFIG + ".accountId")     : MOCK_NEWRELIC_ACCOUNT_ID,
-                (NEWRELIC_CONFIG + ".uri")           : 'http://micronaut.io',
+                (NEWRELIC_CONFIG + ".uri")           : 'https://micronaut.io',
                 (NEWRELIC_CONFIG + ".step")          : "PT2M",
         ])
         Optional<NewRelicMeterRegistry> newRelicMeterRegistry = context.findBean(NewRelicMeterRegistry)
@@ -151,7 +151,7 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
         newRelicMeterRegistry.get().config.numThreads() == 77
         newRelicMeterRegistry.get().config.accountId() == MOCK_NEWRELIC_ACCOUNT_ID
         newRelicMeterRegistry.get().config.apiKey() == MOCK_NEWRELIC_API_KEY
-        newRelicMeterRegistry.get().config.uri() == 'http://micronaut.io'
+        newRelicMeterRegistry.get().config.uri() == 'https://micronaut.io'
         newRelicMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 
         cleanup:
