@@ -11,8 +11,13 @@ buildscript {
         classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
         classpath "io.micronaut.docs:micronaut-docs-asciidoc-extensions:$micronautDocsVersion"
         classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:$micronautDocsVersion"
+        classpath "io.spring.nohttp:nohttp-gradle:0.0.2.RELEASE"
     }
 }
+
+
+import groovyx.net.http.RESTClient
+import static groovyx.net.http.ContentType.*
 
 plugins {
     id 'com.github.hierynomus.license' version '0.14.0' apply false
@@ -55,6 +60,7 @@ subprojects { Project subproject ->
     apply plugin:"groovy"
     apply plugin:"java"
     apply plugin: "io.spring.dependency-management"
+    apply plugin: "io.spring.nohttp"
 
     dependencyManagement {
         imports {
@@ -65,7 +71,7 @@ subprojects { Project subproject ->
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
-    apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-core/01e2b1ef1255b584e9e5c1965d334e1190e2ade5/gradle/publishing.gradle"
+    apply from:"${rootProject.projectDir}/gradle/publishing.gradle"
         
 
     jar {
@@ -155,4 +161,39 @@ allprojects {
         }
     }
     apply from: rootProject.file('gradle/license.gradle')
+}
+
+task synchronizeWithMavenCentral() {
+    description = "Syncs with Maven Central/Sonatype"
+    doLast {
+        println """
+Synchronizing with Maven central. This may take a few minutes ...
+If this fails, log on to http://oss.sonatype.org/ using the centralUser credentials
+and progress through process manually -> Close -> Publish ... under staging repositories
+"""
+        try {
+            try {
+                def mavenClent = new RESTClient("https://repo.maven.apache.org/maven2/")
+                mavenClent.get(path:"io/micronaut/configuration/micronaut-micrometer-core/$projectVersion/micronaut-micrometer-core-${projectVersion}.jar")
+            } catch(groovyx.net.http.HttpResponseException e) {
+                // doesn't exist.. try sync
+                def client = new RESTClient('https://api.bintray.com/maven_central_sync/micronaut/core-releases-local/')
+                client.headers['Authorization'] = 'Basic ' + "$bintrayUser:$bintrayKey".getBytes('iso-8859-1').encodeBase64()
+                def body = /{}/
+                def resp = client.post(
+                        path: "micrometer-core/versions/$projectVersion",
+                        body: body,
+                        requestContentType: JSON
+                )
+                assert resp.status == 200
+                println resp.data.status
+                println resp.data.messages.join('\n')
+            }
+        } catch (groovyx.net.http.HttpResponseException e) {
+            println "Error: $e"
+            println "Message: $e.message"
+            println "Body: $e.response.data"
+            throw e
+        }
+    }
 }
