@@ -20,9 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
@@ -61,8 +59,6 @@ public class JmxMeterRegistryFactory {
      *
      * @return A JmxMeterRegistry
      */
-    @Bean
-    @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(property = JMX_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)

@@ -20,9 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.kairos.KairosConfig;
 import io.micrometer.kairos.KairosMeterRegistry;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
@@ -61,8 +59,6 @@ public class KairosMeterRegistryFactory {
      *
      * @return A KairosMeterRegistry
      */
-    @Bean
-    @Primary
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
     @Requires(property = KAIROS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
