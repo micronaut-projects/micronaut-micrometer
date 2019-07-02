@@ -71,9 +71,9 @@ if [[ $EXIT_STATUS -eq 0 ]]; then
 
         # If there is a tag present then this becomes the latest
         if [[ -n $TRAVIS_TAG ]]; then
-           mkdir -p latest
-           cp -r ../build/docs/. ./latest/
-           git add latest/*
+           # mkdir -p latest
+           # cp -r ../build/docs/. ./latest/
+           # git add latest/*
 
             version="$TRAVIS_TAG"
             version=${version:1}
@@ -96,11 +96,11 @@ if [[ $EXIT_STATUS -eq 0 ]]; then
         cd ..
 
         rm -rf gh-pages
-      # if [[ -n $TRAVIS_TAG ]]; then
-      #     if [[ $EXIT_STATUS -eq 0 ]]; then
-      #       ./gradlew synchronizeWithMavenCentral --no-daemon
-      #     fi
-      # fi
+      if [[ -n $TRAVIS_TAG ]]; then
+          if [[ $EXIT_STATUS -eq 0 ]]; then
+            ./gradlew synchronizeWithMavenCentral --no-daemon
+          fi
+      fi
 
       fi
    fi
