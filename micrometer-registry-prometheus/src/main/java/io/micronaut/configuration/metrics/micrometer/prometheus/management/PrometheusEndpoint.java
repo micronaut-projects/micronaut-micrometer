@@ -18,7 +18,6 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.management;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.http.MediaType;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 
@@ -40,10 +39,7 @@ public class PrometheusEndpoint {
 
     /**
      * Default constructor.
-<<<<<<< HEAD
-=======
-     
->>>>>>> 1.1.x
+     *
      * @param prometheusMeterRegistry The meter registry
      */
     @Inject
