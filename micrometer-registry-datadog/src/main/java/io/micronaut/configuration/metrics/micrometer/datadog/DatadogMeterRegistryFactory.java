@@ -16,16 +16,14 @@
 package io.micronaut.configuration.metrics.micrometer.datadog;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class DatadogMeterRegistryFactory {
     public static final String DATADOG_CONFIG = MICRONAUT_METRICS_EXPORT + ".datadog";
     public static final String DATADOG_ENABLED = DATADOG_CONFIG + ".enabled";
 
-    private final DatadogConfig datadogConfig;
-
-    /**
-     * Sets the underlying datadog meter registry properties.
-     *
-     * @param influxDbConfigurationProperties prometheus properties
-     */
-    public DatadogMeterRegistryFactory(DatadogConfigurationProperties influxDbConfigurationProperties) {
-        this.datadogConfig = influxDbConfigurationProperties;
-    }
-
     /**
      * Create a DatadogMeterRegistry bean if global metrics are enables
      * and the datadog is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class DatadogMeterRegistryFactory {
      * @return A DatadogMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = DATADOG_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    DatadogMeterRegistry datadogConfig() {
-        return new DatadogMeterRegistry(datadogConfig, Clock.SYSTEM);
+    DatadogMeterRegistry datadogConfig(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new DatadogMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

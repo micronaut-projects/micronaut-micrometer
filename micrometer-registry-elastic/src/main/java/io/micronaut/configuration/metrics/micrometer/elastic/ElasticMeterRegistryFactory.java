@@ -16,16 +16,14 @@
 package io.micronaut.configuration.metrics.micrometer.elastic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class ElasticMeterRegistryFactory {
     public static final String ELASTIC_CONFIG = MICRONAUT_METRICS_EXPORT + ".elastic";
     public static final String ELASTIC_ENABLED = ELASTIC_CONFIG + ".enabled";
 
-    private final ElasticConfig elasticConfig;
-
-    /**
-     * Sets the underlying elastic meter registry properties.
-     *
-     * @param elasticConfigurationProperties prometheus properties
-     */
-    public ElasticMeterRegistryFactory(ElasticConfigurationProperties elasticConfigurationProperties) {
-        this.elasticConfig = elasticConfigurationProperties;
-    }
-
     /**
      * Create a ElasticMeterRegistry bean if global metrics are enables
      * and the datadog is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class ElasticMeterRegistryFactory {
      * @return A ElasticMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = ELASTIC_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    ElasticMeterRegistry elasticConfig() {
-        return new ElasticMeterRegistry(elasticConfig, Clock.SYSTEM);
+    ElasticMeterRegistry elasticConfig(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new ElasticMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

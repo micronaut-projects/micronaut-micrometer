@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,18 +29,6 @@ import static PrometheusMeterRegistryFactory.PROMETHEUS_ENABLED
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class PrometheusMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        PrometheusMeterRegistryFactory factory = new PrometheusMeterRegistryFactory(new PrometheusConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.prometheusConfig()
-    }
 
     void "verify PrometheusMeterRegistry is created by default when this configuration used"() {
         when:
@@ -64,7 +50,6 @@ class PrometheusMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(PrometheusMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

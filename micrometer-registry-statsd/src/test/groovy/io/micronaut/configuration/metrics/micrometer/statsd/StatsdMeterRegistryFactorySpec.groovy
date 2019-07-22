@@ -19,7 +19,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.statsd.StatsdFlavor
 import io.micrometer.statsd.StatsdMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.Environment
 import spock.lang.Specification
@@ -32,18 +31,6 @@ import static io.micronaut.configuration.metrics.micrometer.statsd.StatsdMeterRe
 import static io.micronaut.configuration.metrics.micrometer.statsd.StatsdMeterRegistryFactory.STATSD_ENABLED
 
 class StatsdMeterRegistryFactorySpec extends Specification {
-
-    def "wireup the bean manually"() {
-        given:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        StatsdMeterRegistryFactory factory = new StatsdMeterRegistryFactory(new StatsdConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.statsdMeterRegistry()
-    }
 
     void "verify StatsdMeterRegistry is created by default when this configuration used"() {
         when:
@@ -64,7 +51,6 @@ class StatsdMeterRegistryFactorySpec extends Specification {
 
         then:
         compositeRegistry
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(StatsdMeterRegistry)
         compositeRegistry.registries.size() == 1
         compositeRegistry.registries*.class.containsAll([StatsdMeterRegistry])

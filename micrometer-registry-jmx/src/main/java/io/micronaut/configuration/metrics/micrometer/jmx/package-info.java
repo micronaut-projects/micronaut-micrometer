@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Influx metrics.
+ * Configuration for Micrometer-Jmx metrics.
  *
  * @author thiagolocatelli
  * @since 1.2.0
  */
 @Configuration
-@Requires(property = ElasticMeterRegistryFactory.ELASTIC_ENABLED, notEquals = StringUtils.FALSE)
-package io.micronaut.configuration.metrics.micrometer.elastic;
+@Requires(property = JmxMeterRegistryFactory.JMX_ENABLED, notEquals = StringUtils.FALSE)
+package io.micronaut.configuration.metrics.micrometer.jmx;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;

@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFilter {
 
     private final MeterRegistry meterRegistry;

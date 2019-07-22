@@ -50,6 +50,9 @@ class MicronautCaffeineCacheMetricsBinderSpec extends Specification {
         conditions.eventually {
             m.value() > 0
         }
+
+        cleanup:
+        context.close()
     }
 
     @Unroll

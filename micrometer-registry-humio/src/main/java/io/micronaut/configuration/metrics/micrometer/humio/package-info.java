@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Influx metrics.
- *
- * @author thiagolocatelli
- * @since 1.2.0
+ * Configuration for Micrometer-Humio metrics.
  */
 @Configuration
-@Requires(property = ElasticMeterRegistryFactory.ELASTIC_ENABLED, notEquals = StringUtils.FALSE)
-package io.micronaut.configuration.metrics.micrometer.elastic;
+@Requires(property = HumioMeterRegistryFactory.HUMIO_ENABLED, notEquals = StringUtils.FALSE)
+package io.micronaut.configuration.metrics.micrometer.humio;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;

@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.stackdriver.StackdriverConfig;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class StackdriverMeterRegistryFactory {
     public static final String STACKDRIVER_CONFIG = MICRONAUT_METRICS_EXPORT + ".stackdriver";
     public static final String STACKDRIVER_ENABLED = STACKDRIVER_CONFIG + ".enabled";
 
-    private final StackdriverConfig stackdriverConfig;
-
-    /**
-     * Sets the underlying stackdriver meter registry properties.
-     *
-     * @param stackdriverConfigurationProperties stackdriver properties
-     */
-    public StackdriverMeterRegistryFactory(StackdriverConfigurationProperties stackdriverConfigurationProperties) {
-        this.stackdriverConfig = stackdriverConfigurationProperties;
-    }
-
     /**
      * Create a StackdriverMeterRegistry bean if global metrics are enables
      * and the stackdriver is enabled.  Will be true by default when this
@@ -59,11 +51,12 @@ public class StackdriverMeterRegistryFactory {
      * @return A StackdriverMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = STACKDRIVER_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
+    @Requires(property = STACKDRIVER_ENABLED, notEquals = StringUtils.FALSE)
     @Requires(beans = CompositeMeterRegistry.class)
-    StackdriverMeterRegistry stackdriverMeterRegistry() {
-        return new StackdriverMeterRegistry(stackdriverConfig, Clock.SYSTEM);
+    StackdriverMeterRegistry stackdriverMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new StackdriverMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

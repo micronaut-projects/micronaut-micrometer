@@ -52,6 +52,9 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         conditions.eventually {
             g.value() > 0
         }
+
+        cleanup:
+        context.close()
     }
 
     @Unroll

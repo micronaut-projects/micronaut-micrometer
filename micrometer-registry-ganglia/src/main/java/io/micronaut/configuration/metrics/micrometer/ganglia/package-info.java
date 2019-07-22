@@ -20,8 +20,8 @@
  * @since 1.2.0
  */
 @Configuration
-@Requires(property = ElasticMeterRegistryFactory.ELASTIC_ENABLED, notEquals = StringUtils.FALSE)
-package io.micronaut.configuration.metrics.micrometer.elastic;
+@Requires(property = GangliaMeterRegistryFactory.GANGLIA_ENABLED, notEquals = StringUtils.FALSE)
+package io.micronaut.configuration.metrics.micrometer.ganglia;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;

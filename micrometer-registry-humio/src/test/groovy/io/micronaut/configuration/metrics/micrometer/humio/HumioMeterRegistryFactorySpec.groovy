@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.humio
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.humio.HumioMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,18 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.humio.HumioMeterRegi
 import static io.micronaut.configuration.metrics.micrometer.humio.HumioMeterRegistryFactory.HUMIO_ENABLED
 
 class HumioMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run()
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        HumioMeterRegistryFactory factory = new HumioMeterRegistryFactory(new HumioConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.humioMeterRegistry()
-    }
 
     void "verify HumioMeterRegistry is created by default when this configuration used"() {
         when:
@@ -64,7 +50,6 @@ class HumioMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(HumioMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

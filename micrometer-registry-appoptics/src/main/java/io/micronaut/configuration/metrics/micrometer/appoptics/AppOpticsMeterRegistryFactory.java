@@ -18,14 +18,12 @@ package io.micronaut.configuration.metrics.micrometer.appoptics;
 import io.micrometer.appoptics.AppOpticsConfig;
 import io.micrometer.appoptics.AppOpticsMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class AppOpticsMeterRegistryFactory {
     public static final String APPOPTICS_CONFIG = MICRONAUT_METRICS_EXPORT + ".appoptics";
     public static final String APPOPTICS_ENABLED = APPOPTICS_CONFIG + ".enabled";
 
-    private final AppOpticsConfig appOpticsConfig;
-
-    /**
-     * Sets the underlying AppOptics meter registry properties.
-     *
-     * @param appopticsConfigurationProperties appoptics properties
-     */
-    public AppOpticsMeterRegistryFactory(AppOpticsConfigurationProperties appopticsConfigurationProperties) {
-        this.appOpticsConfig = appopticsConfigurationProperties;
-    }
-
     /**
      * Create a AppOpticsMeterRegistry bean if global metrics are enables
      * and the appoptics is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class AppOpticsMeterRegistryFactory {
      * @return A AppOpticsMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = APPOPTICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    AppOpticsMeterRegistry appOpticsMeterRegistry() {
-        return new AppOpticsMeterRegistry(appOpticsConfig, Clock.SYSTEM);
+    AppOpticsMeterRegistry appOpticsMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new AppOpticsMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

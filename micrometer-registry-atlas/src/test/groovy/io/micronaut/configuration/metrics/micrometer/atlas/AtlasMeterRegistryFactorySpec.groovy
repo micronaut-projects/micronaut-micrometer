@@ -18,10 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.atlas
 import io.micrometer.atlas.AtlasMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -32,18 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.atlas.AtlasMeterRegi
 import static io.micronaut.configuration.metrics.micrometer.atlas.AtlasMeterRegistryFactory.ATLAS_ENABLED
 
 class AtlasMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        AtlasMeterRegistryFactory factory = new AtlasMeterRegistryFactory(new AtlasConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.atlasMeterRegistry()
-    }
 
     void "verify AtlasMeterRegistry is created by default when this configuration used"() {
         when:
@@ -65,7 +50,6 @@ class AtlasMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(AtlasMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

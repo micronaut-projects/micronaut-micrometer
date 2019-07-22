@@ -32,7 +32,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-@Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+@Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
 @Requires(beans = MeterRegistry.class)
 public @interface RequiresMetrics {
 }

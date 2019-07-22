@@ -19,9 +19,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.influx.InfluxConsistency
 import io.micrometer.influx.InfluxMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -32,18 +30,6 @@ import static io.micronaut.configuration.metrics.micrometer.influx.InfluxMeterRe
 import static io.micronaut.configuration.metrics.micrometer.influx.InfluxMeterRegistryFactory.INFLUX_ENABLED
 
 class InfluxMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        InfluxMeterRegistryFactory factory = new InfluxMeterRegistryFactory(new InfluxConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.influxConfig()
-    }
 
     void "verify InfluxMeterRegistry is created by default when this configuration used"() {
         when:
@@ -65,7 +51,6 @@ class InfluxMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(InfluxMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * Configuration for Micrometer-Influx metrics.
+ * Configuration for AppOptics meter registry.
  *
- * @author thiagolocatelli
- * @since 1.2.0
+ * @author James Kleeh
+ * @since 1.0
  */
+
 @Configuration
-@Requires(property = ElasticMeterRegistryFactory.ELASTIC_ENABLED, notEquals = StringUtils.FALSE)
-package io.micronaut.configuration.metrics.micrometer.elastic;
+@Requires(property = AppOpticsMeterRegistryFactory.APPOPTICS_ENABLED, notEquals = StringUtils.FALSE)
+package io.micronaut.configuration.metrics.micrometer.appoptics;
 
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;

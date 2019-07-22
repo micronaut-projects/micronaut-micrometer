@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Configuration for Micrometer-Influx metrics.
  *
@@ -20,9 +21,9 @@
  * @since 1.2.0
  */
 @Configuration
-@Requires(classes = DatadogMeterRegistry.class)
+@Requires(property = DatadogMeterRegistryFactory.DATADOG_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.datadog;
 
-import io.micrometer.datadog.DatadogMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.ganglia
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.ganglia.GangliaMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -32,18 +30,6 @@ import static io.micronaut.configuration.metrics.micrometer.ganglia.GangliaMeter
 import static io.micronaut.configuration.metrics.micrometer.ganglia.GangliaMeterRegistryFactory.GANGLIA_ENABLED
 
 class GangliaMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run()
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        GangliaMeterRegistryFactory factory = new GangliaMeterRegistryFactory(new GangliaConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.gangliaMeterRegistry()
-    }
 
     void "verify GangliaMeterRegistry is created by default when this configuration used"() {
         when:
@@ -65,7 +51,6 @@ class GangliaMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(GangliaMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

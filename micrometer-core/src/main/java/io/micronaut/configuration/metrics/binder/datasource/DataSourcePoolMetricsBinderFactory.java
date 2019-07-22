@@ -36,7 +36,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = StringUtils.FALSE)
 public class DataSourcePoolMetricsBinderFactory {
 
     /**

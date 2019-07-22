@@ -17,7 +17,6 @@ package io.micronaut.configuration.metrics.aggregator;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import javax.validation.constraints.NotNull;
@@ -66,7 +65,7 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      */
     @Override
     public boolean supports(@NotNull MeterRegistry meterRegistry) {
-        return !(meterRegistry instanceof CompositeMeterRegistry);
+        return true;
     }
 
     /**

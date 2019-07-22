@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.kairos
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.kairos.KairosMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,18 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.kairos.KairosMeterRe
 import static io.micronaut.configuration.metrics.micrometer.kairos.KairosMeterRegistryFactory.KAIROS_ENABLED
 
 class KairosMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run()
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        KairosMeterRegistryFactory factory = new KairosMeterRegistryFactory(new KairosConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.kairosMeterRegistry()
-    }
 
     void "verify KairosMeterRegistry is created by default when this configuration used"() {
         when:
@@ -64,7 +50,6 @@ class KairosMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(KairosMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

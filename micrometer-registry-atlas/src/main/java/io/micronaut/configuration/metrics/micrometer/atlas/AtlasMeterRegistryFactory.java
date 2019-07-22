@@ -18,14 +18,12 @@ package io.micronaut.configuration.metrics.micrometer.atlas;
 import com.netflix.spectator.atlas.AtlasConfig;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -33,19 +31,9 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 public class AtlasMeterRegistryFactory {
+
     public static final String ATLAS_CONFIG = MICRONAUT_METRICS_EXPORT + ".atlas";
     public static final String ATLAS_ENABLED = ATLAS_CONFIG + ".enabled";
-
-    private final AtlasConfig atlasConfig;
-
-    /**
-     * Sets the underlying atlas meter registry properties.
-     *
-     * @param atlasConfigurationProperties atlas properties
-     */
-    AtlasMeterRegistryFactory(final AtlasConfigurationProperties atlasConfigurationProperties) {
-        this.atlasConfig = atlasConfigurationProperties;
-    }
 
     /**
      * Create a AtlasMeterRegistry bean if global metrics are enables
@@ -55,10 +43,8 @@ public class AtlasMeterRegistryFactory {
      * @return A AtlasMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = ATLAS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    AtlasMeterRegistry atlasMeterRegistry() {
-        return new AtlasMeterRegistry(atlasConfig, Clock.SYSTEM);
+    AtlasMeterRegistry atlasMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new AtlasMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 }

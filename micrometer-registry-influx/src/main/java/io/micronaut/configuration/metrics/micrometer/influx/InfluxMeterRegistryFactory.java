@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class InfluxMeterRegistryFactory {
     public static final String INFLUX_CONFIG = MICRONAUT_METRICS_EXPORT + ".influx";
     public static final String INFLUX_ENABLED = INFLUX_CONFIG + ".enabled";
 
-    private final InfluxConfig influxConfig;
-
-    /**
-     * Sets the underlying influx meter registry properties.
-     *
-     * @param influxDbConfigurationProperties prometheus properties
-     */
-    public InfluxMeterRegistryFactory(InfluxConfigurationProperties influxDbConfigurationProperties) {
-        this.influxConfig = influxDbConfigurationProperties;
-    }
-
     /**
      * Create a InfluxMeterRegistry bean if global metrics are enables
      * and the influx is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class InfluxMeterRegistryFactory {
      * @return A InfluxMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = INFLUX_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    InfluxMeterRegistry influxConfig() {
-        return new InfluxMeterRegistry(influxConfig, Clock.SYSTEM);
+    InfluxMeterRegistry influxConfig(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new InfluxMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

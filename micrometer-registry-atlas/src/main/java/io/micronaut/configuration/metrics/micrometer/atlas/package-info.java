@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Configuration for Micrometer-Atlas metrics.
  */
 @Configuration
-@Requires(classes = AtlasMeterRegistry.class)
+@Requires(property = AtlasMeterRegistryFactory.ATLAS_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.atlas;
 
-import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

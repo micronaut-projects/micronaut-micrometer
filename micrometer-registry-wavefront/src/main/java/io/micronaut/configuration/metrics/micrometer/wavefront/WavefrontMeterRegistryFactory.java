@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class WavefrontMeterRegistryFactory {
     public static final String WAVEFRONT_CONFIG = MICRONAUT_METRICS_EXPORT + ".wavefront";
     public static final String WAVEFRONT_ENABLED = WAVEFRONT_CONFIG + ".enabled";
 
-    private final WavefrontConfig wavefrontConfig;
-
-    /**
-     * Sets the underlying wavefront meter registry properties.
-     *
-     * @param wavefrontConfigurationProperties wavefront properties
-     */
-    public WavefrontMeterRegistryFactory(WavefrontConfigurationProperties wavefrontConfigurationProperties) {
-        this.wavefrontConfig = wavefrontConfigurationProperties;
-    }
-
     /**
      * Create a WavefrontMeterRegistry bean if global metrics are enables
      * and the wavefront is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class WavefrontMeterRegistryFactory {
      * @return A WavefrontMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = WAVEFRONT_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    WavefrontMeterRegistry wavefrontMeterRegistry() {
-        return new WavefrontMeterRegistry(wavefrontConfig, Clock.SYSTEM);
+    WavefrontMeterRegistry wavefrontMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new WavefrontMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

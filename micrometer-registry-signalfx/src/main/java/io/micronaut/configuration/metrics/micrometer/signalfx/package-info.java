@@ -20,9 +20,10 @@
  * @since 1.2.0
  */
 @Configuration
-@Requires(classes = SignalFxMeterRegistry.class)
+@Requires(property = SignalFxMeterRegistryFactory.SIGNALFX_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.signalfx;
 
 import io.micrometer.signalfx.SignalFxMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

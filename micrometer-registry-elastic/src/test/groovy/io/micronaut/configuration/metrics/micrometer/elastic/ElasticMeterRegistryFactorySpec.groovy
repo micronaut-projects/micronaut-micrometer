@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.elastic
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.elastic.ElasticMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,18 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.elastic.ElasticMeter
 import static io.micronaut.configuration.metrics.micrometer.elastic.ElasticMeterRegistryFactory.ELASTIC_ENABLED
 
 class ElasticMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        ElasticMeterRegistryFactory factory = new ElasticMeterRegistryFactory(new ElasticConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.elasticConfig()
-    }
 
     void "verify ElasticMeterRegistry is created by default when this configuration used"() {
         when:
@@ -64,7 +50,6 @@ class ElasticMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(ElasticMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

@@ -26,22 +26,12 @@ import static MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class MeterRegistryFactorySpec extends Specification {
 
-    def "wireup the beans manually"() {
-        when:
-        MeterRegistryFactory factory = new MeterRegistryFactory()
-
-        then:
-        factory.compositeMeterRegistry()
-        factory.meterRegistryConfigurer([], [])
-    }
-
     void "verify beans created by default"() {
         when:
         ApplicationContext context = ApplicationContext.run()
 
         then:
         context.containsBean(CompositeMeterRegistry)
-        context.containsBean(SimpleMeterRegistry)
         context.containsBean(MeterRegistryConfigurer)
 
         cleanup:
@@ -55,7 +45,6 @@ class MeterRegistryFactorySpec extends Specification {
 
         then:
         context.findBean(CompositeMeterRegistry).isPresent()
-        context.findBean(SimpleMeterRegistry).isPresent()
         compositeRegistry
         compositeRegistry?.registries?.size() == 1
         compositeRegistry.registries*.class.containsAll([SimpleMeterRegistry])
@@ -71,7 +60,6 @@ class MeterRegistryFactorySpec extends Specification {
 
         then:
         context.findBean(CompositeMeterRegistry).isPresent() == result
-        context.findBean(SimpleMeterRegistry).isPresent() == result
 
         cleanup:
         context.close()
@@ -89,7 +77,6 @@ class MeterRegistryFactorySpec extends Specification {
 
         then:
         context.findBean(CompositeMeterRegistry).isPresent() == result
-        context.findBean(SimpleMeterRegistry).isPresent() == result
 
         cleanup:
         context.close()

@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.dynatrace
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.dynatrace.DynatraceMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -35,22 +33,6 @@ class DynatraceRegistryFactorySpec extends Specification {
     private static final String DYNATRACE_MOCK_API_TOKEN = "dynatraceApiToken"
     private static final String DYNATRACE_MOCK_URI = "https://mock-api-tocken"
     private static final String DYNATRACE_MOCK_DEVICE_ID = "dynatraceDeviceId"
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (DYNATRACE_CONFIG + ".apiToken")    : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".uri")         : DYNATRACE_MOCK_URI,
-                (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        DynatraceMeterRegistryFactory factory = new DynatraceMeterRegistryFactory(new DynatraceConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.dynatraceMeterRegistry()
-    }
 
     void "verify DynatraceMeterRegistry is created by default when this configuration used"() {
         when:
@@ -80,7 +62,6 @@ class DynatraceRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(DynatraceMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

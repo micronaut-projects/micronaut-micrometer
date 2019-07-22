@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.logging
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,18 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.logging.LoggingMeter
 import static io.micronaut.configuration.metrics.micrometer.logging.LoggingMeterRegistryFactory.LOGGING_ENABLED
 
 class LoggingMeterRegistryFactorySpec extends Specification {
-
-    def "wireup the bean manually"() {
-        given:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        LoggingMeterRegistryFactory factory = new LoggingMeterRegistryFactory(new LoggingRegistryConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.loggingMeterRegistry()
-    }
 
     void "verify LoggingMeterRegistry is created by default when this configuration used"() {
         when:
@@ -65,7 +51,6 @@ class LoggingMeterRegistryFactorySpec extends Specification {
 
         then:
         compositeRegistry
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(LoggingMeterRegistry)
         compositeRegistry.registries.size() == 1
         compositeRegistry.registries*.class.containsAll([LoggingMeterRegistry])

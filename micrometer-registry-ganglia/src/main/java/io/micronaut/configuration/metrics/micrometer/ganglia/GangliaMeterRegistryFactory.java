@@ -16,16 +16,14 @@
 package io.micronaut.configuration.metrics.micrometer.ganglia;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class GangliaMeterRegistryFactory {
     public static final String GANGLIA_CONFIG = MICRONAUT_METRICS_EXPORT + ".ganglia";
     public static final String GANGLIA_ENABLED = GANGLIA_CONFIG + ".enabled";
 
-    private final GangliaConfig gangliaConfig;
-
-    /**
-     * Sets the underlying Ganglia meter registry properties.
-     *
-     * @param gangliaConfigurationProperties ganglia properties
-     */
-    public GangliaMeterRegistryFactory(GangliaConfigurationProperties gangliaConfigurationProperties) {
-        this.gangliaConfig = gangliaConfigurationProperties;
-    }
-
     /**
      * Create a GangliaMeterRegistry bean if global metrics are enables
      * and the ganglia is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class GangliaMeterRegistryFactory {
      * @return A GangliaMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = GANGLIA_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    GangliaMeterRegistry gangliaMeterRegistry() {
-        return new GangliaMeterRegistry(gangliaConfig, Clock.SYSTEM);
+    GangliaMeterRegistry gangliaMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new GangliaMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

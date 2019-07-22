@@ -17,7 +17,6 @@ package io.micronaut.configuration.metrics.management.endpoint
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
@@ -41,7 +40,6 @@ class MetricsEndpointSpec extends Specification {
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)
         context.containsBean(CompositeMeterRegistry)
-        context.containsBean(SimpleMeterRegistry)
 
         cleanup:
         context.close()
@@ -61,8 +59,6 @@ class MetricsEndpointSpec extends Specification {
         then:
         !context.containsBean(MeterRegistry)
         !context.containsBean(CompositeMeterRegistry)
-        !context.containsBean(SimpleMeterRegistry)
-
 
         URL server = embeddedServer.getURL()
         RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)

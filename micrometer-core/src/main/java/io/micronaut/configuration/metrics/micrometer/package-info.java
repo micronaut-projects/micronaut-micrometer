@@ -20,9 +20,9 @@
  * @since 1.0
  */
 @Configuration
-@Requires(classes = MeterRegistry.class)
+@Requires(property = "micronaut.metrics.enabled", notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

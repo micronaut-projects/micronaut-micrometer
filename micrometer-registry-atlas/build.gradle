@@ -11,7 +11,7 @@ dependencies {
 
     testCompile "io.micronaut:micronaut-management"
     testCompile "io.micronaut:micronaut-inject-groovy"
-    annotationProcessor "io.micronaut:micronaut-inject-java"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testRuntime "io.micronaut:micronaut-http-server-netty"    
     testCompile "io.micronaut:micronaut-http-client"       
 }

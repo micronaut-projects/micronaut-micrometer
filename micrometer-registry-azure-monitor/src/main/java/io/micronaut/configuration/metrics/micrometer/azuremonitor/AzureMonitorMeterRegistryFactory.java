@@ -18,14 +18,12 @@ package io.micronaut.configuration.metrics.micrometer.azuremonitor;
 import io.micrometer.azuremonitor.AzureMonitorConfig;
 import io.micrometer.azuremonitor.AzureMonitorMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class AzureMonitorMeterRegistryFactory {
     public static final String AZUREMONITOR_CONFIG = MICRONAUT_METRICS_EXPORT + ".azuremonitor";
     public static final String AZUREMONITOR_ENABLED = AZUREMONITOR_CONFIG + ".enabled";
 
-    private final AzureMonitorConfig azureMonitorConfig;
-
-    /**
-     * Sets the underlying Azure Monitor meter registry properties.
-     *
-     * @param azureMonitorConfigurationProperties azuremonitor properties
-     */
-    public AzureMonitorMeterRegistryFactory(AzureMonitorConfigurationProperties azureMonitorConfigurationProperties) {
-        this.azureMonitorConfig = azureMonitorConfigurationProperties;
-    }
-
     /**
      * Create a AzureMonitorMeterRegistry bean if global metrics are enables
      * and the azuremonitor is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class AzureMonitorMeterRegistryFactory {
      * @return A AzureMonitorMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = AZUREMONITOR_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    AzureMonitorMeterRegistry azureMonitorMeterRegistry() {
-        return new AzureMonitorMeterRegistry(azureMonitorConfig, Clock.SYSTEM);
+    AzureMonitorMeterRegistry azureMonitorMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new AzureMonitorMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

@@ -18,29 +18,14 @@ package io.micronaut.configuration.metrics.micrometer.jmx
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.jmx.JmxMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
-import static io.micronaut.configuration.metrics.micrometer.jmx.JmxMeterRegistryFactory.JMX_CONFIG
 import static io.micronaut.configuration.metrics.micrometer.jmx.JmxMeterRegistryFactory.JMX_ENABLED
 
 class JmxMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run()
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        JmxMeterRegistryFactory factory = new JmxMeterRegistryFactory(new JmxConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.jmxMeterRegistry()
-    }
 
     void "verify JmxMeterRegistry is created by default when this configuration used"() {
         when:
@@ -62,7 +47,6 @@ class JmxMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(JmxMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

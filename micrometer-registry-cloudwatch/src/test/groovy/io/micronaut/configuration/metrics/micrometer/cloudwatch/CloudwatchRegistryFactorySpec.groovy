@@ -20,9 +20,7 @@ import io.micrometer.cloudwatch.CloudWatchConfig
 import io.micrometer.cloudwatch.CloudWatchMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -38,18 +36,6 @@ class CloudwatchRegistryFactorySpec extends Specification {
 
     void cleanupSpec(){
         System.clearProperty(SDKGlobalConfiguration.AWS_REGION_SYSTEM_PROPERTY)
-    }
-
-    void "wireup the bean manually"() {
-        setup:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-        when:
-        CloudWatchMeterRegistryFactory factory = new CloudWatchMeterRegistryFactory(new CloudWatchConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.cloudWatchMeterRegistry()
     }
 
     void "verify CloudWatchMeterRegistry is created by default when this configuration used"() {
@@ -72,7 +58,6 @@ class CloudwatchRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(CloudWatchMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

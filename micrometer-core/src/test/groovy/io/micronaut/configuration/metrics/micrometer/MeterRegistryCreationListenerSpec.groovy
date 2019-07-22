@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer
 
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
@@ -34,7 +33,6 @@ class MeterRegistryCreationListenerSpec extends Specification {
         then:
         context.findBean(MeterRegistryConfigurer).isPresent() == result
         context.findBean(CompositeMeterRegistry).isPresent() == result
-        context.findBean(SimpleMeterRegistry).isPresent() == result
 
         cleanup:
         context.close()
@@ -52,8 +50,6 @@ class MeterRegistryCreationListenerSpec extends Specification {
 
         then:
         context.findBean(MeterRegistryConfigurer).isPresent()
-        context.findBean(CompositeMeterRegistry).isPresent()
-        context.findBean(SimpleMeterRegistry).isPresent()
         context.findBean(CompositeMeterRegistry).get().registries.size() == 1
 
         cleanup:

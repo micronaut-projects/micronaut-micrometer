@@ -40,7 +40,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 @RequiresMetrics
 @Requires(beans = CacheManager.class)
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = StringUtils.FALSE)
 public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManager> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JCacheMetricsBinder.class);

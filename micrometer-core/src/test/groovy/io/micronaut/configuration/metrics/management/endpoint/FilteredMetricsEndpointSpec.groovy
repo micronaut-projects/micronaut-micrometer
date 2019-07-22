@@ -34,11 +34,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.reactivex.Single
-import spock.lang.AutoCleanup
-import spock.lang.IgnoreIf
-import spock.lang.Shared
-import spock.lang.Specification
-import spock.lang.Stepwise
+import spock.lang.*
 
 import javax.inject.Singleton
 import javax.validation.constraints.NotBlank
@@ -98,7 +94,6 @@ class FilteredMetricsEndpointSpec extends Specification {
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)
         context.containsBean(CompositeMeterRegistry)
-        context.containsBean(SimpleMeterRegistry)
 
         when:
 

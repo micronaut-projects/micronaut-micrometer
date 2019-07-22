@@ -18,11 +18,14 @@ package io.micronaut.configuration.metrics.micrometer.prometheus;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -35,17 +38,6 @@ public class PrometheusMeterRegistryFactory {
     public static final String PROMETHEUS_CONFIG = MICRONAUT_METRICS_EXPORT + ".prometheus";
     public static final String PROMETHEUS_ENABLED = PROMETHEUS_CONFIG + ".enabled";
 
-    private final PrometheusConfig prometheusConfig;
-
-    /**
-     * Sets the underlying prometheus meter registry properties.
-     *
-     * @param prometheusConfigurationProperties prometheus properties
-     */
-    PrometheusMeterRegistryFactory(final PrometheusConfigurationProperties prometheusConfigurationProperties) {
-        this.prometheusConfig = prometheusConfigurationProperties;
-    }
-
     /**
      * Create a PrometheusMeterRegistry bean if global metrics are enables
      * and the prometheus is enabled.  Will be true by default when this
@@ -54,10 +46,8 @@ public class PrometheusMeterRegistryFactory {
      * @return A PrometheusMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = PROMETHEUS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    PrometheusMeterRegistry prometheusConfig() {
-        return new PrometheusMeterRegistry(prometheusConfig);
+    PrometheusMeterRegistry prometheusConfig(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new PrometheusMeterRegistry(exportConfig::getProperty);
     }
 }

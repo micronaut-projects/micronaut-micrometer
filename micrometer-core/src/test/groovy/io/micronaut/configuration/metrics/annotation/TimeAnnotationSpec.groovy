@@ -21,7 +21,6 @@ import io.micronaut.context.ApplicationContext
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
-import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 

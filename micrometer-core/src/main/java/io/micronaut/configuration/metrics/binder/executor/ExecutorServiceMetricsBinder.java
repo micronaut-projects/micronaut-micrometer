@@ -47,7 +47,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Singleton
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = StringUtils.FALSE)
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private final Provider<MeterRegistry> meterRegistryProvider;

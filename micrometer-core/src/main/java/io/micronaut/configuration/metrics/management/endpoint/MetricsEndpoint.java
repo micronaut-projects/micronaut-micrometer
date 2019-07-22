@@ -19,9 +19,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
 import io.micronaut.core.type.Argument;
@@ -31,17 +29,7 @@ import io.micronaut.management.endpoint.annotation.Selector;
 
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -71,24 +59,17 @@ public class MetricsEndpoint {
      */
     static final String NAME = "metrics";
 
-    private final Collection<MeterRegistry> meterRegistries;
-    @SuppressWarnings("unused")
-    private final Collection<DataSource> dataSources;
+    private final MeterRegistry meterRegistry;
 
     /**
      * Constructor for metrics endpoint.
      *
-     * @param meterRegistries Meter Registries
-     * @param applicationContext Application Context for looking up beans
+     * @param meterRegistry The meter registry
+     * @param dataSources To ensure data sources are loaded
      */
-    public MetricsEndpoint(Collection<MeterRegistry> meterRegistries,
-                           ApplicationContext applicationContext) {
-        this.meterRegistries = meterRegistries;
-
-        //Make sure the data sources are loaded
-        this.dataSources = applicationContext.containsBean(DataSource.class) ?
-                applicationContext.getBeansOfType(DataSource.class) : null;
-
+    public MetricsEndpoint(MeterRegistry meterRegistry,
+                           DataSource[] dataSources) {
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -99,7 +80,10 @@ public class MetricsEndpoint {
      */
     @Read
     public MetricNames listNames() {
-        return getListNamesResponse();
+        return new MetricNames(
+                meterRegistry.getMeters().stream()
+                        .map(this::getName)
+                        .collect(TreeSet::new, TreeSet::add, TreeSet::addAll));
     }
 
     /**
@@ -118,18 +102,6 @@ public class MetricsEndpoint {
     @Read
     public MetricDetails getMetricDetails(@Selector String name, @Nullable List<String> tag) {
         return getMetricDetailsResponse(name, tag);
-    }
-
-    /**
-     * Read operation to list metric names.  To get the details
-     * the method getMetric will be invoked after this one.
-     *
-     * @return http response with list of metric names
-     */
-    private MetricNames getListNamesResponse() {
-        SortedSet<String> names = new TreeSet<>();
-        collectNames(names, this.meterRegistries);
-        return new MetricNames(names);
     }
 
     /**
@@ -156,8 +128,7 @@ public class MetricsEndpoint {
             throw new UnsatisfiedArgumentException(Argument.of(List.class, "tags"), "Tags must be in the form key:value");
         }).collect(Collectors.toList());
 
-        List<Meter> meters = new ArrayList<>();
-        collectMeters(meters, this.meterRegistries, name, tags, new HashSet<>());
+        Collection<Meter> meters = meterRegistry.find(name).tags(tags).meters();
         if (meters.isEmpty()) {
             return null;
         }
@@ -169,25 +140,7 @@ public class MetricsEndpoint {
                 asList(availableTags, AvailableTag::new));
     }
 
-    private void collectMeters(List<Meter> meters, Collection<MeterRegistry> meterRegistries, String name,
-                               Iterable<Tag> tags, Set<String> meterNames) {
-        meterRegistries.forEach(meterRegistry -> {
-            if (meterRegistry instanceof CompositeMeterRegistry) {
-                ((CompositeMeterRegistry) meterRegistry).getRegistries()
-                        .forEach((member) -> collectMeters(meters, member, name, tags, meterNames));
-            }
-        });
-    }
-
-    private void collectMeters(List<Meter> meters, MeterRegistry meterRegistry, String name,
-                               Iterable<Tag> tags, Set<String> meterNames) {
-        if (!meterNames.contains(name)) {
-            meters.addAll(meterRegistry.find(name).tags(tags).meters());
-            meterNames.add(name);
-        }
-    }
-
-    private Map<Statistic, Double> getSamples(List<Meter> meters) {
+    private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
         Map<Statistic, Double> samples = new LinkedHashMap<>();
         meters.forEach((meter) -> mergeMeasurements(samples, meter));
         return samples;
@@ -208,7 +161,7 @@ public class MetricsEndpoint {
      * @param meters meters to iterate
      * @return map of the tags
      */
-    private Map<String, Set<String>> getAvailableTags(List<Meter> meters) {
+    private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
         Map<String, Set<String>> availableTags = new HashMap<>();
         meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
         return availableTags;
@@ -246,27 +199,6 @@ public class MetricsEndpoint {
         return map.entrySet().stream()
                 .map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    /**
-     * Collect the names from the registries.
-     *
-     * @param names           set of names
-     * @param meterRegistries meter registries
-     */
-    private void collectNames(Set<String> names, Collection<MeterRegistry> meterRegistries) {
-        meterRegistries.forEach(meterRegistry -> {
-            if (meterRegistry instanceof CompositeMeterRegistry) {
-                ((CompositeMeterRegistry) meterRegistry).getRegistries()
-                        .forEach((member) -> collectNames(names, member));
-            } else {
-                meterRegistry.getMeters().stream().map(this::getName).forEach(names::add);
-            }
-        });
-    }
-
-    private void collectNames(Set<String> names, MeterRegistry meterRegistry) {
-        meterRegistry.getMeters().stream().map(this::getName).forEach(names::add);
     }
 
     /**

@@ -17,9 +17,10 @@
  * Configuration for Micrometer-Prometheus metrics.
  */
 @Configuration
-@Requires(classes = PrometheusMeterRegistry.class)
+@Requires(property = PrometheusMeterRegistryFactory.PROMETHEUS_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.prometheus;
 
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

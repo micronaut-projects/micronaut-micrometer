@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.wavefront
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.wavefront.WavefrontMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,21 +32,6 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_WAVEFRONT_API_TOKEN = "wavefrontApiToken"
     private static String MOCK_WAVEFRONT_API_URI = "http://somewhere/"
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (WAVEFRONT_CONFIG + ".apiToken")  : MOCK_WAVEFRONT_API_TOKEN,
-                (WAVEFRONT_CONFIG + ".uri")       : MOCK_WAVEFRONT_API_URI
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        WavefrontMeterRegistryFactory factory = new WavefrontMeterRegistryFactory(new WavefrontConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.wavefrontMeterRegistry()
-    }
 
     void "verify WavefrontMeterRegistry is created by default when this configuration used"() {
         when:
@@ -76,7 +59,6 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(WavefrontMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

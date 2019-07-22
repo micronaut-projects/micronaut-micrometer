@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.stackdriver
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.stackdriver.StackdriverMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -33,20 +31,6 @@ import static io.micronaut.configuration.metrics.micrometer.stackdriver.Stackdri
 class StackdriverMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_WAVEFRONT_PROJECTID = "stackdriverProjectId"
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (STACKDRIVER_CONFIG + ".projectId")  : MOCK_WAVEFRONT_PROJECTID,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        StackdriverMeterRegistryFactory factory = new StackdriverMeterRegistryFactory(new StackdriverConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.stackdriverMeterRegistry()
-    }
 
     void "verify StackdriverMeterRegistry is created by default when this configuration used"() {
         when:
@@ -72,7 +56,6 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(StackdriverMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

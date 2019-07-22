@@ -19,14 +19,12 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClientBuilder;
 import io.micrometer.cloudwatch.CloudWatchConfig;
 import io.micrometer.cloudwatch.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -34,20 +32,10 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 public class CloudWatchMeterRegistryFactory {
+
     public static final String CLOUDWATCH_CONFIG = MICRONAUT_METRICS_EXPORT + ".cloudwatch";
     public static final String CLOUDWATCH_ENABLED = CLOUDWATCH_CONFIG + ".enabled";
-    public static final String CLOUDWATCH_NAMESPACE = CLOUDWATCH_CONFIG + ".namespace";
-
-    private final CloudWatchConfig cloudWatchConfig;
-
-    /**
-     * Sets the underlying cloudwatch meter registry properties.
-     *
-     * @param cloudwatchConfigurationProperties cloudwatch properties
-     */
-    CloudWatchMeterRegistryFactory(final CloudWatchConfigurationProperties cloudwatchConfigurationProperties) {
-        this.cloudWatchConfig = cloudwatchConfigurationProperties;
-    }
+    public static final String CLOUDWATCH_DEFAULT_NAMESPACE = "micronaut";
 
     /**
      * Create a CloudWatchMeterRegistry bean if global metrics are enables
@@ -57,10 +45,13 @@ public class CloudWatchMeterRegistryFactory {
      * @return A CloudWatchMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = CLOUDWATCH_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    CloudWatchMeterRegistry cloudWatchMeterRegistry() {
-        return new CloudWatchMeterRegistry(cloudWatchConfig, Clock.SYSTEM, AmazonCloudWatchAsyncClientBuilder.defaultClient());
+    CloudWatchMeterRegistry cloudWatchMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        String cloudwatchNamespace = "cloudwatch.namespace";
+        if (!exportConfig.containsKey(cloudwatchNamespace)) {
+            exportConfig.setProperty(cloudwatchNamespace, CLOUDWATCH_DEFAULT_NAMESPACE);
+        }
+
+        return new CloudWatchMeterRegistry(exportConfig::getProperty, Clock.SYSTEM, AmazonCloudWatchAsyncClientBuilder.defaultClient());
     }
 }

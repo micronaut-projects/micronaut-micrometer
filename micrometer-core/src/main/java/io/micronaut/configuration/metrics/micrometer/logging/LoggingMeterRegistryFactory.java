@@ -15,17 +15,15 @@
  */
 package io.micronaut.configuration.metrics.micrometer.logging;
 
-import javax.inject.Singleton;
-
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.logging.LoggingRegistryConfig;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
+import javax.inject.Singleton;
+import java.util.Properties;
+
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -33,19 +31,9 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 public class LoggingMeterRegistryFactory {
+
     public static final String LOGGING_CONFIG = MICRONAUT_METRICS_EXPORT + ".logging";
     public static final String LOGGING_ENABLED = LOGGING_CONFIG + ".enabled";
-
-    private final LoggingRegistryConfig loggingConfig;
-
-    /**
-     * Sets the underlying logging meter registry properties.
-     *
-     * @param loggingConfig logging meter properties
-     */
-    LoggingMeterRegistryFactory(LoggingRegistryConfigurationProperties loggingConfig) {
-        this.loggingConfig = loggingConfig == null ? LoggingRegistryConfig.DEFAULT : loggingConfig;
-    }
 
     /**
      * Create a LoggingMeterRegistry bean if global metrics are enabled
@@ -55,10 +43,8 @@ public class LoggingMeterRegistryFactory {
      * @return A LoggingMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = LOGGING_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.FALSE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    LoggingMeterRegistry loggingMeterRegistry() {
-        return new LoggingMeterRegistry(loggingConfig, Clock.SYSTEM);
+    LoggingMeterRegistry loggingMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new LoggingMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 }

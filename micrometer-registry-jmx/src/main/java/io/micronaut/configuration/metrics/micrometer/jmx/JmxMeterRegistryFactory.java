@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class JmxMeterRegistryFactory {
     public static final String JMX_CONFIG = MICRONAUT_METRICS_EXPORT + ".jmx";
     public static final String JMX_ENABLED = JMX_CONFIG + ".enabled";
 
-    private final JmxConfig jmxConfig;
-
-    /**
-     * Sets the underlying Jmx meter registry properties.
-     *
-     * @param jmxConfigurationProperties jmx properties
-     */
-    public JmxMeterRegistryFactory(JmxConfigurationProperties jmxConfigurationProperties) {
-        this.jmxConfig = jmxConfigurationProperties;
-    }
-
     /**
      * Create a JmxMeterRegistry bean if global metrics are enables
      * and the jmx is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class JmxMeterRegistryFactory {
      * @return A JmxMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = JMX_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    JmxMeterRegistry jmxMeterRegistry() {
-        return new JmxMeterRegistry(jmxConfig, Clock.SYSTEM);
+    JmxMeterRegistry jmxMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new JmxMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

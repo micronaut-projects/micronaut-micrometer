@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.signalfx
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.signalfx.SignalFxMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,20 +32,6 @@ class SignalFxMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_SIGNALFX_ACCESS_TOKEN = "signalfxAccessToken"
     private static String MOCK_SIGNALFX_API_HOST = "http://somewhere/"
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (SIGNALFX_CONFIG + ".accessToken")   : MOCK_SIGNALFX_ACCESS_TOKEN,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        SignalFxMeterRegistryFactory factory = new SignalFxMeterRegistryFactory(new SignalFxConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.signalFxMeterRegistry()
-    }
 
     void "verify SignalFxMeterRegistry is created by default when this configuration used"() {
         when:
@@ -73,7 +57,6 @@ class SignalFxMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(SignalFxMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

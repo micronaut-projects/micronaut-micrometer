@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.azuremonitor
 import io.micrometer.azuremonitor.AzureMonitorMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import io.micronaut.context.exceptions.BeanInstantiationException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -34,28 +32,6 @@ import static io.micronaut.configuration.metrics.micrometer.azuremonitor.AzureMo
 class AzureMonitorMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_AZURE_INSTRUMENTATION_KEY = "micronautInstrumentationKey"
-
-    void "fail to create bean without required properties"() {
-        when:
-        ApplicationContext.run()
-
-        then:
-        thrown BeanInstantiationException
-    }
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        AzureMonitorMeterRegistryFactory factory = new AzureMonitorMeterRegistryFactory(new AzureMonitorConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.azureMonitorMeterRegistry()
-    }
 
     void "verify AzureMonitorMeterRegistry is created by default when this configuration used"() {
         when:
@@ -81,7 +57,6 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(AzureMonitorMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

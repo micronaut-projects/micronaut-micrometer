@@ -16,16 +16,14 @@
 package io.micronaut.configuration.metrics.micrometer.dynatrace;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.dynatrace.DynatraceConfig;
 import io.micrometer.dynatrace.DynatraceMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.Properties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -40,17 +38,6 @@ public class DynatraceMeterRegistryFactory {
     public static final String DYNATRACE_CONFIG = MICRONAUT_METRICS_EXPORT + ".dynatrace";
     public static final String DYNATRACE_ENABLED = DYNATRACE_CONFIG + ".enabled";
 
-    private final DynatraceConfig dynatraceConfig;
-
-    /**
-     * Sets the underlying new kairos meter registry properties.
-     *
-     * @param dynatraceConfigurationProperties dynatrace properties
-     */
-    public DynatraceMeterRegistryFactory(DynatraceConfigurationProperties dynatraceConfigurationProperties) {
-        this.dynatraceConfig = dynatraceConfigurationProperties;
-    }
-
     /**
      * Create a DynatraceMeterRegistry bean if global metrics are enables
      * and the dynatrace is enabled.  Will be true by default when this
@@ -59,11 +46,9 @@ public class DynatraceMeterRegistryFactory {
      * @return A DynatraceMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = DYNATRACE_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    DynatraceMeterRegistry dynatraceMeterRegistry() {
-        return new DynatraceMeterRegistry(dynatraceConfig, Clock.SYSTEM);
+    DynatraceMeterRegistry dynatraceMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new DynatraceMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

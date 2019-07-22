@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.humio.HumioConfig;
 import io.micrometer.humio.HumioMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class HumioMeterRegistryFactory {
     public static final String HUMIO_CONFIG = MICRONAUT_METRICS_EXPORT + ".humio";
     public static final String HUMIO_ENABLED = HUMIO_CONFIG + ".enabled";
 
-    private final HumioConfig humioConfig;
-
-    /**
-     * Sets the underlying Humio meter registry properties.
-     *
-     * @param humioConfigurationProperties humio properties
-     */
-    public HumioMeterRegistryFactory(HumioConfigurationProperties humioConfigurationProperties) {
-        this.humioConfig = humioConfigurationProperties;
-    }
-
     /**
      * Create a HumioMeterRegistry bean if global metrics are enables
      * and the humio is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class HumioMeterRegistryFactory {
      * @return A HumioMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = HUMIO_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    HumioMeterRegistry humioMeterRegistry() {
-        return new HumioMeterRegistry(humioConfig, Clock.SYSTEM);
+    HumioMeterRegistry humioMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new HumioMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.signalfx.SignalFxConfig;
 import io.micrometer.signalfx.SignalFxMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class SignalFxMeterRegistryFactory {
     public static final String SIGNALFX_CONFIG = MICRONAUT_METRICS_EXPORT + ".signalfx";
     public static final String SIGNALFX_ENABLED = SIGNALFX_CONFIG + ".enabled";
 
-    private final SignalFxConfig signalFxConfig;
-
-    /**
-     * Sets the underlying signalfx meter registry properties.
-     *
-     * @param signalfxConfigurationProperties signalfx properties
-     */
-    public SignalFxMeterRegistryFactory(SignalFxConfigurationProperties signalfxConfigurationProperties) {
-        this.signalFxConfig = signalfxConfigurationProperties;
-    }
-
     /**
      * Create a StackdriverMeterRegistry bean if global metrics are enables
      * and the signalfx is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class SignalFxMeterRegistryFactory {
      * @return A SignalFxMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = SIGNALFX_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    SignalFxMeterRegistry signalFxMeterRegistry() {
-        return new SignalFxMeterRegistry(signalFxConfig, Clock.SYSTEM);
+    SignalFxMeterRegistry signalFxMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new SignalFxMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

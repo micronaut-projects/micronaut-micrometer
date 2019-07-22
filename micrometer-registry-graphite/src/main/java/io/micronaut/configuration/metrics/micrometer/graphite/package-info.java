@@ -17,9 +17,9 @@
  * Configuration for Micrometer-Graphite metrics.
  */
 @Configuration
-@Requires(classes = GraphiteMeterRegistry.class)
+@Requires(property = GraphiteMeterRegistryFactory.GRAPHITE_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.graphite;
 
-import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

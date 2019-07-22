@@ -17,7 +17,8 @@ buildscript {
 
 
 import groovyx.net.http.RESTClient
-import static groovyx.net.http.ContentType.*
+
+import static groovyx.net.http.ContentType.JSON
 
 plugins {
     id 'com.github.hierynomus.license' version '0.14.0' apply false

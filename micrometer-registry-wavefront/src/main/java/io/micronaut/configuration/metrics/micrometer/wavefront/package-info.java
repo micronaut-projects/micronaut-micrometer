@@ -20,9 +20,10 @@
  * @since 1.2.0
  */
 @Configuration
-@Requires(classes = WavefrontMeterRegistry.class)
+@Requires(property = WavefrontMeterRegistryFactory.WAVEFRONT_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.wavefront;
 
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.datadog
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.datadog.DatadogMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -31,20 +29,6 @@ import static io.micronaut.configuration.metrics.micrometer.datadog.DatadogMeter
 import static io.micronaut.configuration.metrics.micrometer.datadog.DatadogMeterRegistryFactory.DATADOG_ENABLED
 
 class DatadogMeterRegistryFactorySpec extends Specification {
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (DATADOG_CONFIG + ".apiKey")    : "12345"
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        DatadogMeterRegistryFactory factory = new DatadogMeterRegistryFactory(new DatadogConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.datadogConfig()
-    }
 
     void "verify DatadogMeterRegistry is created by default when this configuration used"() {
         when:
@@ -70,7 +54,6 @@ class DatadogMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(DatadogMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

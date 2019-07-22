@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -37,17 +40,6 @@ public class StatsdMeterRegistryFactory {
     public static final String STATSD_CONFIG = MICRONAUT_METRICS_EXPORT + ".statsd";
     public static final String STATSD_ENABLED = STATSD_CONFIG + ".enabled";
 
-    private final StatsdConfig statsdConfig;
-
-    /**
-     * Sets the underlying statsd meter registry properties.
-     *
-     * @param statsdConfigurationProperties atlas properties
-     */
-    StatsdMeterRegistryFactory(final StatsdConfigurationProperties statsdConfigurationProperties) {
-        this.statsdConfig = statsdConfigurationProperties;
-    }
-
     /**
      * Create a StatsdMeterRegistry bean if global metrics are enables
      * and the statsd is enabled.  Will be true by default when this
@@ -56,10 +48,11 @@ public class StatsdMeterRegistryFactory {
      * @return A StatsdMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = STATSD_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
+
     @Requires(beans = CompositeMeterRegistry.class)
-    StatsdMeterRegistry statsdMeterRegistry() {
-        return new StatsdMeterRegistry(statsdConfig, Clock.SYSTEM);
+    StatsdMeterRegistry statsdMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new StatsdMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 }

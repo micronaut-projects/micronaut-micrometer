@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.kairos.KairosConfig;
 import io.micrometer.kairos.KairosMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -40,17 +43,6 @@ public class KairosMeterRegistryFactory {
     public static final String KAIROS_CONFIG = MICRONAUT_METRICS_EXPORT + ".kairos";
     public static final String KAIROS_ENABLED = KAIROS_CONFIG + ".enabled";
 
-    private final KairosConfig kairosConfig;
-
-    /**
-     * Sets the underlying new kairos meter registry properties.
-     *
-     * @param kairosConfigurationProperties kairos properties
-     */
-    public KairosMeterRegistryFactory(KairosConfigurationProperties kairosConfigurationProperties) {
-        this.kairosConfig = kairosConfigurationProperties;
-    }
-
     /**
      * Create a KairosMeterRegistry bean if global metrics are enables
      * and the kairos is enabled.  Will be true by default when this
@@ -59,11 +51,9 @@ public class KairosMeterRegistryFactory {
      * @return A KairosMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = KAIROS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    KairosMeterRegistry kairosMeterRegistry() {
-        return new KairosMeterRegistry(kairosConfig, Clock.SYSTEM);
+    KairosMeterRegistry kairosMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new KairosMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 
 }

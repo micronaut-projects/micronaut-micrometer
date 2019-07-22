@@ -15,17 +15,16 @@
  */
 package io.micronaut.configuration.metrics.micrometer;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -49,16 +48,28 @@ public class MeterRegistryFactory {
      *
      * @return A CompositeMeterRegistry
      */
-    @Bean
     @Primary
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    CompositeMeterRegistry compositeMeterRegistry() {
-        return new CompositeMeterRegistry();
+    CompositeMeterRegistry compositeMeterRegistry(MeterRegistry[] registries,
+                                                  MeterRegistryConfigurer[] configurers) {
+        CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
+        for (MeterRegistryConfigurer configurer : configurers) {
+            if (configurer.supports(compositeMeterRegistry)) {
+                configurer.configure(compositeMeterRegistry);
+            }
+        }
+        if (registries.length == 0) {
+            compositeMeterRegistry.add(new SimpleMeterRegistry());
+        } else {
+            for (MeterRegistry registry : registries) {
+                compositeMeterRegistry.add(registry);
+            }
+        }
+        return compositeMeterRegistry;
     }
 
     /**
-     * Creates a MeterRegistryConfigurer bean if the metrics are endabled, true by default.
+     * Creates a MeterRegistryConfigurer bean if the metrics are enabled, true by default.
      * <p>
      * This bean adds the filters and binders to the metric registry.
      *
@@ -66,7 +77,6 @@ public class MeterRegistryFactory {
      * @param filters list of filter beans
      * @return meterRegistryConfigurer bean
      */
-    @Bean
     @Primary
     @Singleton
     @RequiresMetrics

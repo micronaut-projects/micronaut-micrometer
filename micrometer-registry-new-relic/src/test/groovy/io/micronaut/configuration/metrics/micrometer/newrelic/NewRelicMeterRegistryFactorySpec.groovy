@@ -18,9 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.newrelic
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.newrelic.NewRelicMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,21 +32,6 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_NEWRELIC_API_KEY = "newrelicApiKey"
     private static String MOCK_NEWRELIC_ACCOUNT_ID = "newrelicApiKeyAccountId"
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_CONFIG + ".apiKey")  : MOCK_NEWRELIC_API_KEY,
-                (NEWRELIC_CONFIG + ".accountId")  : MOCK_NEWRELIC_ACCOUNT_ID,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        NewRelicMeterRegistryFactory factory = new NewRelicMeterRegistryFactory(new NewRelicConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.newRelicMeterRegistry()
-    }
 
     void "verify NewRelicMeterRegistry is created by default when this configuration used"() {
         when:
@@ -76,7 +59,6 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(NewRelicMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

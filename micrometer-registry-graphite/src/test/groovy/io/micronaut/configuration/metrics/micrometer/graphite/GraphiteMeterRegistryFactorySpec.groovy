@@ -17,9 +17,7 @@ package io.micronaut.configuration.metrics.micrometer.graphite
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micrometer.graphite.GraphiteMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.Environment
 import spock.lang.Specification
@@ -32,19 +30,6 @@ import static io.micronaut.configuration.metrics.micrometer.graphite.GraphiteMet
 import static io.micronaut.configuration.metrics.micrometer.graphite.GraphiteMeterRegistryFactory.GRAPHITE_ENABLED
 
 class GraphiteMeterRegistryFactorySpec extends Specification {
-
-    def "wireup the bean manually"() {
-        given:
-        Environment mockEnvironment = Stub()
-        mockEnvironment.getProperty(_, _) >> Optional.empty()
-
-
-        when:
-        GraphiteMeterRegistryFactory factory = new GraphiteMeterRegistryFactory(new GraphiteConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.graphiteMeterRegistry()
-    }
 
     void "verify GraphiteMeterRegistry is created by default when this configuration used"() {
         when:
@@ -61,7 +46,6 @@ class GraphiteMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.getBean(CompositeMeterRegistry)
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(GraphiteMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

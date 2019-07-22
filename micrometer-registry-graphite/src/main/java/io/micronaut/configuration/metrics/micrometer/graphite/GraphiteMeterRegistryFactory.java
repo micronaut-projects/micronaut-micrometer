@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteMeterRegistry;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 
 import javax.inject.Singleton;
+
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -37,17 +40,6 @@ public class GraphiteMeterRegistryFactory {
     public static final String GRAPHITE_CONFIG = MICRONAUT_METRICS_EXPORT + ".graphite";
     public static final String GRAPHITE_ENABLED = GRAPHITE_CONFIG + ".enabled";
 
-    private final GraphiteConfig graphiteConfig;
-
-    /**
-     * Sets the underlying graphite meter registry properties.
-     *
-     * @param graphiteConfigurationProperties atlas properties
-     */
-    GraphiteMeterRegistryFactory(final GraphiteConfigurationProperties graphiteConfigurationProperties) {
-        this.graphiteConfig = graphiteConfigurationProperties;
-    }
-
     /**
      * Create a GraphiteMeterRegistry bean if global metrics are enables
      * and the graphite is enabled.  Will be true by default when this
@@ -56,10 +48,8 @@ public class GraphiteMeterRegistryFactory {
      * @return A GraphiteMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(property = GRAPHITE_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
-    @Requires(beans = CompositeMeterRegistry.class)
-    GraphiteMeterRegistry graphiteMeterRegistry() {
-        return new GraphiteMeterRegistry(graphiteConfig, Clock.SYSTEM);
+    GraphiteMeterRegistry graphiteMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new GraphiteMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
     }
 }

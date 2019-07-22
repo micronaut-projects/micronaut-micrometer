@@ -47,7 +47,7 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".uptime.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".uptime.enabled", notEquals = StringUtils.FALSE)
     public UptimeMetrics uptimeMetrics() {
         return new UptimeMetrics();
     }
@@ -60,7 +60,7 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".processor.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".processor.enabled", notEquals = StringUtils.FALSE)
     public ProcessorMetrics processorMetrics() {
         return new ProcessorMetrics();
     }
@@ -73,7 +73,7 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".files.enabled", value = StringUtils.TRUE, defaultValue = StringUtils.TRUE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".files.enabled", notEquals = StringUtils.FALSE)
     public FileDescriptorMetrics fileDescriptorMetrics() {
         return new FileDescriptorMetrics();
     }

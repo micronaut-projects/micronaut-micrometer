@@ -17,9 +17,9 @@
  * Configuration for Micrometer-Logging metrics.
  */
 @Configuration
-@Requires(classes = LoggingMeterRegistry.class)
+@Requires(property = LoggingMeterRegistryFactory.LOGGING_ENABLED, value = StringUtils.TRUE, defaultValue = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.logging;
 
-import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

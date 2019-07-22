@@ -30,8 +30,6 @@ import javax.inject.Inject;
  * @since 1.1
  */
 @Endpoint(PrometheusEndpoint.ID)
-@RequiresMetrics
-@Requires(beans = PrometheusMeterRegistry.class)
 public class PrometheusEndpoint {
 
     public static final String ID = "prometheus";

@@ -18,10 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.appoptics
 import io.micrometer.appoptics.AppOpticsMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micronaut.configuration.metrics.micrometer.MeterRegistryCreationListener
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.env.Environment
-import io.micronaut.context.exceptions.BeanInstantiationException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -34,28 +31,6 @@ import static io.micronaut.configuration.metrics.micrometer.appoptics.AppOpticsM
 class AppOpticsMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_APPOPTICS_API_TOKEN = "appoticsApiToken"
-
-    void "fail to create bean without required properties"() {
-        when:
-        ApplicationContext.run()
-
-        then:
-        thrown BeanInstantiationException
-    }
-
-    void "wireup the bean manually"() {
-        setup:
-        ApplicationContext context = ApplicationContext.run([
-                (APPOPTICS_CONFIG + ".apiToken")    : MOCK_APPOPTICS_API_TOKEN,
-        ])
-        Environment mockEnvironment = context.getEnvironment()
-
-        when:
-        AppOpticsMeterRegistryFactory factory = new AppOpticsMeterRegistryFactory(new AppOpticsConfigurationProperties(mockEnvironment))
-
-        then:
-        factory.appOpticsMeterRegistry()
-    }
 
     void "verify AppOpticsMeterRegistry is created by default when this configuration used"() {
         when:
@@ -81,7 +56,6 @@ class AppOpticsMeterRegistryFactorySpec extends Specification {
         CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
 
         then:
-        context.getBean(MeterRegistryCreationListener)
         context.getBean(AppOpticsMeterRegistry)
         compositeRegistry
         compositeRegistry.registries.size() == 1

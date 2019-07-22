@@ -17,9 +17,9 @@
  * Configuration for Micrometer-Cloudwatch metrics.
  */
 @Configuration
-@Requires(classes = CloudWatchMeterRegistry.class)
+@Requires(property = CloudWatchMeterRegistryFactory.CLOUDWATCH_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.cloudwatch;
 
-import io.micrometer.cloudwatch.CloudWatchMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;

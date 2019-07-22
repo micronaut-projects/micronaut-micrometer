@@ -9,6 +9,7 @@ This project integrates Micronaut and https://micrometer.io[Micrometer] allowing
 * Micronaut 1.1.x minimum version requirement
 * Support for Metrics in GraalVM native image (Thanks to https://github.com/dekstroza[https://github.com/dekstroza])
 * Meter Registry support for SignalFX, Kairos, WaveFront, Azure, Appoptics, Datadog, Influx and Elastic and more (Thanks to https://github.com/thiagolocatelli[Thiago Locatelli])
+* Much of the internals around the composite meter registry and how registries are created have been improved.
 
 ==== 1.1.0
 
