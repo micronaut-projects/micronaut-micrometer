@@ -7,7 +7,7 @@ import io.micronaut.core.naming.conventions.StringConvention;
 import java.util.Properties;
 
 /**
- * Stores metrics export configuration
+ * Stores metrics export configuration.
  *
  * @author James Kleeh
  * @since 1.2.0

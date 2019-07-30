@@ -17,7 +17,6 @@ package io.micronaut.configuration.metrics.micrometer.logging;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
-import io.micrometer.core.instrument.logging.LoggingRegistryConfig;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 
@@ -40,6 +39,7 @@ public class LoggingMeterRegistryFactory {
      * and the logging flag is enabled.  Will be false by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The configuration
      * @return A LoggingMeterRegistry
      */
     @Singleton

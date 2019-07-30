@@ -25,9 +25,11 @@ import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConf
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.core.util.CollectionUtils;
 
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Factory for all supported MetricRegistry beans.
@@ -46,19 +48,21 @@ public class MeterRegistryFactory {
     /**
      * Create a CompositeMeterRegistry bean if metrics are enabled, true by default.
      *
+     * @param registries The registries
+     * @param configurers The configurers
      * @return A CompositeMeterRegistry
      */
     @Primary
     @Singleton
-    CompositeMeterRegistry compositeMeterRegistry(MeterRegistry[] registries,
-                                                  MeterRegistryConfigurer[] configurers) {
+    CompositeMeterRegistry compositeMeterRegistry(List<MeterRegistry> registries,
+                                                  List<MeterRegistryConfigurer> configurers) {
         CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
         for (MeterRegistryConfigurer configurer : configurers) {
             if (configurer.supports(compositeMeterRegistry)) {
                 configurer.configure(compositeMeterRegistry);
             }
         }
-        if (registries.length == 0) {
+        if (CollectionUtils.isEmpty(registries)) {
             compositeMeterRegistry.add(new SimpleMeterRegistry());
         } else {
             for (MeterRegistry registry : registries) {

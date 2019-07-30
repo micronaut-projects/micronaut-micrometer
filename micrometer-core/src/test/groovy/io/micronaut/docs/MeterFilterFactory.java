@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class MeterFilterFactory {
 
     /**
-     * Exclude metrics starting with jvm
+     * Exclude metrics starting with jvm.
      *
      * @return meter filter
      */
@@ -38,7 +38,7 @@ public class MeterFilterFactory {
     }
 
     /**
-     * Add global tags to all metrics
+     * Add global tags to all metrics.
      *
      * @return meter filter
      */
