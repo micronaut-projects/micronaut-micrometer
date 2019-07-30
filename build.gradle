@@ -21,7 +21,7 @@ import groovyx.net.http.RESTClient
 import static groovyx.net.http.ContentType.JSON
 
 plugins {
-    id 'com.github.hierynomus.license' version '0.14.0' apply false
+    id 'com.github.hierynomus.license' version '0.15.0' apply false
 }
 
 repositories {
