@@ -15,9 +15,8 @@
  */
 package io.micronaut.configuration.metrics.micrometer.cloudwatch
 
-import com.amazonaws.SDKGlobalConfiguration
-import io.micrometer.cloudwatch.CloudWatchConfig
-import io.micrometer.cloudwatch.CloudWatchMeterRegistry
+import io.micrometer.cloudwatch2.CloudWatchConfig
+import io.micrometer.cloudwatch2.CloudWatchMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
@@ -31,11 +30,11 @@ import static io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatc
 class CloudwatchRegistryFactorySpec extends Specification {
 
     void setupSpec(){
-        System.setProperty(SDKGlobalConfiguration.AWS_REGION_SYSTEM_PROPERTY, "us-east-1")
+        System.setProperty("aws.region", "us-east-1")
     }
 
     void cleanupSpec(){
-        System.clearProperty(SDKGlobalConfiguration.AWS_REGION_SYSTEM_PROPERTY)
+        System.clearProperty("aws.region")
     }
 
     void "verify CloudWatchMeterRegistry is created by default when this configuration used"() {

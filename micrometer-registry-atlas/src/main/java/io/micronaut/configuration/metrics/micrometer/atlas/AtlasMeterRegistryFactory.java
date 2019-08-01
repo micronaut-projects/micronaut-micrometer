@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.atlas;
 
-import com.netflix.spectator.atlas.AtlasConfig;
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
@@ -39,6 +38,8 @@ public class AtlasMeterRegistryFactory {
      * Create a AtlasMeterRegistry bean if global metrics are enables
      * and the atlas is enabled.  Will be true by default when this
      * configuration is included in project.
+     *
+     * @param exportConfigurationProperties The export configuration
      *
      * @return A AtlasMeterRegistry
      */

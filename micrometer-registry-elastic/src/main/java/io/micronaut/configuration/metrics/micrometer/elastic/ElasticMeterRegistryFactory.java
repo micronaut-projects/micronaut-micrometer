@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.elastic;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -43,6 +42,7 @@ public class ElasticMeterRegistryFactory {
      * and the datadog is enabled.  Will be true by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The export configuration
      * @return A ElasticMeterRegistry
      */
     @Singleton

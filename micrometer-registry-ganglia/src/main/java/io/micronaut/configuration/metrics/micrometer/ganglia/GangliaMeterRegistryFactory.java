@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.ganglia;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.ganglia.GangliaConfig;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -43,6 +42,7 @@ public class GangliaMeterRegistryFactory {
      * and the ganglia is enabled.  Will be true by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The export configuration
      * @return A GangliaMeterRegistry
      */
     @Singleton

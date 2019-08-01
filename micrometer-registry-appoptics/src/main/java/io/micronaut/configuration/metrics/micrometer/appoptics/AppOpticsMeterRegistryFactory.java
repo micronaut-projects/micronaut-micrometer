@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.appoptics;
 
-import io.micrometer.appoptics.AppOpticsConfig;
 import io.micrometer.appoptics.AppOpticsMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
@@ -42,6 +41,8 @@ public class AppOpticsMeterRegistryFactory {
      * Create a AppOpticsMeterRegistry bean if global metrics are enables
      * and the appoptics is enabled.  Will be true by default when this
      * configuration is included in project.
+     *
+     * @param exportConfigurationProperties The export configuration
      *
      * @return A AppOpticsMeterRegistry
      */

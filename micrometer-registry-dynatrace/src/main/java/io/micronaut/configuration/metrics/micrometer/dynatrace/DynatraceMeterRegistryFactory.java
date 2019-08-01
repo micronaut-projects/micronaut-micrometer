@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.dynatrace;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.dynatrace.DynatraceConfig;
 import io.micrometer.dynatrace.DynatraceMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -43,6 +42,7 @@ public class DynatraceMeterRegistryFactory {
      * and the dynatrace is enabled.  Will be true by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The export configuration
      * @return A DynatraceMeterRegistry
      */
     @Singleton

@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.datadog;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.datadog.DatadogConfig;
 import io.micrometer.datadog.DatadogMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -43,6 +42,7 @@ public class DatadogMeterRegistryFactory {
      * and the datadog is enabled.  Will be true by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The export configuration
      * @return A DatadogMeterRegistry
      */
     @Singleton

@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.azuremonitor;
 
-import io.micrometer.azuremonitor.AzureMonitorConfig;
 import io.micrometer.azuremonitor.AzureMonitorMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
@@ -43,6 +42,7 @@ public class AzureMonitorMeterRegistryFactory {
      * and the azuremonitor is enabled.  Will be true by default when this
      * configuration is included in project.
      *
+     * @param exportConfigurationProperties The export configuration
      * @return A AzureMonitorMeterRegistry
      */
     @Singleton

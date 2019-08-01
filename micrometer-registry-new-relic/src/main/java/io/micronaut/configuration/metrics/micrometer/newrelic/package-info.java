@@ -23,7 +23,6 @@
 @Requires(property = NewRelicMeterRegistryFactory.NEWRELIC_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.newrelic;
 
-import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
