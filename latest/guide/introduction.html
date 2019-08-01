@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>1 Introduction 1.1.1</title>
+    <title>1 Introduction 1.2.0</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -38,6 +38,9 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/metricsConcepts.html"><strong>3</strong><span>Metrics Concepts</span></a>
                         </div>
                         
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/metricsAndReporters.html"><strong>4</strong><span>Metrics Registries &amp; Reporters</span></a>
+                        </div>
+                        
                     </div>
                 </div>
             </li>
@@ -67,7 +70,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>1 Introduction</h1>
 
-                    <p><strong>Version:</strong> 1.1.1</p>
+                    <p><strong>Version:</strong> 1.2.0</p>
                 </div>
 
                 
@@ -88,6 +91,28 @@ function addJsClass() {
 </div>
 <div class="sect2">
 <h3 id="_release_notes">Release Notes</h3>
+<div class="sect3">
+<h4 id="_1_2_x">1.2.x</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Upgrade to Micrometer '1.2.0'</p>
+</li>
+<li>
+<p>Micronaut 1.1.x minimum version requirement</p>
+</li>
+<li>
+<p>Support for Metrics in GraalVM native image (Thanks to <a href="https://github.com/dekstroza">https://github.com/dekstroza</a>)</p>
+</li>
+<li>
+<p>Meter Registry support for SignalFX, Kairos, WaveFront, Azure, Appoptics, Datadog, Influx and Elastic and more (Thanks to <a href="https://github.com/thiagolocatelli">Thiago Locatelli</a>)</p>
+</li>
+<li>
+<p>Much of the internals around the composite meter registry and how registries are created have been improved.</p>
+</li>
+</ul>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_1_1_0">1.1.0</h4>
 <div class="ulist">
