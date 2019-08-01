@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.stackdriver.StackdriverMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.stackdriver.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.stackdriver</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/stackdriver/StackdriverConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.stackdriver">StackdriverConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">Wavefront Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/stackdriver/StackdriverMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.stackdriver">StackdriverMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The StackdriverMeterRegistryFactory that will configure and create a wavefront meter registry.</div>

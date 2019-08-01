@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.dynatrace.DynatraceMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.dynatrace.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.dynatrace</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/dynatrace/DynatraceConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.dynatrace">DynatraceConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">Dynatrace Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/dynatrace/DynatraceMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.dynatrace">DynatraceMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The DynatraceMeterRegistryFactory that will configure and create a kairos meter registry.</div>

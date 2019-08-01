@@ -169,6 +169,9 @@
 <li>
 <p>Meter Registry support for SignalFX, Kairos, WaveFront, Azure, Appoptics, Datadog, Influx and Elastic and more (Thanks to <a href="https://github.com/thiagolocatelli">Thiago Locatelli</a>)</p>
 </li>
+<li>
+<p>Much of the internals around the composite meter registry and how registries are created have been improved.</p>
+</li>
 </ul>
 </div>
 </div>
@@ -557,7 +560,7 @@ import java.util.Arrays;
 public class MeterFilterFactory {
 
     /**
-     * Exclude metrics starting with jvm
+     * Exclude metrics starting with jvm.
      *
      * @return meter filter
      */
@@ -568,7 +571,7 @@ public class MeterFilterFactory {
     }
 
     /**
-     * Add global tags to all metrics
+     * Add global tags to all metrics.
      *
      * @return meter filter
      */

@@ -114,8 +114,7 @@ var activeTableTab = "activeTableTab";
 <pre>@Singleton
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
  @Requires(property="micronaut.metrics.binders.executor.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public class <span class="typeNameLabel">ExecutorServiceMetricsBinder</span>
 extends java.lang.Object
 implements io.micronaut.context.event.BeanCreatedEventListener&lt;java.util.concurrent.ExecutorService&gt;</pre>

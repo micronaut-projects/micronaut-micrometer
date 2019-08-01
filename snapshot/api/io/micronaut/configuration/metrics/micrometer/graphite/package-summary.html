@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.graphite.GraphiteMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.graphite.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.graphite</h1>
 <div class="docSummary">

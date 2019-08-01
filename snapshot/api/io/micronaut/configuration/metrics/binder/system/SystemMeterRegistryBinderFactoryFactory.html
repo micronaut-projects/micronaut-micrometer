@@ -220,8 +220,7 @@ extends java.lang.Object</pre>
  @Singleton
  @Primary
  @Requires(property="micronaut.metrics.binders.uptime.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public&nbsp;io.micrometer.core.instrument.binder.system.UptimeMetrics&nbsp;uptimeMetrics()</pre>
 <div class="block">Uptime metrics bean.</div>
 <dl>
@@ -240,8 +239,7 @@ public&nbsp;io.micrometer.core.instrument.binder.system.UptimeMetrics&nbsp;uptim
  @Singleton
  @Primary
  @Requires(property="micronaut.metrics.binders.processor.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public&nbsp;io.micrometer.core.instrument.binder.system.ProcessorMetrics&nbsp;processorMetrics()</pre>
 <div class="block">Processor metrics bean.</div>
 <dl>
@@ -260,8 +258,7 @@ public&nbsp;io.micrometer.core.instrument.binder.system.ProcessorMetrics&nbsp;pr
  @Singleton
  @Primary
  @Requires(property="micronaut.metrics.binders.files.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public&nbsp;io.micrometer.core.instrument.binder.system.FileDescriptorMetrics&nbsp;fileDescriptorMetrics()</pre>
 <div class="block">Files metrics bean.</div>
 <dl>

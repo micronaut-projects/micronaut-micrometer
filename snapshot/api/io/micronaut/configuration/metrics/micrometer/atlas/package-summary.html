@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.atlas.AtlasMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.atlas.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.atlas</h1>
 <div class="docSummary">

@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.cloudwatch.CloudWatchMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.cloudwatch.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.cloudwatch</h1>
 <div class="docSummary">

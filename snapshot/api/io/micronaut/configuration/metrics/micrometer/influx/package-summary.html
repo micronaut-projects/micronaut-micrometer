@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.influx.InfluxMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.influx.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.influx</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/influx/InfluxConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.influx">InfluxConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">Influx Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/influx/InfluxMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.influx">InfluxMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The InfluxMeterRegistryFactory that will configure and create a influx meter registry.</div>

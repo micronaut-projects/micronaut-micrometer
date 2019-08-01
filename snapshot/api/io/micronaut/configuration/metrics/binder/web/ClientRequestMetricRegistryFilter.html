@@ -114,8 +114,7 @@ var activeTableTab = "activeTableTab";
 <pre>@Filter(value="${micronaut.metrics.http.client.path:/**}")
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
  @Requires(property="micronaut.metrics.binders.web.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public class <span class="typeNameLabel">ClientRequestMetricRegistryFilter</span>
 extends java.lang.Object
 implements io.micronaut.http.filter.HttpClientFilter</pre>

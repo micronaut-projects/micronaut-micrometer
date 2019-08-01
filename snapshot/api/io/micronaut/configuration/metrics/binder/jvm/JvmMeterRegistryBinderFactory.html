@@ -110,8 +110,7 @@ var activeTableTab = "activeTableTab";
 <pre>@Factory
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
  @Requires(property="micronaut.metrics.binders.jvm.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public class <span class="typeNameLabel">JvmMeterRegistryBinderFactory</span>
 extends java.lang.Object</pre>
 <div class="block">Binder factory that will create the jvm metrics beans.</div>

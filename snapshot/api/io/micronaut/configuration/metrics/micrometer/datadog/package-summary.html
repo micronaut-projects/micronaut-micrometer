@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.datadog.DatadogMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.datadog.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.datadog</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/datadog/DatadogConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.datadog">DatadogConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">InfluxDb Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/datadog/DatadogMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.datadog">DatadogMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The DatadogMeterRegistryFactory that will configure and create a datadog meter registry.</div>

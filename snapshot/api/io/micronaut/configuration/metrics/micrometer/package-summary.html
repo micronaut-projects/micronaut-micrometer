@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.core.instrument.MeterRegistry.class)
+ @Requires(property="micronaut.metrics.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer</h1>
 <div class="docSummary">
@@ -88,22 +89,15 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/MeterRegistryCreationListener.html" title="class in io.micronaut.configuration.metrics.micrometer">MeterRegistryCreationListener</a></td>
+<td class="colFirst"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer">ExportConfigurationProperties</a></td>
 <td class="colLast">
-<div class="block">Bean used to configure meter registries.</div>
+<div class="block">Stores metrics export configuration.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/MeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer">MeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">Factory for all supported MetricRegistry beans.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/SimpleMeterRegistryEventListener.html" title="class in io.micronaut.configuration.metrics.micrometer">SimpleMeterRegistryEventListener</a></td>
-<td class="colLast">
-<div class="block">Startup event listener that will add a simple meter registry
- if composite is present but no other registries have been created.</div>
 </td>
 </tr>
 </tbody>

@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.wavefront.WavefrontMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.wavefront.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.wavefront</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/wavefront/WavefrontConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.wavefront">WavefrontConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">Wavefront Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/wavefront/WavefrontMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.wavefront">WavefrontMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The WavefrontMeterRegistryFactory that will configure and create a wavefront meter registry.</div>

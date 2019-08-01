@@ -108,7 +108,7 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>@Factory
- @Requires(classes=ch.qos.logback.classic.Logger.class) @Requires(property="micronaut.metrics.binders.logback.enabled",value="true",defaultValue="true")
+ @Requires(classes=ch.qos.logback.classic.Logger.class) @Requires(property="micronaut.metrics.binders.logback.enabled",notEquals="false")
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
 public class <span class="typeNameLabel">LogbackMeterRegistryBinderFactory</span>
 extends java.lang.Object</pre>

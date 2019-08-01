@@ -119,8 +119,7 @@ var activeTableTab = "activeTableTab";
 <pre>@Filter(value="${micronaut.metrics.http.path:/**}")
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
  @Requires(property="micronaut.metrics.binders.web.enabled",
-          value="true",
-          defaultValue="true")
+          notEquals="false")
 public class <span class="typeNameLabel">ServerRequestMeterRegistryFilter</span>
 extends io.micronaut.http.filter.OncePerRequestHttpServerFilter</pre>
 <div class="block">Once per request web filter that will register the timers

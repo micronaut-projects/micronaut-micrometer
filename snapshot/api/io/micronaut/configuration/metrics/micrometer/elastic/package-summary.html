@@ -69,7 +69,8 @@
 <!-- ========= END OF TOP NAVBAR ========= -->
 <div class="header">
 <p>@Configuration
- @Requires(classes=io.micrometer.elastic.ElasticMeterRegistry.class)
+ @Requires(property="micronaut.metrics.export.elastic.enabled",
+          notEquals="false")
 </p>
 <h1 title="Package" class="title">Package&nbsp;io.micronaut.configuration.metrics.micrometer.elastic</h1>
 <div class="docSummary">
@@ -88,12 +89,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/elastic/ElasticConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer.elastic">ElasticConfigurationProperties</a></td>
-<td class="colLast">
-<div class="block">Elastic Configuration Properties holder.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/micronaut/configuration/metrics/micrometer/elastic/ElasticMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.elastic">ElasticMeterRegistryFactory</a></td>
 <td class="colLast">
 <div class="block">The ElasticMeterRegistryFactory that will configure and create a elastic meter registry.</div>
