@@ -81,9 +81,9 @@ There is a default web filter provided for web metrics.  All routes, status code
 *Control Property*: `micronaut.metrics.binders.web.enabled`
 
 .Filter Path
-If enabled, be default the path `/**` will be intercepted.  If you wish to change which paths are run through the filter set the following property.
+If enabled, be default the path `/**` will be intercepted.  If you wish to change which paths are run through the filter for the server set `micronaut.metrics.http.path`. For the client set `micronaut.metrics.http.client.path`.
 
-*Control Property*: `micronaut.metrics.http.path`
+*Control Property*: `micronaut.metrics.web.enabled`
 
 .Metrics provided
 |=======
