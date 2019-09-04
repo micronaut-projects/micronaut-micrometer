@@ -2116,6 +2116,9 @@ micronaut:
         descriptions: true</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p><strong>IMPORTANT NOTE</strong>: Once set up, the Prometheus-compatible metrics can be scraped from the path <code>/prometheus</code>. Note: by default Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
+</div>
 
 
 <h2 id="metricsAndReportersSignalFx">4.16 SignalFx Registry</h2>
