@@ -26,3 +26,5 @@ micronaut:
         step: PT1M
         descriptions: true
 ----
+
+*IMPORTANT NOTE*: Once set up, the Prometheus-compatible metrics can be scraped from the path `/prometheus`. Note: by default Prometheus looks for `/metrics`, but that path serves the core Micronaut metrics, hence the need to point to `/prometheus`.
