@@ -56,8 +56,8 @@ The JVM metrics bindings will provide several jvm metrics.
 
 .Metrics provided
 |=======
-|*Name* 
-| jvm.buffer.count 
+|*Name*
+| jvm.buffer.count
 | jvm.buffer.memory.used
 | jvm.buffer.total.capacity
 | jvm.classes.loaded
@@ -211,5 +211,18 @@ See the Micrometer.io docs at https://micrometer.io/docs for more information.
 [source,java]
 ----
 include::{testsmetricscore}/IndexController.java[]
+----
+
+== Custom Exception Metrics
+
+To report on response codes for custom handled exceptions, implement import io.micronaut.http.HttpResponseProvider.
+The default value reported for ExceptionHandlers is 500.
+
+See the Micronaut docs at https://docs.micronaut.io/latest/guide/index.html for more information on ExceptionHandlers.
+
+.ExceptionHandler Reporting Example
+[source,java]
+----
+include::{testsmetricscore}/OutOfStockException.java[]
 ----
 
