@@ -88,7 +88,7 @@ class AtlasMeterRegistryFactorySpec extends Specification {
         then: "default properties are used"
         atlasMeterRegistry.isPresent()
         atlasMeterRegistry.get().atlasConfig.enabled()
-        atlasMeterRegistry.get().atlasConfig.numThreads() == 2
+        atlasMeterRegistry.get().atlasConfig.numThreads() == 4
         atlasMeterRegistry.get().atlasConfig.uri() == 'http://localhost:7101/api/v1/publish'
         atlasMeterRegistry.get().atlasConfig.step() == Duration.ofMinutes(1)
 
