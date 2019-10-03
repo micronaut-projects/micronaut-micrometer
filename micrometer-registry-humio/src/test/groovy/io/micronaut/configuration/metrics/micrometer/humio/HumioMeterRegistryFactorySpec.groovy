@@ -94,7 +94,7 @@ class HumioMeterRegistryFactorySpec extends Specification {
         humioMeterRegistry.get().config.uri() == 'https://cloud.humio.com'
         humioMeterRegistry.get().config.numThreads() == 2
         humioMeterRegistry.get().config.batchSize() == 10000
-        humioMeterRegistry.get().config.repository() == 'sandbox'
+        humioMeterRegistry.get().config.repository() == ''
         humioMeterRegistry.get().config.step() == Duration.ofMinutes(1)
 
         cleanup:
@@ -108,7 +108,6 @@ class HumioMeterRegistryFactorySpec extends Specification {
                 (HUMIO_ENABLED)                   : true,
                 (HUMIO_CONFIG + ".numThreads")    : "77",
                 (HUMIO_CONFIG + ".uri")           : 'https://micronaut.io',
-                (HUMIO_CONFIG + ".repository")    : 'micronaut',
                 (HUMIO_CONFIG + ".step")          : "PT2M",
         ])
         Optional<HumioMeterRegistry> humioMeterRegistry = context.findBean(HumioMeterRegistry)
@@ -118,7 +117,6 @@ class HumioMeterRegistryFactorySpec extends Specification {
         humioMeterRegistry.get().config.enabled()
         humioMeterRegistry.get().config.numThreads() == 77
         humioMeterRegistry.get().config.uri() == 'https://micronaut.io'
-        humioMeterRegistry.get().config.repository() == 'micronaut'
         humioMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 
         cleanup:
