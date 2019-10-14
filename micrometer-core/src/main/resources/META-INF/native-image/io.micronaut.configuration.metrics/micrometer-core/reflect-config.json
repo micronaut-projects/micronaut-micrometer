@@ -1,0 +1,6 @@
+[
+  {
+    "name": "io.micrometer.core.instrument.MeterRegistry",
+    "allDeclaredConstructors":true
+  }
+]
