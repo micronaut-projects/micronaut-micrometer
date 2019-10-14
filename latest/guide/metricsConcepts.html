@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Metrics Concepts 1.2.0</title>
+    <title>3 Metrics Concepts 1.2.1</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -72,7 +72,7 @@ function addJsClass() {
                 <div class="project">
                     <h1>3 Metrics Concepts</h1>
 
-                    <p><strong>Version:</strong> 1.2.0</p>
+                    <p><strong>Version:</strong> 1.2.1</p>
                 </div>
 
                 
@@ -387,10 +387,10 @@ public class MeterFilterFactory {
 </div>
 <div class="paragraph">
 <div class="title">Filter Path</div>
-<p>If enabled, be default the path <code>/**</code> will be intercepted.  If you wish to change which paths are run through the filter set the following property.</p>
+<p>If enabled, be default the path <code>/**</code> will be intercepted.  If you wish to change which paths are run through the filter for the server set <code>micronaut.metrics.http.path</code>. For the client set <code>micronaut.metrics.http.client.path</code>.</p>
 </div>
 <div class="paragraph">
-<p><strong>Control Property</strong>: <code>micronaut.metrics.http.path</code></p>
+<p><strong>Control Property</strong>: <code>micronaut.metrics.web.enabled</code></p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <caption class="title">Table 2. Metrics provided</caption>
@@ -692,6 +692,50 @@ public class IndexController {
         return Single.just("Hello " + name);
     }
 
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_exception_metrics">Custom Exception Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To report on response codes for custom handled exceptions, implement import io.micronaut.http.HttpResponseProvider.
+The default value reported for ExceptionHandlers is 500.</p>
+</div>
+<div class="paragraph">
+<p>See the Micronaut docs at <a href="https://docs.micronaut.io/latest/guide/index.html" class="bare">https://docs.micronaut.io/latest/guide/index.html</a> for more information on ExceptionHandlers.</p>
+</div>
+<div class="listingblock">
+<div class="title">ExceptionHandler Reporting Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
+ * Copyright 2017-2019 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.micronaut.docs;
+
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpResponseProvider;
+
+public class OutOfStockException extends RuntimeException implements HttpResponseProvider {
+
+  @Override
+  public HttpResponse&lt;?&gt; getResponse() {
+    return HttpResponse.ok(0);
+  }
 }</code></pre>
 </div>
 </div>
