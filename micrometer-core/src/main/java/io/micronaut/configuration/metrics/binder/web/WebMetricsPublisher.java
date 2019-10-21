@@ -59,7 +59,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private static final String STATUS = "status";
     private static final String URI = "uri";
     private static final String EXCEPTION = "exception";
-	private static final String HOST = "host";
+    private static final String HOST = "host";
 
     private final Publisher<T> publisher;
     private final MeterRegistry meterRegistry;
@@ -92,35 +92,35 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
 		this.start = start;
 		this.httpMethod = httpMethod;
 		this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
-		this.host = null;
-	}
+        this.host = null;
+    }
 
-	/**
-	 * Publisher constructor.
-	 *
-	 * @param publisher     The original publisher
-	 * @param meterRegistry MeterRegistry bean
-	 * @param requestPath   The request path
-	 * @param start         The start time of the request
-	 * @param httpMethod    The http method name used
-	 * @param isServer      Whether the metric relates to the server or the client
-	 * @param host          The host called in the request
-	 */
-	WebMetricsPublisher(
-			Publisher<T> publisher,
-			MeterRegistry meterRegistry,
-			String requestPath,
-			long start,
-			String httpMethod,
-			boolean isServer,
-			String host) {
-		this.publisher = publisher;
-		this.meterRegistry = meterRegistry;
-		this.requestPath = requestPath;
-		this.start = start;
-		this.httpMethod = httpMethod;
-		this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
-		this.host = host;
+    /**
+     * Publisher constructor.
+     *
+     * @param publisher     The original publisher
+     * @param meterRegistry MeterRegistry bean
+     * @param requestPath   The request path
+     * @param start         The start time of the request
+     * @param httpMethod    The http method name used
+     * @param isServer      Whether the metric relates to the server or the client
+     * @param host          The host called in the request
+     */
+    WebMetricsPublisher(
+            Publisher<T> publisher,
+            MeterRegistry meterRegistry,
+            String requestPath,
+            long start,
+            String httpMethod,
+            boolean isServer,
+            String host) {
+        this.publisher = publisher;
+        this.meterRegistry = meterRegistry;
+        this.requestPath = requestPath;
+        this.start = start;
+        this.httpMethod = httpMethod;
+        this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
+        this.host = host;
 	}
 
     /**
@@ -202,8 +202,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private static List<Tag> getTags(HttpResponse httpResponse,
 			String httpMethod,
 			String requestPath,
-			Throwable throwable,
-			String host) {
+            Throwable throwable,
+            String host) {
         return Stream
                 .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath), exception(throwable), host(host))
                 .filter(Objects::nonNull)
@@ -275,19 +275,19 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         return Tag.of(EXCEPTION, "none");
     }
 
-	/**
-	 * Get a tag with the host used in the call.
-	 *
-	 * @param host The host used in the call.
-	 * @return Tag of host
-	 */
-	private static Tag host(String host) {
-		Tag tag = null;
-		if (host != null) {
-			tag = Tag.of(HOST, host);
-		}
-		return tag;
-	}
+    /**
+     * Get a tag with the host used in the call.
+     *
+     * @param host The host used in the call.
+     * @return Tag of host
+     */
+    private static Tag host(String host) {
+        Tag tag = null;
+        if (host != null) {
+            tag = Tag.of(HOST, host);
+        }
+        return tag;
+    }
 
     /**
      * Sanitize the uri path for double slashes and ending slashes.

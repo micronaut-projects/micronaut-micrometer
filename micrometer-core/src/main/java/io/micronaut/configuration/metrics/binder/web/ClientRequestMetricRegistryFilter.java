@@ -39,7 +39,7 @@ import java.util.Optional;
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
-	private final String HOST_HEADER = "host";
+    private final String HOST_HEADER = "host";
 	private final MeterRegistry meterRegistry;
 
 	/**
@@ -63,7 +63,7 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 start,
                 request.getMethod().toString(),
                 false,
-				resolveHost(request)
+                resolveHost(request)
         );
     }
 
