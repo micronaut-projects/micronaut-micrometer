@@ -68,6 +68,7 @@ class HttpMetricsSpec extends Specification {
         result == 'ok foo'
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri','/test-http-metrics/{id}').timer()
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','/test-http-metrics/{id}').timer()
+		registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('host','localhost').timer()
 
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','/test-http-metrics/foo').timer()
@@ -87,9 +88,10 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
 
-        cleanup:
+		cleanup:
         embeddedServer.close()
-    }
+
+	}
 
     @Unroll
     def "test getting the beans #cfg #setting"() {
