@@ -36,10 +36,10 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 /**
  * A publisher that will deal with the web filter metrics for success and error conditions.
  *
+ * @param <T> The response type
  * @author Christian Oestreich
  * @author graemerocher
  * @since 1.0
- * @param <T> The response type
  */
 @SuppressWarnings("PublisherImplementation")
 public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher<T> {
@@ -69,29 +69,29 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private final String metricName;
     private final String host;
 
-	/**
-	 * Publisher constructor.
-	 *
-	 * @param publisher     The original publisher
-	 * @param meterRegistry MeterRegistry bean
-	 * @param requestPath   The request path
-	 * @param start         The start time of the request
-	 * @param httpMethod    The http method name used
-	 * @param isServer      Whether the metric relates to the server or the client
-	 */
-	WebMetricsPublisher(
-			Publisher<T> publisher,
-			MeterRegistry meterRegistry,
-			String requestPath,
-			long start,
-			String httpMethod,
-			boolean isServer) {
-		this.publisher = publisher;
-		this.meterRegistry = meterRegistry;
-		this.requestPath = requestPath;
-		this.start = start;
-		this.httpMethod = httpMethod;
-		this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
+    /**
+     * Publisher constructor.
+     *
+     * @param publisher     The original publisher
+     * @param meterRegistry MeterRegistry bean
+     * @param requestPath   The request path
+     * @param start         The start time of the request
+     * @param httpMethod    The http method name used
+     * @param isServer      Whether the metric relates to the server or the client
+     */
+    WebMetricsPublisher(
+            Publisher<T> publisher,
+            MeterRegistry meterRegistry,
+            String requestPath,
+            long start,
+            String httpMethod,
+            boolean isServer) {
+        this.publisher = publisher;
+        this.meterRegistry = meterRegistry;
+        this.requestPath = requestPath;
+        this.start = start;
+        this.httpMethod = httpMethod;
+        this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = null;
     }
 
@@ -121,7 +121,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = host;
-	}
+    }
 
     /**
      * Publisher constructor.
@@ -197,13 +197,13 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param requestPath  The request path (/foo, /foo/bar, etc)
      * @param throwable    The throwable (optional)
      * @param host
-	 * @return A list of Tag objects
+     * @return A list of Tag objects
      */
     private static List<Tag> getTags(HttpResponse httpResponse,
-			String httpMethod,
-			String requestPath,
-            Throwable throwable,
-            String host) {
+                                     String httpMethod,
+                                     String requestPath,
+                                     Throwable throwable,
+                                     String host) {
         return Stream
                 .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath), exception(throwable), host(host))
                 .filter(Objects::nonNull)
