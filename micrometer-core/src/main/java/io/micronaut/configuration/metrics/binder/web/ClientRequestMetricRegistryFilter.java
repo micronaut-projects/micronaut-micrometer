@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpResponse;
@@ -29,6 +30,9 @@ import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.USE_HISTOGRAM;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+
 /**
  * A {@link HttpClientFilter} that produces metrics under the key {@code http.client.requests}.
  *
@@ -39,8 +43,13 @@ import java.util.Optional;
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
+
     private final String HOST_HEADER = "host";
     private final MeterRegistry meterRegistry;
+
+    private final String USE_HISTOGRAM_VALUE_STRING = "${" + USE_HISTOGRAM + ":false}";
+    @Value(USE_HISTOGRAM_VALUE_STRING)
+    private boolean useHistogram;
 
     /**
      * Default constructor.
@@ -63,7 +72,8 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 start,
                 request.getMethod().toString(),
                 false,
-                resolveHost(request)
+                resolveHost(request),
+                useHistogram
         );
     }
 

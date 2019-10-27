@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
@@ -51,6 +52,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
     public static final String METRIC_HTTP_SERVER_REQUESTS = "http.server.requests";
     public static final String METRIC_HTTP_CLIENT_REQUESTS = "http.client.requests";
+    public static final String USE_HISTOGRAM = MICRONAUT_METRICS_BINDERS + ".web.use-histogram";
 
     private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
     private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
@@ -68,6 +70,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private final String httpMethod;
     private final String metricName;
     private final String host;
+    private final boolean useHistogram;
 
     /**
      * Publisher constructor.
@@ -85,7 +88,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             String requestPath,
             long start,
             String httpMethod,
-            boolean isServer) {
+            boolean isServer,
+            boolean useHistogram) {
         this.publisher = publisher;
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
@@ -93,6 +97,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = null;
+        this.useHistogram = useHistogram;
     }
 
     /**
@@ -113,7 +118,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             long start,
             String httpMethod,
             boolean isServer,
-            String host) {
+            String host,
+            boolean useHistogram) {
         this.publisher = publisher;
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
@@ -121,24 +127,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = host;
-    }
-
-    /**
-     * Publisher constructor.
-     *
-     * @param publisher     The original publisher
-     * @param meterRegistry MeterRegistry bean
-     * @param requestPath   The request path
-     * @param start         The start time of the request
-     * @param httpMethod    The http method name used
-     */
-    WebMetricsPublisher(
-            Publisher<T> publisher,
-            MeterRegistry meterRegistry,
-            String requestPath,
-            long start,
-            String httpMethod) {
-        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null);
+        this.useHistogram = useHistogram;
     }
 
     /**
@@ -315,7 +304,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      */
     private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath, String host) {
         Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
-        this.meterRegistry.timer(metricName, tags)
+
+        createTimer(tags)
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     }
 
@@ -333,7 +323,20 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             response = ((HttpResponseProvider) throwable).getResponse();
         }
         Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host);
-        this.meterRegistry.timer(metricName, tags)
+        createTimer(tags)
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+    }
+
+    /**
+     * Method to create a timer in order to configure it as desired
+     * @param tags tags to use in the metrics
+     * @return a registered timer
+     */
+    private Timer createTimer(Iterable<Tag> tags) {
+        return Timer
+                .builder(metricName)
+                .tags(tags)
+                .publishPercentileHistogram(useHistogram)
+                .register(meterRegistry);
     }
 }

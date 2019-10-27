@@ -111,9 +111,8 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_ENABLED     | false
         (WebMetricsPublisher.ENABLED) | true
         (WebMetricsPublisher.ENABLED) | false
+        WebMetricsPublisher.USE_HISTOGRAM | true
     }
-
-
 
     @Client('/')
     static interface TestClient {

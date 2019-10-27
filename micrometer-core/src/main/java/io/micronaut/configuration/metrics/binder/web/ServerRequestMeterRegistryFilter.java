@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
@@ -28,6 +29,8 @@ import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 
 import java.util.Optional;
+
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.USE_HISTOGRAM;
 
 /**
  * Once per request web filter that will register the timers
@@ -47,6 +50,11 @@ import java.util.Optional;
 public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFilter {
 
     private final MeterRegistry meterRegistry;
+
+    private final String USE_HISTOGRAM_VALUE_STRING = "${" + USE_HISTOGRAM + ":false}";
+    @Value(USE_HISTOGRAM_VALUE_STRING)
+    private boolean useHistogram;
+
 
     /**
      * Filter constructor.
@@ -74,7 +82,9 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
                 meterRegistry,
                 path,
                 start,
-                httpRequest.getMethod().toString()
+                httpRequest.getMethod().toString(),
+                true,
+                useHistogram
         );
     }
 
