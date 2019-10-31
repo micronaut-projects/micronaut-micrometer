@@ -107,7 +107,7 @@ class HttpMetricsSpec extends Specification {
 
         where:
         cfg                           | setting
-        MICRONAUT_METRICS_ENABLED     | em
+        MICRONAUT_METRICS_ENABLED     | true
         MICRONAUT_METRICS_ENABLED     | false
         (WebMetricsPublisher.ENABLED) | true
         (WebMetricsPublisher.ENABLED) | false
