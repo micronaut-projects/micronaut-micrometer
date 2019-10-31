@@ -83,6 +83,10 @@ There is a default web filter provided for web metrics.  All routes, status code
 .Filter Path
 If enabled, be default the path `/**` will be intercepted.  If you wish to change which paths are run through the filter for the server set `micronaut.metrics.http.path`. For the client set `micronaut.metrics.http.client.path`.
 
+.Filter order
+You might want to define the order of your metric filter, for instance, because it is being executed after your authorization filter, causing some metrics (like `401` response codes) not to be measured. To change this, you can change set the `micronaut.metrics.http.filter-order` property, this will change the order of your filter. If you need to define it dynamically, you can create a bean of type `ServerRequestMeterRegistryFilterOrderProvider`.
+This only applies to server filter, currently client filters cannot be configured.
+
 .Metrics provided
 |=======
 |*Name*
