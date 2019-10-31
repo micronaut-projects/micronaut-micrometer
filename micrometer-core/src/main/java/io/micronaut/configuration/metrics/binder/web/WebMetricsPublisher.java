@@ -48,7 +48,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * Constant used to define whether web metrics are enabled or not.
      */
     @SuppressWarnings("WeakerAccess")
-    public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
+    public static final String MICRONAUT_METRICS_WEB_BINDER = MICRONAUT_METRICS_BINDERS + ".web";
+    public static final String ENABLED = MICRONAUT_METRICS_WEB_BINDER + ".enabled";
+    public static final String WEB_SERVER_METRICS_FILTER_ORDER = MICRONAUT_METRICS_WEB_BINDER + ".server-filter-order";
     public static final String METRIC_HTTP_SERVER_REQUESTS = "http.server.requests";
     public static final String METRIC_HTTP_CLIENT_REQUESTS = "http.client.requests";
 

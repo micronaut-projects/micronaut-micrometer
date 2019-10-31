@@ -107,13 +107,25 @@ class HttpMetricsSpec extends Specification {
 
         where:
         cfg                           | setting
-        MICRONAUT_METRICS_ENABLED     | true
+        MICRONAUT_METRICS_ENABLED     | em
         MICRONAUT_METRICS_ENABLED     | false
         (WebMetricsPublisher.ENABLED) | true
         (WebMetricsPublisher.ENABLED) | false
     }
 
+    @Unroll
+    def "filter order is correctly applied"() {
+        when:
+        ApplicationContext context = ApplicationContext.run([(cfg): setting])
+        ServerRequestMeterRegistryFilter serverFilter = context.findBean(ServerRequestMeterRegistryFilter).get()
 
+        then:
+        serverFilter.getOrder() == setting
+
+        where:
+        cfg                           | setting
+        (WebMetricsPublisher.WEB_SERVER_METRICS_FILTER_ORDER) | -1
+    }
 
     @Client('/')
     static interface TestClient {

@@ -27,6 +27,7 @@ import io.micronaut.http.filter.OncePerRequestHttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 /**
@@ -48,13 +49,17 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
 
     private final MeterRegistry meterRegistry;
 
+    private int order;
+
     /**
      * Filter constructor.
      *
      * @param meterRegistry the meter registry
      */
-    public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry) {
+    public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry,
+                                            @NotNull ServerRequestMeterRegistryFilterOrderProvider filterOrderProvider) {
         this.meterRegistry = meterRegistry;
+        this.order = filterOrderProvider.getOrder();
     }
 
     /**
@@ -83,4 +88,8 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
         return route.orElseGet(request::getPath);
     }
 
+    @Override
+    public int getOrder() {
+        return order;
+    }
 }
