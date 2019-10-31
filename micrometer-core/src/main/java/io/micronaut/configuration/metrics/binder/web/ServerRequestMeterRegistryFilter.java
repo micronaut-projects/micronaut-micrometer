@@ -55,6 +55,7 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
      * Filter constructor.
      *
      * @param meterRegistry the meter registry
+     * @param filterOrderProvider the bean to provide the filter order
      */
     public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry,
                                             @NotNull ServerRequestMeterRegistryFilterOrderProvider filterOrderProvider) {

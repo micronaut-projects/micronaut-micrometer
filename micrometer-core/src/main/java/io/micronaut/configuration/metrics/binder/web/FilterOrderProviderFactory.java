@@ -9,8 +9,11 @@ import javax.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.WEB_SERVER_METRICS_FILTER_ORDER;
 
+/**
+ * Factory to create order provides beans
+ */
 @Factory
-public class FilterOrderProviderFactory {
+public final class FilterOrderProviderFactory {
     @Bean
     @Singleton
     @Secondary
