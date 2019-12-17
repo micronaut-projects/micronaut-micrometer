@@ -22,3 +22,4 @@ metricsAndReporters:
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
   metricsAndReportersWavefront: Wavefront Registry
+repository: Repository
