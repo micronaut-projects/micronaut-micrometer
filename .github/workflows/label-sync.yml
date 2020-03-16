@@ -9,9 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Download labels.yml
-        uses: wei/curl@v1
-        with:
-          args: -O https://raw.githubusercontent.com/micronaut-projects/micronaut-build/master/labels.yml
+        run: curl -O https://raw.githubusercontent.com/micronaut-projects/micronaut-build/master/labels.yml
       - uses: micnncim/action-label-syncer@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
