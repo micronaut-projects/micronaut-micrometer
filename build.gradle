@@ -48,25 +48,18 @@ subprojects { Project subproject ->
 
     
     repositories {
-        mavenCentral()
         maven { url "https://repo.grails.org/grails/core" }
     }
     
     apply plugin:"groovy"
-    apply plugin:"java"
+    apply plugin:"java-library"
     apply plugin: "io.spring.dependency-management"
     apply plugin: "io.spring.nohttp"
-
-    dependencyManagement {
-        imports {
-            mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
-        }
-    }
 
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
-    apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-build/3ca806eb776b72483a4c0fda5ff1a5caebe0c281/publishing.gradle"
+    apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-build/v${micronautBuildVersion}/publishing.gradle"
         
 
     jar {
@@ -107,20 +100,24 @@ subprojects { Project subproject ->
         }
     }
     dependencies {
+        annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+        testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+        implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+
         documentation "org.codehaus.groovy:groovy-templates:$groovyVersion"
         documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 
-        testCompile "cglib:cglib-nodep:3.3.0"
-        testCompile "org.objenesis:objenesis:3.1"
+        testImplementation "cglib:cglib-nodep:3.3.0"
+        testImplementation "org.objenesis:objenesis:3.1"
 
-        testCompile("org.spockframework:spock-core:${spockVersion}") {
+        testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude module:'groovy-all'
         }
-        testCompile "cglib:cglib-nodep:3.3.0"
-        testCompile "org.objenesis:objenesis:3.1"
+        testImplementation "cglib:cglib-nodep:3.3.0"
+        testImplementation "org.objenesis:objenesis:3.1"
 
-        testRuntime "ch.qos.logback:logback-classic:1.2.3"
-        testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+        testRuntimeOnly "ch.qos.logback:logback-classic:1.2.3"
+        testImplementation "org.codehaus.groovy:groovy-test:$groovyVersion"
     }
 
     groovydoc {
