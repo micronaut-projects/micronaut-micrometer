@@ -4,7 +4,6 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails:grails-docs:$grailsVersion"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
@@ -53,7 +52,6 @@ subprojects { Project subproject ->
     
     apply plugin:"groovy"
     apply plugin:"java-library"
-    apply plugin: "io.spring.dependency-management"
     apply plugin: "io.spring.nohttp"
 
 
