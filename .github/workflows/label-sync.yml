@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: curl
+      - name: Download labels.yml
         uses: wei/curl@v1
         with:
           args: -O https://raw.githubusercontent.com/micronaut-projects/micronaut-build/master/labels.yml
