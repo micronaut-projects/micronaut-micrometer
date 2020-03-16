@@ -1,0 +1,174 @@
+- color: fbca04
+  description: The issue cannot be reproduced
+  name: 'closed: cannot reproduce'
+- color: cfd3d7
+  description: This issue or pull request already exists
+  name: 'closed: duplicate'
+- color: e4e669
+  description: The issue doesn't seem right
+  name: 'closed: invalid'
+- color: 21b2a1
+  description: The issue is not a bug
+  name: 'closed: notabug'
+- color: bae585
+  description: The issue is a question
+  name: 'closed: question'
+- color: 306da3
+  description: The issue will not be worked on
+  name: 'closed: won''t fix'
+- color: "008672"
+  description: Extra attention is needed
+  name: help wanted
+- color: 7057ff
+  description: Good for newcomers
+  name: 'info: good first issue'
+- color: bfdadc
+  description: A workaround is available for the issue
+  name: 'info: workaround available'
+- color: 4298B8
+  description: Issues or features specific to Groovy
+  name: 'lang: groovy'
+- color: e99695
+  description: Issues or features specific to Kotlin
+  name: 'lang: kotlin'
+- color: 72db88
+  description: ""
+  name: 'relates-to: android'
+- color: 8ceadc
+  description: label for issues related to the build file or CI
+  name: 'relates-to: build'
+- color: 80fca7
+  description: ""
+  name: 'relates-to: cli'
+- color: 817ae2
+  description: ""
+  name: 'relates-to: database-migration'
+- color: ffe4c9
+  description: ""
+  name: 'relates-to: discovery-client'
+- color: 3a94b7
+  description: ""
+  name: 'relates-to: functions'
+- color: ffa347
+  description: ""
+  name: 'relates-to: graal'
+- color: ed8be8
+  description: ""
+  name: 'relates-to: http-client'
+- color: 88cde8
+  description: ""
+  name: 'relates-to: http-server'
+- color: d84e3c
+  description: ""
+  name: 'relates-to: infrastructure'
+- color: 5dd858
+  description: ""
+  name: 'relates-to: jackson'
+- color: c0f9f8
+  description: ""
+  name: 'relates-to: jwt'
+- color: 96d9ea
+  description: ""
+  name: 'relates-to: kubernetes'
+- color: f7ab1d
+  description: ""
+  name: 'relates-to: live-reload'
+- color: e2cb53
+  description: ""
+  name: 'relates-to: logs'
+- color: 9dd6e8
+  description: ""
+  name: 'relates-to: mongodb'
+- color: e0509d
+  description: ""
+  name: 'relates-to: multitenancy'
+- color: f7c19e
+  description: ""
+  name: 'relates-to: native-kotlin'
+- color: 53ed83
+  description: ""
+  name: 'relates-to: neo4j'
+- color: f4d89c
+  description: ""
+  name: 'relates-to: open-api'
+- color: "961046"
+  description: ""
+  name: 'relates-to: redis'
+- color: 8585d1
+  description: ""
+  name: 'relates-to: security'
+- color: 84f959
+  description: ""
+  name: 'relates-to: validation'
+- color: 0822cc
+  description: ""
+  name: 'relates-to: versioning'
+- color: 21117c
+  description: ""
+  name: 'relates-to: views'
+- color: e372f9
+  description: ""
+  name: 'relates-to: website'
+- color: e55e40
+  description: ""
+  name: 'relates-to: websockets'
+- color: 1d76db
+  description: ""
+  name: 'status: acknowledged'
+- color: f0ff6b
+  description: ""
+  name: 'status: awaiting feedback'
+- color: ed84cd
+  description: Awaiting changes to a third party library
+  name: 'status: awaiting third-party'
+- color: 5319e7
+  description: Waiting to be validated as a real issue
+  name: 'status: awaiting validation'
+- color: f95ce4
+  description: ""
+  name: 'status: example attached'
+- color: 46a0f4
+  description: The issue will be considered at a future date
+  name: 'status: future consideration'
+- color: fbca04
+  description: ""
+  name: 'status: in progress'
+- color: ea7835
+  description: This pull request needs rebased to another branch
+  name: 'status: needs rebase'
+- color: 04a6ce
+  description: The issue will be considered for the next major version
+  name: 'status: next major version'
+- color: 47edb0
+  description: A pull request has been submitted for the issue
+  name: 'status: pr submitted'
+- color: c5def5
+  description: The issue is being considered, but has not been accepted yet
+  name: 'status: under consideration'
+- color: 89bfe5
+  description: An issue that has been validated as being a bug
+  name: 'status: validated'
+- color: d73a4a
+  description: Something isn't working
+  name: 'type: bug'
+- color: 727ac9
+  description: Upgrade a dependency
+  name: 'type: dependency-upgrade'
+- color: "769100"
+  description: ""
+  name: 'type: docs'
+- color: a2eeef
+  description: New feature or request
+  name: 'type: enhancement'
+- color: "017054"
+  description: A minor improvement to an existing feature
+  name: 'type: improvement'
+- color: db7ac3
+  description: Further information is requested
+  name: 'type: question'
+- color: d85052
+  description: A breaking change was introduced in a minor or patch release
+  name: 'type: regression'
+- color: eaa4b3
+  description: A task that needs to be completed
+  name: 'type: task'
