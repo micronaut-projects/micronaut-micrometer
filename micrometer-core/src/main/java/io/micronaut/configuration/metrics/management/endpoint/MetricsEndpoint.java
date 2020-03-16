@@ -29,7 +29,17 @@ import io.micronaut.management.endpoint.annotation.Selector;
 
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -42,10 +52,10 @@ import java.util.stream.Collectors;
 @Endpoint(value = MetricsEndpoint.NAME, defaultSensitive = MetricsEndpoint.DEFAULT_SENSITIVE)
 @RequiresMetrics
 @TypeHint(value = {io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.class,
-           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
-           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
-           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
-           io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class },
+        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
+        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
+        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
+        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class},
         accessType = {TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS, TypeHint.AccessType.ALL_PUBLIC_METHODS})
 public class MetricsEndpoint {
 
@@ -65,7 +75,7 @@ public class MetricsEndpoint {
      * Constructor for metrics endpoint.
      *
      * @param meterRegistry The meter registry
-     * @param dataSources To ensure data sources are loaded
+     * @param dataSources   To ensure data sources are loaded
      */
     public MetricsEndpoint(MeterRegistry meterRegistry,
                            DataSource[] dataSources) {
@@ -135,9 +145,12 @@ public class MetricsEndpoint {
         Map<Statistic, Double> samples = getSamples(meters);
         Map<String, Set<String>> availableTags = getAvailableTags(meters);
         tags.forEach((t) -> availableTags.remove(t.getKey()));
+        Meter.Id meterId = meters.iterator().next().getId();
         return new MetricDetails(name,
                 asList(samples, Sample::new),
-                asList(availableTags, AvailableTag::new));
+                asList(availableTags, AvailableTag::new),
+                meterId.getDescription(),
+                meterId.getBaseUnit());
     }
 
     private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
@@ -248,18 +261,29 @@ public class MetricsEndpoint {
 
         private final List<AvailableTag> availableTags;
 
+        private final String description;
+
+        private final String baseUnit;
+
         /**
          * Object to hold metric response for name, value and tags.
          *
          * @param name          the name
          * @param measurements  numerical values
          * @param availableTags tags
+         * @param description   description of the metric
+         * @param baseUnit      metric base unit
          */
-        MetricDetails(String name, List<Sample> measurements,
-                      List<AvailableTag> availableTags) {
+        MetricDetails(String name,
+                      List<Sample> measurements,
+                      List<AvailableTag> availableTags,
+                      String description,
+                      String baseUnit) {
             this.name = name;
             this.measurements = measurements;
             this.availableTags = availableTags;
+            this.description = description;
+            this.baseUnit = baseUnit;
         }
 
         /**
@@ -287,6 +311,24 @@ public class MetricsEndpoint {
          */
         public List<AvailableTag> getAvailableTags() {
             return this.availableTags;
+        }
+
+        /**
+         * Get description.
+         *
+         * @return metric description
+         */
+        public String getDescription() {
+            return this.description;
+        }
+
+        /**
+         * Get base unit.
+         *
+         * @return metric base unit
+         */
+        public String getBaseUnit() {
+            return this.baseUnit;
         }
 
     }

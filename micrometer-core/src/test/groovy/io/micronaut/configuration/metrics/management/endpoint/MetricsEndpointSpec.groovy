@@ -159,7 +159,10 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
+        result["baseUnit"]
 
         cleanup:
         rxClient.close()
@@ -202,8 +205,10 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
-
+        result["name"]
+        result["measurements"]
+        result["description"]
+        result["baseUnit"]
 
         when:
         rxClient.exchange("/metrics/jvm.buffer.count?tag=id:blah", Map).blockingFirst()
@@ -275,7 +280,10 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
+        result["baseUnit"]
 
         cleanup:
         rxClient.close()
@@ -326,7 +334,9 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
 
         cleanup:
         rxClient.close()
@@ -379,7 +389,9 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
 
         cleanup:
         rxClient.close()
@@ -409,15 +421,16 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
 
         cleanup:
         rxClient.close()
         embeddedServer.close()
 
         where:
-        name << [
-                "system.load.average.1m"]
+        name << ["system.load.average.1m"]
     }
 
     @Unroll
@@ -465,7 +478,10 @@ class MetricsEndpointSpec extends Specification {
         Map result = response.body() as Map
 
         then:
-        result
+        result["name"]
+        result["measurements"]
+        result["description"]
+        result["baseUnit"]
 
         cleanup:
         rxClient.close()
