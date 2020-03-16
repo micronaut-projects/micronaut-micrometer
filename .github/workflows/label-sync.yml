@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: curl
+        uses: wei/curl@v1
+        with:
+          args: -O https://raw.githubusercontent.com/micronaut-projects/micronaut-build/master/labels.yml
       - uses: micnncim/action-label-syncer@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          manifest: labels.yml
