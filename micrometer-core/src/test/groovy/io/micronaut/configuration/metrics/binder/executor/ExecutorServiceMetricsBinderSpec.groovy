@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.search.RequiredSearch
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.scheduling.TaskExecutors
 import io.netty.channel.DefaultEventLoop
@@ -69,10 +70,14 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
 
         when:
         ApplicationContext context = ApplicationContext.run()
-        EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName("test"))
+        EventLoopGroup eventLoopGroup = context.findBean(EventLoopGroup, Qualifiers.byName("test"))
+                                                .orElse(null)
 
         then:
-        eventLoopGroup != null
+        // for Micronaut 2.0 the value will not be non-null since a bean will be present
+        // we are mainly asserting here that a ClassCastException doesn't occur in
+        // the previous assignment. See #62
+        eventLoopGroup == null || eventLoopGroup instanceof EventLoopGroup
 
         cleanup:
         context.close()
@@ -101,6 +106,7 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
     static class TestEventLoopGroupFactory {
         @Singleton
         @Named("test")
+        @Requires(sdk = Requires.Sdk.MICRONAUT, version = "2.0.0")
         EventLoopGroup eventLoopGroup() {
             return new DefaultEventLoop()
         }
