@@ -28,6 +28,7 @@
 <body class="body" id="docs" onload="addJsClass();" onhashchange="highlightMenu()">
 
 <div id="table-of-content-nav-link" class="desktop">
+    <a id="theme-switcher" title="Switch to dark theme" href="javascript:switchTheme(true)"><i class="fa fa-moon-o"></i></a>
     <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
 </div>
 
@@ -38,8 +39,7 @@
         </div>
         <div class="navLinks">
             <ul>
-                    <li>
-                        <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                    <li><div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
                             <a href="../guide/index.html" class="button">Table of contents</a>
                             <div id="nav-summary-childs" style="display:none;">
                                 
@@ -50,6 +50,8 @@
                                 <div class="toc-item" style="margin-left:0"><a href="#metricsConcepts"><strong>3</strong><span>Metrics Concepts</span></a></div>
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#metricsAndReporters"><strong>4</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>5</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -64,13 +66,12 @@
                 <li class="mobile">
                     <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
                 </li>
-    <!--             <li class="desktop">
+                <li class="desktop">
                     <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Configuration Reference</a>
                 </li>
                 <li class="mobile">
                     <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Conf</a>
                 </li>
- -->
             </ul>
 
         </div>
@@ -127,6 +128,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>4.19</strong><span>Wavefront Registry</span></a></div>
         
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>5</strong><span>Repository</span></a></div>
+        
         </div>
     </div>
     
@@ -135,11 +138,10 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 1.3.0</p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-micrometer/snapshot/guide/index.html'>1.3.1</option><option selected='selected' value='https://micronaut-projects.github.io/micronaut-micrometer/1.3.1/guide/index.html'>1.3.1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.3.0/guide/index.html'>1.3.0</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.2.1/guide/index.html'>1.2.1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.2.0/guide/index.html'>1.2.0</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.2.0.RC2/guide/index.html'>1.2.0.RC2</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.2.0.RC1/guide/index.html'>1.2.0.RC1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.1.1/guide/index.html'>1.1.1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.1.0/guide/index.html'>1.1.0</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.1.0.RC2/guide/index.html'>1.1.0.RC2</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.1.0.RC1/guide/index.html'>1.1.0.RC1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.4/guide/index.html'>1.0.4</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.3/guide/index.html'>1.0.3</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.2/guide/index.html'>1.0.2</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.1/guide/index.html'>1.0.1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0/guide/index.html'>1.0.0</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.RC3/guide/index.html'>1.0.0.RC3</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.RC2/guide/index.html'>1.0.0.RC2</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.RC1/guide/index.html'>1.0.0.RC1</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.M4/guide/index.html'>1.0.0.M4</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.M3/guide/index.html'>1.0.0.M3</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/1.0.0.M2/guide/index.html'>1.0.0.M2</option></select></p>
     </div>
     
-
-<h1 id="introduction">1 Introduction</h1>
+<h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/introduction.adoc"'>
@@ -199,8 +201,7 @@
 </div>
 </div>
 
-
-<h1 id="metricsEndpoint">2 Metrics Endpoint</h1>
+<h1 id="metricsEndpoint"><a class="anchor" href="#metricsEndpoint"></a>2 Metrics Endpoint</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsEndpoint.adoc"'>
@@ -376,8 +377,7 @@
 </div>
 </div>
 
-
-<h1 id="metricsConcepts">3 Metrics Concepts</h1>
+<h1 id="metricsConcepts"><a class="anchor" href="#metricsConcepts"></a>3 Metrics Concepts</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsConcepts.adoc"'>
@@ -1039,8 +1039,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div>
 
-
-<h1 id="metricsAndReporters">4 Metrics Registries & Reporters</h1>
+<h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>4 Metrics Registries & Reporters</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters.adoc"'>
@@ -1058,8 +1057,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersAppOptics">4.1 AppOptics Registry</h2>
+<h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>4.1 AppOptics Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
@@ -1073,8 +1071,9 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-appoptics'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-appoptics")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1134,8 +1133,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersAtlas">4.2 Atlas Registry</h2>
+<h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>4.2 Atlas Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
@@ -1149,8 +1147,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-atlas'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-atlas")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1204,8 +1203,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersAzureMonitor">4.3 Azure Monitor Registry</h2>
+<h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>4.3 Azure Monitor Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
@@ -1219,8 +1217,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1275,8 +1274,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersCloudWatch">4.4 CloudWatch Registry</h2>
+<h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>4.4 CloudWatch Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
@@ -1290,8 +1288,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-cloudwatch'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-cloudwatch")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1345,8 +1344,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersDatadog">4.5 Datadog Registry</h2>
+<h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>4.5 Datadog Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
@@ -1360,8 +1358,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-datadog'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-datadog")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1421,8 +1420,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersDynatrace">4.6 Dynatrace Registry</h2>
+<h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>4.6 Dynatrace Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
@@ -1436,8 +1434,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-dynatrace'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-dynatrace")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1510,8 +1509,7 @@ micronaut:
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersElastic">4.7 Elastic Registry</h2>
+<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>4.7 Elastic Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
@@ -1525,8 +1523,9 @@ micronaut:
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-elastic'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-elastic")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1581,8 +1580,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersGanglia">4.8 Ganglia Registry</h2>
+<h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>4.8 Ganglia Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
@@ -1596,8 +1594,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-ganglia'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-ganglia")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1652,8 +1651,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersGraphite">4.9 Graphite Registry</h2>
+<h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>4.9 Graphite Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
@@ -1667,8 +1665,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-graphite'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-graphite")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1727,8 +1726,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersHumio">4.10 Humio Registry</h2>
+<h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>4.10 Humio Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
@@ -1742,8 +1740,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-humio'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-humio")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1793,8 +1792,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersInflux">4.11 Influx Registry</h2>
+<h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>4.11 Influx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
@@ -1808,8 +1806,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-influx'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-influx")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1864,8 +1863,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersJmx">4.12 Jmx Registry</h2>
+<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>4.12 Jmx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
@@ -1879,8 +1877,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-jmx'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-jmx")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1930,8 +1929,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersKairos">4.13 Kairos Registry</h2>
+<h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>4.13 Kairos Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
@@ -1945,8 +1943,9 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-kairos'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-kairos")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2006,8 +2005,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersNewRelic">4.14 New Relic Registry</h2>
+<h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>4.14 New Relic Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
@@ -2021,8 +2019,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-new-relic'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-new-relic")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2087,8 +2086,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersPrometheus">4.15 Prometheus Registry</h2>
+<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>4.15 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
@@ -2102,8 +2100,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-prometheus'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-prometheus")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2163,8 +2162,7 @@ micronaut:
 <p><strong>IMPORTANT NOTE</strong>: Once set up, the Prometheus-compatible metrics can be scraped from the path <code>/prometheus</code>. Note: by default Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
 </div>
 
-
-<h2 id="metricsAndReportersSignalFx">4.16 SignalFx Registry</h2>
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>4.16 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
@@ -2178,8 +2176,9 @@ micronaut:
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-signalfx'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-signalfx")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2239,8 +2238,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersStackdriver">4.17 Stackdriver Registry</h2>
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>4.17 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
@@ -2254,8 +2252,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-stackdriver'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-stackdriver")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2315,8 +2314,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersStatsD">4.18 StatsD Registry</h2>
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>4.18 StatsD Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
@@ -2330,8 +2328,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-statsd'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-statsd")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2395,8 +2394,7 @@ for more options.</p>
 </div>
 </div>
 
-
-<h2 id="metricsAndReportersWavefront">4.19 Wavefront Registry</h2>
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>4.19 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
@@ -2410,8 +2408,9 @@ for more options.</p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-micrometer-registry-wavefront'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-wavefront")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2474,6 +2473,22 @@ for more options.</p>
         uri: https://longboard.wavefront.com
         step: PT1M</code></pre>
 </div>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>5 Repository</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/repository.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can find the source code of this project in this repository:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-micrometer">https://github.com/micronaut-projects/micronaut-micrometer</a></p>
 </div>
 
     </div>
