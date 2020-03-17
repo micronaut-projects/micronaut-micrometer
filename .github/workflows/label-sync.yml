@@ -1,8 +1,7 @@
 name: Sync labels
 on:
-  push:
-    branches:
-      - master
+  issues:
+    types: [opened, edited, deleted, labeled, closed]
 jobs:
   build:
     runs-on: ubuntu-latest
