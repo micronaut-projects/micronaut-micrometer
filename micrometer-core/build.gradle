@@ -5,21 +5,16 @@ dependencies {
 
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
-
-    implementation "io.micronaut.cache:micronaut-cache-caffeine"
-
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut:micronaut-jdbc"
     compileOnly "javax.cache:cache-api:$jcacheVersion"    
     compileOnly "ch.qos.logback:logback-classic:1.2.3"
-
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "io.micronaut:micronaut-function-web"
+    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
     testImplementation "io.micronaut:micronaut-http-client"
+
     testImplementation "io.micronaut:micronaut-jdbc"
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
-
-    testRuntimeOnly "io.micronaut.cache:micronaut-cache-caffeine"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
 }
