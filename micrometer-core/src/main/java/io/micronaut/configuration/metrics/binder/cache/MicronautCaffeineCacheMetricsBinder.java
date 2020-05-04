@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.cache;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import io.micronaut.cache.Cache;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * A cache Metrics binder for Micronaut's re-packaged version of Caffeine.
+ * A cache Metrics binder for Caffeine.
  *
  * @author graemerocher
  * @since 1.0
@@ -58,7 +59,7 @@ public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventList
         Cache<?> cache = event.getBean();
         Object nativeCache = cache.getNativeCache();
         if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache) {
-            MicronautCaffeineCacheMetrics.monitor(
+            CaffeineCacheMetrics.monitor(
                     meterRegistry,
                     (com.github.benmanes.caffeine.cache.Cache) nativeCache,
                     cache.getName(),
