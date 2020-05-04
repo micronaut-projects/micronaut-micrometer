@@ -15,13 +15,13 @@
  */
 package io.micronaut.configuration.metrics.binder.cache;
 
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 import io.micrometer.core.lang.NonNullApi;
 import io.micrometer.core.lang.NonNullFields;
-import io.micronaut.caffeine.cache.AsyncLoadingCache;
-import io.micronaut.caffeine.cache.Cache;
-import io.micronaut.caffeine.cache.LoadingCache;
 
 import java.util.concurrent.TimeUnit;
 
