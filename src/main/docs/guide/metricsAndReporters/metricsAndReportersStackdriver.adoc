@@ -1,6 +1,6 @@
 You can include the Stackdriver reporter via `io.micronaut.configuration:micronaut-micrometer-registry-stackdriver:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.stackdriver`. The most commonly changed configuration properties are listed below, but see
 https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java[StackdriverConfig]

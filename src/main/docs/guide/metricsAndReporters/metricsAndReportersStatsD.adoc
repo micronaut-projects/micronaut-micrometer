@@ -1,6 +1,6 @@
 You can include the StatsD reporter via `io.micronaut.configuration:micronaut-micrometer-registry-statsd:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-statsd[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-statsd[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.statsd`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java[StatdsConfig] for more options
 

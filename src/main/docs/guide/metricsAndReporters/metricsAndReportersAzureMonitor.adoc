@@ -1,6 +1,6 @@
 You can include the Azure Monitor reporter via `io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-azure-monitor[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-azure-monitor[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.azuremonitor`. The most commonly changed configuration properties are listed below,
 but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-azure-monitor/src/main/java/io/micrometer/azuremonitor/AzureMonitorConfig.java[AzureMonitorConfig] for more options

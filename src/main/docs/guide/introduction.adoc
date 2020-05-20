@@ -3,6 +3,12 @@ This project integrates Micronaut and https://micrometer.io[Micrometer] allowing
 
 === Release Notes
 
+==== 2.0.0
+
+* Upgrade to Micrometer 1.5.x
+* Micronaut 1.3.x minimum version requirement
+* New Maven Group ID `io.micronaut.micrometer`
+
 ==== 1.2.x
 
 * Upgrade to Micrometer '1.2.0'

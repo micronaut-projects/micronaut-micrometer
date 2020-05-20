@@ -1,6 +1,6 @@
 You can include the AppOptics reporter via `io.micronaut.configuration:micronaut-micrometer-registry-appoptics:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-appoptics[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-appoptics[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.appoptics`. The most commonly changed configuration properties are listed below,
 but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java[AppOpticsConfig] for more options

@@ -1,6 +1,6 @@
 You can include the Elastic reporter via `io.micronaut.configuration:micronaut-micrometer-registry-elastic:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-elastic[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-elastic[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.elastic`.  The most commonly changed configuration properties are listed below, but see
 https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig]

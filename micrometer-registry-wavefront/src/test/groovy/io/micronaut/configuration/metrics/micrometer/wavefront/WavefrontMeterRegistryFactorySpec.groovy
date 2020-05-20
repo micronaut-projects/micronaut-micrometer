@@ -104,9 +104,8 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
         then: "default properties are used"
         wavefrontMeterRegistry.isPresent()
         wavefrontMeterRegistry.get().config.enabled()
-        wavefrontMeterRegistry.get().config.numThreads() == 2
         wavefrontMeterRegistry.get().config.uri() == 'https://longboard.wavefront.com'
-        wavefrontMeterRegistry.get().config.step() == Duration.ofSeconds(10)
+        wavefrontMeterRegistry.get().config.step() == Duration.ofMinutes(1)
 
         cleanup:
         context.stop()

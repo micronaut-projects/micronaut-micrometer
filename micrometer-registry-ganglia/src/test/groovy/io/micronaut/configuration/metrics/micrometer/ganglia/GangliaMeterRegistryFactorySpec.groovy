@@ -92,10 +92,8 @@ class GangliaMeterRegistryFactorySpec extends Specification {
         then: "default properties are used"
         gangliaMeterRegistry.isPresent()
         gangliaMeterRegistry.get().config.enabled()
-        gangliaMeterRegistry.get().config.numThreads() == 2
         gangliaMeterRegistry.get().config.batchSize() == 10000
         gangliaMeterRegistry.get().config.host() == 'localhost'
-        gangliaMeterRegistry.get().config.protocolVersion() == '3.1'
         gangliaMeterRegistry.get().config.step() == Duration.ofMinutes(1)
 
         cleanup:
@@ -119,11 +117,8 @@ class GangliaMeterRegistryFactorySpec extends Specification {
         then:
         gangliaMeterRegistry.isPresent()
         gangliaMeterRegistry.get().config.enabled()
-        gangliaMeterRegistry.get().config.numThreads() == 77
         gangliaMeterRegistry.get().config.host() == '127.0.0.1'
-        gangliaMeterRegistry.get().config.rateUnits() == TimeUnit.MILLISECONDS
         gangliaMeterRegistry.get().config.durationUnits() == TimeUnit.SECONDS
-        gangliaMeterRegistry.get().config.protocolVersion() == '3.0'
         gangliaMeterRegistry.get().config.step() == Duration.ofMinutes(2)
 
         cleanup:
