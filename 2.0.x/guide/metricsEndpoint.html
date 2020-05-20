@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script src="/cdn-cgi/apps/head/3cOPSgo5Omz84ycX7CvigfX4cpw.js"></script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-82213539-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-82213539-2');
+    </script>
+    <title>2 Metrics Endpoint 2.0.0.RC1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <div class="navTitle">
+        
+        Micronaut Micrometer
+    </div>
+    <div class="navLinks">
+        <ul>
+            <li>
+                <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                    <a href="../guide/index.html" class="button">Table of contents</a>
+
+                    <div id="nav-summary-childs" style="display:none;">
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/metricsEndpoint.html"><strong>2</strong><span>Metrics Endpoint</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/metricsConcepts.html"><strong>3</strong><span>Metrics Concepts</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/metricsAndReporters.html"><strong>4</strong><span>Metrics Registries &amp; Reporters</span></a>
+                        </div>
+                        
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/repository.html"><strong>5</strong><span>Repository</span></a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </li>
+            <li class="separator selected">
+                <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+            </li>
+        </ul>
+    </div>
+
+
+</div>
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/metricsConcepts.html"><strong>3</strong><span>Metrics Concepts</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Metrics Endpoint</h1>
+
+                    <p><strong>Version:</strong> 2.0.0.RC1</p>
+                </div>
+
+                
+
+                
+<h1 id="metricsEndpoint"><a class="anchor" href="#metricsEndpoint"></a>2 Metrics Endpoint</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply one of <code>micrometer-atlas</code>, <code>micrometer-graphite</code>, <code>micrometer-prometheus</code>, or <code>micrometer-statsd</code> features to enable metrics and preconfigure the selected registery in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features micrometer-atlas</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The metrics endpoint returns information about the "metrics" of the application. To execute the metrics endpoint, send a GET request to <code>/metrics</code>.  This will return a list of the metric names registered with the <code>MeterRegistry</code> bean.</p>
+</div>
+<div class="paragraph">
+<p>You can get specific metrics by using <code>/metrics/[name]</code> such as <code>/metrics/jvm.memory.used</code>.  This would return something like:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.45397552E8
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap",
+        "nonheap"
+      ]
+    },
+    {
+      "tag": "id",
+      "values": [
+        "Compressed Class Space",
+        "PS Survivor Space",
+        "PS Old Gen",
+        "Metaspace",
+        "PS Eden Space",
+        "Code Cache"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can further limit the metric by using a tag like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may even use multiple/nested tags like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&amp;tag=area:heap</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Currently the metrics endpoint will only be enabled if you include the <code>micrometer-core</code> (or one of the typed registries such as <code>micrometer-registry-statsd</code> or <code>micrometer-registry-graphite</code>) AND the <code>management</code> dependencies.  You will also need to have the global metrics flag enabled (true by default).</p>
+</div>
+<div class="listingblock">
+<div class="title">Property</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Gradle</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    compile "io.micronaut.configuration:micronaut-micrometer-core"
+    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
+    compile "io.micronaut.configuration:micronaut-micrometer-registry-statsd"
+    // Also required to enable endpoint
+    compile "io.micronaut:micronaut-management"
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Maven</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- Also required to enable endpoint --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To configure the metrics endpoint, supply configuration through <code>endpoints.metrics</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Metrics Endpoint Configuration Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+    metrics:
+        enabled: Boolean
+        sensitive: Boolean</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/metricsConcepts.html"><strong>3</strong><span>Metrics Concepts</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
