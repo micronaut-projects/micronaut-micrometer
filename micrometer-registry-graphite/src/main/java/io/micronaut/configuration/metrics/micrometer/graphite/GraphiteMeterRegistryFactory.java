@@ -59,6 +59,7 @@ public class GraphiteMeterRegistryFactory {
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
+     * @param tagsAsPrefix  The tags as prefix
      * @return A GraphiteMeterRegistry
      */
     @Singleton
