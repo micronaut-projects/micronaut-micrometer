@@ -23,7 +23,7 @@ plugins {
 }
 
 repositories {
-    maven { url "https://repo.grails.org/grails/core" }
+    jcenter()
 }
 
 version project.projectVersion
@@ -49,7 +49,7 @@ subprojects { Project subproject ->
 
     
     repositories {
-        maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
     }
     
     apply plugin:"groovy"
