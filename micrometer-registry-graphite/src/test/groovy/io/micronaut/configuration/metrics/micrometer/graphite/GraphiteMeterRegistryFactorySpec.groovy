@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.micrometer.graphite
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micrometer.graphite.GraphiteConfig
 import io.micrometer.graphite.GraphiteMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.Environment
@@ -28,6 +29,7 @@ import java.time.Duration
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 import static io.micronaut.configuration.metrics.micrometer.graphite.GraphiteMeterRegistryFactory.GRAPHITE_CONFIG
 import static io.micronaut.configuration.metrics.micrometer.graphite.GraphiteMeterRegistryFactory.GRAPHITE_ENABLED
+import static io.micronaut.configuration.metrics.micrometer.graphite.GraphiteMeterRegistryFactory.GRAPHITE_TAGS_AS_PREFIX
 
 class GraphiteMeterRegistryFactorySpec extends Specification {
 
@@ -88,10 +90,12 @@ class GraphiteMeterRegistryFactorySpec extends Specification {
                 (GRAPHITE_CONFIG + ".host"): "127.0.0.1",
                 (GRAPHITE_CONFIG + ".port"): 2345,
                 (GRAPHITE_CONFIG + ".step"): "PT2M",
+                (GRAPHITE_TAGS_AS_PREFIX): ['foo', 'bar']
         ])
         Optional<GraphiteMeterRegistry> meterRegistry = context.findBean(GraphiteMeterRegistry)
-
+        def config = context.getBean(GraphiteConfig)
         then:
+        config.tagsAsPrefix() == ['foo', 'bar'] as String[]
         meterRegistry.isPresent()
         meterRegistry.get().config.enabled()
         meterRegistry.get().config.port() == 2345

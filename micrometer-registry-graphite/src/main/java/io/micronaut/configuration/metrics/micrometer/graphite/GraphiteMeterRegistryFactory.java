@@ -16,11 +16,16 @@
 package io.micronaut.configuration.metrics.micrometer.graphite;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.core.util.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -32,7 +37,21 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 public class GraphiteMeterRegistryFactory {
 
     public static final String GRAPHITE_CONFIG = MICRONAUT_METRICS_EXPORT + ".graphite";
+    public static final String GRAPHITE_TAGS_AS_PREFIX = GRAPHITE_CONFIG + ".tags-as-prefix";
     public static final String GRAPHITE_ENABLED = GRAPHITE_CONFIG + ".enabled";
+
+    /**
+     * Create a GraphiteMeterRegistry bean if global metrics are enables
+     * and the graphite is enabled.  Will be true by default when this
+     * configuration is included in project.
+     *
+     * @param config The graphite config
+     * @return A GraphiteMeterRegistry
+     */
+    @Singleton
+    GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config) {
+        return new GraphiteMeterRegistry(config, Clock.SYSTEM);
+    }
 
     /**
      * Create a GraphiteMeterRegistry bean if global metrics are enables
@@ -43,8 +62,22 @@ public class GraphiteMeterRegistryFactory {
      * @return A GraphiteMeterRegistry
      */
     @Singleton
-    GraphiteMeterRegistry graphiteMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+    GraphiteConfig graphiteConfig(
+            ExportConfigurationProperties exportConfigurationProperties,
+            @Property(name = GRAPHITE_TAGS_AS_PREFIX)
+            @Nullable
+                    List<String> tagsAsPrefix) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new GraphiteMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new GraphiteConfig() {
+            @Override
+            public String get(String key) {
+                return exportConfig.getProperty(key);
+            }
+
+            @Override
+            public String[] tagsAsPrefix() {
+                return tagsAsPrefix != null ? tagsAsPrefix.toArray(StringUtils.EMPTY_STRING_ARRAY) : StringUtils.EMPTY_STRING_ARRAY;
+            }
+        };
     }
 }
