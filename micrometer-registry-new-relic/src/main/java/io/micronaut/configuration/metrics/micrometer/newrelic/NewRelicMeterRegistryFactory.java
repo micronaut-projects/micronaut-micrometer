@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.micrometer.newrelic;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -42,13 +43,23 @@ public class NewRelicMeterRegistryFactory {
      * and the newrelic is enabled.  Will be true by default when this
      * configuration is included in project.
      *
-     * @param exportConfigurationProperties The export configuration
+     * @param newRelicConfig The the new relic config
      * @return A NewRelicMeterRegistry
      */
     @Singleton
-    NewRelicMeterRegistry newRelicMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+    NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig) {
+        return new NewRelicMeterRegistry(newRelicConfig, Clock.SYSTEM);
+    }
+
+    /**
+     * The new relic config bean.
+     * @param exportConfigurationProperties The properties
+     * @return The new relic bean
+     */
+    @Singleton
+    NewRelicConfig newRelicConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new NewRelicMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return exportConfig::getProperty;
     }
 
 }

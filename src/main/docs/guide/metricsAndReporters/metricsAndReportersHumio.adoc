@@ -1,6 +1,6 @@
 You can include the Humio reporter via `io.micronaut.configuration:micronaut-micrometer-registry-humio:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-humio[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-humio[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.humio`. The most commonly changed configuration properties are listed below,
 but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-humio/src/main/java/io/micrometer/humio/HumioConfig.java[HumioConfig] for more options

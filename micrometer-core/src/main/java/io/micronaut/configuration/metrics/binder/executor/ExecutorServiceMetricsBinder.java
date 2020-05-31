@@ -63,18 +63,21 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
 
     @Override
     public ExecutorService onCreated(BeanCreatedEvent<ExecutorService> event) {
-        MeterRegistry meterRegistry = meterRegistryProvider.get();
         ExecutorService executorService = event.getBean();
-        BeanIdentifier beanIdentifier = event.getBeanIdentifier();
-
-        List<Tag> tags = Collections.emptyList(); // allow tags?
-
         // have to unwrap any Micronaut instrumentations to get the target
         ExecutorService unwrapped = executorService;
         while (unwrapped instanceof InstrumentedExecutorService) {
             InstrumentedExecutorService ies = (InstrumentedExecutorService) unwrapped;
             unwrapped = ies.getTarget();
         }
+        // Netty EventLoopGroups require separate instrumentation.
+        if (unwrapped.getClass().getName().startsWith("io.netty")) {
+            return unwrapped;
+        }
+        MeterRegistry meterRegistry = meterRegistryProvider.get();
+        BeanIdentifier beanIdentifier = event.getBeanIdentifier();
+
+        List<Tag> tags = Collections.emptyList(); // allow tags?
 
         // bind the service metrics
         new ExecutorServiceMetrics(unwrapped, beanIdentifier.getName(), tags).bindTo(meterRegistry);

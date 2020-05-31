@@ -2,18 +2,17 @@ dependencies {
     annotationProcessor "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
 
-    compileOnly "io.micronaut:micronaut-inject-java"
     compileOnly "io.micronaut:micronaut-management"
-    compile "io.micrometer:micrometer-core:$micrometerVersion"
-    compile project(":micrometer-core")
+    api "io.micrometer:micrometer-core:$micrometerVersion"
+    api project(":micrometer-core")
 
-    compile "javax.validation:validation-api:$validationVersion"
-    compile "io.micrometer:micrometer-registry-wavefront:$micrometerVersion"
+    api "javax.validation:validation-api:$validationVersion"
+    api "io.micrometer:micrometer-registry-wavefront:$micrometerVersion"
 
-    testCompile "io.micronaut:micronaut-management"
-    testCompile "io.micronaut:micronaut-inject-groovy"
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    testRuntime "io.micronaut:micronaut-http-server-netty"
-    testCompile "io.micronaut:micronaut-http-client"
+    testImplementation "io.micronaut:micronaut-management"
+    testImplementation "io.micronaut:micronaut-inject-groovy"
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
+    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
+    testImplementation "io.micronaut:micronaut-http-client"
 }
 

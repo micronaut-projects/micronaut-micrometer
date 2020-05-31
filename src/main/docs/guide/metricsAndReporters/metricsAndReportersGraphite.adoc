@@ -1,6 +1,6 @@
 You can include the Graphite reporter via `io.micronaut.configuration:micronaut-micrometer-registry-graphite:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-graphite[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-graphite[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.graphite`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java[GraphiteConfig] for more options
 

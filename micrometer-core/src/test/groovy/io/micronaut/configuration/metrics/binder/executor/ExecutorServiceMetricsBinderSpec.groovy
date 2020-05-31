@@ -19,12 +19,20 @@ import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.scheduling.TaskExecutors
+import io.netty.channel.DefaultEventLoop
+import io.netty.channel.EventLoopGroup
+import spock.lang.Issue
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
+import javax.inject.Named
+import javax.inject.Singleton
 import java.util.concurrent.ExecutorService
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -57,6 +65,24 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         context.close()
     }
 
+    @Issue("https://github.com/micronaut-projects/micronaut-micrometer/issues/62")
+    void "test event loop group not instrumented"() {
+
+        when:
+        ApplicationContext context = ApplicationContext.run()
+        EventLoopGroup eventLoopGroup = context.findBean(EventLoopGroup, Qualifiers.byName("test"))
+                                                .orElse(null)
+
+        then:
+        // for Micronaut 2.0 the value will not be non-null since a bean will be present
+        // we are mainly asserting here that a ClassCastException doesn't occur in
+        // the previous assignment. See #62
+        eventLoopGroup == null || eventLoopGroup instanceof EventLoopGroup
+
+        cleanup:
+        context.close()
+    }
+
     @Unroll
     def "test getting the beans #cfg #setting"() {
         when:
@@ -74,5 +100,15 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         MICRONAUT_METRICS_ENABLED                       | false
         MICRONAUT_METRICS_BINDERS + ".executor.enabled" | true
         MICRONAUT_METRICS_BINDERS + ".executor.enabled" | false
+    }
+
+    @Factory
+    static class TestEventLoopGroupFactory {
+        @Singleton
+        @Named("test")
+        @Requires(sdk = Requires.Sdk.MICRONAUT, version = "2.0.0")
+        EventLoopGroup eventLoopGroup() {
+            return new DefaultEventLoop()
+        }
     }
 }

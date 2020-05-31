@@ -17,6 +17,8 @@ package io.micronaut.configuration.metrics.micrometer.newrelic
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micrometer.core.instrument.step.StepRegistryConfig
+import io.micrometer.newrelic.NewRelicConfig
 import io.micrometer.newrelic.NewRelicMeterRegistry
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
@@ -100,15 +102,13 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
                 (NEWRELIC_CONFIG + ".accountId")  : MOCK_NEWRELIC_ACCOUNT_ID,
         ])
         Optional<NewRelicMeterRegistry> newRelicMeterRegistry = context.findBean(NewRelicMeterRegistry)
-
+        def config = context.getBean(NewRelicConfig)
         then: "default properties are used"
         newRelicMeterRegistry.isPresent()
-        newRelicMeterRegistry.get().config.enabled()
-        newRelicMeterRegistry.get().config.numThreads() == 2
-        newRelicMeterRegistry.get().config.accountId() == MOCK_NEWRELIC_ACCOUNT_ID
-        newRelicMeterRegistry.get().config.apiKey() == MOCK_NEWRELIC_API_KEY
-        newRelicMeterRegistry.get().config.uri() == 'https://insights-collector.newrelic.com'
-        newRelicMeterRegistry.get().config.step() == Duration.ofMinutes(1)
+        config.accountId() == MOCK_NEWRELIC_ACCOUNT_ID
+        config.apiKey() == MOCK_NEWRELIC_API_KEY
+        config.uri() == 'https://insights-collector.newrelic.com'
+        config.step() == Duration.ofMinutes(1)
 
         cleanup:
         context.stop()
@@ -126,15 +126,14 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
                 (NEWRELIC_CONFIG + ".step")          : "PT2M",
         ])
         Optional<NewRelicMeterRegistry> newRelicMeterRegistry = context.findBean(NewRelicMeterRegistry)
-
+        def config = context.getBean(NewRelicConfig)
         then:
         newRelicMeterRegistry.isPresent()
-        newRelicMeterRegistry.get().config.enabled()
-        newRelicMeterRegistry.get().config.numThreads() == 77
-        newRelicMeterRegistry.get().config.accountId() == MOCK_NEWRELIC_ACCOUNT_ID
-        newRelicMeterRegistry.get().config.apiKey() == MOCK_NEWRELIC_API_KEY
-        newRelicMeterRegistry.get().config.uri() == 'https://micronaut.io'
-        newRelicMeterRegistry.get().config.step() == Duration.ofMinutes(2)
+        config.enabled()
+        config.accountId() == MOCK_NEWRELIC_ACCOUNT_ID
+        config.apiKey() == MOCK_NEWRELIC_API_KEY
+        config.uri() == 'https://micronaut.io'
+        config.step() == Duration.ofMinutes(2)
 
         cleanup:
         context.stop()

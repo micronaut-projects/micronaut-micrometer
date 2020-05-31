@@ -4,17 +4,17 @@ dependencies {
 
     compileOnly "io.micronaut:micronaut-inject-java"
     compileOnly "io.micronaut:micronaut-management"
-    compile "io.micrometer:micrometer-core:$micrometerVersion"
-    compile project(":micrometer-core")
+    api "io.micrometer:micrometer-core:$micrometerVersion"
+    api project(":micrometer-core")
 
-    compile "javax.validation:validation-api:$validationVersion"
-    compile "io.micrometer:micrometer-registry-azure-monitor:$micrometerVersion"
+    api "javax.validation:validation-api:$validationVersion"
+    api "io.micrometer:micrometer-registry-azure-monitor:$micrometerVersion"
 
-    testCompile "io.micronaut:micronaut-management"
-    testCompile "io.micronaut:micronaut-inject-groovy"
+    testImplementation "io.micronaut:micronaut-management"
+    testImplementation "io.micronaut:micronaut-inject-groovy"
     annotationProcessor "io.micronaut:micronaut-inject-java"
-    testRuntime "io.micronaut:micronaut-http-server-netty"
-    testRuntimeClasspath 'javax.xml.bind:jaxb-api:2.3.+'
-    testCompile "io.micronaut:micronaut-http-client"
+    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
+    testRuntimeOnly 'javax.xml.bind:jaxb-api:2.3.+'
+    testImplementation "io.micronaut:micronaut-http-client"
 }
 

@@ -1,6 +1,6 @@
 You can include the Ganglia reporter via `io.micronaut.configuration:micronaut-micrometer-registry-ganglia:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-ganglia[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-ganglia[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.ganglia`. The most commonly changed configuration properties are listed below,
 but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-ganglia/src/main/java/io/micrometer/ganglia/GangliaConfig.java[GangliaConfig] for more options

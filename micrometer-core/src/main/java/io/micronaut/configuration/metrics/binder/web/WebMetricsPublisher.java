@@ -36,10 +36,10 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 /**
  * A publisher that will deal with the web filter metrics for success and error conditions.
  *
+ * @param <T> The response type
  * @author Christian Oestreich
  * @author graemerocher
  * @since 1.0
- * @param <T> The response type
  */
 @SuppressWarnings("PublisherImplementation")
 public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher<T> {
@@ -59,6 +59,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private static final String STATUS = "status";
     private static final String URI = "uri";
     private static final String EXCEPTION = "exception";
+    private static final String HOST = "host";
 
     private final Publisher<T> publisher;
     private final MeterRegistry meterRegistry;
@@ -66,6 +67,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private final long start;
     private final String httpMethod;
     private final String metricName;
+    private final String host;
 
     /**
      * Publisher constructor.
@@ -90,6 +92,35 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         this.start = start;
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
+        this.host = null;
+    }
+
+    /**
+     * Publisher constructor.
+     *
+     * @param publisher     The original publisher
+     * @param meterRegistry MeterRegistry bean
+     * @param requestPath   The request path
+     * @param start         The start time of the request
+     * @param httpMethod    The http method name used
+     * @param isServer      Whether the metric relates to the server or the client
+     * @param host          The host called in the request
+     */
+    WebMetricsPublisher(
+            Publisher<T> publisher,
+            MeterRegistry meterRegistry,
+            String requestPath,
+            long start,
+            String httpMethod,
+            boolean isServer,
+            String host) {
+        this.publisher = publisher;
+        this.meterRegistry = meterRegistry;
+        this.requestPath = requestPath;
+        this.start = start;
+        this.httpMethod = httpMethod;
+        this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
+        this.host = host;
     }
 
     /**
@@ -107,7 +138,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             String requestPath,
             long start,
             String httpMethod) {
-        this(publisher, meterRegistry, requestPath, start, httpMethod, true);
+        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null);
     }
 
     /**
@@ -135,7 +166,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
              */
             @Override
             public void onNext(T httpResponse) {
-                success(httpResponse, start, httpMethod, requestPath);
+                success(httpResponse, start, httpMethod, requestPath, host);
                 actual.onNext(httpResponse);
             }
 
@@ -144,7 +175,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
              */
             @Override
             public void onError(Throwable throwable) {
-                error(start, httpMethod, requestPath, throwable);
+                error(start, httpMethod, requestPath, throwable, host);
                 actual.onError(throwable);
             }
 
@@ -165,14 +196,16 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param httpMethod   The name of the http method (GET, POST, etc)
      * @param requestPath  The request path (/foo, /foo/bar, etc)
      * @param throwable    The throwable (optional)
+     * @param host
      * @return A list of Tag objects
      */
     private static List<Tag> getTags(HttpResponse httpResponse,
                                      String httpMethod,
                                      String requestPath,
-                                     Throwable throwable) {
+                                     Throwable throwable,
+                                     String host) {
         return Stream
-                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath), exception(throwable))
+                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath), exception(throwable), host(host))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -243,6 +276,20 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     }
 
     /**
+     * Get a tag with the host used in the call.
+     *
+     * @param host The host used in the call.
+     * @return Tag of host
+     */
+    private static Tag host(String host) {
+        Tag tag = null;
+        if (host != null) {
+            tag = Tag.of(HOST, host);
+        }
+        return tag;
+    }
+
+    /**
      * Sanitize the uri path for double slashes and ending slashes.
      *
      * @param path the uri of the request
@@ -266,8 +313,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param httpMethod   the name of the http method (GET, POST, etc)
      * @param requestPath  the uri of the reuqest
      */
-    private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath) {
-        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null);
+    private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath, String host) {
+        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
         this.meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     }
@@ -280,12 +327,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param requestPath the uri of the reuqest
      * @param throwable   exception that occurred
      */
-    private void error(long start, String httpMethod, String requestPath, Throwable throwable) {
+    private void error(long start, String httpMethod, String requestPath, Throwable throwable, String host) {
         HttpResponse response = null;
         if (throwable instanceof HttpResponseProvider) {
             response = ((HttpResponseProvider) throwable).getResponse();
         }
-        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable);
+        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host);
         this.meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     }

@@ -1,6 +1,6 @@
 You can include the Atlas reporter via `io.micronaut.configuration:micronaut-micrometer-registry-atlas:${micronaut.version}`
 
-dependency:micronaut-micrometer-registry-atlas[groupId="io.micronaut.configuration"]
+dependency:micronaut-micrometer-registry-atlas[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.atlas`.  The most commonly changed configuration properties are listed below, but see https://github.com/Netflix/spectator/blob/master/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java[AtlasConfig] for more options
 

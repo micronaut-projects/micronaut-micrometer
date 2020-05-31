@@ -39,6 +39,7 @@ import java.util.Optional;
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
+    private final String HOST_HEADER = "host";
     private final MeterRegistry meterRegistry;
 
     /**
@@ -61,12 +62,18 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 resolvePath(request),
                 start,
                 request.getMethod().toString(),
-                false
+                false,
+                resolveHost(request)
         );
     }
 
     private String resolvePath(MutableHttpRequest<?> request) {
         Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
+    }
+
+    private String resolveHost(MutableHttpRequest<?> request) {
+        Optional<String> host = request.getHeaders().get(HOST_HEADER, String.class);
+        return host.orElse(request.getUri().getHost());
     }
 }
