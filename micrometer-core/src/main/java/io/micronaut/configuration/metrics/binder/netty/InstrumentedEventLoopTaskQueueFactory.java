@@ -39,6 +39,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.server.netty.NettyHttpServer;
 import io.netty.channel.EventLoopTaskQueueFactory;
@@ -55,17 +56,16 @@ import io.netty.util.internal.PlatformDependent;
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 @Requires(classes = EventLoopTaskQueueFactory.class)
-public class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
-    private static AtomicInteger counter = new AtomicInteger(-1);
+@Internal
+final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
+    private static AtomicInteger parentCounter = new AtomicInteger(-1);
+    private static AtomicInteger workerCounter = new AtomicInteger(-1);
     private final Provider<MeterRegistry> meterRegistryProvider;
     private final Timer globalParentWaitTimeTimer;
     private final Timer globalParentExecutionTimer;
     private final Timer globalWorkerWaitTimeTimer;
     private final Timer globalWorkerExecutionTimer;
 
-    enum Kind {
-        PARENT, WORKER;
-    }
     /**
      * The InstrumentedEventLoopTaskQueueFactory.
      *
@@ -98,23 +98,24 @@ public class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueue
 
     @Override
     public Queue<Runnable> newTaskQueue(int maxCapacity) {
-        Kind kind = findOrigin();
-        return new MonitoredQueue(counter.incrementAndGet(),
+        final String kind = findOrigin();
+        final boolean parent = PARENT.equals(kind);
+        return new MonitoredQueue(parent ? parentCounter.incrementAndGet() : workerCounter.incrementAndGet(),
                 meterRegistryProvider.get(),
-                Tag.of(GROUP, kind.name()),
-                Kind.PARENT.equals(kind) ? globalParentWaitTimeTimer : globalWorkerWaitTimeTimer,
-                Kind.PARENT.equals(kind) ? globalParentExecutionTimer : globalWorkerExecutionTimer,
+                Tag.of(GROUP, kind),
+                parent ? globalParentWaitTimeTimer : globalWorkerWaitTimeTimer,
+                parent ? globalParentExecutionTimer : globalWorkerExecutionTimer,
                 maxCapacity == Integer.MAX_VALUE ? PlatformDependent.<Runnable>newMpscQueue() : PlatformDependent.<Runnable>newMpscQueue(maxCapacity));
     }
 
-    private Kind findOrigin() {
+    private String findOrigin() {
         for (StackTraceElement elt: Thread.currentThread().getStackTrace()) {
             if (NettyHttpServer.class.getName().equals(elt.getClassName()) && "createWorkerEventLoopGroup".equals(elt.getMethodName())) {
-                return Kind.WORKER;
+                return WORKER;
             } else if (NettyHttpServer.class.getName().equals(elt.getClassName()) && "createParentEventLoopGroup".equals(elt.getMethodName())) {
-                return Kind.PARENT;
+                return PARENT;
             }
         }
-        return Kind.WORKER;
+        return WORKER;
     }
 }

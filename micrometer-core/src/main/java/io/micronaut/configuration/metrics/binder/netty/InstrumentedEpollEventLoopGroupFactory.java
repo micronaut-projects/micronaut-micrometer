@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.http.server.netty;
+package io.micronaut.configuration.metrics.binder.netty;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
@@ -25,11 +25,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.configuration.metrics.binder.netty.InstrumentedEventLoopTaskQueueFactory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.http.server.netty.EpollEventLoopGroupFactory;
+import io.micronaut.http.server.netty.EventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -40,7 +41,7 @@ import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
 
 /**
- * Factory for EpollEventLoopGroup.
+ * Factory for Instrumented EpollEventLoopGroup.
  *
  * @author croudet
  * @since 2.0
@@ -51,9 +52,14 @@ import io.netty.util.concurrent.ThreadPerTaskExecutor;
 @Requires(beans = EpollEventLoopGroupFactory.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
-public class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFactory {
+final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFactory {
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
+    /**
+     * Creates an InstrumentedEpollEventLoopGroupFactory.
+     *
+     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     */
     @Inject
     public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
         this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;

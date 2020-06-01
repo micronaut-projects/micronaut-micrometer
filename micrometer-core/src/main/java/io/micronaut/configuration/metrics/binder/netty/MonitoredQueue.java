@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Spliterator;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
+import io.micronaut.core.annotation.Internal;
 
 /**
  * An Instrumented Queue.
@@ -37,7 +39,8 @@ import io.micrometer.core.instrument.Timer;
  * @author croudet
  * @since 2.0
  */
-class MonitoredQueue implements Queue<Runnable> {
+@Internal
+final class MonitoredQueue implements Queue<Runnable> {
     private final Queue<Runnable> delegate;
     private final MeterRegistry meterRegistry;
     private final Timer waitTimeTimer;
@@ -206,6 +209,12 @@ class MonitoredQueue implements Queue<Runnable> {
         return delegate.parallelStream();
     }
 
+    /**
+     * Runnable Wrapper that register time spent in queue and execution time.
+     *
+     * @author croudet
+     * @since 2.0
+     */
     static final class TimedRunnable implements Runnable {
         private final MeterRegistry registry;
         private final Timer executionTimer;
@@ -227,14 +236,12 @@ class MonitoredQueue implements Queue<Runnable> {
 
         @Override
         public void run() {
-            idleSample.stop(waitTimeTimer);
-            idleSample.stop(globalWaitTimeTimer);
+            globalWaitTimeTimer.record(idleSample.stop(waitTimeTimer), TimeUnit.NANOSECONDS);
             final Timer.Sample executionSample = Timer.start(registry);
             try {
                 delegate.run();
             } finally {
-                executionSample.stop(executionTimer);
-                executionSample.stop(globalExecutionTimeTimer);
+                globalExecutionTimeTimer.record(executionSample.stop(executionTimer), TimeUnit.NANOSECONDS);
             }
         }
 

@@ -33,6 +33,7 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufAllocatorMetric;
@@ -54,7 +55,8 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 @Requires(classes = ByteBufAllocator.class)
 @Context
-public class ByteBufAllocatorMetricsBinder {
+@Internal
+final class ByteBufAllocatorMetricsBinder {
     private final Provider<MeterRegistry> meterRegistryProvider;
     private final Set<ByteBufAllocatorMetricKind> kinds;
 
