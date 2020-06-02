@@ -17,11 +17,11 @@ package io.micronaut.configuration.metrics.binder.netty
 
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.DefaultApplicationContext
-import io.micronaut.context.env.PropertySource
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.micronaut.http.server.netty.NettyHttpServer
+import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
@@ -33,94 +33,104 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
-import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.RequiredSearch
+import io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind
 
 class MicronautNettyInstrumentedQueuesSpec extends Specification {
 
-     void "test netty server use instrumented queues"() {
-        given:
-        ApplicationContext beanContext = new DefaultApplicationContext("test")
-        beanContext.environment.addPropertySource(PropertySource.of("test",
-              [MICRONAUT_METRICS_ENABLED: true,
-               (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
-        ))
-        beanContext.start()
-
+    @Unroll
+    def "test getting the beans #cfg #setting"() {
         when:
-        NettyHttpServer server = beanContext.getBean(NettyHttpServer)
-        server.start()
+        ApplicationContext context = ApplicationContext.run([(cfg): setting])
 
         then:
-        server.eventLoopGroupFactory
-        server.eventLoopGroupFactory.class == InstrumentedNioEventLoopGroupFactory
+        context.findBean(ByteBufAllocatorMetricsBinder).isPresent() == result
 
         cleanup:
-        beanContext.close()
+        context.close()
+
+        where:
+        cfg                                                             | setting | result
+        MICRONAUT_METRICS_ENABLED                                       | true    | false
+        MICRONAUT_METRICS_ENABLED                                       | false   | false
+        MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled" | true    | true
+        MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled" | false   | false
     }
 
-    def "test netty server instrumented queues metrics"() {
+
+    def "test ByteBufAllocator custom metrics"() {
         when:
         ApplicationContext context = ApplicationContext.run(
               [MICRONAUT_METRICS_ENABLED: true,
-               (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
+               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true,
+               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics"): [ByteBufAllocatorMetricKind.POOLED_ALLOCATOR, ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR]]
         )
-        context.start()
-        NettyHttpServer server = context.getBean(NettyHttpServer)
-        server.start()
-        DummyClient client = context.getBean(DummyClient)
-        client.root()
-        MeterRegistry registry = context.getBean(MeterRegistry)
-        RequiredSearch search = registry.get(dot(NETTY, QUEUE, WAIT_TIME))
-        Collection<Timer> waitTimers = search.timers()
-        search = registry.get(dot(NETTY, QUEUE, EXECUTION_TIME))
-        Collection<Timer> executionTimers = search.timers()
+        Optional<ByteBufAllocatorMetricsBinder> optBinder = context.findBean(ByteBufAllocatorMetricsBinder)
 
         then:
-        !waitTimers.empty
-        !executionTimers.empty
-        for (Timer t: waitTimers) {
-            t.count() == 0
-        }
-        for (Timer t: executionTimers) {
-            t.count() == 0
-        }
-
-        when:
-        client.root()
-        client.root()
-        client.root()
-        client.root()
-        client.root()
-        def waitTime = 0
-        def executionTime = 0
-        for (Timer t: waitTimers) {
-            waitTime += t.count()
-        }
-        for (Timer t: executionTimers) {
-            executionTime += t.count()
-        }
-
-        then:
-        waitTime > 0
-        executionTime > 0
+        optBinder.isPresent()
+        optBinder.get().kinds.size() == 2
+        optBinder.get().kinds.contains(ByteBufAllocatorMetricKind.POOLED_ALLOCATOR)
+        optBinder.get().kinds.contains(ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR)
 
         cleanup:
         context.close()
     }
 
-    @Client('/foo')
+    def "test ByteBufAllocator metrics binder is present"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(
+              [MICRONAUT_METRICS_ENABLED: true,
+               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true]
+        )
+
+        then:
+        context.containsBean(ByteBufAllocatorMetricsBinder)
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        Tags pooled = Tags.of(ALLOC, POOLED)
+        RequiredSearch search = registry.get(dot(NETTY, ALLOC, MEMORY, USED))
+        search.tags(pooled.and(MEMORY, DIRECT))
+        Gauge gauge = search.gauge()
+
+        then:
+        gauge
+        gauge.value() >= 0
+
+        when:
+        def initialValue = gauge.value()
+        def server = context.getBean(EmbeddedServer)
+        server.start()
+        DummyClient client = context.getBean(DummyClient)
+        PollingConditions conditions = new PollingConditions(timeout: 3, delay: 0.1)
+
+        then:
+        client.root() == 'root'
+        client.root() == 'root'
+        client.root() == 'root'
+        client.root() == 'root'
+        client.root() == 'root'
+        client.root() == 'root'
+        conditions.eventually {
+            gauge.value() >= initialValue
+        }
+
+        cleanup:
+        context.close()
+    }
+
+    @Client('/dummy')
     private static interface DummyClient {
         @Get
         String root()
     }
 
-    @Controller('/foo')
+    @Controller('/dummy')
     private static class DummyController {
         @Get
         String root() {
             return "root"
         }
     }
-
 }

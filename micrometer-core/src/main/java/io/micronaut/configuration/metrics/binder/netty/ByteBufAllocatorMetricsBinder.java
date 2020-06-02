@@ -104,7 +104,6 @@ final class ByteBufAllocatorMetricsBinder {
                     .description("The number of direct arenas.")
                     .tags(pooled)
                     .register(meterRegistry);
-
             Gauge.builder(dot(NETTY, ALLOC, CACHE, SIZE), pooledMetric, PooledByteBufAllocatorMetric::smallCacheSize)
                     .description("The size of the small cache.")
                     .tags(pooled.and(CACHE, SMALL))
