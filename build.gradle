@@ -20,7 +20,6 @@ subprojects { Project subproject ->
     apply plugin: "io.micronaut.build.dependency-updates"
     apply plugin: "io.micronaut.build.publishing"
 
-
     dependencies {
         testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude module:'groovy-all'
