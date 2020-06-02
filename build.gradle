@@ -20,6 +20,7 @@ plugins {
 
 repositories {
     maven { url "https://repo.grails.org/grails/core" }
+    maven { url "https://oss.jfrog.org/oss-snapshot-local" }
 }
 
 version project.projectVersion
@@ -46,6 +47,7 @@ subprojects { Project subproject ->
     
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
+        maven { url "https://oss.jfrog.org/oss-snapshot-local" }
     }
     
     apply plugin:"groovy"
@@ -124,7 +126,7 @@ subprojects { Project subproject ->
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion = 8.10
+        toolVersion = 8.33
         configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
 
         // Per submodule
