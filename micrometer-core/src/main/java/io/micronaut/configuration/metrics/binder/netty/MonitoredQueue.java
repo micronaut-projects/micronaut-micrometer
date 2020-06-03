@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -47,6 +48,7 @@ final class MonitoredQueue implements Queue<Runnable> {
     private final Timer executionTimer;
     private final Timer globalWaitTimeTimer;
     private final Timer globalExecutionTimeTimer;
+    private final Counter globalTaskCounter;
 
     /**
      * An InstrumentedQueue.
@@ -54,15 +56,17 @@ final class MonitoredQueue implements Queue<Runnable> {
      * @param index An index.
      * @param meterRegistry The meter registry.
      * @param tag A Tag.
+     * @param globalTaskCounter A counter.
      * @param globalWaitTimeTimer The global wait time timer.
      * @param globalExecutionTimeTimer The global execution time timer.
      * @param queue The Queue.
      */
-    MonitoredQueue(int index, MeterRegistry meterRegistry, Tag tag, Timer globalWaitTimeTimer, Timer globalExecutionTimeTimer, Queue<Runnable> queue) {
+    MonitoredQueue(int index, MeterRegistry meterRegistry, Tag tag, Counter globalTaskCounter, Timer globalWaitTimeTimer, Timer globalExecutionTimeTimer, Queue<Runnable> queue) {
         this.delegate = queue;
         this.meterRegistry = meterRegistry;
         this.globalExecutionTimeTimer = globalExecutionTimeTimer;
         this.globalWaitTimeTimer = globalWaitTimeTimer;
+        this.globalTaskCounter = globalTaskCounter;
         Tags tags = Tags.of(tag, Tag.of(QUEUE, SIZE))
                 .and(NUMBER, Integer.toString(index));
         Gauge.builder(dot(NETTY, QUEUE, SIZE), delegate, Queue::size)
@@ -86,11 +90,13 @@ final class MonitoredQueue implements Queue<Runnable> {
 
     @Override
     public boolean add(Runnable e) {
+        globalTaskCounter.increment();
         return delegate.add(new TimedRunnable(meterRegistry, executionTimer, waitTimeTimer, globalExecutionTimeTimer, globalWaitTimeTimer, e));
     }
 
     @Override
     public boolean offer(Runnable e) {
+        globalTaskCounter.increment();
         return delegate.offer(new TimedRunnable(meterRegistry, executionTimer, waitTimeTimer, globalExecutionTimeTimer, globalWaitTimeTimer, e));
     }
 
