@@ -15,6 +15,8 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
@@ -34,6 +36,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
@@ -61,6 +64,8 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
     private static AtomicInteger parentCounter = new AtomicInteger(-1);
     private static AtomicInteger workerCounter = new AtomicInteger(-1);
     private final Provider<MeterRegistry> meterRegistryProvider;
+    private final Counter parentTaskCounter;
+    private final Counter workerTaskCounter;
     private final Timer globalParentWaitTimeTimer;
     private final Timer globalParentExecutionTimer;
     private final Timer globalWorkerWaitTimeTimer;
@@ -94,6 +99,12 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
                 .tag(GROUP, WORKER)
                 .publishPercentileHistogram()
                 .register(meterRegistryProvider.get());
+        parentTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                .tag(GROUP, PARENT)
+                .register(meterRegistryProvider.get());
+        workerTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                .tag(GROUP, WORKER)
+                .register(meterRegistryProvider.get());
     }
 
     @Override
@@ -103,6 +114,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
         return new MonitoredQueue(parent ? parentCounter.incrementAndGet() : workerCounter.incrementAndGet(),
                 meterRegistryProvider.get(),
                 Tag.of(GROUP, kind),
+                parent ? parentTaskCounter : workerTaskCounter,
                 parent ? globalParentWaitTimeTimer : globalWorkerWaitTimeTimer,
                 parent ? globalParentExecutionTimer : globalWorkerExecutionTimer,
                 maxCapacity == Integer.MAX_VALUE ? PlatformDependent.<Runnable>newMpscQueue() : PlatformDependent.<Runnable>newMpscQueue(maxCapacity));
@@ -118,4 +130,5 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
         }
         return WORKER;
     }
+
 }
