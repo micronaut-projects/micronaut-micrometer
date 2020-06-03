@@ -201,6 +201,22 @@ If you are using `io.micronaut.configuration:micronaut-jdbc-tomcat` or `io.micro
 | jdbc.connections.min
 |=======
 
+===== Netty Server Metrics
+
+The main *Control Property* for netty's server metrics is `micronaut.metrics.binders.netty.enabled`, which is *false* by default.
+
+Currently two binders are provided to instrument netty server:
+
+* *EventLoopGroupFactoryBinder*: Instrument and expose event loop group queues metrics, use `micronaut.metrics.binders.netty.queues.enabled` to toggle. Default is *false*. The queues' size and tasks wait and execution time are exposed.
+* *ByteBufAllocatorMetricsBinder*: Expose `ByteBuf` default allocators (https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html[UnpooledByteBufAllocator], https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html[PooledByteBufAllocator]) metrics, use `micronaut.metrics.binders.netty.bytebuf-allocators.enabled` to toggle. Default is *false*.
+You can customize what metrics are exposed using `micronaut.metrics.binders.netty.bytebuf-allocators.metrics`. By default all available metrics are exposed. Here are the supported flags:
+** `POOLED_ALLOCATOR`: expose `PooledByteBufAllocator` metrics,
+** `UNPOOLED_ALLOCATOR`: expose `UnpooledByteBufAllocator` metrics,
+** `POOLED_ARENAS`: expose `PooledByteBufAllocator` pooled arenas metrics (requires `POOLED_ALLOCATOR`),
+** `POOLED_ARENAS_SUBPAGES`: expose `PooledByteBufAllocator` pooled arenas sub pages metrics (requires `POOLED_ARENAS`),
+** `POOLED_ARENAS_CHUNKLISTS`: expose `PooledByteBufAllocator` pooled arenas chunk lists metrics (requires `POOLED_ARENAS`),
+** `POOLED_ARENAS_CHUNKS`: expose `PooledByteBufAllocator` pooled arenas chunks metrics (requires `POOLED_ARENAS_CHUNKLISTS`).
+
 == Adding Custom Metrics
 
 To add metrics to your application you can inject a MeterRegistry bean to your class and use the provided methods to access counters, timers, etc.

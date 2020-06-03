@@ -99,7 +99,7 @@ class DatadogMeterRegistryFactorySpec extends Specification {
         datadogMeterRegistry.get().config.enabled()
         datadogMeterRegistry.get().config.numThreads() == 2
         datadogMeterRegistry.get().config.hostTag() == 'instance'
-        datadogMeterRegistry.get().config.uri() == 'https://app.datadoghq.com'
+        datadogMeterRegistry.get().config.uri() == 'https://api.datadoghq.com'
         datadogMeterRegistry.get().config.apiKey() == '12345'
         datadogMeterRegistry.get().config.step() == Duration.ofMinutes(1)
 
