@@ -28,6 +28,7 @@ final class NettyMetrics {
     static final String POOLED = "pooled";
     static final String UNPOOLED = "unpooled";
     static final String QUEUE = "queue";
+    static final String CHANNEL = "channel";
 
     static final String MEMORY = "memory";
     static final String DIRECT = "direct";
@@ -54,6 +55,7 @@ final class NettyMetrics {
     static final String USED = "used";
     static final String COUNT = "count";
     static final String GLOBAL = "global";
+    static final String ERROR = "error";
 
     static final String ALLOCATION = "allocation";
     static final String DEALLOCATION = "deallocation";
@@ -69,10 +71,14 @@ final class NettyMetrics {
 
     static final String WAIT_TIME = "wait.time";
     static final String EXECUTION_TIME = "execution.time";
+    static final String TIME = "time";
 
     static final String GROUP = "group";
     static final String PARENT = "parent";
     static final String WORKER = "worker";
+
+    static final String READ = "read";
+    static final String WRITTEN = "written";
 
     private NettyMetrics() {
 
