@@ -111,10 +111,9 @@ var activeTableTab = "activeTableTab";
 </dl>
 <hr>
 <br>
-<pre><a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
+<pre>@Requires(property="micronaut.metrics.binders.cache.enabled",notEquals="false") @Requires(classes=io.micronaut.cache.Cache.class)
+ <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
  @Singleton
- @Requires(property="micronaut.metrics.binders.cache.enabled",
-          notEquals="false")
 public class <span class="typeNameLabel">MicronautCaffeineCacheMetricsBinder</span>
 extends java.lang.Object
 implements io.micronaut.context.event.BeanCreatedEventListener&lt;io.micronaut.cache.Cache&lt;?&gt;&gt;</pre>
