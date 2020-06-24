@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-$YEAR original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Configuration for Micrometer-Azure-Monitor metrics.
- */
-@Configuration
-@Requires(property = AzureMonitorMeterRegistryFactory.AZUREMONITOR_ENABLED, notEquals = StringUtils.FALSE)
-package io.micronaut.configuration.metrics.micrometer.azuremonitor;
-
-import io.micronaut.context.annotation.Configuration;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
