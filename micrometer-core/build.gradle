@@ -6,7 +6,8 @@ dependencies {
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
     compileOnly "io.micronaut:micronaut-management"
-    compileOnly "io.micronaut:micronaut-jdbc"
+    compileOnly 'io.micronaut.cache:micronaut-cache-core'
+    compileOnly "io.micronaut.sql:micronaut-jdbc"
     compileOnly "io.netty:netty-buffer:$nettyVersion"
     compileOnly "io.netty:netty-transport:$nettyVersion"
     compileOnly "io.netty:netty-transport-native-epoll:$nettyVersion"
