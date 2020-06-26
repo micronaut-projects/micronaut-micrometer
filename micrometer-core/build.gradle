@@ -21,13 +21,15 @@ dependencies {
     testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
     testImplementation "io.micronaut:micronaut-http-client"
 
-    testImplementation "io.micronaut:micronaut-jdbc"
+    testImplementation "io.micronaut.sql:micronaut-jdbc"
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
     testImplementation "io.netty:netty-buffer:$nettyVersion"
     testImplementation "io.netty:netty-transport:$nettyVersion"
     testImplementation "io.netty:netty-transport-native-epoll:$nettyVersion"
     testImplementation "io.netty:netty-transport-native-kqueue:$nettyVersion"
     testImplementation "io.micronaut:micronaut-http-server-netty"
+    testImplementation 'io.micronaut.cache:micronaut-cache-core'
+    testImplementation 'io.micronaut.cache:micronaut-cache-caffeine'
 }
 
 micronautBuild {

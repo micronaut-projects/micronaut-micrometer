@@ -102,7 +102,7 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         def initialValue = gauge.value()
         def server = context.getBean(EmbeddedServer)
         server.start()
-        DummyClient client = context.getBean(DummyClient)
+        ByteBufAllocatorMetricTestDummyClient client = context.getBean(ByteBufAllocatorMetricTestDummyClient)
         PollingConditions conditions = new PollingConditions(timeout: 3, delay: 0.1)
 
         then:
@@ -120,14 +120,14 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         context.close()
     }
 
-    @Client('/dummy')
-    private static interface DummyClient {
+    @Client('/bytebufallocatortest')
+    private static interface ByteBufAllocatorMetricTestDummyClient {
         @Get
         String root()
     }
 
-    @Controller('/dummy')
-    private static class DummyController {
+    @Controller('/bytebufallocatortest')
+    private static class ByteBufAllocatorMetricTestController {
         @Get
         String root() {
             return "root"
