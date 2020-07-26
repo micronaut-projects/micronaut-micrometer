@@ -105,10 +105,6 @@ final class ByteBufAllocatorMetricsBinder {
                     .tags(pooled)
                     .register(meterRegistry);
 
-            Gauge.builder(dot(NETTY, ALLOC, CACHE, SIZE), pooledMetric, PooledByteBufAllocatorMetric::tinyCacheSize)
-                    .description("The size of the tiny cache.")
-                    .tags(pooled.and(CACHE, TINY))
-                    .register(meterRegistry);
             Gauge.builder(dot(NETTY, ALLOC, CACHE, SIZE), pooledMetric, PooledByteBufAllocatorMetric::smallCacheSize)
                     .description("The size of the small cache.")
                     .tags(pooled.and(CACHE, SMALL))
@@ -157,10 +153,6 @@ final class ByteBufAllocatorMetricsBinder {
                 .description("Returns the number of thread caches backed by this arena.")
                 .tags(tags)
                 .register(meterRegistry);
-        Gauge.builder(dot(NETTY, ALLOC, ARENA, SUBPAGE, COUNT), pam, PoolArenaMetric::numTinySubpages)
-                .description("Returns the number of tiny sub-pages for the arena.")
-                .tags(tags.and(SUBPAGE, TINY))
-                .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, SUBPAGE, COUNT), pam, PoolArenaMetric::numSmallSubpages)
                 .description("Returns the number of small sub-pages for the arena.")
                 .tags(tags.and(SUBPAGE, SMALL))
@@ -173,10 +165,6 @@ final class ByteBufAllocatorMetricsBinder {
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT), pam, PoolArenaMetric::numAllocations)
                 .description("Return the number of allocations done via the arena. This includes all sizes.")
                 .tags(tags)
-                .register(meterRegistry);
-        Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT), pam, PoolArenaMetric::numTinyAllocations)
-                .description("Return the number of tiny allocations done via the arena.")
-                .tags(tags.and(SIZE, TINY))
                 .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT), pam, PoolArenaMetric::numSmallAllocations)
                 .description("Return the number of small allocations done via the arena.")
@@ -195,10 +183,6 @@ final class ByteBufAllocatorMetricsBinder {
                 .description("Return the number of deallocations done via the arena. This includes all sizes.")
                 .tags(tags)
                 .register(meterRegistry);
-        Gauge.builder(dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT), pam, PoolArenaMetric::numTinyDeallocations)
-                .description("Return the number of tiny deallocations done via the arena.")
-                .tags(tags.and(SIZE, TINY))
-                .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT), pam, PoolArenaMetric::numSmallDeallocations)
                 .description("Return the number of small deallocations done via the arena.")
                 .tags(tags.and(SIZE, SMALL))
@@ -215,10 +199,6 @@ final class ByteBufAllocatorMetricsBinder {
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT), pam, PoolArenaMetric::numActiveAllocations)
                 .description("Return the number of currently active allocations.")
                 .tags(tags)
-                .register(meterRegistry);
-        Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT), pam, PoolArenaMetric::numActiveTinyAllocations)
-                .description("Return the number of currently active timy allocations.")
-                .tags(tags.and(SIZE, TINY))
                 .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT), pam, PoolArenaMetric::numActiveSmallAllocations)
                 .description("Return the number of currently active small allocations.")
@@ -239,13 +219,6 @@ final class ByteBufAllocatorMetricsBinder {
                 .register(meterRegistry);
 
         if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES)) {
-            for (int i = 0; i < pam.tinySubpages().size(); i++) {
-                Tags tinySubpage = tags.and(SUBPAGE, TINY)
-                        .and(dot(SUBPAGE, NUMBER), Integer.toString(i));
-
-                meterSubpage(tinySubpage, pam.tinySubpages().get(i));
-            }
-
             for (int i = 0; i < pam.smallSubpages().size(); i++) {
                 Tags tinySubpage = tags.and(SUBPAGE, SMALL)
                         .and(dot(SUBPAGE, NUMBER), Integer.toString(i));

@@ -42,7 +42,6 @@ final class NettyMetrics {
 
     static final String CACHE = "cache";
     static final String SIZE = "size";
-    static final String TINY = "tiny";
     static final String SMALL = "small";
     static final String NORMAL = "normal";
     static final String HUGE = "huge";
