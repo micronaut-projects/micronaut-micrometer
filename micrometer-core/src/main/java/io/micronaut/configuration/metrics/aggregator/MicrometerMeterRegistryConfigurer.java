@@ -55,6 +55,7 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      *
      * @param meterRegistry Meter registry to bind metrics to.
      */
+    @Override
     public void configure(@NotNull MeterRegistry meterRegistry) {
         addFilters(meterRegistry);
         addBinders(meterRegistry);
