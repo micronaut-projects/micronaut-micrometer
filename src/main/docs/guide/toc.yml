@@ -18,7 +18,6 @@ metricsAndReporters:
   metricsAndReportersKairos: Kairos Registry
   metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersPrometheus: Prometheus Registry
-    metricsAndReportersPrometheusDefinition: Prometheus Default Metrics
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
