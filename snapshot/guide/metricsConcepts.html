@@ -645,6 +645,48 @@ There is a different set of pool metric names for HikariCP and other pool provid
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_netty_server_metrics">Netty Server Metrics</h5>
+<div class="paragraph">
+<p>The main <strong>Control Property</strong> for netty&#8217;s server metrics is <code>micronaut.metrics.binders.netty.enabled</code>, which is <strong>false</strong> by default.</p>
+</div>
+<div class="paragraph">
+<p>Currently two binders are provided to instrument netty server:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>EventLoopGroupFactoryBinder</strong>: Instrument and expose event loop group queues metrics, use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
+</li>
+<li>
+<p><strong>ByteBufAllocatorMetricsBinder</strong>: Expose <code>ByteBuf</code> default allocators (<a href="https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html">UnpooledByteBufAllocator</a>, <a href="https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html">PooledByteBufAllocator</a>) metrics, use <code>micronaut.metrics.binders.netty.bytebuf-allocators.enabled</code> to toggle. Default is <strong>false</strong>.
+You can customize what metrics are exposed using <code>micronaut.metrics.binders.netty.bytebuf-allocators.metrics</code>. By default all available metrics are exposed. Here are the supported flags:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>POOLED_ALLOCATOR</code>: expose <code>PooledByteBufAllocator</code> metrics,</p>
+</li>
+<li>
+<p><code>UNPOOLED_ALLOCATOR</code>: expose <code>UnpooledByteBufAllocator</code> metrics,</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas metrics (requires <code>POOLED_ALLOCATOR</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_SUBPAGES</code>: expose <code>PooledByteBufAllocator</code> pooled arenas sub pages metrics (requires <code>POOLED_ARENAS</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_CHUNKLISTS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas chunk lists metrics (requires <code>POOLED_ARENAS</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_CHUNKS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas chunks metrics (requires <code>POOLED_ARENAS_CHUNKLISTS</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
