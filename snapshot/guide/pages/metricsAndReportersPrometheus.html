@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>4.15 Prometheus Registry 1.2.2.BUILD-SNAPSHOT</title>
+    <title>4.15 Prometheus Registry 2.0.2.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -50,6 +50,9 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../../guide/metricsAndReporters.html"><strong>4</strong><span>Metrics Registries &amp; Reporters</span></a>
                         </div>
                         
+                        <div class="toc-item" style="margin-left:0"><a href="../../guide/repository.html"><strong>5</strong><span>Repository</span></a>
+                        </div>
+                        
                     </div>
                 </div>
             </li>
@@ -74,12 +77,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
+                    <div class="toc-item next-right"><a href="../../guide/repository.html"><strong>5</strong><span>Repository</span> >></a></div>
+                
 
 
                 <div class="project">
                     <h1>4.15 Prometheus Registry</h1>
 
-                    <p><strong>Version:</strong> 1.2.2.BUILD-SNAPSHOT</p>
+                    <p><strong>Version:</strong> 2.0.2.BUILD-SNAPSHOT</p>
                 </div>
 
                 
@@ -101,13 +106,13 @@ function addJsClass() {
 <p>        <div class="listingblock multi-language-sample">
 <div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.configuration:micronaut-micrometer-registry-prometheus")</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
@@ -160,11 +165,62 @@ micronaut:
 <div class="paragraph">
 <p><strong>IMPORTANT NOTE</strong>: Once set up, the Prometheus-compatible metrics can be scraped from the path <code>/prometheus</code>. Note: by default Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
 </div>
+<div class="sect2">
+<h3 id="_prometheus_default_metrics">Prometheus Default Metrics</h3>
+<div class="paragraph">
+<p>By default, there is a set of metrics that are exposed by the different binders. If you include the Prometheus reporter, those metrics will be available in Prometheus format as well.</p>
+</div>
+<div class="paragraph">
+<p>Here you will find the definition of all default metrics exposed by a binder.</p>
+</div>
+<div class="sect4">
+<h5 id="_web_metrics">Web Metrics</h5>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Metrics provided</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the total number of requests per second your application made to an endpoint via HTTP Client interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_sum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the sum of the duration of every request your application made to an endpoint via HTTP Client interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the total number of requests your application received at an endpoint</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_sum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the sum of the the duration of every request your application received at an endpoint</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
                     <div class="toc-item prev-left"><a href="../../guide/metricsConcepts.html">&lt;&lt; <strong>3</strong><span>Metrics Concepts</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../../guide/repository.html"><strong>5</strong><span>Repository</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
