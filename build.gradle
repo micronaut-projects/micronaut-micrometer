@@ -20,15 +20,12 @@ subprojects { Project subproject ->
     apply plugin: "io.micronaut.build.dependency-updates"
     apply plugin: "io.micronaut.build.publishing"
 
+
     dependencies {
         testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude module:'groovy-all'
         }
-        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"        
-    }
-
-    test {
-        useJUnitPlatform()
+        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
     }
 }
 

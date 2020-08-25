@@ -6,14 +6,14 @@ dependencies {
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
     compileOnly "io.micronaut:micronaut-management"
-    compileOnly 'io.micronaut.cache:micronaut-cache-core'
     compileOnly "io.micronaut.sql:micronaut-jdbc"
+    compileOnly 'io.micronaut.cache:micronaut-cache-core'
     compileOnly "io.netty:netty-buffer:$nettyVersion"
     compileOnly "io.netty:netty-transport:$nettyVersion"
     compileOnly "io.netty:netty-transport-native-epoll:$nettyVersion"
     compileOnly "io.netty:netty-transport-native-kqueue:$nettyVersion"
     compileOnly "io.micronaut:micronaut-http-server-netty"
-    compileOnly "javax.cache:cache-api:$jcacheVersion"    
+    compileOnly "javax.cache:cache-api:$jcacheVersion"
     compileOnly "ch.qos.logback:logback-classic:1.2.3"
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"
@@ -40,7 +40,4 @@ micronautBuild {
             }
         }
     }
-
-    testRuntimeOnly "io.micronaut.cache:micronaut-cache-caffeine"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
 }
