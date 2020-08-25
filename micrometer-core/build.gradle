@@ -28,3 +28,13 @@ dependencies {
     testImplementation "io.netty:netty-transport-native-kqueue:$nettyVersion"
     testImplementation "io.micronaut:micronaut-http-server-netty"
 }
+
+micronautBuild {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'io.netty') {
+                details.useVersion nettyVersion
+            }
+        }
+    }
+}
