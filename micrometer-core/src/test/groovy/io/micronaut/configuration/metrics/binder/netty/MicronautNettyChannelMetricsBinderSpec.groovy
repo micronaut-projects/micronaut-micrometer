@@ -24,19 +24,18 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Specification
 import spock.lang.Unroll
-import spock.util.concurrent.PollingConditions
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.*
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
-import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
+import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.RequiredSearch
-import io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind
 
-class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
+class MicronautNettyChannelMetricsBinderSpec extends Specification {
 
     @Unroll
     def "test getting the beans #cfg #setting"() {
@@ -44,7 +43,7 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         ApplicationContext context = ApplicationContext.run([(cfg): setting])
 
         then:
-        context.findBean(ByteBufAllocatorMetricsBinder).isPresent() == result
+        context.findBean(NettyMetricsPipelineBinder).isPresent() == result
 
         cleanup:
         context.close()
@@ -53,57 +52,46 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         cfg                                                             | setting | result
         MICRONAUT_METRICS_ENABLED                                       | true    | false
         MICRONAUT_METRICS_ENABLED                                       | false   | false
-        MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled" | true    | true
-        MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled" | false   | false
+        MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled" | true    | true
+        MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled" | false   | false
     }
 
-
-    def "test ByteBufAllocator custom metrics"() {
+    def "test channel metrics meters are present"() {
         when:
         ApplicationContext context = ApplicationContext.run(
               [MICRONAUT_METRICS_ENABLED: true,
-               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true,
-               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics"): [ByteBufAllocatorMetricKind.POOLED_ALLOCATOR, ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR]]
+               (MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled"): true]
         )
-        Optional<ByteBufAllocatorMetricsBinder> optBinder = context.findBean(ByteBufAllocatorMetricsBinder)
+        def server = context.getBean(EmbeddedServer)
+        server.start()
 
         then:
-        optBinder.isPresent()
-        optBinder.get().kinds.size() == 2
-        optBinder.get().kinds.contains(ByteBufAllocatorMetricKind.POOLED_ALLOCATOR)
-        optBinder.get().kinds.contains(ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR)
-
-        cleanup:
-        context.close()
-    }
-
-    def "test ByteBufAllocator metrics binder is present"() {
-        when:
-        ApplicationContext context = ApplicationContext.run(
-              [MICRONAUT_METRICS_ENABLED: true,
-               (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true]
-        )
-
-        then:
-        context.containsBean(ByteBufAllocatorMetricsBinder)
+        context.containsBean(NettyMetricsPipelineBinder)
 
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
-        Tags pooled = Tags.of(ALLOC, POOLED)
-        RequiredSearch search = registry.get(dot(NETTY, ALLOC, MEMORY, USED))
-        search.tags(pooled.and(MEMORY, DIRECT))
-        Gauge gauge = search.gauge()
+        RequiredSearch search = registry.get(dot(NETTY, CHANNEL, COUNT))
+        search.tags(Tags.of(CHANNEL, COUNT))
+        Counter channelCounter = search.counter()
+
+        search = registry.get(dot(NETTY, CHANNEL, BYTE))
+        search.tags(Tags.of(BYTE, READ))
+        Counter bytesRead = search.counter()
+
+        search = registry.get(dot(NETTY, CHANNEL, TIME))
+        search.tags(Tags.of(ACTIVE, TIME))
+        Timer activeChannelTimer = search.timer()
 
         then:
-        gauge
-        gauge.value() >= 0
+        channelCounter
+        channelCounter.count() == 0
+        bytesRead
+        bytesRead.count() == 0
+        activeChannelTimer
+        activeChannelTimer.count() == 0
 
         when:
-        def initialValue = gauge.value()
-        def server = context.getBean(EmbeddedServer)
-        server.start()
-        ByteBufAllocatorMetricTestDummyClient client = context.getBean(ByteBufAllocatorMetricTestDummyClient)
-        PollingConditions conditions = new PollingConditions(timeout: 3, delay: 0.1)
+        DummyClient client = context.getBean(DummyClient)
 
         then:
         client.root() == 'root'
@@ -112,22 +100,22 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         client.root() == 'root'
         client.root() == 'root'
         client.root() == 'root'
-        conditions.eventually {
-            gauge.value() >= initialValue
-        }
+        channelCounter.count() > 0
+        bytesRead.count() > 0
+        activeChannelTimer.count() > 0
 
         cleanup:
         context.close()
     }
 
-    @Client('/bytebufallocatortest')
-    private static interface ByteBufAllocatorMetricTestDummyClient {
+    @Client('/dummy')
+    private static interface DummyClient {
         @Get
         String root()
     }
 
-    @Controller('/bytebufallocatortest')
-    private static class ByteBufAllocatorMetricTestController {
+    @Controller('/dummy')
+    private static class DummyController {
         @Get
         String root() {
             return "root"

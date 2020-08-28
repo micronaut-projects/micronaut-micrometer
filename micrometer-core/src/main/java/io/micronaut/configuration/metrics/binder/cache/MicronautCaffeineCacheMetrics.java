@@ -178,3 +178,4 @@ public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
         }
     }
 }
+

@@ -24,18 +24,22 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.server.netty.EventLoopGroupFactory;
-import io.micronaut.http.server.netty.KQueueEventLoopGroupFactory;
+import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
+import io.micronaut.http.netty.channel.EventLoopGroupFactory;
+import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.kqueue.KQueueServerSocketChannel;
+import io.netty.channel.kqueue.KQueueSocketChannel;
 import io.netty.channel.socket.ServerSocketChannel;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
@@ -130,6 +134,11 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
+    @Override
+    public boolean isNative() {
+        return true;
+    }
+
     /**
      * Returns the server channel class.
      *
@@ -138,6 +147,12 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return KQueueServerSocketChannel.class;
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends SocketChannel> clientSocketChannelClass(@Nullable EventLoopGroupConfiguration configuration) {
+        return KQueueSocketChannel.class;
     }
 
     private static KQueueEventLoopGroup withIoRatio(KQueueEventLoopGroup group, @Nullable Integer ioRatio) {

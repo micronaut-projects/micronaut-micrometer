@@ -68,3 +68,4 @@ public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventList
         return cache;
     }
 }
+
