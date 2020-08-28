@@ -911,7 +911,7 @@ There is a different set of pool metric names for HikariCP and other pool provid
 <p>The main <strong>Control Property</strong> for netty&#8217;s server metrics is <code>micronaut.metrics.binders.netty.enabled</code>, which is <strong>false</strong> by default.</p>
 </div>
 <div class="paragraph">
-<p>Currently two binders are provided to instrument netty server:</p>
+<p>Currently the following binders are provided to instrument netty server:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -943,6 +943,10 @@ You can customize what metrics are exposed using <code>micronaut.metrics.binders
 </li>
 </ul>
 </div>
+</li>
+<li>
+<p><strong>NettyMetricsPipelineBinder</strong>: Instrument netty&#8217;s channel, use <code>micronaut.metrics.binders.netty.channels.enabled</code> to toggle. Default is <strong>false</strong>.
+Some of the provided metrics are: the channel count, current active channel count, channel error count, bytes read and written.</p>
 </li>
 </ul>
 </div>
