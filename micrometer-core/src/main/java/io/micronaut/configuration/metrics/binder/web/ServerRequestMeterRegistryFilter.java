@@ -24,7 +24,6 @@ import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
 import io.micronaut.http.filter.HttpServerFilter;
-import io.micronaut.http.filter.OncePerRequestHttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 
@@ -47,6 +46,7 @@ import java.util.Optional;
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
+    private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private final MeterRegistry meterRegistry;
 
     /**
@@ -78,11 +78,10 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
         long start = System.nanoTime();
         Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
         String path = resolvePath(request);
-        String attributeKey = "micronaut.filter." + getClass().getSimpleName();
-        Optional<Boolean> attribute = request.getAttribute(attributeKey, Boolean.class);
+        Optional<Boolean> attribute = request.getAttribute(ATTRIBUTE_KEY, Boolean.class);
         boolean reportErrors = attribute.isPresent();
         if (!attribute.isPresent()) {
-            request.setAttribute(attributeKey, true);
+            request.setAttribute(ATTRIBUTE_KEY, true);
         }
         return new WebMetricsPublisher<>(
                 responsePublisher,
