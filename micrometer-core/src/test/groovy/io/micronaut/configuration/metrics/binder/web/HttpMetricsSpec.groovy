@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.binder.web
 
+import groovy.transform.InheritConstructors
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.MeterNotFoundException
@@ -22,6 +23,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -102,6 +104,19 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
 
+        when:"A request is made that throws an exception"
+        client.exceptionHandling()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400").timer()
+
+        then:
+        noExceptionThrown()
+
 		cleanup:
         embeddedServer.close()
 
@@ -127,8 +142,6 @@ class HttpMetricsSpec extends Specification {
         (WebMetricsPublisher.ENABLED) | false
     }
 
-
-
     @Client('/')
     static interface TestClient {
         @Get
@@ -145,6 +158,9 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/throwable")
         HttpResponse throwable()
+
+        @Get("/test-http-metrics/exception-handling")
+        HttpResponse exceptionHandling()
     }
 
     @Controller('/')
@@ -173,5 +189,20 @@ class HttpMetricsSpec extends Specification {
         HttpResponse throwable() {
             throw new RuntimeException("error")
         }
+
+        @Get("/test-http-metrics/exception-handling")
+        HttpResponse exceptionHandling() {
+            throw new MyException("my custom exception")
+        }
+
+        @Error(exception = MyException)
+        HttpResponse<?> myExceptionHandler() {
+            return HttpResponse.badRequest()
+        }
+    }
+
+    @InheritConstructors
+    static class MyException extends RuntimeException {
+
     }
 }
