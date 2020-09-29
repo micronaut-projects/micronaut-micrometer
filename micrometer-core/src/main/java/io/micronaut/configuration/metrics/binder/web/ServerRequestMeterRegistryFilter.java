@@ -23,6 +23,7 @@ import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
+import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.OncePerRequestHttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
@@ -44,7 +45,7 @@ import java.util.Optional;
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
-public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFilter {
+public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private final MeterRegistry meterRegistry;
 
@@ -57,30 +58,29 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
         this.meterRegistry = meterRegistry;
     }
 
-    /**
-     * The method that will be invoked once per request.
-     *
-     * @param httpRequest the http request
-     * @param chain       The {@link ServerFilterChain} instance
-     * @return a publisher with the response
-     */
-    @Override
-    protected Publisher<MutableHttpResponse<?>> doFilterOnce(HttpRequest<?> httpRequest, ServerFilterChain chain) {
-        long start = System.nanoTime();
-        Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(httpRequest);
-        String path = resolvePath(httpRequest);
-        return new WebMetricsPublisher<>(
-                responsePublisher,
-                meterRegistry,
-                path,
-                start,
-                httpRequest.getMethod().toString()
-        );
-    }
-
     private String resolvePath(HttpRequest<?> request) {
         Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
     }
 
+    @Override
+    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+        long start = System.nanoTime();
+        Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
+        String path = resolvePath(request);
+        String attributeKey = "micronaut.filter." + getClass().getSimpleName();
+        Optional<Boolean> attribute = request.getAttribute(attributeKey, Boolean.class);
+        boolean reportErrors = attribute.isPresent();
+        if (!attribute.isPresent()) {
+            request.setAttribute(attributeKey, true);
+        }
+        return new WebMetricsPublisher<>(
+                responsePublisher,
+                meterRegistry,
+                path,
+                start,
+                request.getMethod().toString(),
+                reportErrors
+        );
+    }
 }

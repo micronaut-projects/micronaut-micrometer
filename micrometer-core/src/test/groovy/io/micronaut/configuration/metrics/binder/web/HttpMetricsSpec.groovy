@@ -84,6 +84,20 @@ class HttpMetricsSpec extends Specification {
 
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "409").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "409").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that throws an exception"
+        client.throwable()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "500").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "500").timer()
 
         then:
         noExceptionThrown()
@@ -128,6 +142,9 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/error")
         HttpResponse error()
+
+        @Get("/test-http-metrics/throwable")
+        HttpResponse throwable()
     }
 
     @Controller('/')
@@ -150,6 +167,11 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/error")
         HttpResponse error() {
             HttpResponse.status(HttpStatus.CONFLICT)
+        }
+
+        @Get("/test-http-metrics/throwable")
+        HttpResponse throwable() {
+            throw new RuntimeException("error")
         }
     }
 }
