@@ -79,6 +79,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param start         The start time of the request
      * @param httpMethod    The http method name used
      * @param isServer      Whether the metric relates to the server or the client
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
@@ -101,6 +102,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param httpMethod    The http method name used
      * @param isServer      Whether the metric relates to the server or the client
      * @param host          The host called in the request
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
@@ -129,6 +131,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param requestPath   The request path
      * @param start         The start time of the request
      * @param httpMethod    The http method name used
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
