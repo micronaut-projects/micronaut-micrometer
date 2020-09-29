@@ -23,7 +23,7 @@ import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
-import io.micronaut.http.filter.OncePerRequestHttpServerFilter;
+import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 
@@ -44,8 +44,9 @@ import java.util.Optional;
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
-public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFilter {
+public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
+    private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private final MeterRegistry meterRegistry;
 
     /**
@@ -57,30 +58,43 @@ public class ServerRequestMeterRegistryFilter extends OncePerRequestHttpServerFi
         this.meterRegistry = meterRegistry;
     }
 
-    /**
-     * The method that will be invoked once per request.
-     *
-     * @param httpRequest the http request
-     * @param chain       The {@link ServerFilterChain} instance
-     * @return a publisher with the response
-     */
-    @Override
-    protected Publisher<MutableHttpResponse<?>> doFilterOnce(HttpRequest<?> httpRequest, ServerFilterChain chain) {
-        long start = System.nanoTime();
-        Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(httpRequest);
-        String path = resolvePath(httpRequest);
-        return new WebMetricsPublisher<>(
-                responsePublisher,
-                meterRegistry,
-                path,
-                start,
-                httpRequest.getMethod().toString()
-        );
-    }
-
     private String resolvePath(HttpRequest<?> request) {
         Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
     }
 
+    /**
+     * This method is here for backwards compatibility. The class no longer implement
+     * OncePerRequestHttpServerFilter, however the method was kept to maintain binary
+     * compatibility.
+     *
+     * @param request The request
+     * @param chain The filter chain
+     * @return A response publisher
+     * @deprecated Override {@link #doFilter(HttpRequest, ServerFilterChain)} instead.
+     */
+    @Deprecated
+    protected Publisher<MutableHttpResponse<?>> doFilterOnce(HttpRequest<?> request, ServerFilterChain chain) {
+        long start = System.nanoTime();
+        Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
+        String path = resolvePath(request);
+        Optional<Boolean> attribute = request.getAttribute(ATTRIBUTE_KEY, Boolean.class);
+        boolean reportErrors = attribute.isPresent();
+        if (!attribute.isPresent()) {
+            request.setAttribute(ATTRIBUTE_KEY, true);
+        }
+        return new WebMetricsPublisher<>(
+                responsePublisher,
+                meterRegistry,
+                path,
+                start,
+                request.getMethod().toString(),
+                reportErrors
+        );
+    }
+
+    @Override
+    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+        return doFilterOnce(request, chain);
+    }
 }

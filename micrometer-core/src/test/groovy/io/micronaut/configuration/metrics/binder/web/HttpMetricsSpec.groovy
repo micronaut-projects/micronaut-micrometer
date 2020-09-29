@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.binder.web
 
+import groovy.transform.InheritConstructors
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.MeterNotFoundException
@@ -22,6 +23,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -84,6 +86,47 @@ class HttpMetricsSpec extends Specification {
 
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "409").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "409").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that throws an exception"
+        client.throwable()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "500").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "500").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that throws an exception that is handled"
+        client.exceptionHandling()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that does not match a route"
+        HttpResponse response = client.notFound()
+
+        then:
+        noExceptionThrown()
+        response.status() == HttpStatus.NOT_FOUND
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "404").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "404").timer()
 
         then:
         noExceptionThrown()
@@ -113,8 +156,6 @@ class HttpMetricsSpec extends Specification {
         (WebMetricsPublisher.ENABLED) | false
     }
 
-
-
     @Client('/')
     static interface TestClient {
         @Get
@@ -128,6 +169,15 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/error")
         HttpResponse error()
+
+        @Get("/test-http-metrics/throwable")
+        HttpResponse throwable()
+
+        @Get("/test-http-metrics/exception-handling")
+        HttpResponse exceptionHandling()
+
+        @Get("/test-http-metrics-not-found")
+        HttpResponse notFound()
     }
 
     @Controller('/')
@@ -151,5 +201,25 @@ class HttpMetricsSpec extends Specification {
         HttpResponse error() {
             HttpResponse.status(HttpStatus.CONFLICT)
         }
+
+        @Get("/test-http-metrics/throwable")
+        HttpResponse throwable() {
+            throw new RuntimeException("error")
+        }
+
+        @Get("/test-http-metrics/exception-handling")
+        HttpResponse exceptionHandling() {
+            throw new MyException("my custom exception")
+        }
+
+        @Error(exception = MyException)
+        HttpResponse<?> myExceptionHandler() {
+            return HttpResponse.badRequest()
+        }
+    }
+
+    @InheritConstructors
+    static class MyException extends RuntimeException {
+
     }
 }
