@@ -68,6 +68,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private final String httpMethod;
     private final String metricName;
     private final String host;
+    private final boolean reportErrors;
 
     /**
      * Publisher constructor.
@@ -78,6 +79,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param start         The start time of the request
      * @param httpMethod    The http method name used
      * @param isServer      Whether the metric relates to the server or the client
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
@@ -85,14 +87,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             String requestPath,
             long start,
             String httpMethod,
-            boolean isServer) {
-        this.publisher = publisher;
-        this.meterRegistry = meterRegistry;
-        this.requestPath = requestPath;
-        this.start = start;
-        this.httpMethod = httpMethod;
-        this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
-        this.host = null;
+            boolean isServer,
+            boolean reportErrors) {
+        this(publisher, meterRegistry, requestPath, start, httpMethod, isServer, null, reportErrors);
     }
 
     /**
@@ -105,6 +102,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param httpMethod    The http method name used
      * @param isServer      Whether the metric relates to the server or the client
      * @param host          The host called in the request
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
@@ -113,7 +111,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             long start,
             String httpMethod,
             boolean isServer,
-            String host) {
+            String host,
+            boolean reportErrors) {
         this.publisher = publisher;
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
@@ -121,6 +120,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = host;
+        this.reportErrors = reportErrors;
     }
 
     /**
@@ -131,14 +131,16 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      * @param requestPath   The request path
      * @param start         The start time of the request
      * @param httpMethod    The http method name used
+     * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
             Publisher<T> publisher,
             MeterRegistry meterRegistry,
             String requestPath,
             long start,
-            String httpMethod) {
-        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null);
+            String httpMethod,
+            boolean reportErrors) {
+        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null, reportErrors);
     }
 
     /**
@@ -175,7 +177,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
              */
             @Override
             public void onError(Throwable throwable) {
-                error(start, httpMethod, requestPath, throwable, host);
+                if (reportErrors) {
+                    error(start, httpMethod, requestPath, throwable, host);
+                }
                 actual.onError(throwable);
             }
 
