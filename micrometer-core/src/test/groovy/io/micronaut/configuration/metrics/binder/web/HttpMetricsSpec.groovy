@@ -104,7 +104,7 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
 
-        when:"A request is made that throws an exception"
+        when:"A request is made that throws an exception that is handled"
         client.exceptionHandling()
 
         then:
@@ -113,6 +113,20 @@ class HttpMetricsSpec extends Specification {
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400").timer()
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that does not match a route"
+        HttpResponse response = client.notFound()
+
+        then:
+        noExceptionThrown()
+        response.status() == HttpStatus.NOT_FOUND
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "404").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "404").timer()
 
         then:
         noExceptionThrown()
@@ -161,6 +175,9 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/exception-handling")
         HttpResponse exceptionHandling()
+
+        @Get("/test-http-metrics-not-found")
+        HttpResponse notFound()
     }
 
     @Controller('/')
