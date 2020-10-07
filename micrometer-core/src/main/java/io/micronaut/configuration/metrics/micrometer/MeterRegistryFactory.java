@@ -25,6 +25,7 @@ import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConf
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.util.CollectionUtils;
 
 import javax.inject.Singleton;
@@ -38,6 +39,7 @@ import java.util.List;
  * @since 1.0
  */
 @Factory
+@TypeHint(io.micrometer.core.instrument.MeterRegistry.class)
 public class MeterRegistryFactory {
 
     public static final String MICRONAUT_METRICS = "micronaut.metrics.";
