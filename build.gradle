@@ -27,6 +27,13 @@ subprojects { Project subproject ->
         }
         testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
     }
+
+    compileJava {
+        options.compilerArgs += [
+            '-Amicronaut.processing.group=' + subproject.group,
+            '-Amicronaut.processing.module=' + "micronaut-$subproject.name",
+        ]
+    }
 }
 
 apply plugin: "io.micronaut.build.docs"
