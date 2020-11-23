@@ -89,8 +89,7 @@ class ElasticMeterRegistryFactorySpec extends Specification {
         then: "default properties are used"
         elasticMeterRegistry.isPresent()
         elasticMeterRegistry.get().config.enabled()
-        elasticMeterRegistry.get().config.numThreads() == 2
-        elasticMeterRegistry.get().config.index() == 'metrics'
+        elasticMeterRegistry.get().config.index() == 'micrometer-metrics'
         elasticMeterRegistry.get().config.host() == 'http://localhost:9200'
         elasticMeterRegistry.get().config.indexDateFormat() == 'yyyy-MM'
         elasticMeterRegistry.get().config.timestampFieldName() == '@timestamp'
