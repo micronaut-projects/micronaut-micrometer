@@ -7,7 +7,10 @@ dependencies {
     api project(":micrometer-core")
 
     api "javax.validation:validation-api:$validationVersion"
-    api "io.micrometer:micrometer-registry-cloudwatch2:$micrometerVersion"
+    api "io.micrometer:micrometer-registry-cloudwatch2:$micrometerVersion", {
+        exclude group: 'io.netty'
+        exclude group: 'com.fasterxml.jackson.core'
+    }
 
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"

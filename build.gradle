@@ -28,6 +28,19 @@ subprojects { Project subproject ->
         testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
     }
 
+    configurations.all {
+        resolutionStrategy{
+            eachDependency { DependencyResolveDetails details ->
+                if (details.requested.group == 'io.dropwizard.metrics') {
+                    details.useVersion dropwizardMetricsVersion
+                }
+                if (details.requested.group == 'io.grpc') {
+                    details.useVersion grpcVersion
+                }
+            }
+        }
+    }
+
     compileJava {
         options.compilerArgs += [
             '-Amicronaut.processing.group=' + subproject.group,

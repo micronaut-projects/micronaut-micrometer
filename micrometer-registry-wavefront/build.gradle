@@ -7,7 +7,9 @@ dependencies {
     api project(":micrometer-core")
 
     api "javax.validation:validation-api:$validationVersion"
-    api "io.micrometer:micrometer-registry-wavefront:$micrometerVersion"
+    api "io.micrometer:micrometer-registry-wavefront:$micrometerVersion", {
+        exclude group: 'com.fasterxml.jackson.core'
+    }
 
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"
