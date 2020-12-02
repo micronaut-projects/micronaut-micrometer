@@ -8,10 +8,10 @@ dependencies {
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut.sql:micronaut-jdbc"
     compileOnly 'io.micronaut.cache:micronaut-cache-core'
-    compileOnly "io.netty:netty-buffer:$nettyVersion"
-    compileOnly "io.netty:netty-transport:$nettyVersion"
-    compileOnly "io.netty:netty-transport-native-epoll:$nettyVersion"
-    compileOnly "io.netty:netty-transport-native-kqueue:$nettyVersion"
+    compileOnly "io.netty:netty-buffer"
+    compileOnly "io.netty:netty-transport"
+    compileOnly "io.netty:netty-transport-native-epoll"
+    compileOnly "io.netty:netty-transport-native-kqueue"
     compileOnly "io.micronaut:micronaut-http-server-netty"
     compileOnly "javax.cache:cache-api:$jcacheVersion"
     compileOnly "ch.qos.logback:logback-classic:1.2.3"
@@ -23,21 +23,11 @@ dependencies {
 
     testImplementation "io.micronaut.sql:micronaut-jdbc"
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
-    testImplementation "io.netty:netty-buffer:$nettyVersion"
-    testImplementation "io.netty:netty-transport:$nettyVersion"
-    testImplementation "io.netty:netty-transport-native-epoll:$nettyVersion"
-    testImplementation "io.netty:netty-transport-native-kqueue:$nettyVersion"
+    testImplementation "io.netty:netty-buffer"
+    testImplementation "io.netty:netty-transport"
+    testImplementation "io.netty:netty-transport-native-epoll"
+    testImplementation "io.netty:netty-transport-native-kqueue"
     testImplementation "io.micronaut:micronaut-http-server-netty"
     testImplementation 'io.micronaut.cache:micronaut-cache-core'
     testImplementation 'io.micronaut.cache:micronaut-cache-caffeine'
-}
-
-micronautBuild {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails details ->
-            if (details.requested.group == 'io.netty') {
-                details.useVersion nettyVersion
-            }
-        }
-    }
 }
