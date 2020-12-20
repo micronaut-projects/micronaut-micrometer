@@ -101,9 +101,9 @@ micronaut:
 ----
 dependencies {
     ...
-    compile "io.micronaut.configuration:micronaut-micrometer-core"
+    compile "io.micronaut.micrometer:micronaut-micrometer-core"
     // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    compile "io.micronaut.configuration:micronaut-micrometer-registry-statsd"
+    compile "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
     // Also required to enable endpoint
     compile "io.micronaut:micronaut-management"
     ...
@@ -114,13 +114,13 @@ dependencies {
 [source,xml]
 ----
 <dependency>
-  <groupId>io.micronaut.configuration</groupId>
+  <groupId>io.micronaut.micrometer</groupId>
   <artifactId>micronaut-micrometer-core</artifactId>
   <version>${micronaut.version}</version>
 </dependency>
 <!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example -->
 <dependency>
-  <groupId>io.micronaut.configuration</groupId>
+  <groupId>io.micronaut.micrometer</groupId>
   <artifactId>micronaut-micrometer-registry-statsd</artifactId>
   <version>${micronaut.version}</version>
 </dependency>
