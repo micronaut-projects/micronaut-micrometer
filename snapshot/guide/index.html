@@ -307,9 +307,9 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile "io.micronaut.configuration:micronaut-micrometer-core"
+    compile "io.micronaut.micrometer:micronaut-micrometer-core"
     // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    compile "io.micronaut.configuration:micronaut-micrometer-registry-statsd"
+    compile "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
     // Also required to enable endpoint
     compile "io.micronaut:micronaut-management"
     ...
@@ -320,13 +320,13 @@
 <div class="title">Maven</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
-  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
   &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
   &lt;version&gt;${micronaut.version}&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
 &lt;dependency&gt;
-  &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
   &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
   &lt;version&gt;${micronaut.version}&lt;/version&gt;
 &lt;/dependency&gt;
