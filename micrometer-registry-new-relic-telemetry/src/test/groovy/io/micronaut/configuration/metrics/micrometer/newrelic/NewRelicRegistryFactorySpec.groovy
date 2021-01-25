@@ -36,7 +36,7 @@ class NewRelicRegistryFactorySpec extends Specification {
     void "verify NewRelicRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_CONFIG + ".apiKey")  : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
         ])
 
         then:
@@ -50,7 +50,7 @@ class NewRelicRegistryFactorySpec extends Specification {
     void "verify CompositeMeterRegistry created by default"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_CONFIG + ".apiKey")       : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
         ])
 
         when:
@@ -71,7 +71,7 @@ class NewRelicRegistryFactorySpec extends Specification {
         when:
         ApplicationContext context = ApplicationContext.run([
                 (cfg): setting,
-                (NEWRELIC_CONFIG + ".apiKey")       : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
         ])
 
         then:
