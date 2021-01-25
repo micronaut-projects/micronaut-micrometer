@@ -36,7 +36,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author mparlee
  */
 @Factory
-public class NewRelicRegistryFactory {
+public class NewRelicTelemetryMeterRegistryFactory {
 
     public static final String NEWRELIC_CONFIG = MICRONAUT_METRICS_EXPORT + ".newrelic";
     public static final String NEWRELIC_ENABLED = NEWRELIC_CONFIG + ".enabled";
@@ -69,7 +69,7 @@ public class NewRelicRegistryFactory {
      * @return The new relic bean
      */
     @Singleton
-    NewRelicMicronautConfig newRelicRegistryConfig(ExportConfigurationProperties exportConfigurationProperties) {
+    NewRelicTelemetryMicronautConfig newRelicRegistryConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
     }

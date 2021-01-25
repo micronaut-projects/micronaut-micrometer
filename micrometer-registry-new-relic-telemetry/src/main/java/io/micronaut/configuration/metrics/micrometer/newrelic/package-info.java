@@ -20,7 +20,7 @@
  * @since 1.2.0
  */
 @Configuration
-@Requires(property = NewRelicRegistryFactory.NEWRELIC_ENABLED, notEquals = StringUtils.FALSE)
+@Requires(property = NewRelicTelemetryMeterRegistryFactory.NEWRELIC_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.newrelic;
 
 import io.micronaut.context.annotation.Configuration;

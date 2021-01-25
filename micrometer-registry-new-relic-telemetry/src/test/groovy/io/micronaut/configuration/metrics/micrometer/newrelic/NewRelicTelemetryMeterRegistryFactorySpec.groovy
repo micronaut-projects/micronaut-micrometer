@@ -25,15 +25,15 @@ import spock.lang.Unroll
 import java.time.Duration
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
-import static io.micronaut.configuration.metrics.micrometer.newrelic.NewRelicRegistryFactory.NEWRELIC_CONFIG
-import static io.micronaut.configuration.metrics.micrometer.newrelic.NewRelicRegistryFactory.NEWRELIC_ENABLED
+import static NewRelicTelemetryMeterRegistryFactory.NEWRELIC_CONFIG
+import static NewRelicTelemetryMeterRegistryFactory.NEWRELIC_ENABLED
 
-class NewRelicRegistryFactorySpec extends Specification {
+class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_NEWRELIC_API_KEY = "newrelicApiKey"
     private static String MOCK_NEWRELIC_SERVICE_NAME = "newrelicApiServiceName"
 
-    void "verify NewRelicRegistry is created by default when this configuration used"() {
+    void "verify NewRelicTelemetryMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
                 (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
@@ -67,7 +67,7 @@ class NewRelicRegistryFactorySpec extends Specification {
     }
 
     @Unroll
-    void "verify NewRelicRegistry bean exists = #result when config #cfg = #setting"() {
+    void "verify NewRelicTelemetryMeterRegistry bean exists = #result when config #cfg = #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([
                 (cfg): setting,
@@ -96,7 +96,7 @@ class NewRelicRegistryFactorySpec extends Specification {
                 (NEWRELIC_CONFIG + ".apiKey")       : MOCK_NEWRELIC_API_KEY,
         ])
         Optional<NewRelicRegistry> newRelicMeterRegistry = context.findBean(NewRelicRegistry)
-        def config = context.getBean(NewRelicMicronautConfig)
+        def config = context.getBean(NewRelicTelemetryMicronautConfig)
         then: "default properties are used"
         newRelicMeterRegistry.isPresent()
         config.apiKey() == MOCK_NEWRELIC_API_KEY
@@ -119,7 +119,7 @@ class NewRelicRegistryFactorySpec extends Specification {
                 (NEWRELIC_CONFIG + ".step")          : "PT2M",
         ])
         Optional<NewRelicRegistry> newRelicMeterRegistry = context.findBean(NewRelicRegistry)
-        def config = context.getBean(NewRelicMicronautConfig)
+        def config = context.getBean(NewRelicTelemetryMicronautConfig)
         then:
         newRelicMeterRegistry.isPresent()
         config.enabled()
