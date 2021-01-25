@@ -30,8 +30,8 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The NewRelicRegistryFactory that will configure and create a new relic registry using the
- * New Relic provided micrometer registr.
+ * The NewRelicTelemetryRegistryFactory that will configure and create a new relic registry using the
+ * New Relic provided, telemetry SDK based micrometer registry.
  *
  * @author mparlee
  */
