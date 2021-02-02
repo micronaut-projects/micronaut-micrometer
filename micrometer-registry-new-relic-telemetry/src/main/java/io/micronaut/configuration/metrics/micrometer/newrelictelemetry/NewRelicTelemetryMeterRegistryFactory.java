@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.configuration.metrics.micrometer.newrelic;
+package io.micronaut.configuration.metrics.micrometer.newrelictelemetry;
 import com.newrelic.telemetry.Attributes;
 import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 import com.newrelic.telemetry.micrometer.NewRelicRegistryConfig;

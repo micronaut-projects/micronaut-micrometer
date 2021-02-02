@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.newrelic
 import com.newrelic.telemetry.micrometer.NewRelicRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micronaut.configuration.metrics.micrometer.newrelictelemetry.NewRelicTelemetryMicronautConfig
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -25,8 +26,8 @@ import spock.lang.Unroll
 import java.time.Duration
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
-import static NewRelicTelemetryMeterRegistryFactory.NEWRELIC_CONFIG
-import static NewRelicTelemetryMeterRegistryFactory.NEWRELIC_ENABLED
+import static io.micronaut.configuration.metrics.micrometer.newrelictelemetry.NewRelicTelemetryMeterRegistryFactory.NEWRELIC_CONFIG
+import static io.micronaut.configuration.metrics.micrometer.newrelictelemetry.NewRelicTelemetryMeterRegistryFactory.NEWRELIC_ENABLED
 
 class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
 
