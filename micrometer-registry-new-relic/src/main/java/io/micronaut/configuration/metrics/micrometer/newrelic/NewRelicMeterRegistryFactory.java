@@ -15,13 +15,19 @@
  */
 package io.micronaut.configuration.metrics.micrometer.newrelic;
 
+import com.newrelic.telemetry.Attributes;
+import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
 
 import javax.inject.Singleton;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -37,6 +43,7 @@ public class NewRelicMeterRegistryFactory {
 
     public static final String NEWRELIC_CONFIG = MICRONAUT_METRICS_EXPORT + ".newrelic";
     public static final String NEWRELIC_ENABLED = NEWRELIC_CONFIG + ".enabled";
+    public static final String NEWRELIC_METRIC_API = NEWRELIC_CONFIG + ".metricAPI";
 
     /**
      * Create a NewRelicMeterRegistry bean if global metrics are enables
@@ -47,6 +54,7 @@ public class NewRelicMeterRegistryFactory {
      * @return A NewRelicMeterRegistry
      */
     @Singleton
+    @Requires(missingProperty =  NEWRELIC_METRIC_API)
     NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig) {
         return new NewRelicMeterRegistry(newRelicConfig, Clock.SYSTEM);
     }
@@ -57,9 +65,42 @@ public class NewRelicMeterRegistryFactory {
      * @return The new relic bean
      */
     @Singleton
+    @Requires(missingProperty =  NEWRELIC_METRIC_API)
     NewRelicConfig newRelicConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
     }
 
+    /**
+     * The new relic config bean.
+     * @param exportConfigurationProperties The properties
+     * @return The new relic bean
+     */
+    @Singleton
+    @Requires(property =  NEWRELIC_METRIC_API)
+    MicronautNewRelicRegistryConfig newRelicRegistryConfig(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return exportConfig::getProperty;
+    }
+
+    /**
+     * Create a NewRelicRegistry bean if global metrics are enables, the metric endpoint is chosen
+     * and the newrelic is enabled.
+     *
+     * @param config The the new relic config
+     * @return A NewRelicRegistry
+     */
+    @Singleton
+    @Requires(property =  NEWRELIC_METRIC_API)
+    NewRelicRegistry newRelicMeterRegistry(MicronautNewRelicRegistryConfig config) throws UnknownHostException {
+        NewRelicRegistry newRelicRegistry =
+                NewRelicRegistry.builder(config)
+                        .commonAttributes(
+                                new Attributes()
+                                        .put("host", InetAddress.getLocalHost().getHostName()))
+                        .build();
+        newRelicRegistry.config().meterFilter(MeterFilter.ignoreTags("plz_ignore_me"));
+        newRelicRegistry.config().meterFilter(MeterFilter.denyNameStartsWith("jvm.threads"));
+        return newRelicRegistry;
+    }
 }

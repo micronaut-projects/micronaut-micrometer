@@ -15,6 +15,8 @@
  */
 package io.micronaut.configuration.metrics.micrometer.newrelic
 
+import com.newrelic.telemetry.micrometer.NewRelicRegistry
+import com.newrelic.telemetry.micrometer.NewRelicRegistryConfig
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.step.StepRegistryConfig
@@ -29,6 +31,7 @@ import java.time.Duration
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 import static io.micronaut.configuration.metrics.micrometer.newrelic.NewRelicMeterRegistryFactory.NEWRELIC_CONFIG
 import static io.micronaut.configuration.metrics.micrometer.newrelic.NewRelicMeterRegistryFactory.NEWRELIC_ENABLED
+import static io.micronaut.configuration.metrics.micrometer.newrelic.NewRelicMeterRegistryFactory.NEWRELIC_METRIC_API
 
 class NewRelicMeterRegistryFactorySpec extends Specification {
 
@@ -134,6 +137,70 @@ class NewRelicMeterRegistryFactorySpec extends Specification {
         config.apiKey() == MOCK_NEWRELIC_API_KEY
         config.uri() == 'https://micronaut.io'
         config.step() == Duration.ofMinutes(2)
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify NewRelicMeterRegistry is created by default when this configuration used for metric endpoint"() {
+        when:
+        ApplicationContext context = ApplicationContext.run([
+                (NEWRELIC_CONFIG + ".apiKey")  : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".accountId")  : MOCK_NEWRELIC_ACCOUNT_ID,
+                (NEWRELIC_METRIC_API)          : true,
+        ])
+
+        then:
+        context.getBeansOfType(MeterRegistry).size() == 2
+        context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['CompositeMeterRegistry', 'NewRelicRegistry'])
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify CompositeMeterRegistry created by default for metric endpoint"() {
+        given:
+        ApplicationContext context = ApplicationContext.run([
+                (NEWRELIC_CONFIG + ".apiKey")  : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".accountId")  : MOCK_NEWRELIC_ACCOUNT_ID,
+                (NEWRELIC_METRIC_API)          : true,
+        ])
+
+        when:
+        CompositeMeterRegistry compositeRegistry = context.findBean(CompositeMeterRegistry).get()
+
+        then:
+        context.getBean(NewRelicRegistry)
+        compositeRegistry
+        compositeRegistry.registries.size() == 1
+        compositeRegistry.registries*.class.containsAll([NewRelicRegistry])
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify that configuration is applied for metric endpoint"() {
+
+        when: "non-default configuration is supplied"
+        ApplicationContext context = ApplicationContext.run([
+                (NEWRELIC_ENABLED)                   : true,
+                (NEWRELIC_METRIC_API)                : true,
+                (NEWRELIC_CONFIG + ".numThreads")    : "77",
+                (NEWRELIC_CONFIG + ".apiKey")        : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".uri")           : 'https://metric-api.eu.newrelic.com/metric/v1',
+                (NEWRELIC_CONFIG + ".step")          : "PT3M",
+                (NEWRELIC_CONFIG + ".serviceName")   : "test service"
+
+        ])
+        Optional<NewRelicRegistry> newRelicRegistry = context.findBean(NewRelicRegistry)
+        def config = context.getBean(NewRelicRegistryConfig)
+        then:
+        newRelicRegistry.isPresent()
+        config.enabled()
+        config.serviceName() == 'test service'
+        config.apiKey() == MOCK_NEWRELIC_API_KEY
+        config.uri() == 'https://metric-api.eu.newrelic.com/metric/v1'
+        config.step() == Duration.ofMinutes(3)
 
         cleanup:
         context.stop()

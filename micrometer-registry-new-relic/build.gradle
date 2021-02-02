@@ -8,6 +8,7 @@ dependencies {
     api project(":micrometer-core")
     api "javax.validation:validation-api:$validationVersion"
     api "io.micrometer:micrometer-registry-new-relic:$micrometerVersion"
+    api "com.newrelic.telemetry:micrometer-registry-new-relic:$newRelicMicrometerRegistryVersion"
 
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"
