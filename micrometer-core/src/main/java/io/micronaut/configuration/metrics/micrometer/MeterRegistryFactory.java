@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.core.annotation.TypeHint;
@@ -56,6 +57,7 @@ public class MeterRegistryFactory {
      */
     @Primary
     @Singleton
+    @Bean(preDestroy = "close")
     CompositeMeterRegistry compositeMeterRegistry(List<MeterRegistry> registries,
                                                   List<MeterRegistryConfigurer> configurers) {
         CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
