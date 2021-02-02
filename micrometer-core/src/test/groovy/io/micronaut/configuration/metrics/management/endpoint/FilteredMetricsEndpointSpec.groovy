@@ -79,7 +79,7 @@ class FilteredMetricsEndpointSpec extends Specification {
         context.containsBean(SimpleMeterRegistry)
     }
 
-    @IgnoreIf({env["TRAVIS"]})
+    @IgnoreIf({env["CI"]})
     void "test metrics endpoint with filtered metrics"() {
         given:
         RxHttpClient rxClient = RxHttpClient.create(embeddedServer.getURL())
