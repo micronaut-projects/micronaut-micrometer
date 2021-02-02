@@ -1,5 +1,6 @@
 rootProject.name = 'micrometer'
 
+include 'micrometer-bom'
 include 'micrometer-core'
 include 'micrometer-registry-appoptics'
 include 'micrometer-registry-atlas'

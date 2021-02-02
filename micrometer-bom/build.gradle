@@ -1,0 +1,16 @@
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    api platform("io.micrometer:micrometer-bom:$micrometerVersion")
+
+    constraints {
+        for (Project p : rootProject.subprojects) {
+            if (p.name == "micrometer-bom") continue
+            api "$p.group:micronaut-$p.name:$p.version"
+        }
+
+        api "io.micrometer:micrometer-core:$micrometerVersion"
+    }
+}
