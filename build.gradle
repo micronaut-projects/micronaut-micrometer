@@ -11,29 +11,34 @@ buildscript {
 
 subprojects { Project subproject ->
     group "io.micronaut.micrometer"
-    apply plugin: "io.micronaut.build.common"
 
-    if (subproject.parent.name == "docs-examples" || subproject.name == "docs-examples") {
-        return
+    if (subproject.name != 'micrometer-bom') {
+        apply plugin: "io.micronaut.build.common"
+
+        if (subproject.parent.name == "docs-examples" || subproject.name == "docs-examples") {
+            return
+        }
+
+        dependencies {
+            testImplementation("org.spockframework:spock-core:${spockVersion}") {
+                exclude module: 'groovy-all'
+            }
+            testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
+        }
+
+        compileJava {
+            options.compilerArgs += [
+                    '-Amicronaut.processing.group=' + subproject.group,
+                    '-Amicronaut.processing.module=' + "micronaut-$subproject.name",
+            ]
+        }
+    } else {
+        apply plugin: "java-platform"
+        version projectVersion
     }
 
     apply plugin: "io.micronaut.build.dependency-updates"
     apply plugin: "io.micronaut.build.publishing"
-
-
-    dependencies {
-        testImplementation("org.spockframework:spock-core:${spockVersion}") {
-            exclude module:'groovy-all'
-        }
-        testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
-    }
-
-    compileJava {
-        options.compilerArgs += [
-            '-Amicronaut.processing.group=' + subproject.group,
-            '-Amicronaut.processing.module=' + "micronaut-$subproject.name",
-        ]
-    }
 }
 
 apply plugin: "io.micronaut.build.docs"
