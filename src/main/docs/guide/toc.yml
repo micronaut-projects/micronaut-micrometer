@@ -18,6 +18,7 @@ metricsAndReporters:
   metricsAndReportersJmx: Jmx Registry
   metricsAndReportersKairos: Kairos Registry
   metricsAndReportersNewRelic: New Relic Registry
+  metricsAndReportersNewRelicTelemetry: New Relic Telemetry Registry
   metricsAndReportersPrometheus: Prometheus Registry
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry
