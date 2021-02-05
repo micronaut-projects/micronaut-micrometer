@@ -122,15 +122,17 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelic"><a href="#metricsAndReportersNewRelic"><strong>5.14</strong><span>New Relic Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>5.15</strong><span>Prometheus Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelicTelemetry"><a href="#metricsAndReportersNewRelicTelemetry"><strong>5.15</strong><span>New Relic Telemetry Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>5.16</strong><span>SignalFx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>5.16</strong><span>Prometheus Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>5.17</strong><span>Stackdriver Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>5.17</strong><span>SignalFx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>5.18</strong><span>StatsD Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>5.18</strong><span>Stackdriver Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>5.19</strong><span>Wavefront Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>5.19</strong><span>StatsD Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>5.20</strong><span>Wavefront Registry</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>6</strong><span>Repository</span></a></div>
         
@@ -2124,7 +2126,88 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>5.15 Prometheus Registry</h2>
+<h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>5.15 New Relic Telemetry Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
+/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A New Relic Registry using <a href="https://github.com/newrelic/micrometer-registry-newrelic">New Relic&#8217;s own Micrometer Registry</a> rather than the New Relic registry provided by the Micrometer project.</p>
+</div>
+<div class="paragraph">
+<p>You can include the New Relic Telemetry reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-new-relic-telemetry:${micronaut.version}</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-new-relic-telemetry&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see
+<a href="https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java">NewRelicRegistryConfig</a>
+for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic api key. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serviceName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The service name this registry will report as in New Relic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="title">Example New Relic Telemetry Config</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      newrelic:
+        enabled: true
+        apiKey: ${NEWRELIC_API_KEY}
+        serviceName: My Micronaut Service
+        step: PT1M</code></pre>
+</div>
+</div>
+
+<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>5.16 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2250,7 +2333,7 @@ micronaut:
 </div>
 </div>
 
-<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>5.16 SignalFx Registry</h2>
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>5.17 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2327,7 +2410,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>5.17 Stackdriver Registry</h2>
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>5.18 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2404,7 +2487,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>5.18 StatsD Registry</h2>
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>5.19 StatsD Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2485,7 +2568,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>5.19 Wavefront Registry</h2>
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>5.20 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master

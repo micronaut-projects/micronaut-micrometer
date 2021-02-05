@@ -476,6 +476,10 @@
 <dd>
 <div class="block">Configuration for Micrometer-New Relic metrics.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/package-summary.html">io.micronaut.configuration.metrics.micrometer.newrelictelemetry</a> - package io.micronaut.configuration.metrics.micrometer.newrelictelemetry</dt>
+<dd>
+<div class="block">Configuration for Micrometer-New Relic metrics.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/prometheus/package-summary.html">io.micronaut.configuration.metrics.micrometer.prometheus</a> - package io.micronaut.configuration.metrics.micrometer.prometheus</dt>
 <dd>
 <div class="block">Configuration for Micrometer-Prometheus metrics.</div>
@@ -695,7 +699,11 @@
 <dl>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html#NEWRELIC_CONFIG">NEWRELIC_CONFIG</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.newrelic.<a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelic">NewRelicMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html#NEWRELIC_CONFIG">NEWRELIC_CONFIG</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelictelemetry">NewRelicTelemetryMeterRegistryFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html#NEWRELIC_ENABLED">NEWRELIC_ENABLED</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.newrelic.<a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelic">NewRelicMeterRegistryFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html#NEWRELIC_ENABLED">NEWRELIC_ENABLED</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelictelemetry">NewRelicTelemetryMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelic"><span class="typeNameLink">NewRelicMeterRegistryFactory</span></a> - Class in <a href="io/micronaut/configuration/metrics/micrometer/newrelic/package-summary.html">io.micronaut.configuration.metrics.micrometer.newrelic</a></dt>
 <dd>
@@ -703,6 +711,18 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html#NewRelicMeterRegistryFactory--">NewRelicMeterRegistryFactory()</a></span> - Constructor for class io.micronaut.configuration.metrics.micrometer.newrelic.<a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelic">NewRelicMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelictelemetry"><span class="typeNameLink">NewRelicTelemetryMeterRegistryFactory</span></a> - Class in <a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/package-summary.html">io.micronaut.configuration.metrics.micrometer.newrelictelemetry</a></dt>
+<dd>
+<div class="block">The NewRelicTelemetryRegistryFactory that will configure and create a new relic registry using the
+ New Relic provided, telemetry SDK based micrometer registry.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html#NewRelicTelemetryMeterRegistryFactory--">NewRelicTelemetryMeterRegistryFactory()</a></span> - Constructor for class io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelictelemetry">NewRelicTelemetryMeterRegistryFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMicronautConfig.html" title="interface in io.micronaut.configuration.metrics.micrometer.newrelictelemetry"><span class="typeNameLink">NewRelicTelemetryMicronautConfig</span></a> - Interface in <a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/package-summary.html">io.micronaut.configuration.metrics.micrometer.newrelictelemetry</a></dt>
+<dd>
+<div class="block">Used by the NewRelicMeterRegistryFactory to read serviceName from
+ the micronaut micrometer newrelic configuration.</div>
+</dd>
 </dl>
 <a name="I:O">
 <!--   -->
@@ -774,6 +794,8 @@
 <dd>
 <div class="block">Filter constructor.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMicronautConfig.html#serviceName--">serviceName()</a></span> - Method in interface io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMicronautConfig.html" title="interface in io.micronaut.configuration.metrics.micrometer.newrelictelemetry">NewRelicTelemetryMicronautConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html#setExport-java.util.Properties-">setExport(Properties)</a></span> - Method in class io.micronaut.configuration.metrics.micrometer.<a href="io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html" title="class in io.micronaut.configuration.metrics.micrometer">ExportConfigurationProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/signalfx/SignalFxMeterRegistryFactory.html#SIGNALFX_CONFIG">SIGNALFX_CONFIG</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.signalfx.<a href="io/micronaut/configuration/metrics/micrometer/signalfx/SignalFxMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.signalfx">SignalFxMeterRegistryFactory</a></dt>

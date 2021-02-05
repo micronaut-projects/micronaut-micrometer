@@ -99,6 +99,7 @@
 <li><a href="io/micronaut/configuration/metrics/micrometer/kairos/package-tree.html">io.micronaut.configuration.metrics.micrometer.kairos</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/logging/package-tree.html">io.micronaut.configuration.metrics.micrometer.logging</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/newrelic/package-tree.html">io.micronaut.configuration.metrics.micrometer.newrelic</a>, </li>
+<li><a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/package-tree.html">io.micronaut.configuration.metrics.micrometer.newrelictelemetry</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/prometheus/package-tree.html">io.micronaut.configuration.metrics.micrometer.prometheus</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/prometheus/management/package-tree.html">io.micronaut.configuration.metrics.micrometer.prometheus.management</a>, </li>
 <li><a href="io/micronaut/configuration/metrics/micrometer/signalfx/package-tree.html">io.micronaut.configuration.metrics.micrometer.signalfx</a>, </li>
@@ -148,6 +149,7 @@
 <li type="circle">io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator"><span class="typeNameLink">MicrometerMeterRegistryConfigurer</span></a> (implements io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a>&lt;T&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/MicronautCaffeineCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache"><span class="typeNameLink">MicronautCaffeineCacheMetricsBinder</span></a> (implements io.micronaut.context.event.BeanCreatedEventListener&lt;T&gt;)</li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.newrelic.<a href="io/micronaut/configuration/metrics/micrometer/newrelic/NewRelicMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelic"><span class="typeNameLink">NewRelicMeterRegistryFactory</span></a></li>
+<li type="circle">io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.newrelictelemetry"><span class="typeNameLink">NewRelicTelemetryMeterRegistryFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.prometheus.management.<a href="io/micronaut/configuration/metrics/micrometer/prometheus/management/PrometheusEndpoint.html" title="class in io.micronaut.configuration.metrics.micrometer.prometheus.management"><span class="typeNameLink">PrometheusEndpoint</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.micrometer.prometheus.<a href="io/micronaut/configuration/metrics/micrometer/prometheus/PrometheusMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.prometheus"><span class="typeNameLink">PrometheusMeterRegistryFactory</span></a></li>
 <li type="circle">io.micronaut.configuration.metrics.binder.web.<a href="io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html" title="class in io.micronaut.configuration.metrics.binder.web"><span class="typeNameLink">ServerRequestMeterRegistryFilter</span></a> (implements io.micronaut.http.filter.HttpServerFilter)</li>
@@ -163,6 +165,23 @@
 </ul>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
+<li type="circle">io.micrometer.core.instrument.config.MeterRegistryConfig
+<ul>
+<li type="circle">io.micrometer.core.instrument.push.PushRegistryConfig
+<ul>
+<li type="circle">io.micrometer.core.instrument.step.StepRegistryConfig
+<ul>
+<li type="circle">com.newrelic.telemetry.micrometer.NewRelicRegistryConfig
+<ul>
+<li type="circle">io.micronaut.configuration.metrics.micrometer.newrelictelemetry.<a href="io/micronaut/configuration/metrics/micrometer/newrelictelemetry/NewRelicTelemetryMicronautConfig.html" title="interface in io.micronaut.configuration.metrics.micrometer.newrelictelemetry"><span class="typeNameLink">NewRelicTelemetryMicronautConfig</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li type="circle">io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator"><span class="typeNameLink">MeterRegistryConfigurer</span></a>&lt;T&gt;</li>
 </ul>
 <h2 title="Annotation Type Hierarchy">Annotation Type Hierarchy</h2>

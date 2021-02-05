@@ -26,6 +26,7 @@ io.micronaut.configuration.metrics.micrometer.jmx
 io.micronaut.configuration.metrics.micrometer.kairos
 io.micronaut.configuration.metrics.micrometer.logging
 io.micronaut.configuration.metrics.micrometer.newrelic
+io.micronaut.configuration.metrics.micrometer.newrelictelemetry
 io.micronaut.configuration.metrics.micrometer.prometheus
 io.micronaut.configuration.metrics.micrometer.prometheus.management
 io.micronaut.configuration.metrics.micrometer.signalfx
