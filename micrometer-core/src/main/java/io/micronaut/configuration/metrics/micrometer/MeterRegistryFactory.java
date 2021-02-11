@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
-import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConfigurer;
+import io.micronaut.configuration.metrics.aggregator.CompositeMeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -59,20 +59,27 @@ public class MeterRegistryFactory {
     @Singleton
     @Bean(preDestroy = "close")
     CompositeMeterRegistry compositeMeterRegistry(List<MeterRegistry> registries,
-                                                  List<MeterRegistryConfigurer> configurers) {
-        CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
-        for (MeterRegistryConfigurer configurer : configurers) {
-            if (configurer.supports(compositeMeterRegistry)) {
-                configurer.configure(compositeMeterRegistry);
-            }
-        }
+                                                  List<MeterRegistryConfigurer<MeterRegistry>> configurers) {
         if (CollectionUtils.isEmpty(registries)) {
-            compositeMeterRegistry.add(new SimpleMeterRegistry());
-        } else {
-            for (MeterRegistry registry : registries) {
-                compositeMeterRegistry.add(registry);
+            registries.add(new SimpleMeterRegistry());
+        }
+
+        CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
+        for (MeterRegistry registry : registries) {
+            compositeMeterRegistry.add(registry);
+            for (MeterRegistryConfigurer<MeterRegistry> configurer : configurers) {
+                // Let configurers configure the composite registry
+                if (configurer.getType().isAssignableFrom(CompositeMeterRegistry.class) && configurer.supports(compositeMeterRegistry)) {
+                    configurer.configure(compositeMeterRegistry);
+                }
+
+                //Let configurers configure individual registries
+                if (configurer.getType().isAssignableFrom(registry.getClass()) && configurer.supports(registry)) {
+                    configurer.configure(registry);
+                }
             }
         }
+
         return compositeMeterRegistry;
     }
 
@@ -88,8 +95,8 @@ public class MeterRegistryFactory {
     @Primary
     @Singleton
     @RequiresMetrics
-    MeterRegistryConfigurer meterRegistryConfigurer(Collection<MeterBinder> binders,
+    MeterRegistryConfigurer<CompositeMeterRegistry> meterRegistryConfigurer(Collection<MeterBinder> binders,
                                                     Collection<MeterFilter> filters) {
-        return new MicrometerMeterRegistryConfigurer(binders, filters);
+        return new CompositeMeterRegistryConfigurer(binders, filters);
     }
 }

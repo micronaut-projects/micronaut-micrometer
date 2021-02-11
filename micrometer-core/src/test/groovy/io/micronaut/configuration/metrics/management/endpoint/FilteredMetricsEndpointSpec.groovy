@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.config.MeterFilter
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
-import io.micronaut.configuration.metrics.aggregator.MicrometerMeterRegistryConfigurer
+import io.micronaut.configuration.metrics.aggregator.CompositeMeterRegistryConfigurer
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Context
@@ -71,7 +71,7 @@ class FilteredMetricsEndpointSpec extends Specification {
     void "test the filter beans are available"() {
         expect:
         context.getBeansOfType(MeterFilter.class)?.size() == 2
-        MicrometerMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
+        CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
         configurer.filters.size() == 2
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)
@@ -89,7 +89,7 @@ class FilteredMetricsEndpointSpec extends Specification {
 
         then:
         context.getBeansOfType(MeterFilter.class)?.size() == 2
-        MicrometerMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
+        CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
         configurer.filters.size() == 2
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)

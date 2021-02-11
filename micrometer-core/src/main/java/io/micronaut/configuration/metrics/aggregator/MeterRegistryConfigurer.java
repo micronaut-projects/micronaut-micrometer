@@ -40,5 +40,12 @@ public interface MeterRegistryConfigurer<T extends MeterRegistry> {
      * @param meterRegistry a meter registry
      * @return boolean whether is supported
      */
-    boolean supports(T meterRegistry);
+    default boolean supports(T meterRegistry) {
+        return true;
+    }
+
+    /**
+     * @return the type parameter
+     */
+    Class<T> getType();
 }
