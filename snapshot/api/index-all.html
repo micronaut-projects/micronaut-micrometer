@@ -144,11 +144,20 @@
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html#CloudWatchMeterRegistryFactory--">CloudWatchMeterRegistryFactory()</a></span> - Constructor for class io.micronaut.configuration.metrics.micrometer.cloudwatch.<a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.cloudwatch">CloudWatchMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#configure-T-">configure(T)</a></span> - Method in interface io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a></dt>
+<dt><a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator"><span class="typeNameLink">CompositeMeterRegistryConfigurer</span></a> - Class in <a href="io/micronaut/configuration/metrics/aggregator/package-summary.html">io.micronaut.configuration.metrics.aggregator</a></dt>
+<dd>
+<div class="block">Default implementation of <a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator"><code>MeterRegistryConfigurer</code></a> that adds the binders and filters
+ to the micrometer meter registry.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html#CompositeMeterRegistryConfigurer-java.util.Collection-java.util.Collection-">CompositeMeterRegistryConfigurer(Collection&lt;MeterBinder&gt;, Collection&lt;MeterFilter&gt;)</a></span> - Constructor for class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">CompositeMeterRegistryConfigurer</a></dt>
+<dd>
+<div class="block">Constructor for the micrometer meter registry configurer.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html#configure-io.micrometer.core.instrument.composite.CompositeMeterRegistry-">configure(CompositeMeterRegistry)</a></span> - Method in class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">CompositeMeterRegistryConfigurer</a></dt>
 <dd>
 <div class="block">Method to configure a meter registry with binders, filters, etc.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html#configure-io.micrometer.core.instrument.MeterRegistry-">configure(MeterRegistry)</a></span> - Method in class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">MicrometerMeterRegistryConfigurer</a></dt>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#configure-T-">configure(T)</a></span> - Method in interface io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a></dt>
 <dd>
 <div class="block">Method to configure a meter registry with binders, filters, etc.</div>
 </dd>
@@ -310,6 +319,10 @@
 <dd>
 <div class="block">Get tag name.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html#getType--">getType()</a></span> - Method in class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">CompositeMeterRegistryConfigurer</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#getType--">getType()</a></span> - Method in interface io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.Sample.html#getValue--">getValue()</a></span> - Method in class io.micronaut.configuration.metrics.management.endpoint.<a href="io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.Sample.html" title="class in io.micronaut.configuration.metrics.management.endpoint">MetricsEndpoint.Sample</a></dt>
 <dd>
 <div class="block">Measurement value.</div>
@@ -636,15 +649,6 @@
 <dd>
 <div class="block">A measurement sample combining a <code>statistic</code> and a value.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator"><span class="typeNameLink">MicrometerMeterRegistryConfigurer</span></a> - Class in <a href="io/micronaut/configuration/metrics/aggregator/package-summary.html">io.micronaut.configuration.metrics.aggregator</a></dt>
-<dd>
-<div class="block">Default implementation of <a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator"><code>MeterRegistryConfigurer</code></a> that adds the binders and filters
- to the micrometer meter registry.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html#MicrometerMeterRegistryConfigurer-java.util.Collection-java.util.Collection-">MicrometerMeterRegistryConfigurer(Collection&lt;MeterBinder&gt;, Collection&lt;MeterFilter&gt;)</a></span> - Constructor for class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">MicrometerMeterRegistryConfigurer</a></dt>
-<dd>
-<div class="block">Constructor for the micrometer meter registry configurer.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/MeterRegistryFactory.html#MICRONAUT_METRICS">MICRONAUT_METRICS</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.<a href="io/micronaut/configuration/metrics/micrometer/MeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer">MeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/micrometer/MeterRegistryFactory.html#MICRONAUT_METRICS_BINDERS">MICRONAUT_METRICS_BINDERS</a></span> - Static variable in class io.micronaut.configuration.metrics.micrometer.<a href="io/micronaut/configuration/metrics/micrometer/MeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer">MeterRegistryFactory</a></dt>
@@ -835,10 +839,6 @@
 <div class="block">The subscribe method that will be called for publisher.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#supports-T-">supports(T)</a></span> - Method in interface io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a></dt>
-<dd>
-<div class="block">Method to determine if this configurer supports the meter registry type.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html#supports-io.micrometer.core.instrument.MeterRegistry-">supports(MeterRegistry)</a></span> - Method in class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MicrometerMeterRegistryConfigurer.html" title="class in io.micronaut.configuration.metrics.aggregator">MicrometerMeterRegistryConfigurer</a></dt>
 <dd>
 <div class="block">Method to determine if this configurer supports the meter registry type.</div>
 </dd>
