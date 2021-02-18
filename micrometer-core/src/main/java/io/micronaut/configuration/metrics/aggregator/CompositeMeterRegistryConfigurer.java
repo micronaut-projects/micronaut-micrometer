@@ -15,8 +15,8 @@
  */
 package io.micronaut.configuration.metrics.aggregator;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import javax.validation.constraints.NotNull;
@@ -29,7 +29,7 @@ import java.util.Collection;
  * @author Christian Oestreich
  * @since 1.0
  */
-public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigurer<MeterRegistry> {
+public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer<CompositeMeterRegistry> {
 
     private final Collection<MeterBinder> binders;
     private final Collection<MeterFilter> filters;
@@ -40,7 +40,7 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      * @param binders list of binder beans
      * @param filters list of filter beans
      */
-    public MicrometerMeterRegistryConfigurer(
+    public CompositeMeterRegistryConfigurer(
             Collection<MeterBinder> binders,
             Collection<MeterFilter> filters) {
         this.binders = binders;
@@ -56,17 +56,14 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      * @param meterRegistry Meter registry to bind metrics to.
      */
     @Override
-    public void configure(@NotNull MeterRegistry meterRegistry) {
+    public void configure(@NotNull CompositeMeterRegistry meterRegistry) {
         addFilters(meterRegistry);
         addBinders(meterRegistry);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean supports(@NotNull MeterRegistry meterRegistry) {
-        return true;
+    public Class<CompositeMeterRegistry> getType() {
+        return CompositeMeterRegistry.class;
     }
 
     /**
@@ -74,7 +71,7 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      *
      * @param meterRegistry the meter registry to configure
      */
-    private void addFilters(@NotNull MeterRegistry meterRegistry) {
+    private void addFilters(@NotNull CompositeMeterRegistry meterRegistry) {
         if (filters != null && !filters.isEmpty()) {
             filters.forEach(meterRegistry.config()::meterFilter);
         }
@@ -89,7 +86,7 @@ public class MicrometerMeterRegistryConfigurer implements MeterRegistryConfigure
      *
      * @param meterRegistry the meter registry
      */
-    private void addBinders(@NotNull MeterRegistry meterRegistry) {
+    private void addBinders(@NotNull CompositeMeterRegistry meterRegistry) {
         if (binders != null && !binders.isEmpty()) {
             binders.forEach((binder) -> binder.bindTo(meterRegistry));
         }

@@ -190,7 +190,7 @@ class MetricsEndpointSpec extends Specification {
 
 
     @Unroll
-    void "test metrics endpoint get jvm details #name success with tags"() {
+    void "test metrics endpoint get jvm details success with tags"() {
         given:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
                 'endpoints.metrics.sensitive'          : false,
