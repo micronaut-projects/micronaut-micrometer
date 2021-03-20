@@ -9,6 +9,11 @@ buildscript {
 
 subprojects { Project subproject ->
     group "io.micronaut.micrometer"
+    repositories {
+        maven {
+            url 'https://repo.spring.io/milestone'
+        }
+    }
 
     if (subproject.name != 'micrometer-bom') {
         apply plugin: "io.micronaut.build.internal.common"
