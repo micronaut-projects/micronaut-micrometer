@@ -1,4 +1,4 @@
-You can include the StatsD reporter via `io.micronaut.configuration:micronaut-micrometer-registry-statsd:${micronaut.version}`
+You can include the StatsD reporter via `io.micronaut.configuration:micronaut-micrometer-registry-statsd`
 
 dependency:micronaut-micrometer-registry-statsd[groupId="io.micronaut.micrometer"]
 

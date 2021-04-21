@@ -1,0 +1,8 @@
+dependencies {
+    api "io.micrometer:micrometer-core:$micrometerVersion"
+    api "io.micronaut:micronaut-inject:$micronautVersion"
+    api "io.micronaut:micronaut-aop:$micronautVersion"
+
+    testImplementation "io.micronaut:micronaut-inject-java-test:$micronautVersion"
+    testImplementation "io.micronaut:micronaut-inject-groovy-test:$micronautVersion"
+}

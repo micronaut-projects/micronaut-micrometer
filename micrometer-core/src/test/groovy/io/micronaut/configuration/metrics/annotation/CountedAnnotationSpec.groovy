@@ -22,24 +22,28 @@ import io.reactivex.functions.Consumer
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
-import java.util.concurrent.TimeUnit
+class CountedAnnotationSpec extends Specification {
 
-class TimeAnnotationSpec extends Specification {
-
-    void "test timed annotation usage"() {
+    void "test counted annotation usage"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()
-        TimedTarget tt = ctx.getBean(TimedTarget)
+        CountedTarget tt = ctx.getBean(CountedTarget)
         MeterRegistry registry = ctx.getBean(MeterRegistry)
 
         when:
         def result = tt.max(4, 10)
-        def timer = registry.get("timed.test.max.blocking").timer()
+        def timer = registry.get("counted.test.max.blocking").counter()
 
         then:
         result == 10
         timer.count() == 1
-        timer.totalTime(TimeUnit.MILLISECONDS) > 0
+
+        when:
+        tt.max(4, 10)
+        registry.get("counted.test.max.blocking").counter()
+
+        then:
+        timer.count() == 2
 
         when:
         result = tt.maxFuture(4, 10).get()
@@ -48,24 +52,21 @@ class TimeAnnotationSpec extends Specification {
 
         then:
         conditions.eventually {
-            def t = registry.get("timed.test.max.future").timer()
+            def t = registry.get("counted.test.max.future").counter()
             result == 10
             t.count() == 1
-            t.totalTime(TimeUnit.MILLISECONDS) > 0
-
         }
-        timer.count() == 1
+        timer.count() == 2
 
         when:
         tt.maxSingle(4, 10).subscribe( { o -> result = o} as Consumer)
 
         then:
         conditions.eventually {
-            def rxTimer = registry.get("timed.test.max.single").timer()
+            def rxTimer = registry.get("counted.test.max.single").counter()
 
             result == 10
             rxTimer.count() == 1
-            rxTimer.totalTime(TimeUnit.MILLISECONDS) > 0
         }
 
         when:
@@ -73,28 +74,15 @@ class TimeAnnotationSpec extends Specification {
 
         then:
         conditions.eventually {
-            def rxTimer = registry.get("timed.test.max.flowable").timer()
+            def rxTimer = registry.get("counted.test.max.flowable").counter()
 
             result == 10
             rxTimer.count() == 1
-            rxTimer.totalTime(TimeUnit.MILLISECONDS) > 0
         }
 
-        when:"repeated annotation is used"
-        tt.repeated(1, 2)
-
-        then:
-        conditions.eventually {
-            def repeatedTimer1 = registry.get("timed.test.repeated1").timer()
-            def repeatedTimer2 = registry.get("timed.test.repeated2").timer()
-
-            repeatedTimer1.count() == 1
-            repeatedTimer2.count() == 1
-        }
 
         cleanup:
         ctx.close()
     }
-
 
 }

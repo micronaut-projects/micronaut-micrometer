@@ -15,6 +15,8 @@ dependencies {
     compileOnly "io.micronaut:micronaut-http-server-netty"
     compileOnly "javax.cache:cache-api:$jcacheVersion"
     compileOnly "ch.qos.logback:logback-classic:1.2.3"
+    testAnnotationProcessor project(":micrometer-annotation")
+    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "io.micronaut:micronaut-function-web"

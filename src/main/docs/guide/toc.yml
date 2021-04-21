@@ -2,6 +2,7 @@ introduction: Introduction
 releaseHistory: Release History
 metricsEndpoint: Metrics Endpoint
 metricsConcepts: Metrics Concepts
+metricsAnnotations: Metrics Annotations
 metricsAndReporters:
   title: Metrics Registries & Reporters
   metricsAndReportersAppOptics: AppOptics Registry

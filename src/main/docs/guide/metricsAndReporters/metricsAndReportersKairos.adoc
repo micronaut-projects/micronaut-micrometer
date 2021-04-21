@@ -1,4 +1,4 @@
-You can include the Kairos reporter via `io.micronaut.configuration:micronaut-micrometer-registry-kairos:${micronaut.version}`
+You can include the Kairos reporter via `io.micronaut.configuration:micronaut-micrometer-registry-kairos`
 
 dependency:micronaut-micrometer-registry-kairos[groupId="io.micronaut.micrometer"]
 
