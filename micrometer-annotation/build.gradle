@@ -8,3 +8,8 @@ dependencies {
     testImplementation "io.micronaut:micronaut-inject-java-test:$micronautVersion"
     testImplementation "io.micronaut:micronaut-inject-groovy-test:$micronautVersion"
 }
+tasks.withType(Test) {
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_15)) {
+        jvmArgs "--enable-preview"
+    }
+}
