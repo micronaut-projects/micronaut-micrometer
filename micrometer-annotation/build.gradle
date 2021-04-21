@@ -2,7 +2,9 @@ dependencies {
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
     api "io.micronaut:micronaut-aop:$micronautVersion"
-
+    if (!JavaVersion.current().isJava9Compatible()) {
+        testImplementation files(org.gradle.internal.jvm.Jvm.current().toolsJar)
+    }
     testImplementation "io.micronaut:micronaut-inject-java-test:$micronautVersion"
     testImplementation "io.micronaut:micronaut-inject-groovy-test:$micronautVersion"
 }
