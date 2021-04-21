@@ -17,9 +17,12 @@ package io.micronaut.docs;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+
 import javax.inject.Singleton;
 
 @Singleton
+@RequiresMetrics
 public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer<SimpleMeterRegistry> {
 
     @Override

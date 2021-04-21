@@ -65,14 +65,14 @@ class FilteredMetricsEndpointSpec extends Specification {
         RxHttpClient rxClient = RxHttpClient.create(embeddedServer.getURL())
 
         expect:
-        rxClient.exchange(HttpRequest.GET('/hello/fred'), String).blockingFirst().body() == "Hello Fred"
+        rxClient.exchange(HttpRequest.GET('/filtered/hello/fred'), String).blockingFirst().body() == "Hello Fred"
     }
 
     void "test the filter beans are available"() {
         expect:
-        context.getBeansOfType(MeterFilter.class)?.size() == 2
+        context.getBeansOfType(MeterFilter.class)?.size() == 4
         CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
-        configurer.filters.size() == 2
+        configurer.filters.size() == 4
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)
         context.containsBean(CompositeMeterRegistry)
@@ -88,9 +88,9 @@ class FilteredMetricsEndpointSpec extends Specification {
         ApplicationContext context = embeddedServer.getApplicationContext()
 
         then:
-        context.getBeansOfType(MeterFilter.class)?.size() == 2
+        context.getBeansOfType(MeterFilter.class)?.size() == 4
         CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
-        configurer.filters.size() == 2
+        configurer.filters.size() == 4
         context.containsBean(MetricsEndpoint)
         context.containsBean(MeterRegistry)
         context.containsBean(CompositeMeterRegistry)
@@ -128,7 +128,7 @@ class FilteredMetricsEndpointSpec extends Specification {
     @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = "false")
     static class HelloController {
 
-        @Get("/hello/{name}")
+        @Get("/filtered/hello/{name}")
         Single<String> hello(@NotBlank String name) {
             return Single.just("Hello ${name.capitalize()}")
         }
