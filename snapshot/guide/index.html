@@ -51,9 +51,11 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#metricsConcepts"><strong>4</strong><span>Metrics Concepts</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#metricsAndReporters"><strong>5</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsAnnotations"><strong>5</strong><span>Metrics Annotations</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>6</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsAndReporters"><strong>6</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -92,49 +94,51 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-metricsConcepts"><a href="#metricsConcepts"><strong>4</strong><span>Metrics Concepts</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsAndReporters"><a href="#metricsAndReporters"><strong>5</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsAnnotations"><a href="#metricsAnnotations"><strong>5</strong><span>Metrics Annotations</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAppOptics"><a href="#metricsAndReportersAppOptics"><strong>5.1</strong><span>AppOptics Registry</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsAndReporters"><a href="#metricsAndReporters"><strong>6</strong><span>Metrics Registries &amp; Reporters</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAtlas"><a href="#metricsAndReportersAtlas"><strong>5.2</strong><span>Atlas Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAppOptics"><a href="#metricsAndReportersAppOptics"><strong>6.1</strong><span>AppOptics Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAzureMonitor"><a href="#metricsAndReportersAzureMonitor"><strong>5.3</strong><span>Azure Monitor Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAtlas"><a href="#metricsAndReportersAtlas"><strong>6.2</strong><span>Atlas Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersCloudWatch"><a href="#metricsAndReportersCloudWatch"><strong>5.4</strong><span>CloudWatch Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAzureMonitor"><a href="#metricsAndReportersAzureMonitor"><strong>6.3</strong><span>Azure Monitor Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDatadog"><a href="#metricsAndReportersDatadog"><strong>5.5</strong><span>Datadog Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersCloudWatch"><a href="#metricsAndReportersCloudWatch"><strong>6.4</strong><span>CloudWatch Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDynatrace"><a href="#metricsAndReportersDynatrace"><strong>5.6</strong><span>Dynatrace Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDatadog"><a href="#metricsAndReportersDatadog"><strong>6.5</strong><span>Datadog Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersElastic"><a href="#metricsAndReportersElastic"><strong>5.7</strong><span>Elastic Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDynatrace"><a href="#metricsAndReportersDynatrace"><strong>6.6</strong><span>Dynatrace Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGanglia"><a href="#metricsAndReportersGanglia"><strong>5.8</strong><span>Ganglia Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersElastic"><a href="#metricsAndReportersElastic"><strong>6.7</strong><span>Elastic Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGraphite"><a href="#metricsAndReportersGraphite"><strong>5.9</strong><span>Graphite Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGanglia"><a href="#metricsAndReportersGanglia"><strong>6.8</strong><span>Ganglia Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersHumio"><a href="#metricsAndReportersHumio"><strong>5.10</strong><span>Humio Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGraphite"><a href="#metricsAndReportersGraphite"><strong>6.9</strong><span>Graphite Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersInflux"><a href="#metricsAndReportersInflux"><strong>5.11</strong><span>Influx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersHumio"><a href="#metricsAndReportersHumio"><strong>6.10</strong><span>Humio Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersJmx"><a href="#metricsAndReportersJmx"><strong>5.12</strong><span>Jmx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersInflux"><a href="#metricsAndReportersInflux"><strong>6.11</strong><span>Influx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersKairos"><a href="#metricsAndReportersKairos"><strong>5.13</strong><span>Kairos Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersJmx"><a href="#metricsAndReportersJmx"><strong>6.12</strong><span>Jmx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelic"><a href="#metricsAndReportersNewRelic"><strong>5.14</strong><span>New Relic Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersKairos"><a href="#metricsAndReportersKairos"><strong>6.13</strong><span>Kairos Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelicTelemetry"><a href="#metricsAndReportersNewRelicTelemetry"><strong>5.15</strong><span>New Relic Telemetry Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelic"><a href="#metricsAndReportersNewRelic"><strong>6.14</strong><span>New Relic Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>5.16</strong><span>Prometheus Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelicTelemetry"><a href="#metricsAndReportersNewRelicTelemetry"><strong>6.15</strong><span>New Relic Telemetry Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>5.17</strong><span>SignalFx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>6.16</strong><span>Prometheus Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>5.18</strong><span>Stackdriver Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.17</strong><span>SignalFx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>5.19</strong><span>StatsD Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.18</strong><span>Stackdriver Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>5.20</strong><span>Wavefront Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.19</strong><span>StatsD Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>6</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.20</strong><span>Wavefront Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -482,9 +486,12 @@ package io.micronaut.docs;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+
 import javax.inject.Singleton;
 
 @Singleton
+@RequiresMetrics
 public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt; {
 
     @Override
@@ -542,20 +549,10 @@ import io.micronaut.context.annotation.Factory;
 
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Factory
 public class MeterFilterFactory {
-
-    /**
-     * Exclude metrics starting with jvm.
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    MeterFilter jvmExclusionFilter() {
-        return MeterFilter.denyNameStartsWith("jvm");
-    }
 
     /**
      * Add global tags to all metrics.
@@ -565,7 +562,7 @@ public class MeterFilterFactory {
     @Bean
     @Singleton
     MeterFilter addCommonTagFilter() {
-        return MeterFilter.commonTags(Arrays.asList(Tag.of("scope", "demo")));
+        return MeterFilter.commonTags(Collections.singletonList(Tag.of("scope", "demo")));
     }
 
     /**
@@ -1070,7 +1067,41 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div>
 
-<h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>5 Metrics Registries & Reporters</h1>
+<h1 id="metricsAnnotations"><a class="anchor" href="#metricsAnnotations"></a>5 Metrics Annotations</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
+/src/main/docs/guide/metricsAnnotations.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can use the Micrometer <code>@Timed</code> and <code>@Counted</code> annotations on any bean method by adding the <code>micronaut-micrometer-annotation</code> dependency to your annotation processor classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">annotationProcessor(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-annotation")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;annotationProcessorPaths&gt;
+    &lt;path&gt;
+        &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+        &lt;artifactId&gt;micronaut-micrometer-annotation&lt;/artifactId&gt;
+    &lt;/path&gt;
+&lt;/annotationProcessorPaths&gt;</code></pre>
+</div>
+</div>
+</p>
+</div>
+
+<h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1089,7 +1120,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div>
 
-<h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>5.1 AppOptics Registry</h2>
+<h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>6.1 AppOptics Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1100,7 +1131,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 
 
 <div class="paragraph">
-<p>You can include the AppOptics reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-appoptics:${micronaut.version}</code></p>
+<p>You can include the AppOptics reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-appoptics</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1166,7 +1197,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>5.2 Atlas Registry</h2>
+<h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>6.2 Atlas Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1177,7 +1208,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Atlas reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-atlas:${micronaut.version}</code></p>
+<p>You can include the Atlas reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-atlas</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1237,7 +1268,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>5.3 Azure Monitor Registry</h2>
+<h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>6.3 Azure Monitor Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1248,7 +1279,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Azure Monitor reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor:${micronaut.version}</code></p>
+<p>You can include the Azure Monitor reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1309,7 +1340,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>5.4 CloudWatch Registry</h2>
+<h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>6.4 CloudWatch Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1320,7 +1351,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Cloudwatch reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-cloudwatch:${micronaut.version}</code></p>
+<p>You can include the Cloudwatch reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-cloudwatch</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1380,7 +1411,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>5.5 Datadog Registry</h2>
+<h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>6.5 Datadog Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1391,7 +1422,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Datadog reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-datadog:${micronaut.version}</code></p>
+<p>You can include the Datadog reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-datadog</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1457,7 +1488,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>5.6 Dynatrace Registry</h2>
+<h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>6.6 Dynatrace Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1468,7 +1499,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Dynatrace reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-dynatrace:${micronaut.version}</code></p>
+<p>You can include the Dynatrace reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-dynatrace</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1547,7 +1578,7 @@ micronaut:
 </div>
 </div>
 
-<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>5.7 Elastic Registry</h2>
+<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elastic Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1558,7 +1589,7 @@ micronaut:
 
 
 <div class="paragraph">
-<p>You can include the Elastic reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-elastic:${micronaut.version}</code></p>
+<p>You can include the Elastic reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-elastic</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1619,7 +1650,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>5.8 Ganglia Registry</h2>
+<h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>6.8 Ganglia Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1630,7 +1661,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Ganglia reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-ganglia:${micronaut.version}</code></p>
+<p>You can include the Ganglia reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-ganglia</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1691,7 +1722,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>5.9 Graphite Registry</h2>
+<h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>6.9 Graphite Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1702,7 +1733,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Graphite reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-graphite:${micronaut.version}</code></p>
+<p>You can include the Graphite reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-graphite</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1767,7 +1798,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>5.10 Humio Registry</h2>
+<h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>6.10 Humio Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1778,7 +1809,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Humio reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-humio:${micronaut.version}</code></p>
+<p>You can include the Humio reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-humio</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1834,7 +1865,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>5.11 Influx Registry</h2>
+<h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>6.11 Influx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1845,7 +1876,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Influx reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-influx:${micronaut.version}</code></p>
+<p>You can include the Influx reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-influx</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1906,7 +1937,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>5.12 Jmx Registry</h2>
+<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 Jmx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1917,7 +1948,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Jmx reporter via <code>io.micronaut.micrometer:micronaut-micrometer-jmx:${micronaut.version}</code></p>
+<p>You can include the Jmx reporter via <code>io.micronaut.micrometer:micronaut-micrometer-jmx</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1973,7 +2004,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div>
 </div>
 
-<h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>5.13 Kairos Registry</h2>
+<h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>6.13 Kairos Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -1984,7 +2015,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Kairos reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-kairos:${micronaut.version}</code></p>
+<p>You can include the Kairos reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-kairos</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2050,7 +2081,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>5.14 New Relic Registry</h2>
+<h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>6.14 New Relic Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2061,7 +2092,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the New Relic reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-new-relic:${micronaut.version}</code></p>
+<p>You can include the New Relic reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-new-relic</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2132,7 +2163,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>5.15 New Relic Telemetry Registry</h2>
+<h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>6.15 New Relic Telemetry Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2146,7 +2177,7 @@ for more options.</p>
 <p>A New Relic Registry using <a href="https://github.com/newrelic/micrometer-registry-newrelic">New Relic&#8217;s own Micrometer Registry</a> rather than the New Relic registry provided by the Micrometer project.</p>
 </div>
 <div class="paragraph">
-<p>You can include the New Relic Telemetry reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-new-relic-telemetry:${micronaut.version}</code></p>
+<p>You can include the New Relic Telemetry reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-new-relic-telemetry</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2213,7 +2244,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>5.16 Prometheus Registry</h2>
+<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.16 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2224,7 +2255,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Prometheus reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-prometheus:${micronaut.version}</code></p>
+<p>You can include the Prometheus reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-prometheus</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2339,7 +2370,7 @@ micronaut:
 </div>
 </div>
 
-<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>5.17 SignalFx Registry</h2>
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.17 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2350,7 +2381,7 @@ micronaut:
 
 
 <div class="paragraph">
-<p>You can include the SignalFx reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-signalfx:${micronaut.version}</code></p>
+<p>You can include the SignalFx reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-signalfx</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2416,7 +2447,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>5.18 Stackdriver Registry</h2>
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.18 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2427,7 +2458,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Stackdriver reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-stackdriver:${micronaut.version}</code></p>
+<p>You can include the Stackdriver reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-stackdriver</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2493,7 +2524,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>5.19 StatsD Registry</h2>
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.19 StatsD Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2504,7 +2535,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the StatsD reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-statsd:${micronaut.version}</code></p>
+<p>You can include the StatsD reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-statsd</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2574,7 +2605,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>5.20 Wavefront Registry</h2>
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.20 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master
@@ -2585,7 +2616,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Wavefront reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-wavefront:${micronaut.version}</code></p>
+<p>You can include the Wavefront reporter via <code>io.micronaut.configuration:micronaut-micrometer-registry-wavefront</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -2656,7 +2687,7 @@ for more options.</p>
 </div>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>6 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>7 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master

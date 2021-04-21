@@ -33,3 +33,4 @@ io.micronaut.configuration.metrics.micrometer.signalfx
 io.micronaut.configuration.metrics.micrometer.stackdriver
 io.micronaut.configuration.metrics.micrometer.statsd
 io.micronaut.configuration.metrics.micrometer.wavefront
+io.micronaut.micrometer.annotation.processing
