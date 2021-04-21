@@ -15,17 +15,13 @@
  */
 package io.micronaut.configuration.metrics.annotation
 
-import io.micrometer.core.annotation.Timed
+
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
-import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
-import javax.inject.Singleton
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class TimeAnnotationSpec extends Specification {
@@ -84,45 +80,21 @@ class TimeAnnotationSpec extends Specification {
             rxTimer.totalTime(TimeUnit.MILLISECONDS) > 0
         }
 
+        when:"repeated annotation is used"
+        tt.repeated(1, 2)
+
+        then:
+        conditions.eventually {
+            def repeatedTimer1 = registry.get("timed.test.repeated1").timer()
+            def repeatedTimer2 = registry.get("timed.test.repeated2").timer()
+
+            repeatedTimer1.count() == 1
+            repeatedTimer2.count() == 1
+        }
 
         cleanup:
         ctx.close()
     }
 
 
-    @Singleton
-    static class TimedTarget {
-
-        @Timed("timed.test.max.blocking")
-        Integer max(int a, int b) {
-            return Math.max(a, b)
-        }
-
-        @Timed("timed.test.max.blocking")
-        Integer error(int a, int b) {
-            throw new NumberFormatException("cannot")
-        }
-
-
-        @Timed(value = "timed.test.max.future", description = "some desc", extraTags = ['one', 'two'])
-        CompletableFuture<Integer> maxFuture(int a, int b) {
-            CompletableFuture.completedFuture(
-                Math.max(a, b)
-            )
-        }
-
-        @Timed(value = "timed.test.max.single", description = "some desc", extraTags = ['one', 'two'])
-        Single<Integer> maxSingle(int a, int b) {
-            Single.just(
-                    Math.max(a, b)
-            )
-        }
-
-        @Timed(value = "timed.test.max.flowable", description = "some desc", extraTags = ['one', 'two'])
-        Flowable<Integer> maxFlow(int a, int b) {
-            Flowable.just(
-                    Math.max(a, b)
-            )
-        }
-    }
 }

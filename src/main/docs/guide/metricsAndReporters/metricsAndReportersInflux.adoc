@@ -1,4 +1,4 @@
-You can include the Influx reporter via `io.micronaut.configuration:micronaut-micrometer-registry-influx:${micronaut.version}`
+You can include the Influx reporter via `io.micronaut.configuration:micronaut-micrometer-registry-influx`
 
 dependency:micronaut-micrometer-registry-influx[groupId="io.micronaut.micrometer"]
 

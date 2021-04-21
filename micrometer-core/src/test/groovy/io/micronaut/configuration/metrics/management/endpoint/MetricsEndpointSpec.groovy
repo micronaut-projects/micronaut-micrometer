@@ -33,7 +33,7 @@ class MetricsEndpointSpec extends Specification {
 
     void "test the beans are available"() {
         given:
-        ApplicationContext context = ApplicationContext.build("test").build()
+        ApplicationContext context = ApplicationContext.builder("test").build()
         context.start()
 
         expect:
@@ -189,7 +189,6 @@ class MetricsEndpointSpec extends Specification {
     }
 
 
-    @Unroll
     void "test metrics endpoint get jvm details success with tags"() {
         given:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [

@@ -1,4 +1,4 @@
-You can include the Dynatrace reporter via `io.micronaut.configuration:micronaut-micrometer-registry-dynatrace:${micronaut.version}`
+You can include the Dynatrace reporter via `io.micronaut.configuration:micronaut-micrometer-registry-dynatrace`
 
 dependency:micronaut-micrometer-registry-dynatrace[groupId="io.micronaut.micrometer"]
 

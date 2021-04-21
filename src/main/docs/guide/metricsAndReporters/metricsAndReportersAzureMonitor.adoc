@@ -1,4 +1,4 @@
-You can include the Azure Monitor reporter via `io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor:${micronaut.version}`
+You can include the Azure Monitor reporter via `io.micronaut.configuration:micronaut-micrometer-registry-azure-monitor`
 
 dependency:micronaut-micrometer-registry-azure-monitor[groupId="io.micronaut.micrometer"]
 

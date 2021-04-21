@@ -1,4 +1,4 @@
-You can include the Jmx reporter via `io.micronaut.micrometer:micronaut-micrometer-jmx:${micronaut.version}`
+You can include the Jmx reporter via `io.micronaut.micrometer:micronaut-micrometer-jmx`
 
 dependency:micronaut-micrometer-registry-jmx[groupId="io.micronaut.micrometer"]
 

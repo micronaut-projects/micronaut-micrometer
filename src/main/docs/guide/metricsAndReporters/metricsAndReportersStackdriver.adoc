@@ -1,4 +1,4 @@
-You can include the Stackdriver reporter via `io.micronaut.configuration:micronaut-micrometer-registry-stackdriver:${micronaut.version}`
+You can include the Stackdriver reporter via `io.micronaut.configuration:micronaut-micrometer-registry-stackdriver`
 
 dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.micrometer"]
 

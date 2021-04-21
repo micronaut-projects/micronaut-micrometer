@@ -1,4 +1,4 @@
-You can include the AppOptics reporter via `io.micronaut.configuration:micronaut-micrometer-registry-appoptics:${micronaut.version}`
+You can include the AppOptics reporter via `io.micronaut.configuration:micronaut-micrometer-registry-appoptics`
 
 dependency:micronaut-micrometer-registry-appoptics[groupId="io.micronaut.micrometer"]
 

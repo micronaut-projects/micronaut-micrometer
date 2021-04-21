@@ -29,6 +29,7 @@ import java.lang.annotation.*;
  *
  * @author graemerocher
  * @since 1.1.0
+ * @deprecated Replaced by annotation binding
  */
 @Internal
 @Around
@@ -36,5 +37,6 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.SOURCE)
 @Inherited
+@Deprecated
 public @interface MircometerTimed {
 }

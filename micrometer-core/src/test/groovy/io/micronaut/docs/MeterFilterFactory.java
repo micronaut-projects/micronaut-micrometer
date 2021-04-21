@@ -22,20 +22,10 @@ import io.micronaut.context.annotation.Factory;
 
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Factory
 public class MeterFilterFactory {
-
-    /**
-     * Exclude metrics starting with jvm.
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    MeterFilter jvmExclusionFilter() {
-        return MeterFilter.denyNameStartsWith("jvm");
-    }
 
     /**
      * Add global tags to all metrics.
@@ -45,7 +35,7 @@ public class MeterFilterFactory {
     @Bean
     @Singleton
     MeterFilter addCommonTagFilter() {
-        return MeterFilter.commonTags(Arrays.asList(Tag.of("scope", "demo")));
+        return MeterFilter.commonTags(Collections.singletonList(Tag.of("scope", "demo")));
     }
 
     /**

@@ -1,4 +1,4 @@
-You can include the New Relic reporter via `io.micronaut.configuration:micronaut-micrometer-registry-new-relic:${micronaut.version}`
+You can include the New Relic reporter via `io.micronaut.configuration:micronaut-micrometer-registry-new-relic`
 
 dependency:micronaut-micrometer-registry-new-relic[groupId="io.micronaut.micrometer"]
 
