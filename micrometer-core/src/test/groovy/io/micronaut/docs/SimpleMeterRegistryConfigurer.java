@@ -15,15 +15,18 @@
  */
 package io.micronaut.docs;
 
+import io.micronaut.core.annotation.Order;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.order.Ordered;
 
 import javax.inject.Singleton;
 
+@Order(Integer.MAX_VALUE)
 @Singleton
 @RequiresMetrics
-public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer<SimpleMeterRegistry> {
+public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer<SimpleMeterRegistry>, Ordered {
 
     @Override
     public void configure(SimpleMeterRegistry meterRegistry) {
