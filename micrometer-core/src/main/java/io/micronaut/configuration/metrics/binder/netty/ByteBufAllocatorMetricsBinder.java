@@ -15,17 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.*;
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -44,6 +33,47 @@ import io.netty.buffer.PoolSubpageMetric;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocatorMetric;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import jakarta.inject.Inject;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Provider;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ARENA;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.AVAILABLE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.BYTE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.CACHE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.CHUNK;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.CHUNKLIST;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DEALLOCATION;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DIRECT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.HEAP;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.HUGE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.LOCAL;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MAX;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MEMORY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MIN;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NORMAL;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NUMBER;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PAGE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.POOLED;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SMALL;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SUBPAGE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.THREAD;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.UNPOOLED;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USAGE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
  * Metrics for netty default ByteBufAllocators.

@@ -20,8 +20,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.order.Ordered;
-
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Order(Integer.MAX_VALUE)
 @Singleton

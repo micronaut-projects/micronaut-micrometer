@@ -3,8 +3,8 @@ package io.micronaut.configuration.metrics.annotation;
 import io.micrometer.core.annotation.Counted;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 
 @Singleton

@@ -23,8 +23,8 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Properties;
 

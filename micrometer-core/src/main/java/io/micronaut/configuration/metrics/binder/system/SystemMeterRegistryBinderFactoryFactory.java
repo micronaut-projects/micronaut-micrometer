@@ -24,8 +24,7 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
-
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 

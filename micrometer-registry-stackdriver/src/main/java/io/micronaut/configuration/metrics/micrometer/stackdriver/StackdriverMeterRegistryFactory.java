@@ -22,8 +22,8 @@ import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperti
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;

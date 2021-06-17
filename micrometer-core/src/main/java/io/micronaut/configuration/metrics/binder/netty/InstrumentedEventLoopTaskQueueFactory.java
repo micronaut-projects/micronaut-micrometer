@@ -15,27 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -47,6 +26,26 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.server.netty.NettyHttpServer;
 import io.netty.channel.EventLoopTaskQueueFactory;
 import io.netty.util.internal.PlatformDependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+
+import javax.inject.Provider;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
  * Instrumented Event Loop Queue factory.

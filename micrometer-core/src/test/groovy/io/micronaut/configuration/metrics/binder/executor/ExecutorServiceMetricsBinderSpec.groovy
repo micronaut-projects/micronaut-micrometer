@@ -19,20 +19,19 @@ import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.scheduling.TaskExecutors
 import io.netty.channel.DefaultEventLoop
 import io.netty.channel.EventLoopGroup
+import jakarta.inject.Named
+import jakarta.inject.Singleton
 import spock.lang.Issue
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
-import javax.inject.Named
-import javax.inject.Singleton
 import java.util.concurrent.ExecutorService
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS

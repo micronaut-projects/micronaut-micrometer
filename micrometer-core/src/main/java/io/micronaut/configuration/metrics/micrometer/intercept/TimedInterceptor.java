@@ -29,10 +29,9 @@ import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.CollectionUtils;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Iterator;

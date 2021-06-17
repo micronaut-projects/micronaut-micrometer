@@ -34,9 +34,9 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.reactivex.Single
+import jakarta.inject.Singleton
 import spock.lang.*
 
-import javax.inject.Singleton
 import javax.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED

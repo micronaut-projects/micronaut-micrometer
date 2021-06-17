@@ -11,7 +11,7 @@ class GroovyAnnotationMappingSpec extends AbstractBeanDefinitionSpec {
 package test;
 
 @io.micrometer.core.annotation.Timed("foo")
-@javax.inject.Singleton
+@jakarta.inject.Singleton
 class Test {
 
 }

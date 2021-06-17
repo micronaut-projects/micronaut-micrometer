@@ -35,9 +35,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 

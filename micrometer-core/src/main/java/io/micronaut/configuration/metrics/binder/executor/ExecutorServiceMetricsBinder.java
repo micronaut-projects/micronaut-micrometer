@@ -28,9 +28,9 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
+import jakarta.inject.Singleton;
 
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;

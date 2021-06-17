@@ -20,8 +20,8 @@ import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;

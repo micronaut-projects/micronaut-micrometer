@@ -15,12 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
@@ -30,6 +24,12 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.ChannelPipelineCustomizer;
 import io.micronaut.runtime.server.EmbeddedServer;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
+import javax.inject.Provider;
+
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
  * Adds netty's metrics handler to the pipeline.

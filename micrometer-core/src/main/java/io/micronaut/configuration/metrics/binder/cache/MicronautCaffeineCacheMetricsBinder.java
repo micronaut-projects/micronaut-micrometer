@@ -22,9 +22,9 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Singleton;
 
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
