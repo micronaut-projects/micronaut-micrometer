@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
@@ -36,7 +37,6 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import jakarta.inject.Inject;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Provider;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -87,7 +87,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Context
 @Internal
 final class ByteBufAllocatorMetricsBinder {
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Set<ByteBufAllocatorMetricKind> kinds;
 
     enum ByteBufAllocatorMetricKind {
@@ -101,8 +101,8 @@ final class ByteBufAllocatorMetricsBinder {
      * @param kinds The kinds of metrics to add.
      */
     @Inject
-    public ByteBufAllocatorMetricsBinder(Provider<MeterRegistry> meterRegistryProvider,
-            @Value("${" + MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics:null}") Set<ByteBufAllocatorMetricKind> kinds) {
+    public ByteBufAllocatorMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                         @Value("${" + MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics:null}") Set<ByteBufAllocatorMetricKind> kinds) {
         this.meterRegistryProvider = meterRegistryProvider;
         this.kinds = kinds == null || kinds.isEmpty() ? EnumSet.allOf(ByteBufAllocatorMetricKind.class) : kinds;
     }

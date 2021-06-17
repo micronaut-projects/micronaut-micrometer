@@ -18,13 +18,13 @@ package io.micronaut.configuration.metrics.binder.cache;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.cache.Cache;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
-import javax.inject.Provider;
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
@@ -41,14 +41,14 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventListener<Cache<?>> {
 
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
      * Default constructor.
      *
      * @param meterRegistryProvider The meter registry provider
      */
-    public MicronautCaffeineCacheMetricsBinder(Provider<MeterRegistry> meterRegistryProvider) {
+    public MicronautCaffeineCacheMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
     }
 

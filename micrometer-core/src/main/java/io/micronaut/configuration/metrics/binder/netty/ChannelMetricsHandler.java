@@ -15,6 +15,25 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.binder.BaseUnits;
+import io.micronaut.context.BeanProvider;
+import io.micronaut.core.annotation.Internal;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.LongAdder;
+
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.BYTE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.CHANNEL;
@@ -25,27 +44,6 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.READ;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.TIME;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WRITTEN;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
-
-import java.util.concurrent.atomic.LongAdder;
-
-import javax.inject.Provider;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tags;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.binder.BaseUnits;
-import io.micronaut.core.annotation.Internal;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufHolder;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelPromise;
 
 /**
  * Metrics for netty's Channels.
@@ -66,7 +64,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelMetricsHandler.class);
 
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     private final Counter bytesRead;
     private final Counter bytesWritten;
@@ -75,7 +73,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
     private final LongAdder activeChannelCount;
     private final Timer activeChannelTimer;
 
-    ChannelMetricsHandler(Provider<MeterRegistry> meterRegistryProvider) {
+    ChannelMetricsHandler(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
         activeChannelCount = meterRegistryProvider.get().gauge(dot(NETTY, CHANNEL, COUNT), Tags.of(CHANNEL, ACTIVE), new LongAdder());
         channelCount = Counter.builder(dot(NETTY, CHANNEL, COUNT))

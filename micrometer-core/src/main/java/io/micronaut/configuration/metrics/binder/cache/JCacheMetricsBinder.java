@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.cache;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.JCacheMetrics;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
@@ -27,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.cache.CacheManager;
-import javax.inject.Provider;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
@@ -44,14 +44,14 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManager> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JCacheMetricsBinder.class);
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
      * Default constructor.
      *
      * @param meterRegistryProvider The meter registry.
      */
-    protected JCacheMetricsBinder(Provider<MeterRegistry> meterRegistryProvider) {
+    protected JCacheMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
     }
 

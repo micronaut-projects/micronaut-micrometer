@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
@@ -30,7 +31,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
-import javax.inject.Provider;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +62,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
     private static AtomicInteger parentCounter = new AtomicInteger(-1);
     private static AtomicInteger workerCounter = new AtomicInteger(-1);
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Counter parentTaskCounter;
     private final Counter workerTaskCounter;
     private final Timer globalParentWaitTimeTimer;
@@ -76,7 +76,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
      * @param meterRegistryProvider The metric registry provider.
      */
     @Inject
-    public InstrumentedEventLoopTaskQueueFactory(Provider<MeterRegistry> meterRegistryProvider) {
+    public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
         globalParentWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
                 .description("Global wait time spent in the parent Queues.")
