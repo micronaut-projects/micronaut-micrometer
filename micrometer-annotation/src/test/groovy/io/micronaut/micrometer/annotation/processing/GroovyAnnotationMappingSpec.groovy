@@ -2,11 +2,9 @@ package io.micronaut.micrometer.annotation.processing
 
 import io.micronaut.aop.Intercepted
 import io.micronaut.ast.transform.test.AbstractBeanDefinitionSpec
-import spock.lang.PendingFeature
 
 class GroovyAnnotationMappingSpec extends AbstractBeanDefinitionSpec {
 
-    @PendingFeature(reason = "Needs https://github.com/micronaut-projects/micronaut-core/pull/5282")
     void 'test map timedset annotation'() {
         given:
         def context = buildContext('test.Test', '''
