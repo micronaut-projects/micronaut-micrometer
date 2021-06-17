@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
 import io.micronaut.core.type.Argument;
@@ -27,7 +28,6 @@ import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 import io.micronaut.management.endpoint.annotation.Selector;
 
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;

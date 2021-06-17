@@ -15,20 +15,12 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadFactory;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import edu.umd.cs.findbugs.annotations.NonNull;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
@@ -43,6 +35,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadFactory;
+
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
  * Factory for Instrumented EpollEventLoopGroup.
