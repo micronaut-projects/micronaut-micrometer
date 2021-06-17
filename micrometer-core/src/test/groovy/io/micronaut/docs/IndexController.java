@@ -18,7 +18,7 @@ package io.micronaut.docs;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import io.reactivex.Single;
+import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 
@@ -32,11 +32,11 @@ public class IndexController {
     }
 
     @Get("/hello/{name}")
-    public Single hello(@NotBlank String name) {
+    public Mono hello(@NotBlank String name) {
         meterRegistry
                 .counter("web.access", "controller", "index", "action", "hello")
                 .increment();
-        return Single.just("Hello " + name);
+        return Mono.just("Hello " + name);
     }
 
 }

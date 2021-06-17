@@ -18,9 +18,10 @@ package io.micronaut.configuration.metrics.annotation
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
-import io.reactivex.functions.Consumer
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
+
+import java.util.function.Consumer
 
 class CountedAnnotationSpec extends Specification {
 
@@ -70,7 +71,7 @@ class CountedAnnotationSpec extends Specification {
         }
 
         when:
-        tt.maxFlow(4, 10).toList().subscribe( { o -> result = o[0]} as Consumer)
+        tt.maxFlow(4, 10).collectList().subscribe( { o -> result = o[0]} as Consumer)
 
         then:
         conditions.eventually {

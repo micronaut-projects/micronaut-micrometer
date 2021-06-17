@@ -33,9 +33,13 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import io.reactivex.Single
 import jakarta.inject.Singleton
-import spock.lang.*
+import reactor.core.publisher.Mono
+import spock.lang.AutoCleanup
+import spock.lang.IgnoreIf
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Stepwise
 
 import javax.validation.constraints.NotBlank
 
@@ -129,8 +133,8 @@ class FilteredMetricsEndpointSpec extends Specification {
     static class HelloController {
 
         @Get("/filtered/hello/{name}")
-        Single<String> hello(@NotBlank String name) {
-            return Single.just("Hello ${name.capitalize()}")
+        Mono<String> hello(@NotBlank String name) {
+            return Mono.just("Hello ${name.capitalize()}".toString())
         }
     }
 
