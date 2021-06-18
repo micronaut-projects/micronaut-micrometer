@@ -14,11 +14,6 @@ subprojects { Project subproject ->
     if (subproject.name != 'micrometer-bom') {
         apply plugin: "io.micronaut.build.internal.common"
 
-        dependencies {
-            compileOnly "jakarta.inject:jakarta.inject-api:2.0.0"
-            testImplementation "jakarta.inject:jakarta.inject-api:2.0.0"
-        }
-
         if (subproject.parent.name == "docs-examples" || subproject.name == "docs-examples") {
             return
         }
