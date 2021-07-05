@@ -27,12 +27,11 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.CollectionUtils;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Singleton;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -100,13 +99,13 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                             Object result;
                             AtomicReference<List<Timer.Sample>> reactiveInvokeSample = new AtomicReference<>();
                             if (context.getReturnType().isSingleResult()) {
-                                Single<?> single = Publishers.convertPublisher(interceptResult, Single.class);
+                                Mono<?> single = Publishers.convertPublisher(interceptResult, Mono.class);
                                 result = single.doOnSubscribe(d -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
                                         .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get()))
                                         .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get()));
                             } else {
                                 AtomicReference<String> exceptionClassHolder = new AtomicReference<>("none");
-                                Flowable<?> flowable = Publishers.convertPublisher(interceptResult, Flowable.class);
+                                Flux<?> flowable = Publishers.convertPublisher(interceptResult, Flux.class);
                                 result = flowable.doOnRequest(n -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
                                         .doOnError(throwable -> exceptionClassHolder.set(throwable.getClass().getSimpleName()))
                                         .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get()));

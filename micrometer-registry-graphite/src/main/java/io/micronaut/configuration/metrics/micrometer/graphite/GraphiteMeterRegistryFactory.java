@@ -21,10 +21,10 @@ import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Singleton;
 
-import javax.annotation.Nullable;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,8 +66,7 @@ public class GraphiteMeterRegistryFactory {
     GraphiteConfig graphiteConfig(
             ExportConfigurationProperties exportConfigurationProperties,
             @Property(name = GRAPHITE_TAGS_AS_PREFIX)
-            @Nullable
-                    List<String> tagsAsPrefix) {
+            @Nullable List<String> tagsAsPrefix) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return new GraphiteConfig() {
             @Override

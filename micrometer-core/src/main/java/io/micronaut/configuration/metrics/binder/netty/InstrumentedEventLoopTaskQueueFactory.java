@@ -15,38 +15,37 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER;
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.inject.Singleton;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.server.netty.NettyHttpServer;
 import io.netty.channel.EventLoopTaskQueueFactory;
 import io.netty.util.internal.PlatformDependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
  * Instrumented Event Loop Queue factory.
@@ -63,7 +62,7 @@ import io.netty.util.internal.PlatformDependent;
 final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
     private static AtomicInteger parentCounter = new AtomicInteger(-1);
     private static AtomicInteger workerCounter = new AtomicInteger(-1);
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Counter parentTaskCounter;
     private final Counter workerTaskCounter;
     private final Timer globalParentWaitTimeTimer;
@@ -77,7 +76,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
      * @param meterRegistryProvider The metric registry provider.
      */
     @Inject
-    public InstrumentedEventLoopTaskQueueFactory(Provider<MeterRegistry> meterRegistryProvider) {
+    public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
         globalParentWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
                 .description("Global wait time spent in the parent Queues.")

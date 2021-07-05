@@ -11,7 +11,7 @@ class AnnotationMappingSpec extends AbstractTypeElementSpec {
 package test;
 
 @io.micrometer.core.annotation.Timed("foo")
-@javax.inject.Singleton
+@jakarta.inject.Singleton
 class Test {
 
 }
@@ -28,7 +28,7 @@ class Test {
         def context = buildContext('test.Test', '''
 package test;
 
-@javax.inject.Singleton
+@jakarta.inject.Singleton
 class Test {
     @io.micrometer.core.annotation.Counted("foo")
     void test() {

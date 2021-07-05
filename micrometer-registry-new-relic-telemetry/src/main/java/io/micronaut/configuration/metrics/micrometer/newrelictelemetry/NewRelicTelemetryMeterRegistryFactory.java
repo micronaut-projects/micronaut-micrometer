@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package io.micronaut.configuration.metrics.micrometer.newrelictelemetry;
+
 import com.newrelic.telemetry.Attributes;
 import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 import com.newrelic.telemetry.micrometer.NewRelicRegistryConfig;
@@ -21,8 +22,8 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.util.NamedThreadFactory;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;

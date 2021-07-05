@@ -5,6 +5,7 @@ dependencies {
 
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
+    api "io.micronaut.reactor:micronaut-reactor"
     compileOnly "io.micronaut:micronaut-management"
     compileOnly "io.micronaut.sql:micronaut-jdbc"
     compileOnly 'io.micronaut.cache:micronaut-cache-core'
@@ -30,6 +31,4 @@ dependencies {
     testImplementation "io.netty:netty-transport-native-epoll"
     testImplementation "io.netty:netty-transport-native-kqueue"
     testImplementation "io.micronaut:micronaut-http-server-netty"
-    testImplementation 'io.micronaut.cache:micronaut-cache-core'
-    testImplementation 'io.micronaut.cache:micronaut-cache-caffeine'
 }

@@ -19,9 +19,8 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
-import java.util.Arrays;
 import java.util.Collections;
 
 @Factory

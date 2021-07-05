@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
@@ -28,9 +29,8 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
+import jakarta.inject.Singleton;
 
-import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -50,14 +50,14 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = StringUtils.FALSE)
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
      * Default constructor.
      *
      * @param meterRegistryProvider The meter registry provider
      */
-    public ExecutorServiceMetricsBinder(Provider<MeterRegistry> meterRegistryProvider) {
+    public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
     }
 
