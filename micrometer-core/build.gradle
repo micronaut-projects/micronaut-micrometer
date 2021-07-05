@@ -31,6 +31,4 @@ dependencies {
     testImplementation "io.netty:netty-transport-native-epoll"
     testImplementation "io.netty:netty-transport-native-kqueue"
     testImplementation "io.micronaut:micronaut-http-server-netty"
-    testImplementation 'io.micronaut.cache:micronaut-cache-core'
-    testImplementation 'io.micronaut.cache:micronaut-cache-caffeine'
 }
