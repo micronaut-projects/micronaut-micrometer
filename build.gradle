@@ -9,9 +9,6 @@ buildscript {
 }
 
 subprojects { Project subproject ->
-    repositories {
-        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
-    }
     group "io.micronaut.micrometer"
 
     if (subproject.name != 'micrometer-bom') {
@@ -22,6 +19,7 @@ subprojects { Project subproject ->
         }
 
         dependencies {
+            implementation 'jakarta.inject:jakarta.inject-api:2.0.0'
             testImplementation("org.spockframework:spock-core:${spockVersion}") {
                 exclude module: 'groovy-all'
             }
