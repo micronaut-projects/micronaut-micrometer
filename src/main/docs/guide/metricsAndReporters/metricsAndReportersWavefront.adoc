@@ -1,4 +1,4 @@
-You can include the Wavefront reporter via `io.micronaut.configuration:micronaut-micrometer-registry-wavefront`
+You can include the Wavefront reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-wavefront`
 
 dependency:micronaut-micrometer-registry-wavefront[groupId="io.micronaut.micrometer"]
 

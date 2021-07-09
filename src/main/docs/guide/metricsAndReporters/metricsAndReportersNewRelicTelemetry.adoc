@@ -1,6 +1,6 @@
 A New Relic Registry using https://github.com/newrelic/micrometer-registry-newrelic[New Relic's own Micrometer Registry] rather than the New Relic registry provided by the Micrometer project.
 
-You can include the New Relic Telemetry reporter via `io.micronaut.configuration:micronaut-micrometer-registry-new-relic-telemetry`
+You can include the New Relic Telemetry reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry`
 
 dependency:micronaut-micrometer-registry-new-relic-telemetry[groupId="io.micronaut.micrometer"]
 

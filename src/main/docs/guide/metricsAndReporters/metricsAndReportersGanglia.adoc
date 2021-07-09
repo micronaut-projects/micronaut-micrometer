@@ -1,4 +1,4 @@
-You can include the Ganglia reporter via `io.micronaut.configuration:micronaut-micrometer-registry-ganglia`
+You can include the Ganglia reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-ganglia`
 
 dependency:micronaut-micrometer-registry-ganglia[groupId="io.micronaut.micrometer"]
 

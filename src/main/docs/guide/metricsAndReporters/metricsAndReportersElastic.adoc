@@ -1,4 +1,4 @@
-You can include the Elastic reporter via `io.micronaut.configuration:micronaut-micrometer-registry-elastic`
+You can include the Elastic reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-elastic`
 
 dependency:micronaut-micrometer-registry-elastic[groupId="io.micronaut.micrometer"]
 
