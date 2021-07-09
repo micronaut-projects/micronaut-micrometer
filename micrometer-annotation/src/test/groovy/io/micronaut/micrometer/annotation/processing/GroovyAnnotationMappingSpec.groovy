@@ -6,7 +6,6 @@ import spock.lang.PendingFeature
 
 class GroovyAnnotationMappingSpec extends AbstractBeanDefinitionSpec {
 
-    @PendingFeature(reason = "Needs https://github.com/micronaut-projects/micronaut-core/pull/5282")
     void 'test map timedset annotation'() {
         given:
         def context = buildContext('test.Test', '''
