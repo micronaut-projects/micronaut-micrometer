@@ -1,15 +1,3 @@
-configurations {
-    all {
-        resolutionStrategy {
-            eachDependency { DependencyResolveDetails details ->
-                if (details.requested.group == 'io.micronaut.cache') {
-                    details.useVersion '3.0.0.RC1'
-                }
-            }
-        }
-    }
-}
-
 dependencies {
     annotationProcessor "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut:micronaut-graal"

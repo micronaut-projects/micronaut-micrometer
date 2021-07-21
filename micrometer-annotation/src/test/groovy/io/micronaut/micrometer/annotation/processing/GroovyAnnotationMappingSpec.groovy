@@ -1,9 +1,9 @@
 package io.micronaut.micrometer.annotation.processing
 
+import io.micronaut.annotation.processing.test.AbstractTypeElementSpec
 import io.micronaut.aop.Intercepted
-import io.micronaut.ast.transform.test.AbstractBeanDefinitionSpec
 
-class GroovyAnnotationMappingSpec extends AbstractBeanDefinitionSpec {
+class GroovyAnnotationMappingSpec extends AbstractTypeElementSpec {
 
     void 'test map timedset annotation'() {
         given:
