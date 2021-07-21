@@ -17,7 +17,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.management
 
 import groovy.transform.NotYetImplemented
 import io.micronaut.context.ApplicationContext
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.AutoCleanup
 import spock.lang.Shared
@@ -29,19 +29,19 @@ class PrometheusEndpointSpec extends Specification {
             'endpoints.prometheus.sensitive':false,
             'micronaut.metrics.export.prometheus.descriptions':false
     ])
-    @Shared @AutoCleanup RxHttpClient client = embeddedServer.applicationContext
-                                                    .createBean(RxHttpClient, embeddedServer.getURL())
+    @Shared @AutoCleanup HttpClient client = embeddedServer.applicationContext
+                                                    .createBean(HttpClient, embeddedServer.getURL())
 
 
     void "test prometheus scrape"() {
         expect:
-        client.retrieve('/prometheus').blockingFirst().contains('jvm_memory_used')
+        client.toBlocking().retrieve('/prometheus').contains('jvm_memory_used')
     }
 
     @NotYetImplemented
     void "test prometheus scrape no descriptions"() {
         given:
-        def result = client.retrieve('/prometheus').blockingFirst()
+        def result = client.toBlocking().retrieve('/prometheus')
         expect:
         result.contains('jvm_memory_used')
         !result.contains('# TYPE')
