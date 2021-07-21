@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.IgnoreIf
@@ -61,16 +61,16 @@ class MetricsEndpointSpec extends Specification {
         !context.containsBean(CompositeMeterRegistry)
 
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.retrieve(HttpRequest.GET("/metrics"), Map).blockingFirst()
+        client.toBlocking().retrieve(HttpRequest.GET("/metrics"), Map).blockingFirst()
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
     }
 
@@ -87,10 +87,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.files.enabled"    : filesEnabled
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics", Map)
         Map result = response.body()
 
         then:
@@ -129,7 +129,7 @@ class MetricsEndpointSpec extends Specification {
         }
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -152,10 +152,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.jvm.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -165,7 +165,7 @@ class MetricsEndpointSpec extends Specification {
         result["baseUnit"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -197,10 +197,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.jvm.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/jvm.buffer.count?tag=id:direct", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/jvm.buffer.count?tag=id:direct", Map)
         Map result = response.body() as Map
 
         then:
@@ -210,14 +210,14 @@ class MetricsEndpointSpec extends Specification {
         result["baseUnit"]
 
         when:
-        rxClient.exchange("/metrics/jvm.buffer.count?tag=id:blah", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/jvm.buffer.count?tag=id:blah", Map)
 
         then:
         def e = thrown(HttpClientResponseException)
         e.status == HttpStatus.NOT_FOUND
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
     }
@@ -231,16 +231,16 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.jvm.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/$name", Map)
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -272,10 +272,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.logback.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -285,7 +285,7 @@ class MetricsEndpointSpec extends Specification {
         result["baseUnit"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -301,16 +301,16 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.logback.enabled": false
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/$name", Map)
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -326,10 +326,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.uptime.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -338,7 +338,7 @@ class MetricsEndpointSpec extends Specification {
         result["description"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -355,16 +355,16 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.uptime.enabled": false
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/$name", Map)
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -381,10 +381,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.processor.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -393,7 +393,7 @@ class MetricsEndpointSpec extends Specification {
         result["description"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -413,10 +413,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.processor.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -425,7 +425,7 @@ class MetricsEndpointSpec extends Specification {
         result["description"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -441,16 +441,16 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.processor.enabled": false
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/$name", Map)
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -470,10 +470,10 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.files.enabled": true
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        def response = rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics/$name", Map)
         Map result = response.body() as Map
 
         then:
@@ -483,7 +483,7 @@ class MetricsEndpointSpec extends Specification {
         result["baseUnit"]
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:
@@ -500,16 +500,16 @@ class MetricsEndpointSpec extends Specification {
                 "micronaut.metrics.binders.files.enabled": false
         ])
         URL server = embeddedServer.getURL()
-        RxHttpClient rxClient = embeddedServer.applicationContext.createBean(RxHttpClient, server)
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
         when:
-        rxClient.exchange("/metrics/$name", Map).blockingFirst()
+        client.toBlocking().exchange("/metrics/$name", Map)
 
         then:
         thrown(HttpClientResponseException)
 
         cleanup:
-        rxClient.close()
+        client.close()
         embeddedServer.close()
 
         where:

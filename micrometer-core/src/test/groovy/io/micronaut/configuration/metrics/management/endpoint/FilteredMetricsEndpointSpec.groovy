@@ -31,7 +31,7 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
@@ -66,10 +66,10 @@ class FilteredMetricsEndpointSpec extends Specification {
 
     void "warm up the server"() {
         given:
-        RxHttpClient rxClient = RxHttpClient.create(embeddedServer.getURL())
+        HttpClient client = HttpClient.create(embeddedServer.getURL())
 
         expect:
-        rxClient.exchange(HttpRequest.GET('/filtered/hello/fred'), String).blockingFirst().body() == "Hello Fred"
+        client.toBlocking().exchange(HttpRequest.GET('/filtered/hello/fred'), String).body() == "Hello Fred"
     }
 
     void "test the filter beans are available"() {
@@ -86,7 +86,7 @@ class FilteredMetricsEndpointSpec extends Specification {
     @IgnoreIf({env["CI"]})
     void "test metrics endpoint with filtered metrics"() {
         given:
-        RxHttpClient rxClient = RxHttpClient.create(embeddedServer.getURL())
+        HttpClient client = HttpClient.create(embeddedServer.getURL())
 
         when:
         ApplicationContext context = embeddedServer.getApplicationContext()
@@ -101,28 +101,28 @@ class FilteredMetricsEndpointSpec extends Specification {
 
         when:
 
-        def result = waitForResponse(rxClient)
+        def result = waitForResponse(client)
 
         then:
         result.names.size() == 1
         !result.names[0].toString().startsWith("system")
 
         cleanup:
-        rxClient.close()
+        client.close()
     }
 
-    Map waitForResponse(RxHttpClient rxClient, Integer loopCount = 1) {
+    Map waitForResponse(HttpClient client, Integer loopCount = 1) {
         if (loopCount > 5) {
             throw new RuntimeException("Too many attempts to get metrics, failed!")
         }
 
-        def response = rxClient.exchange("/metrics", Map).blockingFirst()
+        def response = client.toBlocking().exchange("/metrics", Map)
         Map result = response?.body()
         log.info("/metrics returned status=${response?.status()} data=${result}")
         if (!(result?.names?.size() > 0) || response?.status() != HttpStatus.OK) {
             Thread.sleep(500)
             log.info("Could not get metrics, retrying attempt $loopCount of 5")
-            waitForResponse(rxClient, loopCount + 1)
+            waitForResponse(client, loopCount + 1)
         } else {
             return result
         }
