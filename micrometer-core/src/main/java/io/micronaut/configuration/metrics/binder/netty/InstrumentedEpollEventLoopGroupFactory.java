@@ -119,21 +119,6 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
     }
 
     /**
-     * Creates a default EpollEventLoopGroup.
-     *
-     * @param ioRatio The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
-    @Override
-    public EventLoopGroup createEventLoopGroup(@Nullable Integer ioRatio) {
-        return new EpollEventLoopGroup(0, (Executor) null,
-                DefaultEventExecutorChooserFactory.INSTANCE,
-                DefaultSelectStrategyFactory.INSTANCE,
-                RejectedExecutionHandlers.reject(),
-                instrumentedEventLoopTaskQueueFactory);
-    }
-
-    /**
      * Returns the server channel class.
      *
      * @return EpollServerSocketChannel.
