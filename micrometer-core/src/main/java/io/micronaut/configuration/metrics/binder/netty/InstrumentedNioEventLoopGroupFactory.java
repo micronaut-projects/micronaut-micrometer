@@ -123,22 +123,6 @@ final class InstrumentedNioEventLoopGroupFactory implements EventLoopGroupFactor
     }
 
     /**
-     * Creates a default NioEventLoopGroup.
-     *
-     * @param ioRatio The io ratio.
-     * @return A NioEventLoopGroup.
-     */
-    @Override
-    public EventLoopGroup createEventLoopGroup(@Nullable Integer ioRatio) {
-        return withIoRatio(new NioEventLoopGroup(0, (Executor) null,
-                DefaultEventExecutorChooserFactory.INSTANCE,
-                SelectorProvider.provider(),
-                DefaultSelectStrategyFactory.INSTANCE,
-                RejectedExecutionHandlers.reject(),
-                instrumentedEventLoopTaskQueueFactory), ioRatio);
-    }
-
-    /**
      * Returns the server channel class.
      *
      * @return NioServerSocketChannel.
