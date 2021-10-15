@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -32,9 +33,11 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.EventLoopGroupFactory;
+import io.micronaut.http.netty.channel.KQueueAvailabilityCondition;
 import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.kqueue.KQueue;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.kqueue.KQueueServerSocketChannel;
 import io.netty.channel.kqueue.KQueueSocketChannel;
@@ -52,8 +55,9 @@ import io.netty.util.concurrent.ThreadPerTaskExecutor;
  */
 @Singleton
 @Internal
-@Replaces(factory = KQueueEventLoopGroupFactory.class)
-@Requires(beans = KQueueEventLoopGroupFactory.class)
+@Replaces(bean = KQueueEventLoopGroupFactory.class, named = EventLoopGroupFactory.NATIVE)
+@Named(EventLoopGroupFactory.NATIVE)
+@Requires(classes = KQueue.class, condition = KQueueAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFactory {

@@ -32,7 +32,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.NioEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
@@ -54,11 +53,10 @@ import io.netty.util.concurrent.ThreadPerTaskExecutor;
  */
 @Singleton
 @Internal
-@Replaces(factory = NioEventLoopGroupFactory.class)
-@Requires(beans = NioEventLoopGroupFactory.class)
+@Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
-final class InstrumentedNioEventLoopGroupFactory implements EventLoopGroupFactory {
+final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactory {
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**

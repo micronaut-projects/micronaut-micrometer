@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -30,11 +31,13 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.http.netty.channel.EpollAvailabilityCondition;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -52,8 +55,9 @@ import io.netty.util.concurrent.ThreadPerTaskExecutor;
  */
 @Singleton
 @Internal
-@Replaces(factory = EpollEventLoopGroupFactory.class)
-@Requires(beans = EpollEventLoopGroupFactory.class)
+@Replaces(bean = EpollEventLoopGroupFactory.class, named = EventLoopGroupFactory.NATIVE)
+@Named(EventLoopGroupFactory.NATIVE)
+@Requires(classes = Epoll.class, condition = EpollAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
 final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFactory {
