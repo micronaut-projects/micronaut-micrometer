@@ -1,4 +1,4 @@
-You can include the Cloudwatch reporter via `io.micronaut.configuration:micronaut-micrometer-registry-cloudwatch`
+You can include the Cloudwatch reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch`
 
 dependency:micronaut-micrometer-registry-cloudwatch[groupId="io.micronaut.micrometer"]
 

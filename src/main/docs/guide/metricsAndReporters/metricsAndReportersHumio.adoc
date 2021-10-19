@@ -1,4 +1,4 @@
-You can include the Humio reporter via `io.micronaut.configuration:micronaut-micrometer-registry-humio`
+You can include the Humio reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-humio`
 
 dependency:micronaut-micrometer-registry-humio[groupId="io.micronaut.micrometer"]
 

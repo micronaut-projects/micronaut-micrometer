@@ -1,4 +1,4 @@
-You can include the SignalFx reporter via `io.micronaut.configuration:micronaut-micrometer-registry-signalfx`
+You can include the SignalFx reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-signalfx`
 
 dependency:micronaut-micrometer-registry-signalfx[groupId="io.micronaut.micrometer"]
 
