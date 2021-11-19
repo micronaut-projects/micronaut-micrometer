@@ -23,7 +23,6 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.NioEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
@@ -53,11 +52,10 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Singleton
 @Internal
-@Replaces(factory = NioEventLoopGroupFactory.class)
-@Requires(beans = NioEventLoopGroupFactory.class)
+@Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
-final class InstrumentedNioEventLoopGroupFactory implements EventLoopGroupFactory {
+final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactory {
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
@@ -115,22 +113,6 @@ final class InstrumentedNioEventLoopGroupFactory implements EventLoopGroupFactor
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, executor,
-                DefaultEventExecutorChooserFactory.INSTANCE,
-                SelectorProvider.provider(),
-                DefaultSelectStrategyFactory.INSTANCE,
-                RejectedExecutionHandlers.reject(),
-                instrumentedEventLoopTaskQueueFactory), ioRatio);
-    }
-
-    /**
-     * Creates a default NioEventLoopGroup.
-     *
-     * @param ioRatio The io ratio.
-     * @return A NioEventLoopGroup.
-     */
-    @Override
-    public EventLoopGroup createEventLoopGroup(@Nullable Integer ioRatio) {
-        return withIoRatio(new NioEventLoopGroup(0, (Executor) null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 SelectorProvider.provider(),
                 DefaultSelectStrategyFactory.INSTANCE,

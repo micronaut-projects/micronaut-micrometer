@@ -171,7 +171,7 @@ The data source metrics bindings will provide data source pool metrics.
 
 NOTE: There is a different set of pool metric names for HikariCP and other pool providers.
 
-If you are using `io.micronaut.configuration:micronaut-jdbc-hikari` you will get additional pool metrics as HikariCP has built in support for meter registries.
+If you are using `io.micronaut.sql:micronaut-jdbc-hikari` you will get additional pool metrics as HikariCP has built in support for meter registries.
 
 .HikariCP Metrics Provided
 |=======
@@ -188,7 +188,7 @@ If you are using `io.micronaut.configuration:micronaut-jdbc-hikari` you will get
 | hikaricp.connections.acquire
 |=======
 
-If you are using `io.micronaut.configuration:micronaut-jdbc-tomcat` or `io.micronaut.configuration:micronaut-jdbc-dbcp` you will get the following metrics
+If you are using `io.micronaut.sql:micronaut-jdbc-tomcat` or `io.micronaut.sql:micronaut-jdbc-dbcp` you will get the following metrics
 
 .Generic Pool Metrics provided
 |=======
@@ -215,7 +215,7 @@ You can customize what metrics are exposed using `micronaut.metrics.binders.nett
 ** `POOLED_ARENAS_CHUNKLISTS`: expose `PooledByteBufAllocator` pooled arenas chunk lists metrics (requires `POOLED_ARENAS`),
 ** `POOLED_ARENAS_CHUNKS`: expose `PooledByteBufAllocator` pooled arenas chunks metrics (requires `POOLED_ARENAS_CHUNKLISTS`).
 * *NettyMetricsPipelineBinder*: Instrument netty's channel, use `micronaut.metrics.binders.netty.channels.enabled` to toggle. Default is *false*.
-Some of the provided metrics are: the channel count, current active channel count, channel error count, bytes read and written. 
+Some of the provided metrics are: the channel count, current active channel count, channel error count, bytes read and written.
 
 == Adding Custom Metrics
 
