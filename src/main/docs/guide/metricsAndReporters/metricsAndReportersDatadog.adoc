@@ -1,4 +1,4 @@
-You can include the Datadog reporter via `io.micronaut.configuration:micronaut-micrometer-registry-datadog`
+You can include the Datadog reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-datadog`
 
 dependency:micronaut-micrometer-registry-datadog[groupId="io.micronaut.micrometer"]
 

@@ -1,4 +1,4 @@
-You can include the Prometheus reporter via `io.micronaut.configuration:micronaut-micrometer-registry-prometheus`
+You can include the Prometheus reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-prometheus`
 
 dependency:micronaut-micrometer-registry-prometheus[groupId="io.micronaut.micrometer"]
 
