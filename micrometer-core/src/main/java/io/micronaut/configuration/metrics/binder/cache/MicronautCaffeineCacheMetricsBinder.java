@@ -34,11 +34,13 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  *
  * @author graemerocher
  * @since 1.0
+ * @deprecated Since cache was separated from core this is no longer necessary
  */
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = StringUtils.FALSE)
 @Requires(classes = Cache.class)
 @RequiresMetrics
 @Singleton
+@Deprecated
 public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventListener<Cache<?>> {
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;

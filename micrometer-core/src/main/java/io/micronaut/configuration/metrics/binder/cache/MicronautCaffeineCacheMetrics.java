@@ -41,9 +41,11 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Clint Checketts
  * @author graemerocher
+ * @deprecated Use {@link io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics instead}. Since cache was separated from core this is no longer necessary
  */
 @NonNullApi
 @NonNullFields
+@Deprecated
 public class MicronautCaffeineCacheMetrics extends CacheMeterBinder {
     private final Cache<?, ?> cache;
 
