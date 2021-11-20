@@ -109,7 +109,12 @@ class DynatraceRegistryFactorySpec extends Specification {
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
         def properties = context.getBean(ExportConfigurationProperties)
-        DynatraceConfig config = (DynatraceConfig) { val -> properties.export.get(val) }
+        DynatraceConfig config = new DynatraceConfig() {
+            @Override
+            String get(String key) {
+                return properties.export.get(key)
+            }
+        }
 
         then: "default properties are used"
         dynatraceMeterRegistry.isPresent()
@@ -137,7 +142,12 @@ class DynatraceRegistryFactorySpec extends Specification {
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
         def properties = context.getBean(ExportConfigurationProperties)
-        DynatraceConfig config = (DynatraceConfig) { val -> properties.export.get(val) }
+        DynatraceConfig config = new DynatraceConfig() {
+            @Override
+            String get(String key) {
+                return properties.export.get(key)
+            }
+        }
 
         then:
         dynatraceMeterRegistry.isPresent()
