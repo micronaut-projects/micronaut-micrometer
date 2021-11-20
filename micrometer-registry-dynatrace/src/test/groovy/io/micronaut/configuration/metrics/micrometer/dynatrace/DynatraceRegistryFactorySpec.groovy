@@ -17,7 +17,9 @@ package io.micronaut.configuration.metrics.micrometer.dynatrace
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micrometer.dynatrace.DynatraceConfig
 import io.micrometer.dynatrace.DynatraceMeterRegistry
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -106,15 +108,22 @@ class DynatraceRegistryFactorySpec extends Specification {
                 (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
+        def properties = context.getBean(ExportConfigurationProperties)
+        DynatraceConfig config = new DynatraceConfig() {
+            @Override
+            String get(String key) {
+                return properties.export.get(key)
+            }
+        }
 
         then: "default properties are used"
         dynatraceMeterRegistry.isPresent()
-        dynatraceMeterRegistry.get().config.enabled()
-        dynatraceMeterRegistry.get().config.numThreads() == 2
-        dynatraceMeterRegistry.get().config.uri() == DYNATRACE_MOCK_URI
-        dynatraceMeterRegistry.get().config.apiToken() == DYNATRACE_MOCK_API_TOKEN
-        dynatraceMeterRegistry.get().config.deviceId() == DYNATRACE_MOCK_DEVICE_ID
-        dynatraceMeterRegistry.get().config.step() == Duration.ofMinutes(1)
+        config.enabled()
+        config.numThreads() == 2
+        config.uri() == DYNATRACE_MOCK_URI
+        config.apiToken() == DYNATRACE_MOCK_API_TOKEN
+        config.deviceId() == DYNATRACE_MOCK_DEVICE_ID
+        config.step() == Duration.ofMinutes(1)
 
         cleanup:
         context.stop()
@@ -132,15 +141,22 @@ class DynatraceRegistryFactorySpec extends Specification {
                 (DYNATRACE_CONFIG + ".deviceId")      : DYNATRACE_MOCK_DEVICE_ID,
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
+        def properties = context.getBean(ExportConfigurationProperties)
+        DynatraceConfig config = new DynatraceConfig() {
+            @Override
+            String get(String key) {
+                return properties.export.get(key)
+            }
+        }
 
         then:
         dynatraceMeterRegistry.isPresent()
-        dynatraceMeterRegistry.get().config.enabled()
-        dynatraceMeterRegistry.get().config.numThreads() == 77
-        dynatraceMeterRegistry.get().config.apiToken() == DYNATRACE_MOCK_API_TOKEN
-        dynatraceMeterRegistry.get().config.deviceId() == DYNATRACE_MOCK_DEVICE_ID
-        dynatraceMeterRegistry.get().config.uri() == 'https://micronaut.io'
-        dynatraceMeterRegistry.get().config.step() == Duration.ofMinutes(2)
+        config.enabled()
+        config.numThreads() == 77
+        config.apiToken() == DYNATRACE_MOCK_API_TOKEN
+        config.deviceId() == DYNATRACE_MOCK_DEVICE_ID
+        config.uri() == 'https://micronaut.io'
+        config.step() == Duration.ofMinutes(2)
 
         cleanup:
         context.stop()
