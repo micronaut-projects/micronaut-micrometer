@@ -24,6 +24,9 @@ import io.micronaut.http.HttpStatus;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import reactor.core.CoreSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.util.context.Context;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +45,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @since 1.0
  */
 @SuppressWarnings("PublisherImplementation")
-public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher<T> {
+public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 
     /**
      * Constant used to define whether web metrics are enabled or not.
@@ -61,7 +64,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
     private static final String EXCEPTION = "exception";
     private static final String HOST = "host";
 
-    private final Publisher<T> publisher;
+    private final Flux<T> publisher;
     private final MeterRegistry meterRegistry;
     private final String requestPath;
     private final long start;
@@ -113,7 +116,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
             boolean isServer,
             String host,
             boolean reportErrors) {
-        this.publisher = publisher;
+        this.publisher = Flux.from(publisher);
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
         this.start = start;
@@ -150,9 +153,14 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> implements Publisher
      */
     @SuppressWarnings("SubscriberImplementation")
     @Override
-    public void subscribe(Subscriber<? super T> actual) {
+    public void subscribe(CoreSubscriber<? super T> actual) {
 
-        publisher.subscribe(new Subscriber<T>() {
+        publisher.subscribe(new CoreSubscriber<T>() {
+
+            @Override
+            public Context currentContext(){
+                return actual.currentContext();
+            }
             /**
              * Subscription handler.
              * @param subscription the subscription
