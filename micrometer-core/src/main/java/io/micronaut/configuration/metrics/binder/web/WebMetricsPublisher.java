@@ -22,7 +22,6 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
 import io.micronaut.http.HttpStatus;
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
@@ -158,9 +157,10 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         publisher.subscribe(new CoreSubscriber<T>() {
 
             @Override
-            public Context currentContext(){
+            public Context currentContext() {
                 return actual.currentContext();
             }
+
             /**
              * Subscription handler.
              * @param subscription the subscription
