@@ -31,7 +31,7 @@ import jakarta.inject.Singleton;
  * @since 4.1.0
  */
 @Factory
-public class GrpcMetricsListenerFactory {
+class GrpcMetricsListenerFactory {
 
     @Singleton
     @Requires(classes = ServerInterceptor.class)
