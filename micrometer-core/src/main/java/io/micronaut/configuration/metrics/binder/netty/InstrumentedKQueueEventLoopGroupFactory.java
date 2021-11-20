@@ -118,21 +118,6 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a default KQueueEventLoopGroup.
-     *
-     * @param ioRatio The io ratio.
-     * @return A KQueueEventLoopGroup.
-     */
-    @Override
-    public EventLoopGroup createEventLoopGroup(@Nullable Integer ioRatio) {
-        return withIoRatio(new KQueueEventLoopGroup(0, (Executor) null,
-                DefaultEventExecutorChooserFactory.INSTANCE,
-                DefaultSelectStrategyFactory.INSTANCE,
-                RejectedExecutionHandlers.reject(),
-                instrumentedEventLoopTaskQueueFactory), ioRatio);
-    }
-
     @Override
     public boolean isNative() {
         return true;
