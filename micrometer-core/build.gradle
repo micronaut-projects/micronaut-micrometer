@@ -7,6 +7,7 @@ dependencies {
     api "io.micronaut:micronaut-inject:$micronautVersion"
     implementation "io.projectreactor:reactor-core"
     compileOnly "io.micronaut:micronaut-management"
+    compileOnly "io.grpc:grpc-api"
     compileOnly "io.micronaut.sql:micronaut-jdbc"
     compileOnly 'io.micronaut.cache:micronaut-cache-core'
     compileOnly "io.netty:netty-buffer"
@@ -31,4 +32,6 @@ dependencies {
     testImplementation "io.netty:netty-transport-native-epoll"
     testImplementation "io.netty:netty-transport-native-kqueue"
     testImplementation "io.micronaut:micronaut-http-server-netty"
+    testImplementation "io.grpc:grpc-api"
+
 }
