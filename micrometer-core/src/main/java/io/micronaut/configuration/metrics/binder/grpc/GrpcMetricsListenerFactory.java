@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.grpc;
 
 import io.grpc.ClientInterceptor;
+import io.grpc.Internal;
 import io.grpc.ServerInterceptor;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.grpc.MetricCollectingClientInterceptor;
@@ -34,6 +35,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author James Kleeh
  * @since 4.1.0
  */
+@Internal
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.enabled", notEquals = StringUtils.FALSE)
 @Factory
