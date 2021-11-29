@@ -8,16 +8,6 @@ buildscript {
     }
 }
 
-configurations {
-    configProperties {
-        dependencies.whenObjectAdded {
-            if (it.name == 'micrometer-bom') {
-                dependencies.remove(it)
-            }
-        }
-    }
-}
-
 subprojects { Project subproject ->
     group "io.micronaut.micrometer"
 

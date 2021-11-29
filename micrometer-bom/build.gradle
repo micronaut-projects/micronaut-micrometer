@@ -2,6 +2,23 @@ javaPlatform {
     allowDependencies()
 }
 
+configurations {
+    dummyIndividualDocs {
+        canBeConsumed = true
+        canBeResolved = false
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "individual-configuration-properties"))
+        }
+    }
+    dummyDocs {
+        canBeConsumed = true
+        canBeResolved = false
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "configuration-properties"))
+        }
+    }
+}
+
 dependencies {
     api platform("io.micrometer:micrometer-bom:$micrometerVersion")
 
