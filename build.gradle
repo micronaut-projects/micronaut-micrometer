@@ -1,45 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath "io.micronaut.build.internal:micronaut-gradle-plugins:4.2.6"
-    }
+plugins {
+    id "io.micronaut.build.internal.docs"
+    id "io.micronaut.build.internal.dependency-updates"
 }
-
-subprojects { Project subproject ->
-    group "io.micronaut.micrometer"
-
-    if (subproject.name != 'micrometer-bom') {
-        apply plugin: "io.micronaut.build.internal.common"
-
-        if (subproject.parent.name == "docs-examples" || subproject.name == "docs-examples") {
-            return
-        }
-
-        dependencies {
-            implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
-            testImplementation("org.spockframework:spock-core:${spockVersion}") {
-                exclude module: 'groovy-all'
-            }
-            testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
-        }
-
-        compileJava {
-            options.compilerArgs += [
-                    '-Amicronaut.processing.group=' + subproject.group,
-                    '-Amicronaut.processing.module=' + "micronaut-$subproject.name",
-            ]
-        }
-    } else {
-        apply plugin: "java-platform"
-        version projectVersion
-    }
-
-    apply plugin: "io.micronaut.build.internal.dependency-updates"
-    apply plugin: "io.micronaut.build.internal.publishing"
-}
-
-apply plugin: "io.micronaut.build.internal.docs"
-apply plugin: "io.micronaut.build.internal.dependency-updates"

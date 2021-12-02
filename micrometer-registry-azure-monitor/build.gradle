@@ -1,3 +1,7 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
 dependencies {
     annotationProcessor "io.micronaut:micronaut-inject-java"
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
@@ -17,4 +21,3 @@ dependencies {
     testRuntimeOnly 'javax.xml.bind:jaxb-api:2.3.+'
     testImplementation "io.micronaut:micronaut-http-client"
 }
-

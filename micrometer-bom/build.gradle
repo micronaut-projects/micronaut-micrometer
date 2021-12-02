@@ -1,33 +1,4 @@
-javaPlatform {
-    allowDependencies()
-}
-
-configurations {
-    dummyIndividualDocs {
-        canBeConsumed = true
-        canBeResolved = false
-        attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "individual-configuration-properties"))
-        }
-    }
-    dummyDocs {
-        canBeConsumed = true
-        canBeResolved = false
-        attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "configuration-properties"))
-        }
-    }
-}
-
-dependencies {
-    api platform("io.micrometer:micrometer-bom:$micrometerVersion")
-
-    constraints {
-        for (Project p : rootProject.subprojects) {
-            if (p.name == "micrometer-bom") continue
-            api "$p.group:micronaut-$p.name:$p.version"
-        }
-
-        api "io.micrometer:micrometer-core:$micrometerVersion"
-    }
+plugins {
+    id 'io.micronaut.build.internal.micrometer-base'
+    id 'io.micronaut.build.internal.bom'
 }
