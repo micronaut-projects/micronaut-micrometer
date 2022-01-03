@@ -1,3 +1,7 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
 dependencies {
     api "io.micrometer:micrometer-core:$micrometerVersion"
     api "io.micronaut:micronaut-inject:$micronautVersion"
@@ -8,7 +12,8 @@ dependencies {
     testImplementation "io.micronaut:micronaut-inject-java-test:$micronautVersion"
     testImplementation "io.micronaut:micronaut-inject-groovy-test:$micronautVersion"
 }
-tasks.withType(Test) {
+
+tasks.withType(Test).configureEach {
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_15)) {
         jvmArgs "--enable-preview"
     }

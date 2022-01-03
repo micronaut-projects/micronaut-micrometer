@@ -1,0 +1,22 @@
+/**
+ * Defines common configuration for all Micrometer modules.
+ */
+plugins {
+    id 'io.micronaut.build.internal.micrometer-base'
+    id 'io.micronaut.build.internal.module'
+}
+
+dependencies {
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+    testImplementation("org.spockframework:spock-core:${spockVersion}") {
+        exclude module: 'groovy-all'
+    }
+    testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
+}
+
+tasks.named("compileJava", JavaCompile) {
+    options.compilerArgs += [
+            "-Amicronaut.processing.group=${project.group}".toString(),
+            "-Amicronaut.processing.module=micronaut-${project.name}".toString()
+    ]
+}
