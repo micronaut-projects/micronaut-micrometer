@@ -37,6 +37,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 class HttpMetricsSpec extends Specification {
 
+    @Unroll
     void "test client / server metrics"() {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting])
