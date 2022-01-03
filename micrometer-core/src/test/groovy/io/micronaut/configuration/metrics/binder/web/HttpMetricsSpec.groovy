@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web
 import groovy.transform.InheritConstructors
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpResponse
@@ -31,13 +32,14 @@ import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class HttpMetricsSpec extends Specification {
 
     void "test client / server metrics"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting])
         def context = embeddedServer.getApplicationContext()
         TestClient client = context.getBean(TestClient)
 
@@ -49,12 +51,15 @@ class HttpMetricsSpec extends Specification {
 
         Timer serverTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','/test-http-metrics').timer()
         Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri','/test-http-metrics').timer()
-
+        HistogramSnapshot serverSnapshot = serverTimer.takeSnapshot()
+        HistogramSnapshot clientSnapshot = clientTimer.takeSnapshot()
 
         then:
         serverTimer != null
         serverTimer.count() == 1
         clientTimer.count() == 1
+        serverSnapshot.percentileValues().length == serverPercentilesCount
+        clientSnapshot.percentileValues().length == clientPercentilesCount
 
         when:"A request is sent to the root route"
 
@@ -134,6 +139,10 @@ class HttpMetricsSpec extends Specification {
 		cleanup:
         embeddedServer.close()
 
+        where:
+        cfg                                                   | setting       | serverPercentilesCount | clientPercentilesCount
+        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99"   | 0                      | 2
+        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99"   | 2                      | 0
 	}
 
     @Unroll
