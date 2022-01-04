@@ -31,12 +31,24 @@ import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.
 import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
+
+/**
+ * Optional filter for adding percentile to http metrics.
+ *
+ *  @author umutkocasarac
+ */
 @Factory
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
 public class HttpMeterFilterFactory {
 
 
+    /**
+     * Configure new MeterFilter for http.server.requests metrics.
+     *
+     * @param percentiles The percentiles
+     * @return A MeterFilter
+     */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server.percentiles")
@@ -44,6 +56,12 @@ public class HttpMeterFilterFactory {
         return getMeterFilter(percentiles, METRIC_HTTP_SERVER_REQUESTS);
     }
 
+    /**
+     * Configure new MeterFilter for http.client.requests metrics.
+     *
+     * @param percentiles The percentiles
+     * @return A MeterFilter
+     */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.percentiles")
