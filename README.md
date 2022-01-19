@@ -2,6 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.micronaut.micrometer/micronaut-micrometer-core.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut.micrometer%22%20AND%20a:%22micronaut-micrometer-core%22)
 [![Build Status](https://github.com/micronaut-projects/micronaut-micrometer/workflows/Java%20CI/badge.svg)](https://github.com/micronaut-projects/micronaut-micrometer/actions)
+[![Revved up by Gradle Enterprise](https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A)](https://ge.micronaut.io/scans)
 
 This project includes integration between [Micronaut](http://micronaut.io) and [Micrometer](https://micrometer.io).
 
