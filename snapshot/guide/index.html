@@ -599,7 +599,7 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jvm.enabled</code></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -668,7 +668,7 @@ public class MeterFilterFactory {
 <div class="title">Filter Path</div>
 <p>If enabled, be default the path <code>/**</code> will be intercepted.  If you wish to change which paths are run through the filter for the server set <code>micronaut.metrics.http.path</code>. For the client set <code>micronaut.metrics.http.client.path</code>.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 2. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -699,7 +699,7 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.uptime.enabled</code></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 3. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -726,7 +726,7 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.processor.enabled</code></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 4. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -758,7 +758,7 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.files.enabled</code></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 5. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -784,7 +784,7 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.logback.enabled</code></p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 6. Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -843,7 +843,7 @@ There is a different set of pool metric names for HikariCP and other pool provid
 <div class="paragraph">
 <p>If you are using <code>io.micronaut.sql:micronaut-jdbc-hikari</code> you will get additional pool metrics as HikariCP has built in support for meter registries.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 7. HikariCP Metrics Provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -887,7 +887,7 @@ There is a different set of pool metric names for HikariCP and other pool provid
 <div class="paragraph">
 <p>If you are using <code>io.micronaut.sql:micronaut-jdbc-tomcat</code> or <code>io.micronaut.sql:micronaut-jdbc-dbcp</code> you will get the following metrics</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 8. Generic Pool Metrics provided</caption>
 <colgroup>
 <col style="width: 100%;">
@@ -1093,8 +1093,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
     &lt;/path&gt;
 &lt;/annotationProcessorPaths&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 
 <h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
@@ -1141,14 +1140,13 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
     &lt;artifactId&gt;micronaut-micrometer-registry-appoptics&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.appoptics</code>. The most commonly changed configuration properties are listed below,
 but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java">AppOpticsConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1217,13 +1215,12 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-atlas&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.atlas</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/Netflix/spectator/blob/master/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java">AtlasConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1287,14 +1284,13 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-azure-monitor&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.azuremonitor</code>. The most commonly changed configuration properties are listed below,
 but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-azure-monitor/src/main/java/io/micrometer/azuremonitor/AzureMonitorConfig.java">AzureMonitorConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1358,13 +1354,12 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-cloudwatch&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.cloudwatch</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java">CloudWatchConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1428,15 +1423,14 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-datadog&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.datadog</code>.  The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-datadog/src/main/java/io/micrometer/datadog/DatadogConfig.java">DatadogConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1504,15 +1498,14 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-dynatrace&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.dynatrace</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-dynatrace/src/main/java/io/micrometer/dynatrace/DynatraceConfig.java">DynatraceConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1593,15 +1586,14 @@ micronaut:
     &lt;artifactId&gt;micronaut-micrometer-registry-elastic&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.elastic</code>.  The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java">ElasticConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1660,14 +1652,13 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-ganglia&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.ganglia</code>. The most commonly changed configuration properties are listed below,
 but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-ganglia/src/main/java/io/micrometer/ganglia/GangliaConfig.java">GangliaConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1731,13 +1722,12 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-graphite&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.graphite</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java">GraphiteConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1806,14 +1796,13 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-humio&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.humio</code>. The most commonly changed configuration properties are listed below,
 but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-humio/src/main/java/io/micrometer/humio/HumioConfig.java">HumioConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1872,15 +1861,14 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-influx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.influx</code>.  The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-influx/src/main/java/io/micrometer/influx/InfluxConfig.java">InfluxConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1943,14 +1931,13 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-jmx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.jmx</code>. The most commonly changed configuration properties are listed below,
 but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-jmx/src/main/java/io/micrometer/jmx/JmxConfig.java">JmxConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2009,15 +1996,14 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
     &lt;artifactId&gt;micronaut-micrometer-registry-kairos&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.kairos</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-kairos/src/main/java/io/micrometer/kairos/KairosConfig.java">KairosConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2085,15 +2071,14 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-new-relic/src/main/java/io/micrometer/newrelic/NewRelicConfig.java">NewRelicConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2169,15 +2154,14 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic-telemetry&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java">NewRelicRegistryConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2246,13 +2230,12 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.prometheus</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java">PrometheusConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2305,7 +2288,7 @@ micronaut:
 </div>
 <div class="sect4">
 <h5 id="_web_metrics">Web Metrics</h5>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Metrics provided</caption>
 <colgroup>
 <col style="width: 50%;">
@@ -2371,15 +2354,14 @@ micronaut:
     &lt;artifactId&gt;micronaut-micrometer-registry-signalfx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.signalfx</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalFxConfig.java">SignalFxConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2447,15 +2429,14 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-stackdriver&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2523,13 +2504,12 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.statsd</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java">StatdsConfig</a> for more options</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2603,15 +2583,14 @@ for more options.</p>
     &lt;artifactId&gt;micronaut-micrometer-registry-wavefront&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-</p>
+</div></p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.wavefront</code>. The most commonly changed configuration properties are listed below, but see
 <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-wavefront/src/main/java/io/micrometer/wavefront/WavefrontConfig.java">WavefrontConfig</a>
 for more options.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
+<table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
