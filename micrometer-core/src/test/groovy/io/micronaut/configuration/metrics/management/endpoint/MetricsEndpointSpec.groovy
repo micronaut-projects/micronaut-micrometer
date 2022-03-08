@@ -18,16 +18,14 @@ package io.micronaut.configuration.metrics.management.endpoint
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.annotation.Introspected
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.micronaut.serde.annotation.Serdeable
 import io.micronaut.runtime.server.EmbeddedServer
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
-import org.reflections.scanners.SubTypesScanner
-import org.reflections.scanners.TypeAnnotationsScanner
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -531,7 +529,7 @@ class MetricsEndpointSpec extends Specification {
                 Scanners.SubTypes,
                 Scanners.TypesAnnotated
         )
-        def classes = ref.getTypesAnnotatedWith(Serdeable)
+        def classes = ref.getTypesAnnotatedWith(Introspected)
 
         assert classes.contains(type)
 

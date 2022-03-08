@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
@@ -27,7 +28,6 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 import io.micronaut.management.endpoint.annotation.Selector;
-import io.micronaut.serde.annotation.Serdeable;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -228,7 +228,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name listing.
      */
-    @Serdeable
+    @Introspected
     public static final class MetricNames {
 
         private final SortedSet<String> names;
@@ -255,7 +255,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name selector.
      */
-    @Serdeable
+    @Introspected
     public static final class MetricDetails {
 
         private final String name;
@@ -339,7 +339,7 @@ public class MetricsEndpoint {
     /**
      * A set of tags for further dimensional drilldown and their potential values.
      */
-    @Serdeable
+    @Introspected
     public static final class AvailableTag {
 
         private final String tag;
@@ -380,7 +380,7 @@ public class MetricsEndpoint {
     /**
      * A measurement sample combining a {@link Statistic statistic} and a value.
      */
-    @Serdeable
+    @Introspected
     public static final class Sample {
 
         private final Statistic statistic;
