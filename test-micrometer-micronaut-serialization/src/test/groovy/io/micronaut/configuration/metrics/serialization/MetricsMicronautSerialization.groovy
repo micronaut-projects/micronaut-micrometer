@@ -37,7 +37,7 @@ class MetricsMicronautSerialization extends Specification {
         then:
         result["names"]
         List names = result["names"] as List
-        names.size() == 33
+        !names.isEmpty()
         names.containsAll("executor.completed", "executor.queued")
         cleanup:
         client.close()
