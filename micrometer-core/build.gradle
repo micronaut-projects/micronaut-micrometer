@@ -21,6 +21,7 @@ dependencies {
     compileOnly "io.micronaut:micronaut-http-server-netty"
     compileOnly "javax.cache:cache-api:$jcacheVersion"
     compileOnly "ch.qos.logback:logback-classic:1.2.11"
+    compileOnly "io.micronaut.serde:micronaut-serde-jackson:$micronautSerializationVersion"
     testAnnotationProcessor project(":micrometer-annotation")
     testAnnotationProcessor "io.micronaut:micronaut-inject-java"
     testImplementation "io.micronaut:micronaut-management"
@@ -30,12 +31,14 @@ dependencies {
     testImplementation "io.micronaut:micronaut-http-client"
 
     testImplementation "io.micronaut.sql:micronaut-jdbc"
+    testImplementation "io.micronaut.serde:micronaut-serde-jackson:$micronautSerializationVersion"
     testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
     testImplementation "io.netty:netty-buffer"
     testImplementation "io.netty:netty-transport"
     testImplementation "io.netty:netty-transport-native-epoll"
     testImplementation "io.netty:netty-transport-native-kqueue"
     testImplementation "io.micronaut:micronaut-http-server-netty"
+    testImplementation "org.reflections:reflections:$reflectionsVersion"
     testImplementation "io.grpc:grpc-api"
 
 }
