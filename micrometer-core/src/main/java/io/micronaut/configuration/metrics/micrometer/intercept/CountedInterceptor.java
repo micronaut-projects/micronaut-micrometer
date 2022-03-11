@@ -27,6 +27,7 @@ import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.StringUtils;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -68,12 +69,12 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                         }
                         Object reactiveResult;
                         if (context.getReturnType().isSingleResult()) {
-                            Mono<?> single = Publishers.convertPublisher(interceptResult, Mono.class);
+                            Mono<?> single = Mono.from(Publishers.convertPublisher(interceptResult, Publisher.class));
                             reactiveResult = single
                                     .doOnError(throwable -> doCount(metadata, metricName, throwable))
                                     .doOnSuccess(o -> doCount(metadata, metricName, null));
                         } else {
-                            Flux<?> flowable = Publishers.convertPublisher(interceptResult, Flux.class);
+                            Flux<?> flowable = Flux.from(Publishers.convertPublisher(interceptResult, Publisher.class));
                             reactiveResult = flowable
                                     .doOnError(throwable -> doCount(metadata, metricName, throwable))
                                     .doOnComplete(() -> doCount(metadata, metricName, null));
