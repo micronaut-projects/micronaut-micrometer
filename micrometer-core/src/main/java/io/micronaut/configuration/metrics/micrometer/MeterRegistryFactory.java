@@ -45,6 +45,7 @@ public class MeterRegistryFactory {
 
     public static final String MICRONAUT_METRICS = "micronaut.metrics.";
     public static final String MICRONAUT_METRICS_BINDERS = MICRONAUT_METRICS + "binders";
+    public static final String MICRONAUT_METRICS_COMMON_TAGS = MICRONAUT_METRICS + "tags";
     public static final String MICRONAUT_METRICS_ENABLED = MICRONAUT_METRICS + "enabled";
     public static final String MICRONAUT_METRICS_EXPORT = MICRONAUT_METRICS + "export";
 
