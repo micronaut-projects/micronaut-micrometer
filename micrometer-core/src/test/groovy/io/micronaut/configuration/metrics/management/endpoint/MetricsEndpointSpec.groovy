@@ -24,6 +24,7 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
+import reactor.core.publisher.Flux
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -491,6 +492,7 @@ class MetricsEndpointSpec extends Specification {
         name << ["process.files.open",
                  "process.files.max"]
     }
+
     @Unroll
     void "test metrics endpoint with common tags"() {
         given:
@@ -503,22 +505,20 @@ class MetricsEndpointSpec extends Specification {
         URL server = embeddedServer.getURL()
         HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
 
-        when:
-        def response = client.toBlocking().exchange("/metrics/$name", Map)
-        Map result = response.body() as Map
-
-        then:
-        result["name"]
-        List availableTags = result["availableTags"] as List
-        availableTags.size() == 3
-        List tagsNames = [Tag.of("test1", "test1-val"), Tag.of("test2", "test2-val")]
-
-        tagsNames.stream().allMatch(tag->
-                availableTags.stream().anyMatch(item -> {
-                    LinkedHashMap entry = item as LinkedHashMap
-                    return entry["tag"] == tag.key && entry["values"][0] == tag.value
-                })
-        )
+        expect:
+        100.times {
+            def response = client.toBlocking().exchange("/metrics/$name", Map)
+            Map result = response.body() as Map
+            List availableTags = result["availableTags"] as List
+            availableTags.size() == 3
+            List tagsNames = [Tag.of("test1", "test1-val"), Tag.of("test2", "test2-val")]
+            tagsNames.stream().allMatch(tag->
+                    availableTags.stream().anyMatch(item -> {
+                        LinkedHashMap entry = item as LinkedHashMap
+                        return entry["tag"] == tag.key && entry["values"][0] == tag.value
+                    })
+            )
+        }
 
         cleanup:
         client.close()
@@ -528,7 +528,6 @@ class MetricsEndpointSpec extends Specification {
         name << ["process.files.open",
                  "process.files.max"]
     }
-
 
     @Unroll
     void "test metrics endpoint get file details #name disabled"() {

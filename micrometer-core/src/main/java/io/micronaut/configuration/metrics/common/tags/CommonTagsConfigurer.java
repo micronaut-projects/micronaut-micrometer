@@ -31,13 +31,9 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_COMMON_TAGS;
 
 /**
- * Binder factory that will create the jvm metrics beans.
- *
- * @author Christian Oestreich
- * @since 1.0
+ * CommonTagsConfigurer will configure every MeterRegistry with common tags.
  */
 @Factory
-@Internal
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_COMMON_TAGS)
 public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegistry> {
@@ -52,6 +48,7 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
     @Override
     public void configure(MeterRegistry meterRegistry) {
         meterRegistry.config().commonTags(commonTags);
+        System.out.println("Doesn't work");
     }
 
     @Override
