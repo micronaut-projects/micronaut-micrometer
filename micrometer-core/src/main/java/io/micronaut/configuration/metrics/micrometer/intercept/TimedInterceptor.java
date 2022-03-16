@@ -28,6 +28,7 @@ import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Singleton;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -99,13 +100,13 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                             Object result;
                             AtomicReference<List<Timer.Sample>> reactiveInvokeSample = new AtomicReference<>();
                             if (context.getReturnType().isSingleResult()) {
-                                Mono<?> single = Publishers.convertPublisher(interceptResult, Mono.class);
+                                Mono<?> single = Mono.from(Publishers.convertPublisher(interceptResult, Publisher.class));
                                 result = single.doOnSubscribe(d -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
                                         .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get()))
                                         .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get()));
                             } else {
                                 AtomicReference<String> exceptionClassHolder = new AtomicReference<>("none");
-                                Flux<?> flowable = Publishers.convertPublisher(interceptResult, Flux.class);
+                                Flux<?> flowable = Flux.from(Publishers.convertPublisher(interceptResult, Publisher.class));
                                 result = flowable.doOnRequest(n -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
                                         .doOnError(throwable -> exceptionClassHolder.set(throwable.getClass().getSimpleName()))
                                         .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get()));

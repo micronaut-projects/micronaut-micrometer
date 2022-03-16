@@ -16,6 +16,8 @@
 package io.micronaut.configuration.metrics.management.endpoint
 
 import groovy.util.logging.Slf4j
+import io.micrometer.core.annotation.Counted
+import io.micrometer.core.annotation.Timed
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.config.MeterFilter
@@ -33,6 +35,7 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
+import io.reactivex.Single
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
@@ -70,6 +73,7 @@ class FilteredMetricsEndpointSpec extends Specification {
 
         expect:
         client.toBlocking().exchange(HttpRequest.GET('/filtered/hello/fred'), String).body() == "Hello Fred"
+        client.toBlocking().exchange(HttpRequest.GET('/filtered/rxjava2/fred'), String).body() == "Hello Fred"
     }
 
     void "test the filter beans are available"() {
@@ -135,6 +139,13 @@ class FilteredMetricsEndpointSpec extends Specification {
         @Get("/filtered/hello/{name}")
         Mono<String> hello(@NotBlank String name) {
             return Mono.just("Hello ${name.capitalize()}".toString())
+        }
+
+        @Timed
+        @Counted
+        @Get("/filtered/rxjava2/{name}")
+        Single<String> rxjava(@NotBlank String name) {
+            return Single.just("Hello ${name.capitalize()}".toString())
         }
     }
 

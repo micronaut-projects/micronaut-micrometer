@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException;
@@ -227,6 +228,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name listing.
      */
+    @Introspected
     public static final class MetricNames {
 
         private final SortedSet<String> names;
@@ -253,6 +255,7 @@ public class MetricsEndpoint {
     /**
      * Response payload for a metric name selector.
      */
+    @Introspected
     public static final class MetricDetails {
 
         private final String name;
@@ -336,6 +339,7 @@ public class MetricsEndpoint {
     /**
      * A set of tags for further dimensional drilldown and their potential values.
      */
+    @Introspected
     public static final class AvailableTag {
 
         private final String tag;
@@ -376,6 +380,7 @@ public class MetricsEndpoint {
     /**
      * A measurement sample combining a {@link Statistic statistic} and a value.
      */
+    @Introspected
     public static final class Sample {
 
         private final Statistic statistic;
