@@ -19,15 +19,19 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.annotation.Introspected
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
-import reactor.core.publisher.Flux
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.lang.reflect.Type
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
@@ -553,5 +557,23 @@ class MetricsEndpointSpec extends Specification {
         where:
         name << ["process.files.open",
                  "process.files.max"]
+    }
+
+    @Unroll
+    void "#type is annotated with @Serdeable"(Type type) {
+        expect:
+        Reflections ref = new Reflections("io.micronaut.configuration.metrics",
+                Scanners.SubTypes,
+                Scanners.TypesAnnotated
+        )
+        def classes = ref.getTypesAnnotatedWith(Introspected)
+
+        assert classes.contains(type)
+
+        where:
+        type << [
+                MetricsEndpoint.MetricNames, MetricsEndpoint.MetricDetails,
+                MetricsEndpoint.AvailableTag, MetricsEndpoint.Sample
+        ]
     }
 }
