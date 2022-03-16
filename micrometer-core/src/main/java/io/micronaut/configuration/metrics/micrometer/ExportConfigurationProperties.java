@@ -19,6 +19,7 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.convert.format.MapFormat;
 import io.micronaut.core.naming.conventions.StringConvention;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -31,6 +32,8 @@ import java.util.Properties;
 public class ExportConfigurationProperties {
 
     private Properties export = new Properties();
+
+    private Properties tags = new Properties();
 
     /**
      * @return The export properties
@@ -46,5 +49,19 @@ public class ExportConfigurationProperties {
             keyFormat = StringConvention.CAMEL_CASE,
             transformation = MapFormat.MapTransformation.FLAT) Properties export) {
         this.export = export;
+    }
+
+    /**
+     * @return The common tags properties
+     */
+    public Properties getTags() {
+        return tags;
+    }
+
+    /**
+     * @param tags The common tags properties
+     */
+    public void setTags(Properties tags) {
+        this.tags = tags;
     }
 }

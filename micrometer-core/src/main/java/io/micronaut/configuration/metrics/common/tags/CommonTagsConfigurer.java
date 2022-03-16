@@ -19,12 +19,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_COMMON_TAGS;
 
@@ -42,8 +44,9 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
 
     private final List<Tag> commonTags = new ArrayList<>();
 
-    public CommonTagsConfigurer(CommonTagsConfiguration configuration) {
-        configuration.getTags().forEach((key, value) -> commonTags.add(Tag.of(key, value)));
+    public CommonTagsConfigurer(ExportConfigurationProperties configuration) {
+        Properties tags = configuration.getTags();
+        tags.stringPropertyNames().forEach(key -> commonTags.add(Tag.of(key, tags.getProperty(key))));
     }
 
     @Override
