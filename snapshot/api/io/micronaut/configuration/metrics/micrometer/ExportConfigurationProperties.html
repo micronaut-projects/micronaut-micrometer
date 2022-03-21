@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -157,8 +157,16 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html#getExport--">getExport</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code>java.util.Properties</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html#getTags--">getTags</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html#setExport-java.util.Properties-">setExport</a></span>(java.util.Properties&nbsp;export)</code>&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html#setTags-java.util.Properties-">setTags</a></span>(java.util.Properties&nbsp;tags)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -215,7 +223,7 @@ extends java.lang.Object</pre>
 <a name="setExport-java.util.Properties-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>setExport</h4>
 <pre>public&nbsp;void&nbsp;setExport(@MapFormat(keyFormat=CAMEL_CASE,transformation=FLAT)
@@ -223,6 +231,32 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>export</code> - The export properties</dd>
+</dl>
+</li>
+</ul>
+<a name="getTags--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getTags</h4>
+<pre>public&nbsp;java.util.Properties&nbsp;getTags()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The common tags properties</dd>
+</dl>
+</li>
+</ul>
+<a name="setTags-java.util.Properties-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setTags</h4>
+<pre>public&nbsp;void&nbsp;setTags(java.util.Properties&nbsp;tags)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>tags</code> - The common tags properties</dd>
 </dl>
 </li>
 </ul>
