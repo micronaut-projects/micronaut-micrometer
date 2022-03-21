@@ -47,7 +47,6 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
     @Override
     public void configure(MeterRegistry meterRegistry) {
         meterRegistry.config().commonTags(commonTags);
-        System.out.println("Doesn't work");
     }
 
     @Override
