@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.management.endpoint
 
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.annotation.Introspected
@@ -486,6 +487,42 @@ class MetricsEndpointSpec extends Specification {
         result["measurements"]
         result["description"]
         result["baseUnit"]
+
+        cleanup:
+        client.close()
+        embeddedServer.close()
+
+        where:
+        name << ["process.files.open",
+                 "process.files.max"]
+    }
+
+    @Unroll
+    void "test metrics endpoint with common tags"() {
+        given:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'endpoints.metrics.sensitive'            : false,
+                (MICRONAUT_METRICS_ENABLED)              : true,
+                "micronaut.metrics.binders.web.enabled"  : true,
+                "micronaut.metrics.tags": ["test1":"test1-val", "test2":"test2-val"]
+        ])
+        URL server = embeddedServer.getURL()
+        HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, server)
+
+        expect:
+        100.times {
+            def response = client.toBlocking().exchange("/metrics/$name", Map)
+            Map result = response.body() as Map
+            List availableTags = result["availableTags"] as List
+            availableTags.size() == 3
+            List tagsNames = [Tag.of("test1", "test1-val"), Tag.of("test2", "test2-val")]
+            tagsNames.stream().allMatch(tag->
+                    availableTags.stream().anyMatch(item -> {
+                        LinkedHashMap entry = item as LinkedHashMap
+                        return entry["tag"] == tag.key && entry["values"][0] == tag.value
+                    })
+            )
+        }
 
         cleanup:
         client.close()
