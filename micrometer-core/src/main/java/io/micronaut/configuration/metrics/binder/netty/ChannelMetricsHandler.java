@@ -75,7 +75,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
 
     ChannelMetricsHandler(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
-        activeChannelCount = meterRegistryProvider.get().gauge(dot(NETTY, CHANNEL, COUNT), Tags.of(CHANNEL, ACTIVE), new LongAdder());
+        activeChannelCount = meterRegistryProvider.get().gauge(dot(NETTY, CHANNEL, COUNT, ACTIVE), Tags.of(CHANNEL, ACTIVE), new LongAdder());
         channelCount = Counter.builder(dot(NETTY, CHANNEL, COUNT))
                 .tag(CHANNEL, COUNT)
                 .register(meterRegistryProvider.get());
