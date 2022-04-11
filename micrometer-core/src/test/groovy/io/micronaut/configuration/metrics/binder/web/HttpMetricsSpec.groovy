@@ -117,8 +117,8 @@ class HttpMetricsSpec extends Specification {
         thrown(HttpClientResponseException)
 
         when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
 
         then:
         noExceptionThrown()
@@ -144,6 +144,93 @@ class HttpMetricsSpec extends Specification {
         cfg                                                   | setting       | serverPercentilesCount | clientPercentilesCount
         MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99"   | 0                      | 2
         MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99"   | 2                      | 0
+	}
+
+    @Unroll
+    void "test client / server metrics ignored uris for client errors"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'micronaut.metrics.binders.web.client-errors-uris.enabled'                : false,
+        ])
+        def context = embeddedServer.getApplicationContext()
+        TestClient client = context.getBean(TestClient)
+
+        then:
+        client.index() == 'ok'
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        Timer serverTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','/test-http-metrics').timer()
+        Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri','/test-http-metrics').timer()
+
+        then:
+        serverTimer != null
+        serverTimer.count() == 1
+        clientTimer.count() == 1
+
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri','/test-http-metrics/foo').timer()
+
+        then:
+        thrown(MeterNotFoundException)
+
+        when:"A request is made that returns an error response"
+        client.error()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "409", ).timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "409").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that throws an exception"
+        client.throwable()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "500").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "500").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that throws an exception that is handled"
+        client.exceptionHandling()
+
+        then:
+        thrown(HttpClientResponseException)
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400", "uri", "BAD_REQUEST").timer()
+
+        then:
+        noExceptionThrown()
+
+        when:"A request is made that does not match a route"
+        HttpResponse response = client.notFound()
+
+        then:
+        noExceptionThrown()
+        response.status() == HttpStatus.NOT_FOUND
+
+        when:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "404").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "404").timer()
+
+        then:
+        noExceptionThrown()
+
+		cleanup:
+        embeddedServer.close()
 	}
 
     @Unroll

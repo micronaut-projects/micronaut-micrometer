@@ -64,6 +64,7 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 request.getMethod().toString(),
                 false,
                 resolveHost(request),
+                true,
                 true
         );
     }

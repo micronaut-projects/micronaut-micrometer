@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
@@ -48,6 +49,9 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private final MeterRegistry meterRegistry;
+
+    @Value("${"+ WebMetricsPublisher.CLIENT_ERROR_URIS_ENABLED + ":true}")
+    private boolean reportClientErrorURIs;
 
     /**
      * Filter constructor.
@@ -89,7 +93,8 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
                 path,
                 start,
                 request.getMethod().toString(),
-                reportErrors
+                reportErrors,
+                reportClientErrorURIs
         );
     }
 
