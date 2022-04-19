@@ -55,7 +55,7 @@ public class R2dbcPoolMetricsBinderFactory {
             @Parameter String dataSourceName,
             ConnectionFactory factory) {
         PoolMetrics poolMetrics = null;
-        if(factory instanceof ConnectionPool) {
+        if (factory instanceof ConnectionPool) {
             poolMetrics = ((ConnectionPool) factory).getMetrics().orElse(null);
         }
 

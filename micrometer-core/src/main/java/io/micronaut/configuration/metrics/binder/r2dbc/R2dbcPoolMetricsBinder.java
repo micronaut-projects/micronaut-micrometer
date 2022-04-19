@@ -21,7 +21,6 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import javax.validation.constraints.NotNull;
 
-import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 
 import java.util.function.Function;
@@ -45,7 +44,7 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
 
     @Override
     public void bindTo(@NotNull MeterRegistry registry) {
-        if(poolMetrics != null) {
+        if (poolMetrics != null) {
             bindToPoolMetrics(registry, "acquired", PoolMetrics::acquiredSize);
             bindToPoolMetrics(registry, "allocated", PoolMetrics::allocatedSize);
             bindToPoolMetrics(registry, "idle", PoolMetrics::idleSize);
