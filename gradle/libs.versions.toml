@@ -1,0 +1,66 @@
+[versions]
+groovy = "3.0.10"
+jcache = "1.1.1"
+logback-classic = "1.2.11"
+metrics-core = "4.2.9"
+micrometer = "1.8.3"
+new-relic-registry = "0.8.0"
+reflections = "0.10.2"
+validation = "2.0.1.Final"
+
+# Micronaut
+micronaut = "3.4.3"
+micronaut-docs = "2.0.0"
+
+
+[libraries]
+# Micronaut
+micronaut-aop = { module = "io.micronaut:micronaut-aop", version.ref = "micronaut" }
+micronaut-cache-core = { module = "io.micronaut.cache:micronaut-cache-core" }
+micronaut-docs-asciidoc-config-props = { module = "io.micronaut.docs:micronaut-docs-asciidoc-config-props", version.ref = "micronaut-docs" }
+micronaut-function-web = { module = "io.micronaut:micronaut-function-web" }
+micronaut-graal = { module = "io.micronaut:micronaut-graal" }
+micronaut-http-client = { module = "io.micronaut:micronaut-http-client" }
+micronaut-http-server-netty = { module = "io.micronaut:micronaut-http-server-netty" }
+micronaut-inject = { module = "io.micronaut:micronaut-inject", version.ref = "micronaut" }
+micronaut-inject-groovy = { module = "io.micronaut:micronaut-inject-groovy" }
+micronaut-inject-groovy-test = { module = "io.micronaut:micronaut-inject-groovy-test", version.ref = "micronaut" }
+micronaut-inject-java = { module = "io.micronaut:micronaut-inject-java" }
+micronaut-inject-java-test = { module = "io.micronaut:micronaut-inject-java-test", version.ref = "micronaut" }
+micronaut-jdbc = { module = "io.micronaut.sql:micronaut-jdbc" }
+micronaut-management = { module = "io.micronaut:micronaut-management" }
+micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2" }
+
+cache-api = { module = "javax.cache:cache-api", version.ref = "jcache" }
+groovy-json = { module = "org.codehaus.groovy:groovy-json", version.ref = "groovy" }
+grpc-api = { module = "io.grpc:grpc-api" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+metrics-core = { module = "io.dropwizard.metrics:metrics-core", version.ref = "metrics-core" }
+micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }
+micrometer-registry-appoptics = { module = "io.micrometer:micrometer-registry-appoptics", version.ref = "micrometer" }
+micrometer-registry-atlas = { module = "io.micrometer:micrometer-registry-atlas", version.ref = "micrometer" }
+micrometer-registry-azure-monitor = { module = "io.micrometer:micrometer-registry-azure-monitor", version.ref = "micrometer" }
+micrometer-registry-cloudwatch2 = { module = "io.micrometer:micrometer-registry-cloudwatch2", version.ref = "micrometer" }
+micrometer-registry-datadog = { module = "io.micrometer:micrometer-registry-datadog", version.ref = "micrometer" }
+micrometer-registry-dynatrace = { module = "io.micrometer:micrometer-registry-dynatrace", version.ref = "micrometer" }
+micrometer-registry-elastic = { module = "io.micrometer:micrometer-registry-elastic", version.ref = "micrometer" }
+micrometer-registry-ganglia = { module = "io.micrometer:micrometer-registry-ganglia", version.ref = "micrometer" }
+micrometer-registry-graphite = { module = "io.micrometer:micrometer-registry-graphite", version.ref = "micrometer" }
+micrometer-registry-humio = { module = "io.micrometer:micrometer-registry-humio", version.ref = "micrometer" }
+micrometer-registry-influx = { module = "io.micrometer:micrometer-registry-influx", version.ref = "micrometer" }
+micrometer-registry-jmx = { module = "io.micrometer:micrometer-registry-jmx", version.ref = "micrometer" }
+micrometer-registry-kairos = { module = "io.micrometer:micrometer-registry-kairos", version.ref = "micrometer" }
+micrometer-registry-new-relic = { module = "io.micrometer:micrometer-registry-new-relic", version.ref = "micrometer" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+micrometer-registry-signalfx = { module = "io.micrometer:micrometer-registry-signalfx", version.ref = "micrometer" }
+micrometer-registry-stackdriver = { module = "io.micrometer:micrometer-registry-stackdriver", version.ref = "micrometer" }
+micrometer-registry-statsd = { module = "io.micrometer:micrometer-registry-statsd", version.ref = "micrometer" }
+micrometer-registry-wavefront = { module = "io.micrometer:micrometer-registry-wavefront", version.ref = "micrometer" }
+netty-buffer = { module = "io.netty:netty-buffer" }
+netty-transport = { module = "io.netty:netty-transport" }
+netty-transport-native-epoll = { module = "io.netty:netty-transport-native-epoll" }
+netty-transport-native-kqueue = { module = "io.netty:netty-transport-native-kqueue" }
+reactor-core = { module = "io.projectreactor:reactor-core" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+validation-api = { module = "javax.validation:validation-api", version.ref = "validation" }
+micrometer-registry-new-relic-telemetry = { module = "com.newrelic.telemetry:micrometer-registry-new-relic", version.ref = "new-relic-registry" }

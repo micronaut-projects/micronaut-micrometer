@@ -3,14 +3,14 @@ plugins {
 }
 
 dependencies {
-    api "io.micrometer:micrometer-core:$micrometerVersion"
-    api "io.micronaut:micronaut-inject:$micronautVersion"
-    api "io.micronaut:micronaut-aop:$micronautVersion"
+    api(libs.micrometer.core)
+    api(libs.micronaut.inject)
+    api(libs.micronaut.aop)
     if (!JavaVersion.current().isJava9Compatible()) {
         testImplementation files(org.gradle.internal.jvm.Jvm.current().toolsJar)
     }
-    testImplementation "io.micronaut:micronaut-inject-java-test:$micronautVersion"
-    testImplementation "io.micronaut:micronaut-inject-groovy-test:$micronautVersion"
+    testImplementation(libs.micronaut.inject.java.test)
+    testImplementation(libs.micronaut.inject.groovy.test)
 }
 
 tasks.withType(Test).configureEach {

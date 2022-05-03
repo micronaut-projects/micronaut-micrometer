@@ -3,19 +3,19 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+    annotationProcessor(libs.micronaut.inject.java)
+    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
 
-    compileOnly "io.micronaut:micronaut-management"
-    api "io.micrometer:micrometer-core:$micrometerVersion"
+    compileOnly(libs.micronaut.management)
+    api(libs.micrometer.core)
     api project(":micrometer-core")
-    api "javax.validation:validation-api:$validationVersion"
-    api "io.micrometer:micrometer-registry-ganglia:$micrometerVersion"
+    api(libs.validation.api)
+    api(libs.micrometer.registry.ganglia)
 
-    testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
-    testRuntimeOnly "io.dropwizard.metrics:metrics-core:4.2.9"
-    testImplementation "io.micronaut:micronaut-http-client"
+    testImplementation(libs.micronaut.management)
+    testImplementation(libs.micronaut.inject.groovy)
+    annotationProcessor(libs.micronaut.inject.java)
+    testRuntimeOnly(libs.micronaut.http.server.netty)
+    testRuntimeOnly(libs.metrics.core)
+    testImplementation(libs.micronaut.http.client)
 }

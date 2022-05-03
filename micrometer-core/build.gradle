@@ -3,40 +3,40 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut:micronaut-graal"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+    annotationProcessor(libs.micronaut.inject.java)
+    annotationProcessor(libs.micronaut.graal)
+    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
 
-    api "io.micrometer:micrometer-core:$micrometerVersion"
-    api "io.micronaut:micronaut-inject:$micronautVersion"
-    implementation "io.projectreactor:reactor-core"
-    compileOnly "io.micronaut:micronaut-management"
-    compileOnly "io.grpc:grpc-api"
-    compileOnly "io.micronaut.sql:micronaut-jdbc"
-    compileOnly 'io.micronaut.cache:micronaut-cache-core'
-    compileOnly "io.netty:netty-buffer"
-    compileOnly "io.netty:netty-transport"
-    compileOnly "io.netty:netty-transport-native-epoll"
-    compileOnly "io.netty:netty-transport-native-kqueue"
-    compileOnly "io.micronaut:micronaut-http-server-netty"
-    compileOnly "javax.cache:cache-api:$jcacheVersion"
-    compileOnly "ch.qos.logback:logback-classic:1.2.11"
+    api(libs.micrometer.core)
+    api(libs.micronaut.inject)
+    implementation(libs.reactor.core)
+    compileOnly(libs.micronaut.management)
+    compileOnly(libs.grpc.api)
+    compileOnly(libs.micronaut.jdbc)
+    compileOnly(libs.micronaut.cache.core)
+    compileOnly(libs.netty.buffer)
+    compileOnly(libs.netty.transport)
+    compileOnly(libs.netty.transport.native.epoll)
+    compileOnly(libs.netty.transport.native.kqueue)
+    compileOnly(libs.micronaut.http.server.netty)
+    compileOnly(libs.cache.api)
+    compileOnly(libs.logback.classic)
     testAnnotationProcessor project(":micrometer-annotation")
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-    testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    testImplementation "io.micronaut:micronaut-function-web"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
-    testImplementation "io.micronaut:micronaut-http-client"
-    testImplementation "io.micronaut.sql:micronaut-jdbc"
-    testImplementation "io.micronaut.rxjava2:micronaut-rxjava2"
-    testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
-    testImplementation "io.netty:netty-buffer"
-    testImplementation "io.netty:netty-transport"
-    testImplementation "io.netty:netty-transport-native-epoll"
-    testImplementation "io.netty:netty-transport-native-kqueue"
-    testImplementation "io.micronaut:micronaut-http-server-netty"
-    testImplementation "org.reflections:reflections:$reflectionsVersion"
-    testImplementation "io.grpc:grpc-api"
+    testAnnotationProcessor(libs.micronaut.inject.java)
+    testImplementation(libs.micronaut.management)
+    testImplementation(libs.micronaut.inject.groovy)
+    testImplementation(libs.micronaut.function.web)
+    testRuntimeOnly(libs.micronaut.http.server.netty)
+    testImplementation(libs.micronaut.http.client)
+    testImplementation(libs.micronaut.jdbc)
+    testImplementation(libs.micronaut.rxjava2)
+    testImplementation(libs.groovy.json)
+    testImplementation(libs.netty.buffer)
+    testImplementation(libs.netty.transport)
+    testImplementation(libs.netty.transport.native.epoll)
+    testImplementation(libs.netty.transport.native.kqueue)
+    testImplementation(libs.micronaut.http.server.netty)
+    testImplementation(libs.reflections)
+    testImplementation(libs.grpc.api)
 
 }
