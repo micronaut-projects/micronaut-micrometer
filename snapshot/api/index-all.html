@@ -120,6 +120,8 @@
 <dd>
 <div class="block">Method for getting metadataProvider object for datasource that will bind the pool metrics.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html#bindTo-io.micrometer.core.instrument.MeterRegistry-">bindTo(MeterRegistry)</a></span> - Method in class io.micronaut.configuration.metrics.binder.r2dbc.<a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc">R2dbcPoolMetricsBinder</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <a name="I:C">
 <!--   -->
@@ -452,6 +454,10 @@
 <dt><a href="io/micronaut/configuration/metrics/binder/logging/package-summary.html">io.micronaut.configuration.metrics.binder.logging</a> - package io.micronaut.configuration.metrics.binder.logging</dt>
 <dd>
 <div class="block">Logging Meter Binders.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/r2dbc/package-summary.html">io.micronaut.configuration.metrics.binder.r2dbc</a> - package io.micronaut.configuration.metrics.binder.r2dbc</dt>
+<dd>
+<div class="block">Contains classes that bind metrics for configured R2DBC data sources.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/metrics/binder/system/package-summary.html">io.micronaut.configuration.metrics.binder.system</a> - package io.micronaut.configuration.metrics.binder.system</dt>
 <dd>
@@ -847,6 +853,22 @@
 </a>
 <h2 class="title">R</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinderFactory.html#r2dbcPoolMeterBinder-java.lang.String-io.r2dbc.spi.ConnectionFactory-">r2dbcPoolMeterBinder(String, ConnectionFactory)</a></span> - Method in class io.micronaut.configuration.metrics.binder.r2dbc.<a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc">R2dbcPoolMetricsBinderFactory</a></dt>
+<dd>
+<div class="block">Method to wire beans for each type of datasource.</div>
+</dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc"><span class="typeNameLink">R2dbcPoolMetricsBinder</span></a> - Class in <a href="io/micronaut/configuration/metrics/binder/r2dbc/package-summary.html">io.micronaut.configuration.metrics.binder.r2dbc</a></dt>
+<dd>
+<div class="block">A <code>MeterBinder</code> for a <code>ConnectionPool</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html#R2dbcPoolMetricsBinder-io.r2dbc.pool.PoolMetrics-java.lang.String-java.lang.Iterable-">R2dbcPoolMetricsBinder(PoolMetrics, String, Iterable&lt;Tag&gt;)</a></span> - Constructor for class io.micronaut.configuration.metrics.binder.r2dbc.<a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc">R2dbcPoolMetricsBinder</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc"><span class="typeNameLink">R2dbcPoolMetricsBinderFactory</span></a> - Class in <a href="io/micronaut/configuration/metrics/binder/r2dbc/package-summary.html">io.micronaut.configuration.metrics.binder.r2dbc</a></dt>
+<dd>
+<div class="block">Instruments Micronaut related r2dbc pool metrics via Micrometer.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinderFactory.html#R2dbcPoolMetricsBinderFactory--">R2dbcPoolMetricsBinderFactory()</a></span> - Constructor for class io.micronaut.configuration.metrics.binder.r2dbc.<a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinderFactory.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc">R2dbcPoolMetricsBinderFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation"><span class="typeNameLink">RequiresMetrics</span></a> - Annotation Type in <a href="io/micronaut/configuration/metrics/annotation/package-summary.html">io.micronaut.configuration.metrics.annotation</a></dt>
 <dd>
 <div class="block">An annotation that can be applied to any bean that requires Metrics is enabled.</div>
