@@ -64,3 +64,4 @@ reactor-core = { module = "io.projectreactor:reactor-core" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 validation-api = { module = "javax.validation:validation-api", version.ref = "validation" }
 micrometer-registry-new-relic-telemetry = { module = "com.newrelic.telemetry:micrometer-registry-new-relic", version.ref = "new-relic-registry" }
+r2dbc-pool = { module = "io.r2dbc:r2dbc-pool" }
