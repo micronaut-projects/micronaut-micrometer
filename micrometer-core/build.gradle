@@ -13,6 +13,7 @@ dependencies {
     compileOnly(libs.micronaut.management)
     compileOnly(libs.grpc.api)
     compileOnly(libs.micronaut.jdbc)
+    compileOnly(libs.r2dbc.pool)
     compileOnly(libs.micronaut.cache.core)
     compileOnly(libs.netty.buffer)
     compileOnly(libs.netty.transport)
@@ -29,6 +30,7 @@ dependencies {
     testRuntimeOnly(libs.micronaut.http.server.netty)
     testImplementation(libs.micronaut.http.client)
     testImplementation(libs.micronaut.jdbc)
+    testImplementation(libs.r2dbc.pool)
     testImplementation(libs.micronaut.rxjava2)
     testImplementation(libs.groovy.json)
     testImplementation(libs.netty.buffer)
@@ -38,5 +40,4 @@ dependencies {
     testImplementation(libs.micronaut.http.server.netty)
     testImplementation(libs.reflections)
     testImplementation(libs.grpc.api)
-
 }
