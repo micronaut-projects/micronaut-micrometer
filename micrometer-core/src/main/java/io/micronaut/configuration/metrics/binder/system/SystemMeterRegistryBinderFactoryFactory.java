@@ -23,10 +23,10 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Creates the system metrics beans.
@@ -46,7 +46,7 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".uptime.enabled", notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".uptime.enabled", notEquals = FALSE)
     public UptimeMetrics uptimeMetrics() {
         return new UptimeMetrics();
     }
@@ -59,7 +59,7 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".processor.enabled", notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".processor.enabled", notEquals = FALSE)
     public ProcessorMetrics processorMetrics() {
         return new ProcessorMetrics();
     }
@@ -72,9 +72,8 @@ public class SystemMeterRegistryBinderFactoryFactory {
     @Bean
     @Singleton
     @Primary
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".files.enabled", notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".files.enabled", notEquals = FALSE)
     public FileDescriptorMetrics fileDescriptorMetrics() {
         return new FileDescriptorMetrics();
     }
-
 }

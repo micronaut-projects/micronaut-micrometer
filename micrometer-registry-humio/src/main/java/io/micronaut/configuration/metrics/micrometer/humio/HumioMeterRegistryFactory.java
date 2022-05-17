@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.humio;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.humio.HumioMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,6 +22,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -48,7 +48,6 @@ public class HumioMeterRegistryFactory {
     @Singleton
     HumioMeterRegistry humioMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new HumioMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new HumioMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

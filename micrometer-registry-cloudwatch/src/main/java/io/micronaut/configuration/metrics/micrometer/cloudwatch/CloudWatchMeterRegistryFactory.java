@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.cloudwatch;
 
 import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -26,6 +25,7 @@ import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClientBuilder;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -77,7 +77,7 @@ public class CloudWatchMeterRegistryFactory {
 
         return new CloudWatchMeterRegistry(
                 exportConfig::getProperty,
-                Clock.SYSTEM,
+                SYSTEM,
                 cloudWatchAsyncClient
         );
     }

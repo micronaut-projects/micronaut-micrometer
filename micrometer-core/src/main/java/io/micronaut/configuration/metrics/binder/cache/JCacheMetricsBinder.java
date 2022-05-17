@@ -22,7 +22,6 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.cache.CacheManager;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments the active JCache manager.
@@ -40,7 +40,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 @RequiresMetrics
 @Requires(beans = CacheManager.class)
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = FALSE)
 public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManager> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JCacheMetricsBinder.class);
@@ -75,4 +75,3 @@ public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManage
         return cacheManager;
     }
 }
-

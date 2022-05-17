@@ -16,13 +16,13 @@
 package io.micronaut.configuration.metrics.micrometer.azuremonitor;
 
 import io.micrometer.azuremonitor.AzureMonitorMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -48,7 +48,6 @@ public class AzureMonitorMeterRegistryFactory {
     @Singleton
     AzureMonitorMeterRegistry azureMonitorMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new AzureMonitorMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new AzureMonitorMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

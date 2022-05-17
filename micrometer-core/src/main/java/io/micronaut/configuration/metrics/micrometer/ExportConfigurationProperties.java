@@ -17,9 +17,11 @@ package io.micronaut.configuration.metrics.micrometer;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.convert.format.MapFormat;
-import io.micronaut.core.naming.conventions.StringConvention;
 
 import java.util.Properties;
+
+import static io.micronaut.core.convert.format.MapFormat.MapTransformation.FLAT;
+import static io.micronaut.core.naming.conventions.StringConvention.CAMEL_CASE;
 
 /**
  * Stores metrics export configuration.
@@ -45,8 +47,8 @@ public class ExportConfigurationProperties {
      * @param export The export properties
      */
     public void setExport(@MapFormat(
-            keyFormat = StringConvention.CAMEL_CASE,
-            transformation = MapFormat.MapTransformation.FLAT) Properties export) {
+            keyFormat = CAMEL_CASE,
+            transformation = FLAT) Properties export) {
         this.export = export;
     }
 

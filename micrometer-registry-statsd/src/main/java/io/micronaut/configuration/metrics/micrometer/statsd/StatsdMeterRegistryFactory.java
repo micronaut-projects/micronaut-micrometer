@@ -15,19 +15,19 @@
  */
 package io.micronaut.configuration.metrics.micrometer.statsd;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.statsd.StatsdMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Creates a StatsD meter registry.
@@ -46,10 +46,10 @@ public class StatsdMeterRegistryFactory {
      * @return StatsdMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = FALSE)
     @Requires(beans = CompositeMeterRegistry.class)
     StatsdMeterRegistry statsdMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new StatsdMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new StatsdMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
 }

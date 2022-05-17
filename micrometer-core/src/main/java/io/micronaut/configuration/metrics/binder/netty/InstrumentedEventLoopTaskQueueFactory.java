@@ -23,7 +23,6 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.server.netty.NettyHttpServer;
 import io.netty.channel.EventLoopTaskQueueFactory;
 import io.netty.util.internal.PlatformDependent;
@@ -46,6 +45,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instrumented Event Loop Queue factory.
@@ -56,7 +56,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 @Named("InstrumentedEventLoopTaskQueueFactory")
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EventLoopTaskQueueFactory.class)
 @Internal
 final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {

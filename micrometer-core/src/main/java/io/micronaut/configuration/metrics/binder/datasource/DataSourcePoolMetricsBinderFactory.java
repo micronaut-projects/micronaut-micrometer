@@ -21,12 +21,12 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments Micronaut related JDBC pool metrics via Micrometer.

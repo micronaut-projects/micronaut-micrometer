@@ -24,7 +24,6 @@ import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.util.StringUtils;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufAllocatorMetric;
 import io.netty.buffer.PoolArenaMetric;
@@ -41,6 +40,12 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKLISTS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION;
@@ -74,6 +79,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USAGE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Metrics for Netty default ByteBufAllocators.
@@ -82,7 +88,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @since 2.0
  */
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = ByteBufAllocator.class)
 @Context
 @Internal
@@ -113,7 +119,7 @@ final class ByteBufAllocatorMetricsBinder {
     @PostConstruct
     public void configureNettyMetrics() {
         MeterRegistry meterRegistry = meterRegistryProvider.get();
-        if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ALLOCATOR)) {
+        if (kinds.contains(POOLED_ALLOCATOR)) {
             PooledByteBufAllocatorMetric pooledMetric = PooledByteBufAllocator.DEFAULT.metric();
 
             Tags pooled = Tags.of(ALLOC, POOLED);
@@ -147,7 +153,7 @@ final class ByteBufAllocatorMetricsBinder {
                     .tags(pooled)
                     .register(meterRegistry);
 
-            if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ARENAS)) {
+            if (kinds.contains(POOLED_ARENAS)) {
                 for (int i = 0; i < pooledMetric.directArenas().size(); i++) {
                     Tags tags = Tags.of(MEMORY, DIRECT)
                             .and(dot(ARENA, NUMBER), Integer.toString(i));
@@ -164,7 +170,7 @@ final class ByteBufAllocatorMetricsBinder {
             }
         }
 
-        if (kinds.contains(ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR)) {
+        if (kinds.contains(UNPOOLED_ALLOCATOR)) {
             ByteBufAllocatorMetric unpooledMetric = UnpooledByteBufAllocator.DEFAULT.metric();
             Tags unpooled = Tags.of(ALLOC, UNPOOLED);
 
@@ -247,7 +253,7 @@ final class ByteBufAllocatorMetricsBinder {
                 .tags(tags)
                 .register(meterRegistry);
 
-        if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES)) {
+        if (kinds.contains(POOLED_ARENAS_SUBPAGES)) {
             for (int i = 0; i < pam.smallSubpages().size(); i++) {
                 Tags tinySubpage = tags.and(SUBPAGE, SMALL)
                         .and(dot(SUBPAGE, NUMBER), Integer.toString(i));
@@ -256,7 +262,7 @@ final class ByteBufAllocatorMetricsBinder {
             }
         }
 
-        if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKLISTS)) {
+        if (kinds.contains(POOLED_ARENAS_CHUNKLISTS)) {
             for (int i = 0; i < pam.chunkLists().size(); i++) {
                 Tags chunkList = tags.and(dot(CHUNKLIST, NUMBER), Integer.toString(i));
 
@@ -297,7 +303,7 @@ final class ByteBufAllocatorMetricsBinder {
                 .description("Return the maximum usage of the chunk list after which chunks are promoted to the next list.")
                 .tags(tags)
                 .register(meterRegistry);
-        if (kinds.contains(ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKS)) {
+        if (kinds.contains(POOLED_ARENAS_CHUNKS)) {
             int index = 0;
             for (Iterator<PoolChunkMetric> i = pclm.iterator(); i.hasNext(); ++index) {
                 meterChunk(tags.and(dot(CHUNK, NUMBER), Integer.toString(index)), i.next());

@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.dynatrace;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.dynatrace.DynatraceMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,6 +22,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -48,7 +48,6 @@ public class DynatraceMeterRegistryFactory {
     @Singleton
     DynatraceMeterRegistry dynatraceMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new DynatraceMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new DynatraceMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

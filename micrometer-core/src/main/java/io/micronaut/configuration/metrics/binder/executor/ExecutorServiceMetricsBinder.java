@@ -25,7 +25,6 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
@@ -38,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments Micronaut related thread pools via Micrometer.
@@ -47,7 +47,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Singleton
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = FALSE)
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;

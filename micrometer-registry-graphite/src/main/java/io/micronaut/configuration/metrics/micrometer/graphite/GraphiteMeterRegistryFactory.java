@@ -15,20 +15,20 @@
  */
 package io.micronaut.configuration.metrics.micrometer.graphite;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import java.util.List;
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
+import static io.micronaut.core.util.StringUtils.EMPTY_STRING_ARRAY;
 
 /**
  * Creates a Graphite meter registry.
@@ -50,7 +50,7 @@ public class GraphiteMeterRegistryFactory {
      */
     @Singleton
     GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config) {
-        return new GraphiteMeterRegistry(config, Clock.SYSTEM);
+        return new GraphiteMeterRegistry(config, SYSTEM);
     }
 
     /**
@@ -76,7 +76,7 @@ public class GraphiteMeterRegistryFactory {
 
             @Override
             public String[] tagsAsPrefix() {
-                return tagsAsPrefix != null ? tagsAsPrefix.toArray(StringUtils.EMPTY_STRING_ARRAY) : StringUtils.EMPTY_STRING_ARRAY;
+                return tagsAsPrefix != null ? tagsAsPrefix.toArray(EMPTY_STRING_ARRAY) : EMPTY_STRING_ARRAY;
             }
         };
     }

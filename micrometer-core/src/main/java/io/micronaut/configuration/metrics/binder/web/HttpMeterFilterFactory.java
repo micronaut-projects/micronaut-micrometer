@@ -24,13 +24,12 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.ArrayUtils;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS;
 import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Optional filter for adding percentile to HTTP metrics.
@@ -39,9 +38,8 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class HttpMeterFilterFactory {
-
 
     /**
      * Configure new MeterFilter for http.server.requests metrics.
@@ -83,5 +81,4 @@ public class HttpMeterFilterFactory {
             }
         };
     }
-
 }

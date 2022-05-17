@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.logging;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,6 +22,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -45,6 +45,6 @@ public class LoggingMeterRegistryFactory {
     @Singleton
     LoggingMeterRegistry loggingMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new LoggingMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new LoggingMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
 }

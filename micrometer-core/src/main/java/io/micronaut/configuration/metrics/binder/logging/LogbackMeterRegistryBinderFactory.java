@@ -15,16 +15,17 @@
  */
 package io.micronaut.configuration.metrics.binder.logging;
 
+import ch.qos.logback.classic.Logger;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Creates the logback metrics beans.
@@ -33,9 +34,9 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @since 1.0
  */
 @Factory
-@Requires(classes = ch.qos.logback.classic.Logger.class)
+@Requires(classes = Logger.class)
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".logback.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".logback.enabled", notEquals = FALSE)
 public class LogbackMeterRegistryBinderFactory {
 
     /**

@@ -29,11 +29,13 @@ import reactor.util.context.Context;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.http.HttpStatus.NOT_FOUND;
+import static io.micronaut.http.HttpStatus.OK;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * Deals with the web filter metrics for success and error conditions.
@@ -229,7 +231,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 
         HttpStatus status = httpResponse.status();
         if (status == null) {
-            status = HttpStatus.OK;
+            status = OK;
         }
         return Tag.of(STATUS, String.valueOf(status.getCode()));
     }
@@ -247,7 +249,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
             if (status != null && status.getCode() >= 300 && status.getCode() < 400) {
                 return URI_REDIRECTION;
             }
-            if (status != null && status.equals(HttpStatus.NOT_FOUND)) {
+            if (status != null && status.equals(NOT_FOUND)) {
                 return URI_NOT_FOUND;
             }
         }
@@ -308,7 +310,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath, String host) {
         Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
         this.meterRegistry.timer(metricName, tags)
-                .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+                .record(System.nanoTime() - start, NANOSECONDS);
     }
 
     /**
@@ -326,6 +328,6 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         }
         Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host);
         this.meterRegistry.timer(metricName, tags)
-                .record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+                .record(System.nanoTime() - start, NANOSECONDS);
     }
 }

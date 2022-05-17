@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 import io.r2dbc.spi.ConnectionFactory;
@@ -29,6 +28,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments Micronaut related R2DBC pool metrics via Micrometer.
@@ -39,7 +39,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".r2dbc.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".r2dbc.enabled", notEquals = FALSE)
 public class R2dbcPoolMetricsBinderFactory {
 
     /**

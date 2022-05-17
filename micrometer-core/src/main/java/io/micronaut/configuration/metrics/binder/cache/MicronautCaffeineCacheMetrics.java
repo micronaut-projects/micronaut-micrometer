@@ -15,7 +15,12 @@
  */
 package io.micronaut.configuration.metrics.binder.cache;
 
-import io.micrometer.core.instrument.*;
+import io.micrometer.core.instrument.FunctionCounter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
 import io.micrometer.core.lang.NonNullApi;
 import io.micrometer.core.lang.NonNullFields;

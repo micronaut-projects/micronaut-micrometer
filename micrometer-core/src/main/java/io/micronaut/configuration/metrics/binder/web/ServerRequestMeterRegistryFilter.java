@@ -18,8 +18,6 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
@@ -28,6 +26,9 @@ import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 
 import java.util.Optional;
+
+import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
  * Registers the timers and meters for each request.
@@ -41,7 +42,7 @@ import java.util.Optional;
  */
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
@@ -55,7 +56,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
+        Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
     }
 

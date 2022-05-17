@@ -20,7 +20,10 @@ import io.micrometer.core.annotation.TimedSet;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.micronaut.aop.*;
+import io.micronaut.aop.InterceptedMethod;
+import io.micronaut.aop.InterceptorBean;
+import io.micronaut.aop.MethodInterceptor;
+import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
@@ -28,6 +31,8 @@ import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Singleton;
+import org.HdrHistogram.ConcurrentHistogram;
+import org.HdrHistogram.Histogram;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +45,8 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.micronaut.core.annotation.AnnotationMetadata.VALUE_MEMBER;
+
 /**
  * Implements support for {@link io.micrometer.core.annotation.Timed} as AOP advice.
  *
@@ -48,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @RequiresMetrics
-@TypeHint(value = {org.HdrHistogram.Histogram.class, org.HdrHistogram.ConcurrentHistogram.class})
+@TypeHint(value = {Histogram.class, ConcurrentHistogram.class})
 @InterceptorBean(Timed.class)
 public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
@@ -82,7 +89,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final AnnotationValue<TimedSet> timedSet = metadata.getAnnotation(TimedSet.class);
         if (timedSet != null) {
-            final List<AnnotationValue<Timed>> timedAnnotations = timedSet.getAnnotations(AnnotationMetadata.VALUE_MEMBER, Timed.class);
+            final List<AnnotationValue<Timed>> timedAnnotations = timedSet.getAnnotations(VALUE_MEMBER, Timed.class);
             if (!timedAnnotations.isEmpty()) {
 
                 String exceptionClass = "none";

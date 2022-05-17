@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.NioEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
@@ -43,6 +42,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Factory for Instrumented NioEventLoopGroup.
@@ -54,7 +54,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Internal
 @Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactory {
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 

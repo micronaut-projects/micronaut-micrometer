@@ -15,19 +15,19 @@
  */
 package io.micronaut.configuration.metrics.micrometer.stackdriver;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Creates a Stackdriver meter registry.
@@ -50,12 +50,11 @@ public class StackdriverMeterRegistryFactory {
      * @return StackdriverMeterRegistry
      */
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
-    @Requires(property = STACKDRIVER_ENABLED, notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = FALSE)
+    @Requires(property = STACKDRIVER_ENABLED, notEquals = FALSE)
     @Requires(beans = CompositeMeterRegistry.class)
     StackdriverMeterRegistry stackdriverMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new StackdriverMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new StackdriverMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

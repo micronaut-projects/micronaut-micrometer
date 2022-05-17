@@ -15,17 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.*;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Spliterator;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -33,6 +22,23 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.core.annotation.Internal;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NUMBER;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * An instrumented Queue.
@@ -239,14 +245,13 @@ final class MonitoredQueue implements Queue<Runnable> {
 
         @Override
         public void run() {
-            globalWaitTimeTimer.record(idleSample.stop(waitTimeTimer), TimeUnit.NANOSECONDS);
+            globalWaitTimeTimer.record(idleSample.stop(waitTimeTimer), NANOSECONDS);
             final Timer.Sample executionSample = Timer.start(registry);
             try {
                 delegate.run();
             } finally {
-                globalExecutionTimeTimer.record(executionSample.stop(executionTimer), TimeUnit.NANOSECONDS);
+                globalExecutionTimeTimer.record(executionSample.stop(executionTimer), NANOSECONDS);
             }
         }
-
     }
 }

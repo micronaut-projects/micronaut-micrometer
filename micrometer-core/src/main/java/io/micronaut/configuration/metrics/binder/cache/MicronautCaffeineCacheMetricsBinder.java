@@ -22,12 +22,12 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * A cache Metrics binder for Micronaut's re-packaged version of Caffeine.
@@ -36,7 +36,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @since 1.0
  * @deprecated Since cache was separated from core this is no longer necessary
  */
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = FALSE)
 @Requires(classes = Cache.class)
 @RequiresMetrics
 @Singleton
@@ -70,4 +70,3 @@ public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventList
         return cache;
     }
 }
-

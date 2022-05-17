@@ -44,6 +44,9 @@ import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS;
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_PUBLIC_METHODS;
+
 /**
  * Provides an endpoint to visualize metrics.
  *
@@ -52,12 +55,13 @@ import java.util.stream.Collectors;
  */
 @Endpoint(value = MetricsEndpoint.NAME, defaultSensitive = MetricsEndpoint.DEFAULT_SENSITIVE)
 @RequiresMetrics
-@TypeHint(value = {io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class},
-        accessType = {TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS, TypeHint.AccessType.ALL_PUBLIC_METHODS})
+@TypeHint(value = {
+        MetricsEndpoint.class,
+        MetricsEndpoint.MetricNames.class,
+        MetricsEndpoint.MetricDetails.class,
+        MetricsEndpoint.AvailableTag.class,
+        MetricsEndpoint.Sample.class},
+        accessType = {ALL_DECLARED_CONSTRUCTORS, ALL_PUBLIC_METHODS})
 public class MetricsEndpoint {
 
     /**
