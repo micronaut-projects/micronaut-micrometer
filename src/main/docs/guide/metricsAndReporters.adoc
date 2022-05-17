@@ -1,3 +1,3 @@
 == Metrics Registries & Reporters
 
-By default there a metrics endpoint wired up and metrics are provided to it for viewing or retrieving via http.  If you want to register a specific type of reporter you will need to include a typed registry configuration.  The following are the currently supported libraries for reporting metrics.
+By default, there is a `/metrics` endpoint configured, and metrics are provided to it for viewing or retrieving via HTTP. To register a specific type of reporter, include a typed registry configuration. The following are the currently supported libraries for reporting metrics.

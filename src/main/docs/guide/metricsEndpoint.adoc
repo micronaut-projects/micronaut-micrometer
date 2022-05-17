@@ -1,15 +1,15 @@
 [TIP]
 .Using the CLI
 ====
-If you are creating your project using the Micronaut CLI, supply one of `micrometer-atlas`, `micrometer-graphite`, `micrometer-prometheus`, or `micrometer-statsd` features to enable metrics and preconfigure the selected registery in your project:
+If you are creating your project using the Micronaut CLI, supply one of `micrometer-atlas`, `micrometer-graphite`, `micrometer-prometheus`, or `micrometer-statsd` features to enable metrics and preconfigure the selected registry in your project:
 ----
 $ mn create-app my-app --features micrometer-atlas
 ----
 ====
 
-The metrics endpoint returns information about the "metrics" of the application. To execute the metrics endpoint, send a GET request to `/metrics`.  This will return a list of the metric names registered with the `MeterRegistry` bean.
+The metrics endpoint returns information about the "metrics" of the application. To execute the endpoint, send a GET request to `/metrics`. This returns the metric names registered with the `MeterRegistry` bean.
 
-You can get specific metrics by using `/metrics/[name]` such as `/metrics/jvm.memory.used`.  This would return something like:
+You can get specific metrics by using `/metrics/[name]`, for example `/metrics/jvm.memory.used`. This would return something like:
 
 .Sample Metric Detail Json
 ```json
@@ -67,7 +67,7 @@ You can further limit the metric by using a tag like `/metrics/jvm.memory.used?t
 }
 ```
 
-You may even use multiple/nested tags like `/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&tag=area:heap`.
+You may even use multiple or nested tags, for example `/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&tag=area:heap`.
 
 .Sample Metric Detail Json
 ```json
@@ -84,7 +84,7 @@ You may even use multiple/nested tags like `/metrics/jvm.memory.used?tag=id:PS%2
 
 == Configuration
 
-Currently the metrics endpoint will only be enabled if you include the `micrometer-core` (or one of the typed registries such as `micrometer-registry-statsd` or `micrometer-registry-graphite`) AND the `management` dependencies.  You will also need to have the global metrics flag enabled (true by default).
+Currently, the metrics endpoint is only enabled if you include the `micrometer-core` (or one of the typed registries such as `micrometer-registry-statsd`, `micrometer-registry-graphite`, etc.) AND the `management` dependencies. You must also enable the global metrics flag (`true` by default).
 
 .Property
 
@@ -101,11 +101,11 @@ micronaut:
 ----
 dependencies {
     ...
-    compile "io.micronaut.micrometer:micronaut-micrometer-core"
+    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
     // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    compile "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
+    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
     // Also required to enable endpoint
-    compile "io.micronaut:micronaut-management"
+    implementation "io.micronaut:micronaut-management"
     ...
 }
 ----
@@ -138,7 +138,7 @@ To configure the metrics endpoint, supply configuration through `endpoints.metri
 [source,yaml]
 ----
 endpoints:
-    metrics:
-        enabled: Boolean
-        sensitive: Boolean
+  metrics:
+    enabled: Boolean
+    sensitive: Boolean
 ----

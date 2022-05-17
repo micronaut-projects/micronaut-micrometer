@@ -2,14 +2,14 @@ You can include the Graphite reporter via `io.micronaut.micrometer:micronaut-mic
 
 dependency:micronaut-micrometer-registry-graphite[groupId="io.micronaut.micrometer"]
 
-You can configure this reporter using `micronaut.metrics.export.graphite`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java[GraphiteConfig] for more options
+You can configure this reporter using `micronaut.metrics.export.graphite`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java[GraphiteConfig] for more options.
 
 |=======
 |*Name* |*Description*
-|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
-|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
-|host |The host to communicate with graphite. Default: `localhost`
-|port |The port to communicate with graphite. Default: `2004`
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
+|host |The Graphite server location. Default: `localhost`
+|port |The Graphite server port. Default: `2004`
 |=======
 
 .Example Graphite Config
