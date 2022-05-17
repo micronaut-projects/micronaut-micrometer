@@ -42,8 +42,6 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     private final Iterable<Tag> tags;
 
     /**
-     * Constructor for creaging data source pool metrics.
-     *
      * @param dataSource       The datasource to bind metrics for
      * @param metadataProvider A composite object of all the metadataProviders
      * @param dataSourceName   The name of the datasource
@@ -59,9 +57,9 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     }
 
     /**
-     * Method for getting metadataProvider object for datasource that will bind the pool metrics.
+     * Binds the pool metrics.
      *
-     * @param meterRegistry the meter registry object
+     * @param meterRegistry the meter registry
      */
     @Override
     public void bindTo(@NotNull MeterRegistry meterRegistry) {

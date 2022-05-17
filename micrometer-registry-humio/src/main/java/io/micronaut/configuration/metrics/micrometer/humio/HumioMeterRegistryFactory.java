@@ -26,7 +26,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The HumioMeterRegistryFactory that will configure and create a humio meter registry.
+ * Creates a Humio meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,12 +38,12 @@ public class HumioMeterRegistryFactory {
     public static final String HUMIO_ENABLED = HUMIO_CONFIG + ".enabled";
 
     /**
-     * Create a HumioMeterRegistry bean if global metrics are enables
-     * and the humio is enabled.  Will be true by default when this
+     * Create a HumioMeterRegistry bean if global metrics are enabled
+     * and Humio is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A HumioMeterRegistry
+     * @return HumioMeterRegistry
      */
     @Singleton
     HumioMeterRegistry humioMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {

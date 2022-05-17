@@ -24,7 +24,7 @@ import java.util.Collection;
 
 /**
  * Default implementation of {@link MeterRegistryConfigurer} that adds the binders and filters
- * to the micrometer meter registry.  This is specifically needed for the {@link io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint}
+ * to the micrometer meter registry. This is specifically needed for the {@link io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint}
  *
  * @author Christian Oestreich
  * @since 1.0
@@ -37,8 +37,8 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
     /**
      * Constructor for the micrometer meter registry configurer.
      *
-     * @param binders list of binder beans
-     * @param filters list of filter beans
+     * @param binders binder beans
+     * @param filters filter beans
      */
     public CompositeMeterRegistryConfigurer(
             Collection<MeterBinder> binders,
@@ -67,9 +67,9 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
     }
 
     /**
-     * Add filters to the meter regitry. More details available at https://micrometer.io/docs/concepts#_meter_filters
+     * Add filters to the meter registry. More details available at https://micrometer.io/docs/concepts#_meter_filters
      *
-     * @param meterRegistry the meter registry to configure
+     * @param meterRegistry the registry
      */
     private void addFilters(@NotNull CompositeMeterRegistry meterRegistry) {
         if (filters != null && !filters.isEmpty()) {
@@ -78,7 +78,7 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
     }
 
     /**
-     * Add binders to the meter registry.  There are default binders available.
+     * Add binders to the meter registry. There are default binders available.
      * <p>
      * {@link io.micronaut.configuration.metrics.binder.jvm.JvmMeterRegistryBinderFactory}
      * {@link io.micronaut.configuration.metrics.binder.logging.LogbackMeterRegistryBinderFactory}

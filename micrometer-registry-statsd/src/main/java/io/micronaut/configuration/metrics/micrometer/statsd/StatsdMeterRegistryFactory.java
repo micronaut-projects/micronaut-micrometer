@@ -30,7 +30,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The StatsdMeterRegistryFactory that will configure and create a statsd meter registry.
+ * Creates a StatsD meter registry.
  */
 @Factory
 public class StatsdMeterRegistryFactory {
@@ -39,11 +39,11 @@ public class StatsdMeterRegistryFactory {
     public static final String STATSD_ENABLED = STATSD_CONFIG + ".enabled";
 
     /**
-     * Create a StatsdMeterRegistry bean if global metrics are enables
-     * and the statsd is enabled.  Will be true by default when this
+     * Create a StatsdMeterRegistry bean if global metrics are enabled
+     * and StatsD is enabled. Will be true by default when this
      * configuration is included in project.
      * @param exportConfigurationProperties The export configuration
-     * @return A StatsdMeterRegistry
+     * @return StatsdMeterRegistry
      */
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)

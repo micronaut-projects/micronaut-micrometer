@@ -30,12 +30,10 @@ import org.reactivestreams.Publisher;
 import java.util.Optional;
 
 /**
- * Once per request web filter that will register the timers
- * and meters for each request.
+ * Registers the timers and meters for each request.
  *
  * <p>The default is to intercept all paths /**, but using the
  *  property micronaut.metrics.http.path, this can be changed.</p>
- *
  *
  * @author Christian Oestreich
  * @author graemerocher
@@ -50,8 +48,6 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Filter constructor.
-     *
      * @param meterRegistry the meter registry
      */
     public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry) {
@@ -64,7 +60,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     /**
-     * This method is here for backwards compatibility. The class no longer implement
+     * This is here for backwards compatibility. The class no longer implements
      * OncePerRequestHttpServerFilter, however the method was kept to maintain binary
      * compatibility.
      *

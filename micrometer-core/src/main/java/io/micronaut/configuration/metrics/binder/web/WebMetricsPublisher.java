@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * A publisher that will deal with the web filter metrics for success and error conditions.
+ * Deals with the web filter metrics for success and error conditions.
  *
  * @param <T> The response type
  * @author Christian Oestreich
@@ -47,7 +47,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 
     /**
-     * Constant used to define whether web metrics are enabled or not.
+     * To enable/disable web metrics.
      */
     @SuppressWarnings("WeakerAccess")
     public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
@@ -73,13 +73,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private final boolean reportErrors;
 
     /**
-     * Publisher constructor.
-     *
      * @param publisher     The original publisher
      * @param meterRegistry MeterRegistry bean
      * @param requestPath   The request path
      * @param start         The start time of the request
-     * @param httpMethod    The http method name used
+     * @param httpMethod    The HTTP method name used
      * @param isServer      Whether the metric relates to the server or the client
      * @param reportErrors  Whether errors should be reported
      */
@@ -95,13 +93,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Publisher constructor.
-     *
      * @param publisher     The original publisher
      * @param meterRegistry MeterRegistry bean
      * @param requestPath   The request path
      * @param start         The start time of the request
-     * @param httpMethod    The http method name used
+     * @param httpMethod    The HTTP method name used
      * @param isServer      Whether the metric relates to the server or the client
      * @param host          The host called in the request
      * @param reportErrors  Whether errors should be reported
@@ -126,13 +122,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Publisher constructor.
-     *
      * @param publisher     The original publisher
      * @param meterRegistry MeterRegistry bean
      * @param requestPath   The request path
      * @param start         The start time of the request
-     * @param httpMethod    The http method name used
+     * @param httpMethod    The HTTP method name used
      * @param reportErrors  Whether errors should be reported
      */
     WebMetricsPublisher(
@@ -146,7 +140,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * The subscribe method that will be called for publisher.
+     * Called for publisher.
      *
      * @param actual the original subscription
      */
@@ -161,28 +155,17 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                 return actual.currentContext();
             }
 
-            /**
-             * Subscription handler.
-             * @param subscription the subscription
-             */
             @Override
             public void onSubscribe(Subscription subscription) {
                 actual.onSubscribe(subscription);
             }
 
-            /**
-             * Request success handler.
-             * @param httpResponse the http response
-             */
             @Override
             public void onNext(T httpResponse) {
                 success(httpResponse, start, httpMethod, requestPath, host);
                 actual.onNext(httpResponse);
             }
 
-            /**
-             * Request error handler.
-             */
             @Override
             public void onError(Throwable throwable) {
                 if (reportErrors) {
@@ -191,9 +174,6 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                 actual.onError(throwable);
             }
 
-            /**
-             * Request complete handler.
-             */
             @Override
             public void onComplete() {
                 actual.onComplete();
@@ -204,11 +184,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     /**
      * Get the tags for the metrics based on request shape.
      *
-     * @param httpResponse The http response
-     * @param httpMethod   The name of the http method (GET, POST, etc)
+     * @param httpResponse The HTTP response
+     * @param httpMethod   The name of the HTTP method (GET, POST, etc)
      * @param requestPath  The request path (/foo, /foo/bar, etc)
      * @param throwable    The throwable (optional)
-     * @param host
+     * @param host         the host
      * @return A list of Tag objects
      */
     private static List<Tag> getTags(HttpResponse httpResponse,
@@ -223,9 +203,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Get a tag with the http method name.
+     * Get a tag with the HTTP method name.
      *
-     * @param httpMethod The name of the http method.
+     * @param httpMethod The name of the HTTP method.
      * @return Tag of method
      */
     private static Tag method(String httpMethod) {
@@ -237,9 +217,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Get a tag with the http status value.
+     * Get a tag with the HTTP status value.
      *
-     * @param httpResponse the http response
+     * @param httpResponse the HTTP response
      * @return Tag of status
      */
     private static Tag status(HttpResponse httpResponse) {
@@ -255,11 +235,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Get a tag with the uri.
+     * Get a tag with the URI.
      *
-     * @param httpResponse the http response
+     * @param httpResponse the HTTP response
      * @param path         the path of the request
-     * @return Tag of uri
+     * @return Tag of URI
      */
     private static Tag uri(HttpResponse httpResponse, String path) {
         if (httpResponse != null) {
@@ -302,9 +282,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Sanitize the uri path for double slashes and ending slashes.
+     * Sanitize the URI path for double slashes and ending slashes.
      *
-     * @param path the uri of the request
+     * @param path the URI of the request
      * @return sanitized string
      */
     private static String sanitizePath(String path) {
@@ -318,12 +298,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Method to register the success timer for a web request.
+     * Registers the success timer for a web request.
      *
-     * @param httpResponse the http response
+     * @param httpResponse the HTTP response
      * @param start        the start time of the request
-     * @param httpMethod   the name of the http method (GET, POST, etc)
-     * @param requestPath  the uri of the reuqest
+     * @param httpMethod   the name of the HTTP method (GET, POST, etc)
+     * @param requestPath  the URI of the request
      */
     private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath, String host) {
         Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
@@ -332,11 +312,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Method to register the error timer for a web request when an exception occurs.
+     * Registers the error timer for a web request when an exception occurs.
      *
      * @param start       the start time of the request
-     * @param httpMethod  the name of the http method (GET, POST, etc)
-     * @param requestPath the uri of the reuqest
+     * @param httpMethod  the name of the HTTP method (GET, POST, etc)
+     * @param requestPath the URI of the request
      * @param throwable   exception that occurred
      */
     private void error(long start, String httpMethod, String requestPath, Throwable throwable, String host) {

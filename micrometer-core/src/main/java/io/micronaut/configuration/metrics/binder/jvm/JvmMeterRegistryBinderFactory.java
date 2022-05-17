@@ -30,7 +30,7 @@ import jakarta.inject.Singleton;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Binder factory that will create the jvm metrics beans.
+ * Creates the JVM metrics beans.
  *
  * @author Christian Oestreich
  * @since 1.0

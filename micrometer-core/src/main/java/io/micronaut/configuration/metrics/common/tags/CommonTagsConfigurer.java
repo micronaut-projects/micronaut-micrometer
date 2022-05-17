@@ -30,7 +30,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_COMMON_TAGS;
 
 /**
- * CommonTagsConfigurer will configure every MeterRegistry with common tags.
+ * Configures every MeterRegistry with common tags.
  */
 @Factory
 @RequiresMetrics

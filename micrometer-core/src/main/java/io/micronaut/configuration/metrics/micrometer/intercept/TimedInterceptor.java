@@ -71,7 +71,6 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Default constructor.
      * @param meterRegistry The meter registry
      */
     protected TimedInterceptor(MeterRegistry meterRegistry) {

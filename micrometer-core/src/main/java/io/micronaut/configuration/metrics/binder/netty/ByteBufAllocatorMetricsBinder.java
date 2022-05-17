@@ -76,7 +76,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Metrics for netty default ByteBufAllocators.
+ * Metrics for Netty default ByteBufAllocators.
  *
  * @author Christophe Roudet
  * @since 2.0
@@ -95,7 +95,7 @@ final class ByteBufAllocatorMetricsBinder {
     }
 
     /**
-     * Adds metrics for netty's default ByteBufAllocators.
+     * Adds metrics for Netty's default ByteBufAllocators.
      *
      * @param meterRegistryProvider The metric registry provider.
      * @param kinds The kinds of metrics to add.
@@ -108,7 +108,7 @@ final class ByteBufAllocatorMetricsBinder {
     }
 
     /**
-     * Adds metrics for netty's default ByteBufAllocators.
+     * Adds metrics for Netty's default ByteBufAllocators.
      */
     @PostConstruct
     public void configureNettyMetrics() {

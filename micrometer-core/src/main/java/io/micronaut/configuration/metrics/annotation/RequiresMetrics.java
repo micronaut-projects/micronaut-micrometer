@@ -24,7 +24,7 @@ import java.lang.annotation.*;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 
 /**
- * An annotation that can be applied to any bean that requires Metrics is enabled.
+ * Apply to a bean that requires metrics to be enabled.
  *
  * @author Graeme Rocher
  * @since 1.0

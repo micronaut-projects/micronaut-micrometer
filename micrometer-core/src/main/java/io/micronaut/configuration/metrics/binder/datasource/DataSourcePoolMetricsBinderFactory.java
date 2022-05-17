@@ -29,18 +29,18 @@ import java.util.Collections;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Instruments Micronaut related jdbc pool metrics via Micrometer.
+ * Instruments Micronaut related JDBC pool metrics via Micrometer.
  *
  * @author Christian Oestreich
  * @since 1.0
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = FALSE)
 public class DataSourcePoolMetricsBinderFactory {
 
     /**
-     * Method to wire beans for each type of datasource.
+     * Wires beans for each DataSource.
      *
      * @param dataSourceName         The parameterized name of the datasource
      * @param dataSourcePoolMetadata The datasource metadata object to use for the binder

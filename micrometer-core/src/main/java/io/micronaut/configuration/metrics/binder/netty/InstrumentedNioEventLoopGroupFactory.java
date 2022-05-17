@@ -59,22 +59,13 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * Creates an InstrumentedNioEventLoopGroupFactory.
-     *
-     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     * @param instrumentedEventLoopTaskQueueFactory InstrumentedEventLoopTaskQueueFactory
      */
     @Inject
     public InstrumentedNioEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
         this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads The number of threads to use.
-     * @param ioRatio The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, (Executor) null, (EventExecutorChooserFactory) null,
@@ -84,14 +75,6 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads       The number of threads to use.
-     * @param threadFactory The thread factory.
-     * @param ioRatio       The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
@@ -102,14 +85,6 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads  The number of threads to use.
-     * @param executor An Executor.
-     * @param ioRatio  The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, executor,
@@ -120,11 +95,6 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Returns the server channel class.
-     *
-     * @return NioServerSocketChannel.
-     */
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return NioServerSocketChannel.class;

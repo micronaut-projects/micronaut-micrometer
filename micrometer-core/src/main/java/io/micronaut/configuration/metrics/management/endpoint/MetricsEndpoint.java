@@ -45,7 +45,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
- * Provides a metrics endpoint to visualize metrics.
+ * Provides an endpoint to visualize metrics.
  *
  * @author Christian Oestreich
  * @since 1.0
@@ -73,8 +73,6 @@ public class MetricsEndpoint {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Constructor for metrics endpoint.
-     *
      * @param meterRegistry The meter registry
      * @param dataSources   To ensure data sources are loaded
      */
@@ -84,10 +82,9 @@ public class MetricsEndpoint {
     }
 
     /**
-     * Read operation to list metric names.  To get the details
-     * the method getMetricDetails(name) should be invoked.
+     * Lists metric names. To get the details, invoke the method {@code getMetricDetails(name)}.
      *
-     * @return single of http response with list of metric names
+     * @return single of HTTP response with metric names
      */
     @Read
     public MetricNames listNames() {
@@ -98,7 +95,7 @@ public class MetricsEndpoint {
     }
 
     /**
-     * Method to read individual metric data.
+     * Reads individual metric data.
      * <p>
      * After calling the /metrics endpoint, you can pass the name in
      * like /metrics/foo.bar and the details for the metrics and tags
@@ -116,7 +113,7 @@ public class MetricsEndpoint {
     }
 
     /**
-     * Method to read individual metric data.
+     * Read individual metric data.
      * <p>
      * After calling the /metrics endpoint, you can pass the name in
      * like /metrics/foo.bar and the details for the metrics and tags

@@ -46,7 +46,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WRITT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 
 /**
- * Metrics for netty's Channels.
+ * Metrics for Netty Channels.
  *
  * @author Christophe Roudet
  * @since 2.0

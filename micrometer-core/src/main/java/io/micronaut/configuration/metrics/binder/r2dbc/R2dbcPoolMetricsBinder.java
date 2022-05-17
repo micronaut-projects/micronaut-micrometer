@@ -26,7 +26,7 @@ import io.r2dbc.pool.PoolMetrics;
 import java.util.function.Function;
 
 /**
- * A {@link MeterBinder} for a {@link ConnectionPool}.
+ * A {@link MeterBinder} for {@link PoolMetrics}.
  *
  * @author Leonardo Schick
  * @author Caroline Medeiros

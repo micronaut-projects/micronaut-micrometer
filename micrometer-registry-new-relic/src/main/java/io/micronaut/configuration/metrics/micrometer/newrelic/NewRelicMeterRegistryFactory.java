@@ -27,7 +27,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The NewRelicMeterRegistryFactory that will configure and create a signalfx meter registry.
+ * Creates a New Relic meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -39,12 +39,12 @@ public class NewRelicMeterRegistryFactory {
     public static final String NEWRELIC_ENABLED = NEWRELIC_CONFIG + ".enabled";
 
     /**
-     * Create a NewRelicMeterRegistry bean if global metrics are enables
-     * and the newrelic is enabled.  Will be true by default when this
+     * Create a NewRelicMeterRegistry bean if global metrics are enabled
+     * and New Relic is enabled. Will be true by default when this
      * configuration is included in project.
      *
-     * @param newRelicConfig The the new relic config
-     * @return A NewRelicMeterRegistry
+     * @param newRelicConfig the New Relic config
+     * @return NewRelicMeterRegistry
      */
     @Singleton
     NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig) {
@@ -52,14 +52,14 @@ public class NewRelicMeterRegistryFactory {
     }
 
     /**
-     * The new relic config bean.
+     * The New Relic config bean.
+     *
      * @param exportConfigurationProperties The properties
-     * @return The new relic bean
+     * @return the New Relic bean
      */
     @Singleton
     NewRelicConfig newRelicConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
     }
-
 }

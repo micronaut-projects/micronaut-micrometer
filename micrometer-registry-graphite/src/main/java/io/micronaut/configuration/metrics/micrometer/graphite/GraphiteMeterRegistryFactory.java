@@ -31,7 +31,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The GraphiteMeterRegistryFactory that will configure and create a graphite meter registry.
+ * Creates a Graphite meter registry.
  */
 @Factory
 public class GraphiteMeterRegistryFactory {
@@ -41,12 +41,12 @@ public class GraphiteMeterRegistryFactory {
     public static final String GRAPHITE_ENABLED = GRAPHITE_CONFIG + ".enabled";
 
     /**
-     * Create a GraphiteMeterRegistry bean if global metrics are enables
-     * and the graphite is enabled.  Will be true by default when this
+     * Create a GraphiteMeterRegistry bean if global metrics are enabled
+     * and Graphite is enabled. Will be true by default when this
      * configuration is included in project.
      *
-     * @param config The graphite config
-     * @return A GraphiteMeterRegistry
+     * @param config the Graphite config
+     * @return GraphiteMeterRegistry
      */
     @Singleton
     GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config) {
@@ -54,13 +54,13 @@ public class GraphiteMeterRegistryFactory {
     }
 
     /**
-     * Create a GraphiteMeterRegistry bean if global metrics are enables
-     * and the graphite is enabled.  Will be true by default when this
+     * Create a GraphiteMeterRegistry bean if global metrics are enabled
+     * and Graphite is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @param tagsAsPrefix  The tags as prefix
-     * @return A GraphiteMeterRegistry
+     * @param tagsAsPrefix                  The tags as prefix
+     * @return GraphiteMeterRegistry
      */
     @Singleton
     GraphiteConfig graphiteConfig(

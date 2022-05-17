@@ -19,7 +19,7 @@ import com.newrelic.telemetry.micrometer.NewRelicRegistryConfig;
 
 /**
  * Used by the NewRelicMeterRegistryFactory to read serviceName from
- * the micronaut micrometer newrelic configuration.
+ * the Micronaut Micrometer New Relic configuration.
  */
 public interface NewRelicTelemetryMicronautConfig extends NewRelicRegistryConfig {
     @Override

@@ -26,7 +26,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The WavefrontMeterRegistryFactory that will configure and create a wavefront meter registry.
+ * Creates a Wavefront meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,12 +38,12 @@ public class WavefrontMeterRegistryFactory {
     public static final String WAVEFRONT_ENABLED = WAVEFRONT_CONFIG + ".enabled";
 
     /**
-     * Create a WavefrontMeterRegistry bean if global metrics are enables
-     * and the wavefront is enabled.  Will be true by default when this
+     * Create a WavefrontMeterRegistry bean if global metrics are enabled
+     * and Wavefront is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A WavefrontMeterRegistry
+     * @return WavefrontMeterRegistry
      */
     @Singleton
     WavefrontMeterRegistry wavefrontMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {

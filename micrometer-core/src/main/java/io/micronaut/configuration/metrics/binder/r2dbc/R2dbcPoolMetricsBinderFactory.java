@@ -31,7 +31,7 @@ import java.util.Collections;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Instruments Micronaut related r2dbc pool metrics via Micrometer.
+ * Instruments Micronaut related R2DBC pool metrics via Micrometer.
  *
  * @author Leonardo Schick
  * @author Caroline Medeiros
@@ -43,7 +43,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 public class R2dbcPoolMetricsBinderFactory {
 
     /**
-     * Method to wire beans for each type of datasource.
+     * Wires beans for each DataSource.
      *
      * @param dataSourceName    The parameterized name of the datasource
      * @param factory           The datasource factory object to use for the binder

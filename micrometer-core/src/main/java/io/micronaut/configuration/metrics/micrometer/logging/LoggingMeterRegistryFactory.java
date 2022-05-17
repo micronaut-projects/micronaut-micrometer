@@ -26,7 +26,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The LoggingMeterRegistryFactory that will configure and create a logging meter registry.
+ * Creates a logging meter registry.
  */
 @Factory
 public class LoggingMeterRegistryFactory {
@@ -36,11 +36,11 @@ public class LoggingMeterRegistryFactory {
 
     /**
      * Create a LoggingMeterRegistry bean if global metrics are enabled
-     * and the logging flag is enabled.  Will be false by default when this
+     * and the logging flag is enabled. Will be false by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The configuration
-     * @return A LoggingMeterRegistry
+     * @return LoggingMeterRegistry
      */
     @Singleton
     LoggingMeterRegistry loggingMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {

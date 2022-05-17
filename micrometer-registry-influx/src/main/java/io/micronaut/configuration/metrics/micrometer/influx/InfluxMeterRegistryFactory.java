@@ -38,12 +38,12 @@ public class InfluxMeterRegistryFactory {
     public static final String INFLUX_ENABLED = INFLUX_CONFIG + ".enabled";
 
     /**
-     * Create a InfluxMeterRegistry bean if global metrics are enables
-     * and the influx is enabled.  Will be true by default when this
+     * Create a InfluxMeterRegistry bean if global metrics are enabled
+     * and Influx is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A InfluxMeterRegistry
+     * @return InfluxMeterRegistry
      */
     @Singleton
     InfluxMeterRegistry influxConfig(ExportConfigurationProperties exportConfigurationProperties) {

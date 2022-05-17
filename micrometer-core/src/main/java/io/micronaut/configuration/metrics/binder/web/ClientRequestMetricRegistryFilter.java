@@ -43,8 +43,6 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Default constructor.
-     *
      * @param meterRegistry The metrics registry
      */
     public ClientRequestMetricRegistryFilter(MeterRegistry meterRegistry) {

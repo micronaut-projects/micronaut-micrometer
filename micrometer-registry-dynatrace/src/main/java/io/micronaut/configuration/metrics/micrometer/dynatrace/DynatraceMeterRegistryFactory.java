@@ -26,7 +26,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The DynatraceMeterRegistryFactory that will configure and create a kairos meter registry.
+ * Creates a Dynatrace meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,12 +38,12 @@ public class DynatraceMeterRegistryFactory {
     public static final String DYNATRACE_ENABLED = DYNATRACE_CONFIG + ".enabled";
 
     /**
-     * Create a DynatraceMeterRegistry bean if global metrics are enables
-     * and the dynatrace is enabled.  Will be true by default when this
+     * Create a DynatraceMeterRegistry bean if global metrics are enabled
+     * and Dynatrace is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A DynatraceMeterRegistry
+     * @return DynatraceMeterRegistry
      */
     @Singleton
     DynatraceMeterRegistry dynatraceMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {

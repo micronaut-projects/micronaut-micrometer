@@ -35,7 +35,7 @@ import io.micrometer.core.instrument.Timer;
 import io.micronaut.core.annotation.Internal;
 
 /**
- * An Instrumented Queue.
+ * An instrumented Queue.
  *
  * @author croudet
  * @since 2.0
@@ -51,15 +51,13 @@ final class MonitoredQueue implements Queue<Runnable> {
     private final Counter globalTaskCounter;
 
     /**
-     * An InstrumentedQueue.
-     *
-     * @param index An index.
-     * @param meterRegistry The meter registry.
-     * @param tag A Tag.
-     * @param globalTaskCounter A counter.
-     * @param globalWaitTimeTimer The global wait time timer.
+     * @param index                    An index.
+     * @param meterRegistry            The meter registry.
+     * @param tag                      A Tag.
+     * @param globalTaskCounter        A counter.
+     * @param globalWaitTimeTimer      The global wait time timer.
      * @param globalExecutionTimeTimer The global execution time timer.
-     * @param queue The Queue.
+     * @param queue                    The Queue.
      */
     MonitoredQueue(int index, MeterRegistry meterRegistry, Tag tag, Counter globalTaskCounter, Timer globalWaitTimeTimer, Timer globalExecutionTimeTimer, Queue<Runnable> queue) {
         this.delegate = queue;
@@ -218,7 +216,6 @@ final class MonitoredQueue implements Queue<Runnable> {
     /**
      * Runnable Wrapper that register time spent in queue and execution time.
      *
-     * @author croudet
      * @since 2.0
      */
     static final class TimedRunnable implements Runnable {

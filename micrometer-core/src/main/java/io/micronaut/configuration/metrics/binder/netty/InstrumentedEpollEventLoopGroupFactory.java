@@ -63,22 +63,13 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * Creates an InstrumentedEpollEventLoopGroupFactory.
-     *
-     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     * @param instrumentedEventLoopTaskQueueFactory InstrumentedEventLoopTaskQueueFactory
      */
     @Inject
     public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
         this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads The number of threads to use.
-     * @param ioRatio The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
         return new EpollEventLoopGroup(threads, (Executor) null,
@@ -88,14 +79,6 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads       The number of threads to use.
-     * @param threadFactory The thread factory.
-     * @param ioRatio       The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
         return new EpollEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
@@ -105,14 +88,6 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads  The number of threads to use.
-     * @param executor An Executor.
-     * @param ioRatio  The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
         return new EpollEventLoopGroup(threads, executor,
@@ -122,11 +97,6 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Returns the server channel class.
-     *
-     * @return EpollServerSocketChannel.
-     */
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return EpollServerSocketChannel.class;

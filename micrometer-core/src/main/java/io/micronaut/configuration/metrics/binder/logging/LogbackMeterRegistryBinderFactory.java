@@ -27,7 +27,7 @@ import jakarta.inject.Singleton;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Binder factory that will create the logback metrics beans.
+ * Creates the logback metrics beans.
  *
  * @author Christian Oestreich
  * @since 1.0

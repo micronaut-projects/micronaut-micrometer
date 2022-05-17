@@ -71,9 +71,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
     private final Timer globalWorkerExecutionTimer;
 
     /**
-     * The InstrumentedEventLoopTaskQueueFactory.
-     *
-     * @param meterRegistryProvider The metric registry provider.
+     * @param meterRegistryProvider the metric registry provider
      */
     @Inject
     public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {

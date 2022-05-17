@@ -33,8 +33,6 @@ public class PrometheusEndpoint {
     private PrometheusMeterRegistry prometheusMeterRegistry;
 
     /**
-     * Default constructor.
-     *
      * @param prometheusMeterRegistry The meter registry
      */
     @Inject
@@ -44,7 +42,8 @@ public class PrometheusEndpoint {
 
     /**
      * Scrapes the data.
-     * @return The data.
+     *
+     * @return the data
      */
     @Read(produces = "text/plain; version=0.0.4")
     public String scrape() {

@@ -53,8 +53,6 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
-     * Default constructor.
-     *
      * @param meterRegistryProvider The meter registry provider
      */
     public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {

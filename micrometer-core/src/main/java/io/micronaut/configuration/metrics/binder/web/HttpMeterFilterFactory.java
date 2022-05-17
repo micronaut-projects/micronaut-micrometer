@@ -33,7 +33,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 
 /**
- * Optional filter for adding percentile to http metrics.
+ * Optional filter for adding percentile to HTTP metrics.
  *
  *  @author umutkocasarac
  */

@@ -30,7 +30,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The StackdriverMeterRegistryFactory that will configure and create a wavefront meter registry.
+ * Creates a Stackdriver meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -42,12 +42,12 @@ public class StackdriverMeterRegistryFactory {
     public static final String STACKDRIVER_ENABLED = STACKDRIVER_CONFIG + ".enabled";
 
     /**
-     * Create a StackdriverMeterRegistry bean if global metrics are enables
-     * and the stackdriver is enabled.  Will be true by default when this
+     * Create a StackdriverMeterRegistry bean if global metrics are enabled
+     * and Stackdriver is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A StackdriverMeterRegistry
+     * @return StackdriverMeterRegistry
      */
     @Singleton
     @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
