@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.micrometer.azuremonitor
 
 import io.micrometer.azuremonitor.AzureMonitorConfig
@@ -21,7 +6,6 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.step.StepMeterRegistry
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.exceptions.BeanInstantiationException
 import io.micronaut.core.reflect.ReflectionUtils
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -40,7 +24,7 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
     void "verify AzureMonitorMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
+                (AZUREMONITOR_CONFIG + ".instrumentationKey"): MOCK_AZURE_INSTRUMENTATION_KEY,
         ])
 
         then:
@@ -54,7 +38,7 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
     void "verify CompositeMeterRegistry created by default"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
+                (AZUREMONITOR_CONFIG + ".instrumentationKey"): MOCK_AZURE_INSTRUMENTATION_KEY,
         ])
 
         when:
@@ -74,8 +58,8 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
     void "verify AzureMonitorMeterRegistry bean exists = #result when config #cfg = #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (cfg): setting,
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
+                (cfg)                                        : setting,
+                (AZUREMONITOR_CONFIG + ".instrumentationKey"): MOCK_AZURE_INSTRUMENTATION_KEY,
         ])
 
         then:
@@ -96,8 +80,8 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
 
         when: "no configuration supplied"
         ApplicationContext context = ApplicationContext.run([
-                (AZUREMONITOR_ENABLED)                 : true,
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
+                (AZUREMONITOR_ENABLED)                       : true,
+                (AZUREMONITOR_CONFIG + ".instrumentationKey"): MOCK_AZURE_INSTRUMENTATION_KEY,
         ])
         Optional<AzureMonitorMeterRegistry> azureMonitorMeterRegistry = context.findBean(AzureMonitorMeterRegistry)
 
@@ -106,7 +90,7 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
 
         and:
         def meterRegistry = azureMonitorMeterRegistry.get()
-        def field = ReflectionUtils.getRequiredField(StepMeterRegistry, "config")
+        Field field = ReflectionUtils.getRequiredField(StepMeterRegistry, "config")
         field.setAccessible(true)
         AzureMonitorConfig config = field.get(meterRegistry)
 
@@ -122,10 +106,10 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
 
         when: "non-default configuration is supplied"
         ApplicationContext context = ApplicationContext.run([
-                (AZUREMONITOR_ENABLED)                   : true,
-                (AZUREMONITOR_CONFIG + ".instrumentationKey")    : MOCK_AZURE_INSTRUMENTATION_KEY,
-                (AZUREMONITOR_CONFIG + ".numThreads")    : "77",
-                (AZUREMONITOR_CONFIG + ".step")          : "PT2M",
+                (AZUREMONITOR_ENABLED)                       : true,
+                (AZUREMONITOR_CONFIG + ".instrumentationKey"): MOCK_AZURE_INSTRUMENTATION_KEY,
+                (AZUREMONITOR_CONFIG + ".numThreads")        : "77",
+                (AZUREMONITOR_CONFIG + ".step")              : "PT2M",
         ])
         Optional<AzureMonitorMeterRegistry> azureMonitorMeterRegistry = context.findBean(AzureMonitorMeterRegistry)
 
@@ -134,7 +118,7 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
 
         and:
         def meterRegistry = azureMonitorMeterRegistry.get()
-        def field = ReflectionUtils.getRequiredField(StepMeterRegistry, "config")
+        Field field = ReflectionUtils.getRequiredField(StepMeterRegistry, "config")
         field.setAccessible(true)
         AzureMonitorConfig config = field.get(meterRegistry)
         config.instrumentationKey() == MOCK_AZURE_INSTRUMENTATION_KEY
@@ -143,6 +127,4 @@ class AzureMonitorMeterRegistryFactorySpec extends Specification {
         cleanup:
         context.stop()
     }
-
-
 }

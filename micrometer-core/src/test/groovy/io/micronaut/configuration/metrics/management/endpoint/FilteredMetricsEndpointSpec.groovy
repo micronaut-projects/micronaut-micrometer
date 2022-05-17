@@ -1,36 +1,19 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.management.endpoint
 
-import groovy.util.logging.Slf4j
 import io.micrometer.core.annotation.Counted
 import io.micrometer.core.annotation.Timed
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.core.instrument.config.MeterFilter
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
 import io.micronaut.configuration.metrics.aggregator.CompositeMeterRegistryConfigurer
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpRequest
-import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
@@ -47,29 +30,28 @@ import spock.lang.Stepwise
 import javax.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
+import static io.micronaut.core.util.StringUtils.FALSE
+import static io.micronaut.http.HttpStatus.OK
 
-@Slf4j
 @Stepwise
 class FilteredMetricsEndpointSpec extends Specification {
 
-    static final SPEC_NAME_PROPERTY = 'spec.name'
+    private static final SPEC_NAME_PROPERTY = 'spec.name'
 
     @Shared
     @AutoCleanup
-    EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer,
-            [
-                    (SPEC_NAME_PROPERTY)         : getClass().simpleName,
-                    'endpoints.metrics.sensitive': false,
-                    (MICRONAUT_METRICS_ENABLED)  : true
-            ]
-    )
+    EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+            (SPEC_NAME_PROPERTY)         : getClass().simpleName,
+            'endpoints.metrics.sensitive': false,
+            (MICRONAUT_METRICS_ENABLED)  : true
+    ])
 
     @Shared
     ApplicationContext context = embeddedServer.applicationContext
 
     void "warm up the server"() {
         given:
-        HttpClient client = HttpClient.create(embeddedServer.getURL())
+        HttpClient client = HttpClient.create(embeddedServer.URL)
 
         expect:
         client.toBlocking().exchange(HttpRequest.GET('/filtered/hello/fred'), String).body() == "Hello Fred"
@@ -78,7 +60,7 @@ class FilteredMetricsEndpointSpec extends Specification {
 
     void "test the filter beans are available"() {
         expect:
-        context.getBeansOfType(MeterFilter.class)?.size() == 4
+        context.getBeansOfType(MeterFilter)?.size() == 4
         CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
         configurer.filters.size() == 4
         context.containsBean(MetricsEndpoint)
@@ -87,16 +69,16 @@ class FilteredMetricsEndpointSpec extends Specification {
         context.containsBean(SimpleMeterRegistry)
     }
 
-    @IgnoreIf({env["CI"]})
+    @IgnoreIf({ env["CI"] })
     void "test metrics endpoint with filtered metrics"() {
         given:
-        HttpClient client = HttpClient.create(embeddedServer.getURL())
+        HttpClient client = HttpClient.create(embeddedServer.URL)
 
         when:
-        ApplicationContext context = embeddedServer.getApplicationContext()
+        ApplicationContext context = embeddedServer.applicationContext
 
         then:
-        context.getBeansOfType(MeterFilter.class)?.size() == 4
+        context.getBeansOfType(MeterFilter)?.size() == 4
         CompositeMeterRegistryConfigurer configurer = context.getBean(MeterRegistryConfigurer)
         configurer.filters.size() == 4
         context.containsBean(MetricsEndpoint)
@@ -104,8 +86,7 @@ class FilteredMetricsEndpointSpec extends Specification {
         context.containsBean(CompositeMeterRegistry)
 
         when:
-
-        def result = waitForResponse(client)
+        Map result = waitForResponse(client)
 
         then:
         result.names.size() == 1
@@ -115,37 +96,35 @@ class FilteredMetricsEndpointSpec extends Specification {
         client.close()
     }
 
-    Map waitForResponse(HttpClient client, Integer loopCount = 1) {
+    private Map waitForResponse(HttpClient client, Integer loopCount = 1) {
         if (loopCount > 5) {
             throw new RuntimeException("Too many attempts to get metrics, failed!")
         }
 
         def response = client.toBlocking().exchange("/metrics", Map)
         Map result = response?.body()
-        log.info("/metrics returned status=${response?.status()} data=${result}")
-        if (!(result?.names?.size() > 0) || response?.status() != HttpStatus.OK) {
-            Thread.sleep(500)
-            log.info("Could not get metrics, retrying attempt $loopCount of 5")
+        if (!(result?.names?.size() > 0) || response?.status() != OK) {
+            sleep(500)
             waitForResponse(client, loopCount + 1)
         } else {
             return result
         }
     }
 
-    @Controller("/")
-    @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = "false")
+    @Controller
+    @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = FALSE)
     static class HelloController {
 
         @Get("/filtered/hello/{name}")
         Mono<String> hello(@NotBlank String name) {
-            return Mono.just("Hello ${name.capitalize()}".toString())
+            return Mono.just('Hello ' + name.capitalize())
         }
 
         @Timed
         @Counted
         @Get("/filtered/rxjava2/{name}")
         Single<String> rxjava(@NotBlank String name) {
-            return Single.just("Hello ${name.capitalize()}".toString())
+            return Single.just('Hello ' + name.capitalize())
         }
     }
 
@@ -155,21 +134,21 @@ class FilteredMetricsEndpointSpec extends Specification {
         @Bean
         @Singleton
         @Context
-        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = "false")
+        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = FALSE)
         SimpleMeterRegistry simpleMeterRegistry() {
             return new SimpleMeterRegistry()
         }
 
         @Bean
         @Singleton
-        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = "false")
+        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = FALSE)
         MeterFilter denyNameStartsWithJvmFilter() {
             return MeterFilter.denyNameStartsWith("system")
         }
 
         @Bean
         @Singleton
-        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = "false")
+        @Requires(property = "spec.name", value = "FilteredMetricsEndpointSpec", defaultValue = FALSE)
         MeterFilter maximumAllowableMetricsFilter() {
             return MeterFilter.maximumAllowableMetrics(1)
         }

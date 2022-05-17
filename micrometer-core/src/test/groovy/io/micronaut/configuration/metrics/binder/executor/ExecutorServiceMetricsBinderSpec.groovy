@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.binder.executor
 
 import io.micrometer.core.instrument.Gauge
@@ -39,7 +24,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 class ExecutorServiceMetricsBinderSpec extends Specification {
 
-    def "test executor service metrics"() {
+    void "test executor service metrics"() {
         when:
         ApplicationContext context = ApplicationContext.run()
         ExecutorService executorService = context.getBean(ExecutorService, Qualifiers.byName(TaskExecutors.IO))
@@ -53,10 +38,8 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
 
         Gauge g = search.gauge()
 
-        PollingConditions conditions = new PollingConditions(timeout: 3, delay: 0.1)
-
-        then:"The pool size was expanded to handle the 2 runnables"
-        conditions.eventually {
+        then: "The pool size was expanded to handle the 2 runnables"
+        new PollingConditions(timeout: 3, delay: 0.1).eventually {
             g.value() > 0
         }
 
@@ -70,7 +53,7 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         when:
         ApplicationContext context = ApplicationContext.run()
         EventLoopGroup eventLoopGroup = context.findBean(EventLoopGroup, Qualifiers.byName("test"))
-                                                .orElse(null)
+                .orElse(null)
 
         then:
         // for Micronaut 2.0 the value will not be non-null since a bean will be present
@@ -83,7 +66,7 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
     }
 
     @Unroll
-    def "test getting the beans #cfg #setting"() {
+    void "test getting the beans #cfg #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([(cfg): setting])
 
