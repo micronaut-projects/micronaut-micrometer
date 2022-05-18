@@ -74,9 +74,7 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     private <N extends Number> void bindPoolMetadata(MeterRegistry registry,
                                                      String metricName,
                                                      Function<DataSourcePoolMetadata, N> function) {
-        bindDataSource(registry,
-                metricName,
-                this.getValueFunction(function));
+        bindDataSource(registry, metricName, this.getValueFunction(function));
     }
 
     private <N extends Number> Function<DataSource, N> getValueFunction(

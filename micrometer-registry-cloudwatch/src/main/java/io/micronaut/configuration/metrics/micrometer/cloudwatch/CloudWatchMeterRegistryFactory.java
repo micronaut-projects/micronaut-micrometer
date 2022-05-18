@@ -66,19 +66,14 @@ public class CloudWatchMeterRegistryFactory {
      * @return A CloudWatchMeterRegistry
      */
     @Singleton
-    CloudWatchMeterRegistry cloudWatchMeterRegistry(
-            ExportConfigurationProperties exportConfigurationProperties,
-            CloudWatchAsyncClient cloudWatchAsyncClient) {
+    CloudWatchMeterRegistry cloudWatchMeterRegistry(ExportConfigurationProperties exportConfigurationProperties,
+                                                    CloudWatchAsyncClient cloudWatchAsyncClient) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         String cloudwatchNamespace = "cloudwatch.namespace";
         if (!exportConfig.containsKey(cloudwatchNamespace)) {
             exportConfig.setProperty(cloudwatchNamespace, CLOUDWATCH_DEFAULT_NAMESPACE);
         }
 
-        return new CloudWatchMeterRegistry(
-                exportConfig::getProperty,
-                SYSTEM,
-                cloudWatchAsyncClient
-        );
+        return new CloudWatchMeterRegistry(exportConfig::getProperty, SYSTEM, cloudWatchAsyncClient);
     }
 }

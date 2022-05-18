@@ -60,6 +60,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFactory {
+
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
@@ -71,7 +72,8 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -80,7 +82,9 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               ThreadFactory threadFactory,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -89,7 +93,9 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               Executor executor,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new KQueueEventLoopGroup(threads, executor,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -119,5 +125,4 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
         }
         return group;
     }
-
 }

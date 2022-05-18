@@ -73,5 +73,4 @@ public class NewRelicTelemetryMeterRegistryFactory {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
     }
-
 }

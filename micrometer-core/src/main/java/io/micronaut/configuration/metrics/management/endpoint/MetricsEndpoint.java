@@ -112,7 +112,8 @@ public class MetricsEndpoint {
      * @return single with metric details response
      */
     @Read
-    public MetricDetails getMetricDetails(@Selector String name, @Nullable List<String> tag) {
+    public MetricDetails getMetricDetails(@Selector String name,
+                                          @Nullable List<String> tag) {
         return getMetricDetailsResponse(name, tag);
     }
 
@@ -419,10 +420,7 @@ public class MetricsEndpoint {
 
         @Override
         public String toString() {
-            return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
-                    + this.value + '}';
+            return "MeasurementSample{" + "statistic=" + this.statistic + ", value=" + this.value + '}';
         }
-
     }
 }
-

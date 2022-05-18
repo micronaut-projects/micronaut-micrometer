@@ -48,9 +48,8 @@ public class DataSourcePoolMetricsBinderFactory {
      */
     @EachBean(DataSourcePoolMetadata.class)
     @Requires(beans = {DataSourcePoolMetadata.class})
-    public MeterBinder dataSourceMeterBinder(
-            @Parameter String dataSourceName,
-            DataSourcePoolMetadata dataSourcePoolMetadata) {
+    public MeterBinder dataSourceMeterBinder(@Parameter String dataSourceName,
+                                             DataSourcePoolMetadata dataSourcePoolMetadata) {
         return new DataSourcePoolMetricsBinder(dataSourcePoolMetadata.getDataSource(),
                 dataSourcePoolMetadata,
                 dataSourceName,

@@ -40,9 +40,8 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      * @param binders binder beans
      * @param filters filter beans
      */
-    public CompositeMeterRegistryConfigurer(
-            Collection<MeterBinder> binders,
-            Collection<MeterFilter> filters) {
+    public CompositeMeterRegistryConfigurer(Collection<MeterBinder> binders,
+                                            Collection<MeterFilter> filters) {
         this.binders = binders;
         this.filters = filters;
     }

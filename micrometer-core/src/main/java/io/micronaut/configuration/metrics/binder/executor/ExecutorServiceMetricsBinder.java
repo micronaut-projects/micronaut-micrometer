@@ -72,6 +72,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         if (unwrapped.getClass().getName().startsWith("io.netty")) {
             return unwrapped;
         }
+
         MeterRegistry meterRegistry = meterRegistryProvider.get();
         BeanIdentifier beanIdentifier = event.getBeanIdentifier();
 
@@ -118,6 +119,5 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
-
     }
 }

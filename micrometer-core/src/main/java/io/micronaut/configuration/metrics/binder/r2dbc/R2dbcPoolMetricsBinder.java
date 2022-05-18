@@ -37,7 +37,9 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
     private final PoolMetrics poolMetrics;
     private final Iterable<Tag> tags;
 
-    public R2dbcPoolMetricsBinder(PoolMetrics metrics, String dataSourceName, Iterable<Tag> tags) {
+    public R2dbcPoolMetricsBinder(PoolMetrics metrics,
+                                  String dataSourceName,
+                                  Iterable<Tag> tags) {
         this.poolMetrics = metrics;
         this.tags = Tags.concat(tags, "name", dataSourceName);
     }
@@ -54,11 +56,9 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
         }
     }
 
-    private void bindToPoolMetrics(
-        MeterRegistry registry,
-        String metricName,
-        Function<PoolMetrics, Integer> function
-    ) {
+    private void bindToPoolMetrics(MeterRegistry registry,
+                                   String metricName,
+                                   Function<PoolMetrics, Integer> function) {
         registry.gauge(
             "r2dbc.pool" + "." + metricName,
             tags,

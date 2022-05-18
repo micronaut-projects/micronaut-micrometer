@@ -48,6 +48,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  */
 @Internal
 final class MonitoredQueue implements Queue<Runnable> {
+
     private final Queue<Runnable> delegate;
     private final MeterRegistry meterRegistry;
     private final Timer waitTimeTimer;
@@ -65,7 +66,13 @@ final class MonitoredQueue implements Queue<Runnable> {
      * @param globalExecutionTimeTimer The global execution time timer.
      * @param queue                    The Queue.
      */
-    MonitoredQueue(int index, MeterRegistry meterRegistry, Tag tag, Counter globalTaskCounter, Timer globalWaitTimeTimer, Timer globalExecutionTimeTimer, Queue<Runnable> queue) {
+    MonitoredQueue(int index,
+                   MeterRegistry meterRegistry,
+                   Tag tag,
+                   Counter globalTaskCounter,
+                   Timer globalWaitTimeTimer,
+                   Timer globalExecutionTimeTimer,
+                   Queue<Runnable> queue) {
         this.delegate = queue;
         this.meterRegistry = meterRegistry;
         this.globalExecutionTimeTimer = globalExecutionTimeTimer;
@@ -166,7 +173,7 @@ final class MonitoredQueue implements Queue<Runnable> {
 
     @Override
     public boolean addAll(Collection<? extends Runnable> c) {
-        for (Runnable r: c) {
+        for (Runnable r : c) {
             if (!add(r)) {
                 return false;
             }
@@ -233,7 +240,12 @@ final class MonitoredQueue implements Queue<Runnable> {
         private final Runnable delegate;
         private final Timer.Sample idleSample;
 
-        TimedRunnable(MeterRegistry registry, Timer executionTimer, Timer waitTimeTimer, Timer globalExecutionTimeTimer, Timer globalWaitTimeTimer, Runnable delegate) {
+        TimedRunnable(MeterRegistry registry,
+                      Timer executionTimer,
+                      Timer waitTimeTimer,
+                      Timer globalExecutionTimeTimer,
+                      Timer globalWaitTimeTimer,
+                      Runnable delegate) {
             this.registry = registry;
             this.executionTimer = executionTimer;
             this.waitTimeTimer = waitTimeTimer;

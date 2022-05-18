@@ -100,10 +100,10 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
     public void channelRegistered(ChannelHandlerContext ctx) {
         channelCount.increment();
         activeChannelCount.increment();
-        ctx.pipeline()
-                .addAfter(CHANNEL_METRICS,
-                        ACTIVE_CHANNEL_TIMER,
-                        new ActiveChannelTimerHandler());
+        ctx.pipeline().addAfter(
+                CHANNEL_METRICS,
+                ACTIVE_CHANNEL_TIMER,
+                new ActiveChannelTimerHandler());
         ctx.fireChannelRegistered();
     }
 

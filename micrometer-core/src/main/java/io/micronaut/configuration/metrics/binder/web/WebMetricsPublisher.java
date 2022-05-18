@@ -83,14 +83,13 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param isServer      Whether the metric relates to the server or the client
      * @param reportErrors  Whether errors should be reported
      */
-    WebMetricsPublisher(
-            Publisher<T> publisher,
-            MeterRegistry meterRegistry,
-            String requestPath,
-            long start,
-            String httpMethod,
-            boolean isServer,
-            boolean reportErrors) {
+    WebMetricsPublisher(Publisher<T> publisher,
+                        MeterRegistry meterRegistry,
+                        String requestPath,
+                        long start,
+                        String httpMethod,
+                        boolean isServer,
+                        boolean reportErrors) {
         this(publisher, meterRegistry, requestPath, start, httpMethod, isServer, null, reportErrors);
     }
 
@@ -104,15 +103,14 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param host          The host called in the request
      * @param reportErrors  Whether errors should be reported
      */
-    WebMetricsPublisher(
-            Publisher<T> publisher,
-            MeterRegistry meterRegistry,
-            String requestPath,
-            long start,
-            String httpMethod,
-            boolean isServer,
-            String host,
-            boolean reportErrors) {
+    WebMetricsPublisher(Publisher<T> publisher,
+                        MeterRegistry meterRegistry,
+                        String requestPath,
+                        long start,
+                        String httpMethod,
+                        boolean isServer,
+                        String host,
+                        boolean reportErrors) {
         this.publisher = Flux.from(publisher);
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
@@ -131,13 +129,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param httpMethod    The HTTP method name used
      * @param reportErrors  Whether errors should be reported
      */
-    WebMetricsPublisher(
-            Publisher<T> publisher,
-            MeterRegistry meterRegistry,
-            String requestPath,
-            long start,
-            String httpMethod,
-            boolean reportErrors) {
+    WebMetricsPublisher(Publisher<T> publisher,
+                        MeterRegistry meterRegistry,
+                        String requestPath,
+                        long start,
+                        String httpMethod,
+                        boolean reportErrors) {
         this(publisher, meterRegistry, requestPath, start, httpMethod, true, null, reportErrors);
     }
 
@@ -307,7 +304,11 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param httpMethod   the name of the HTTP method (GET, POST, etc)
      * @param requestPath  the URI of the request
      */
-    private void success(HttpResponse httpResponse, long start, String httpMethod, String requestPath, String host) {
+    private void success(HttpResponse httpResponse,
+                         long start,
+                         String httpMethod,
+                         String requestPath,
+                         String host) {
         Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
         this.meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
@@ -321,7 +322,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param requestPath the URI of the request
      * @param throwable   exception that occurred
      */
-    private void error(long start, String httpMethod, String requestPath, Throwable throwable, String host) {
+    private void error(long start, String httpMethod, String requestPath,
+                       Throwable throwable, String host) {
         HttpResponse response = null;
         if (throwable instanceof HttpResponseProvider) {
             response = ((HttpResponseProvider) throwable).getResponse();

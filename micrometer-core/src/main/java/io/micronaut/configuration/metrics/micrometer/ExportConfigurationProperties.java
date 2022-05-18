@@ -46,9 +46,7 @@ public class ExportConfigurationProperties {
     /**
      * @param export The export properties
      */
-    public void setExport(@MapFormat(
-            keyFormat = CAMEL_CASE,
-            transformation = FLAT) Properties export) {
+    public void setExport(@MapFormat(keyFormat = CAMEL_CASE, transformation = FLAT) Properties export) {
         this.export = export;
     }
 

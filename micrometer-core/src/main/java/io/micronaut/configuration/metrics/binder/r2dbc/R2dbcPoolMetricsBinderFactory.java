@@ -51,9 +51,8 @@ public class R2dbcPoolMetricsBinderFactory {
      */
     @EachBean(ConnectionFactory.class)
     @Requires(beans = {ConnectionFactory.class})
-    public MeterBinder r2dbcPoolMeterBinder(
-            @Parameter String dataSourceName,
-            ConnectionFactory factory) {
+    public MeterBinder r2dbcPoolMeterBinder(@Parameter String dataSourceName,
+                                            ConnectionFactory factory) {
         PoolMetrics poolMetrics = null;
         if (factory instanceof ConnectionPool) {
             poolMetrics = ((ConnectionPool) factory).getMetrics().orElse(null);

@@ -44,6 +44,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManager> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JCacheMetricsBinder.class);
+
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
@@ -60,12 +61,8 @@ public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManage
         final MeterRegistry meterRegistry = meterRegistryProvider.get();
         final CacheManager cacheManager = event.getBean();
         for (String cacheName : cacheManager.getCacheNames()) {
-
             try {
-                JCacheMetrics.monitor(
-                        meterRegistry,
-                        cacheManager.getCache(cacheName)
-                );
+                JCacheMetrics.monitor(meterRegistry, cacheManager.getCache(cacheName));
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
                     LOG.warn("Unable to instrument JCache CacheManager with metrics: " + e.getMessage(), e);

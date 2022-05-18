@@ -93,11 +93,17 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Context
 @Internal
 final class ByteBufAllocatorMetricsBinder {
+
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Set<ByteBufAllocatorMetricKind> kinds;
 
     enum ByteBufAllocatorMetricKind {
-        POOLED_ALLOCATOR, UNPOOLED_ALLOCATOR, POOLED_ARENAS, POOLED_ARENAS_SUBPAGES, POOLED_ARENAS_CHUNKLISTS, POOLED_ARENAS_CHUNKS,
+        POOLED_ALLOCATOR,
+        UNPOOLED_ALLOCATOR,
+        POOLED_ARENAS,
+        POOLED_ARENAS_SUBPAGES,
+        POOLED_ARENAS_CHUNKLISTS,
+        POOLED_ARENAS_CHUNKS
     }
 
     /**

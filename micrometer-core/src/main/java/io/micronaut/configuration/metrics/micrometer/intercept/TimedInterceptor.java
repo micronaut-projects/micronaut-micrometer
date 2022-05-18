@@ -155,7 +155,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         return syncInvokeSamples;
     }
 
-    private void finalizeSamples(List<AnnotationValue<Timed>> timedAnnotations, String exceptionClass, List<Timer.Sample> syncInvokeSamples) {
+    private void finalizeSamples(List<AnnotationValue<Timed>> timedAnnotations,
+                                 String exceptionClass,
+                                 List<Timer.Sample> syncInvokeSamples) {
         if (CollectionUtils.isNotEmpty(syncInvokeSamples) && timedAnnotations.size() == syncInvokeSamples.size()) {
             final Iterator<AnnotationValue<Timed>> i = timedAnnotations.iterator();
             for (Timer.Sample syncInvokeSample : syncInvokeSamples) {
@@ -166,7 +168,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         }
     }
 
-    private void stopTimed(String metricName, Timer.Sample sample, String exceptionClass, AnnotationValue<Timed> metadata) {
+    private void stopTimed(String metricName, Timer.Sample sample,
+                           String exceptionClass, AnnotationValue<Timed> metadata) {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
@@ -186,5 +189,4 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             }
         }
     }
-
 }

@@ -56,6 +56,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactory {
+
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
@@ -67,7 +68,8 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, (Executor) null, (EventExecutorChooserFactory) null,
                 SelectorProvider.provider(),
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -76,7 +78,9 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               ThreadFactory threadFactory,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 SelectorProvider.provider(),
@@ -86,7 +90,9 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
     }
 
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               Executor executor,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, executor,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 SelectorProvider.provider(),
@@ -106,7 +112,8 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
         return NioSocketChannel.class;
     }
 
-    private static NioEventLoopGroup withIoRatio(NioEventLoopGroup group, @Nullable Integer ioRatio) {
+    private static NioEventLoopGroup withIoRatio(NioEventLoopGroup group,
+                                                 @Nullable Integer ioRatio) {
         if (ioRatio != null) {
             group.setIoRatio(ioRatio);
         }

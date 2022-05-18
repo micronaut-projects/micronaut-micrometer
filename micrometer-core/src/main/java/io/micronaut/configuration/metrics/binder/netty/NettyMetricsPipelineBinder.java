@@ -43,6 +43,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EmbeddedServer.class)
 final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<ChannelPipelineCustomizer> {
+
     private final ChannelMetricsHandler metricsHandler;
 
     /**
@@ -66,5 +67,4 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Chann
         }
         return customizer;
     }
-
 }

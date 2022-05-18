@@ -63,10 +63,8 @@ public class GraphiteMeterRegistryFactory {
      * @return GraphiteMeterRegistry
      */
     @Singleton
-    GraphiteConfig graphiteConfig(
-            ExportConfigurationProperties exportConfigurationProperties,
-            @Property(name = GRAPHITE_TAGS_AS_PREFIX)
-            @Nullable List<String> tagsAsPrefix) {
+    GraphiteConfig graphiteConfig(ExportConfigurationProperties exportConfigurationProperties,
+                                  @Property(name = GRAPHITE_TAGS_AS_PREFIX) @Nullable List<String> tagsAsPrefix) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return new GraphiteConfig() {
             @Override

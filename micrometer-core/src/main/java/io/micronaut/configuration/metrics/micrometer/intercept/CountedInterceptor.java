@@ -44,6 +44,7 @@ import static io.micrometer.core.aop.TimedAspect.EXCEPTION_TAG;
 @RequiresMetrics
 @InterceptorBean(Counted.class)
 public class CountedInterceptor implements MethodInterceptor<Object, Object> {
+
     public static final String DEFAULT_METRIC_NAME = "method.counted";
     public static final String RESULT_TAG = "result";
 
@@ -118,5 +119,4 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                 .register(meterRegistry)
                 .increment();
     }
-
 }
