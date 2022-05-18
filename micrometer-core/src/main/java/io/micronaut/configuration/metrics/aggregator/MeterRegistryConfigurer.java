@@ -18,8 +18,8 @@ package io.micronaut.configuration.metrics.aggregator;
 import io.micrometer.core.instrument.MeterRegistry;
 
 /**
- * Class that will configure meter registries.  This is done on bean added event so that
- * composite registry can be skipped and non-composite registries can be added to composite.
+ * Configures meter registries. This is done on bean added event so composite
+ * registry can be skipped and non-composite registries can be added to composite.
  *
  * @author Christian Oestreich
  * @param <T> an instance of a meter registry that will be configured
@@ -28,14 +28,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 public interface MeterRegistryConfigurer<T extends MeterRegistry> {
 
     /**
-     * Method to configure a meter registry with binders, filters, etc.
+     * Configures a meter registry with binders, filters, etc.
      *
      * @param meterRegistry Meter Registry
      */
     void configure(T meterRegistry);
 
     /**
-     * Method to determine if this configurer supports the meter registry type.
+     * Determines if this configurer supports the meter registry type.
      *
      * @param meterRegistry a meter registry
      * @return boolean whether is supported

@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.signalfx;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.signalfx.SignalFxMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,10 +22,11 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The SignalFxMeterRegistryFactory that will configure and create a signalfx meter registry.
+ * Creates a SignalFx meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class SignalFxMeterRegistryFactory {
     public static final String SIGNALFX_ENABLED = SIGNALFX_CONFIG + ".enabled";
 
     /**
-     * Create a StackdriverMeterRegistry bean if global metrics are enables
-     * and the signalfx is enabled.  Will be true by default when this
+     * Create a SignalFxMeterRegistry bean if global metrics are enabled
+     * and SignalFx is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A SignalFxMeterRegistry
+     * @return SignalFxMeterRegistry
      */
     @Singleton
     SignalFxMeterRegistry signalFxMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new SignalFxMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new SignalFxMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

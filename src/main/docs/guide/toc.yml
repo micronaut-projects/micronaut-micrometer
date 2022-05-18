@@ -11,12 +11,12 @@ metricsAndReporters:
   metricsAndReportersCloudWatch: CloudWatch Registry
   metricsAndReportersDatadog: Datadog Registry
   metricsAndReportersDynatrace: Dynatrace Registry
-  metricsAndReportersElastic: Elastic Registry
+  metricsAndReportersElastic: Elasticsearch Registry
   metricsAndReportersGanglia: Ganglia Registry
   metricsAndReportersGraphite: Graphite Registry
   metricsAndReportersHumio: Humio Registry
   metricsAndReportersInflux: Influx Registry
-  metricsAndReportersJmx: Jmx Registry
+  metricsAndReportersJmx: JMX Registry
   metricsAndReportersKairos: Kairos Registry
   metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersNewRelicTelemetry: New Relic Telemetry Registry

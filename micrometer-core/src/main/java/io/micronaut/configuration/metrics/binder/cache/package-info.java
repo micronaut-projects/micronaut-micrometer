@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains classes that binds metrics Micronaut's re-packaged version of Caffeine.
+ * Classes that bind metrics for Micronaut's repackaged version of Caffeine.
  *
  * @author graemerocher
  * @since 1.0

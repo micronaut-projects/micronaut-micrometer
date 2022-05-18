@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.micrometer.dynatrace
 
 import io.micrometer.core.instrument.MeterRegistry
@@ -39,9 +24,9 @@ class DynatraceRegistryFactorySpec extends Specification {
     void "verify DynatraceMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (DYNATRACE_CONFIG + ".apiToken")    : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".uri")         : DYNATRACE_MOCK_URI,
-                (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
+                (DYNATRACE_CONFIG + ".apiToken"): DYNATRACE_MOCK_API_TOKEN,
+                (DYNATRACE_CONFIG + ".uri")     : DYNATRACE_MOCK_URI,
+                (DYNATRACE_CONFIG + ".deviceId"): DYNATRACE_MOCK_DEVICE_ID,
         ])
 
         then:
@@ -55,9 +40,9 @@ class DynatraceRegistryFactorySpec extends Specification {
     void "verify CompositeMeterRegistry created by default"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                (DYNATRACE_CONFIG + ".apiToken")    : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".uri")         : DYNATRACE_MOCK_URI,
-                (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
+                (DYNATRACE_CONFIG + ".apiToken"): DYNATRACE_MOCK_API_TOKEN,
+                (DYNATRACE_CONFIG + ".uri")     : DYNATRACE_MOCK_URI,
+                (DYNATRACE_CONFIG + ".deviceId"): DYNATRACE_MOCK_DEVICE_ID,
         ])
 
         when:
@@ -77,10 +62,10 @@ class DynatraceRegistryFactorySpec extends Specification {
     void "verify DynatraceMeterRegistry bean exists = #result when config #cfg = #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (cfg): setting,
-                (DYNATRACE_CONFIG + ".apiToken")    : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".uri")         : DYNATRACE_MOCK_URI,
-                (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
+                (cfg)                           : setting,
+                (DYNATRACE_CONFIG + ".apiToken"): DYNATRACE_MOCK_API_TOKEN,
+                (DYNATRACE_CONFIG + ".uri")     : DYNATRACE_MOCK_URI,
+                (DYNATRACE_CONFIG + ".deviceId"): DYNATRACE_MOCK_DEVICE_ID,
 
         ])
 
@@ -91,21 +76,21 @@ class DynatraceRegistryFactorySpec extends Specification {
         context.stop()
 
         where:
-        cfg                        | setting | result
-        MICRONAUT_METRICS_ENABLED  | false   | false
-        MICRONAUT_METRICS_ENABLED  | true    | true
-        DYNATRACE_ENABLED          | true    | true
-        DYNATRACE_ENABLED          | false   | false
+        cfg                       | setting | result
+        MICRONAUT_METRICS_ENABLED | false   | false
+        MICRONAUT_METRICS_ENABLED | true    | true
+        DYNATRACE_ENABLED         | true    | true
+        DYNATRACE_ENABLED         | false   | false
     }
 
     void "verify default configuration"() {
 
         when: "no configuration supplied"
         ApplicationContext context = ApplicationContext.run([
-                (DYNATRACE_ENABLED)           : true,
-                (DYNATRACE_CONFIG + ".apiToken")    : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".uri")         : DYNATRACE_MOCK_URI,
-                (DYNATRACE_CONFIG + ".deviceId")    : DYNATRACE_MOCK_DEVICE_ID,
+                (DYNATRACE_ENABLED)             : true,
+                (DYNATRACE_CONFIG + ".apiToken"): DYNATRACE_MOCK_API_TOKEN,
+                (DYNATRACE_CONFIG + ".uri")     : DYNATRACE_MOCK_URI,
+                (DYNATRACE_CONFIG + ".deviceId"): DYNATRACE_MOCK_DEVICE_ID,
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
         def properties = context.getBean(ExportConfigurationProperties)
@@ -133,12 +118,12 @@ class DynatraceRegistryFactorySpec extends Specification {
 
         when: "non-default configuration is supplied"
         ApplicationContext context = ApplicationContext.run([
-                (DYNATRACE_ENABLED)                   : true,
-                (DYNATRACE_CONFIG + ".numThreads")    : "77",
-                (DYNATRACE_CONFIG + ".uri")           : 'https://micronaut.io',
-                (DYNATRACE_CONFIG + ".step")          : "PT2M",
-                (DYNATRACE_CONFIG + ".apiToken")      : DYNATRACE_MOCK_API_TOKEN,
-                (DYNATRACE_CONFIG + ".deviceId")      : DYNATRACE_MOCK_DEVICE_ID,
+                (DYNATRACE_ENABLED)               : true,
+                (DYNATRACE_CONFIG + ".numThreads"): "77",
+                (DYNATRACE_CONFIG + ".uri")       : 'https://micronaut.io',
+                (DYNATRACE_CONFIG + ".step")      : "PT2M",
+                (DYNATRACE_CONFIG + ".apiToken")  : DYNATRACE_MOCK_API_TOKEN,
+                (DYNATRACE_CONFIG + ".deviceId")  : DYNATRACE_MOCK_DEVICE_ID,
         ])
         Optional<DynatraceMeterRegistry> dynatraceMeterRegistry = context.findBean(DynatraceMeterRegistry)
         def properties = context.getBean(ExportConfigurationProperties)

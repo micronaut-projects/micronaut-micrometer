@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.binder.r2dbc
 
 import io.r2dbc.pool.ConnectionPool
@@ -25,7 +10,7 @@ import spock.lang.Specification
 
 class R2dbcPoolMetricsBinderFactorySpec extends Specification {
 
-    def "test getting metrics from r2dbc pool"() {
+    void "test getting metrics from r2dbc pool"() {
         given:
         def r2dbcPoolMetricsBinderFactory = new R2dbcPoolMetricsBinderFactory()
         def pool = Mock(ConnectionPool)
@@ -39,7 +24,7 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
         meterBinder.@poolMetrics == metrics
     }
 
-    def "test getting empty metrics from r2dbc pool"() {
+    void "test getting empty metrics from r2dbc pool"() {
         given:
         def r2dbcPoolMetricsBinderFactory = new R2dbcPoolMetricsBinderFactory()
         def pool = Mock(ConnectionPool)
@@ -52,7 +37,7 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
         meterBinder.@poolMetrics == null
     }
 
-    def "test ignoring metrics when factory is not r2dbc pool"() {
+    void "test ignoring metrics when factory is not r2dbc pool"() {
         given:
         def r2dbcPoolMetricsBinderFactory = new R2dbcPoolMetricsBinderFactory()
         def factory = Mock(StubFactory)
@@ -65,48 +50,16 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
     }
 
     class StubFactory implements ConnectionFactory {
-
-        @Override
-        Publisher<? extends Connection> create() {
-            return null
-        }
-
-        @Override
-        ConnectionFactoryMetadata getMetadata() {
-            return null
-        }
+        Publisher<? extends Connection> create() { null }
+        ConnectionFactoryMetadata getMetadata() { null }
     }
 
     class StubMetrics implements PoolMetrics {
-
-        @Override
-        int acquiredSize() {
-            return 0
-        }
-
-        @Override
-        int allocatedSize() {
-            return 0
-        }
-
-        @Override
-        int idleSize() {
-            return 0
-        }
-
-        @Override
-        int pendingAcquireSize() {
-            return 0
-        }
-
-        @Override
-        int getMaxAllocatedSize() {
-            return 0
-        }
-
-        @Override
-        int getMaxPendingAcquireSize() {
-            return 0
-        }
+        int acquiredSize() { 0 }
+        int allocatedSize() { 0 }
+        int idleSize() { 0 }
+        int pendingAcquireSize() { 0 }
+        int getMaxAllocatedSize() { 0 }
+        int getMaxPendingAcquireSize() { 0 }
     }
 }

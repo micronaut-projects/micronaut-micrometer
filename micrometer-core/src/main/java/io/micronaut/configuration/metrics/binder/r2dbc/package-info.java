@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains classes that bind metrics for configured R2DBC data sources.
+ * Classes that bind metrics for configured R2DBC data sources.
  *
  * @author Leonardo Schick
  * @author Caroline Medeiros

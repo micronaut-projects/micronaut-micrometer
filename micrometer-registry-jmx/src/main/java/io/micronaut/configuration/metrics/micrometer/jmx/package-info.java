@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Jmx metrics.
+ * Configuration for Micrometer-JMX metrics.
  *
  * @author thiagolocatelli
  * @since 1.2.0

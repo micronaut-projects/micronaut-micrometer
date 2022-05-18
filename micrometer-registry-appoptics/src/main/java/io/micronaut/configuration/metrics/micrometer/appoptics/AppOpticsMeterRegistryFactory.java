@@ -16,17 +16,17 @@
 package io.micronaut.configuration.metrics.micrometer.appoptics;
 
 import io.micrometer.appoptics.AppOpticsMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The AppOpticsMeterRegistryFactory that will configure and create a appoptics meter registry.
+ * Creates an AppOptics meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,18 +38,17 @@ public class AppOpticsMeterRegistryFactory {
     public static final String APPOPTICS_ENABLED = APPOPTICS_CONFIG + ".enabled";
 
     /**
-     * Create a AppOpticsMeterRegistry bean if global metrics are enables
-     * and the appoptics is enabled.  Will be true by default when this
+     * Create a AppOpticsMeterRegistry bean if global metrics are enabled
+     * and AppOptics is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
      *
-     * @return A AppOpticsMeterRegistry
+     * @return AppOpticsMeterRegistry
      */
     @Singleton
     AppOpticsMeterRegistry appOpticsMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new AppOpticsMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new AppOpticsMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

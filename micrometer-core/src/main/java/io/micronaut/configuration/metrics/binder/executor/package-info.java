@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains classes that bind metrics for configured {@link java.util.concurrent.ExecutorService} beans.
+ * Classes that bind metrics for configured {@link java.util.concurrent.ExecutorService} beans.
  *
  * @author graemerocher
  * @since 1.0

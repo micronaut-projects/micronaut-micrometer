@@ -19,10 +19,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
 import java.util.function.Function;
 
 /**
@@ -42,8 +42,6 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     private final Iterable<Tag> tags;
 
     /**
-     * Constructor for creaging data source pool metrics.
-     *
      * @param dataSource       The datasource to bind metrics for
      * @param metadataProvider A composite object of all the metadataProviders
      * @param dataSourceName   The name of the datasource
@@ -59,13 +57,13 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     }
 
     /**
-     * Method for getting metadataProvider object for datasource that will bind the pool metrics.
+     * Binds the pool metrics.
      *
-     * @param meterRegistry the meter registry object
+     * @param meterRegistry the meter registry
      */
     @Override
-    public void bindTo(@NotNull MeterRegistry meterRegistry) {
-        if (this.metadataProvider != null) {
+    public void bindTo(@NonNull MeterRegistry meterRegistry) {
+        if (metadataProvider != null) {
             bindPoolMetadata(meterRegistry, "active", DataSourcePoolMetadata::getActive);
             bindPoolMetadata(meterRegistry, "max", DataSourcePoolMetadata::getMax);
             bindPoolMetadata(meterRegistry, "min", DataSourcePoolMetadata::getMin);
@@ -76,14 +74,12 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     private <N extends Number> void bindPoolMetadata(MeterRegistry registry,
                                                      String metricName,
                                                      Function<DataSourcePoolMetadata, N> function) {
-        bindDataSource(registry,
-                metricName,
-                this.getValueFunction(function));
+        bindDataSource(registry, metricName, getValueFunction(function));
     }
 
     private <N extends Number> Function<DataSource, N> getValueFunction(
             Function<DataSourcePoolMetadata, N> function) {
-        return dataSource -> function.apply(this.metadataProvider);
+        return dataSource -> function.apply(metadataProvider);
     }
 
     /**
@@ -97,10 +93,10 @@ public class DataSourcePoolMetricsBinder implements MeterBinder {
     private <N extends Number> void bindDataSource(MeterRegistry meterRegistry,
                                                    String metricName,
                                                    Function<DataSource, N> function) {
-        if (function.apply(this.dataSource) != null) {
+        if (function.apply(dataSource) != null) {
             meterRegistry.gauge("jdbc.connections." + metricName,
-                    this.tags,
-                    this.dataSource,
+                    tags,
+                    dataSource,
                     m -> function.apply(m).doubleValue());
         }
     }

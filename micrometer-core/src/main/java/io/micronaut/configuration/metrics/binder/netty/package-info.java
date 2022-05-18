@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains classes that bind metrics for netty.
+ * Classes that bind metrics for Netty.
  *
  * @author Christophe Roudet
  * @since 2.0

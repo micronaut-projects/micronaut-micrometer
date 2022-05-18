@@ -19,14 +19,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import javax.validation.constraints.NotNull;
-
+import io.micronaut.core.annotation.NonNull;
 import io.r2dbc.pool.PoolMetrics;
 
 import java.util.function.Function;
 
 /**
- * A {@link MeterBinder} for a {@link ConnectionPool}.
+ * A {@link MeterBinder} for {@link PoolMetrics}.
  *
  * @author Leonardo Schick
  * @author Caroline Medeiros
@@ -37,13 +36,15 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
     private final PoolMetrics poolMetrics;
     private final Iterable<Tag> tags;
 
-    public R2dbcPoolMetricsBinder(PoolMetrics metrics, String dataSourceName, Iterable<Tag> tags) {
+    public R2dbcPoolMetricsBinder(PoolMetrics metrics,
+                                  String dataSourceName,
+                                  Iterable<Tag> tags) {
         this.poolMetrics = metrics;
         this.tags = Tags.concat(tags, "name", dataSourceName);
     }
 
     @Override
-    public void bindTo(@NotNull MeterRegistry registry) {
+    public void bindTo(@NonNull MeterRegistry registry) {
         if (poolMetrics != null) {
             bindToPoolMetrics(registry, "acquired", PoolMetrics::acquiredSize);
             bindToPoolMetrics(registry, "allocated", PoolMetrics::allocatedSize);
@@ -54,13 +55,11 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
         }
     }
 
-    private void bindToPoolMetrics(
-        MeterRegistry registry,
-        String metricName,
-        Function<PoolMetrics, Integer> function
-    ) {
+    private void bindToPoolMetrics(MeterRegistry registry,
+                                   String metricName,
+                                   Function<PoolMetrics, Integer> function) {
         registry.gauge(
-            "r2dbc.pool" + "." + metricName,
+            "r2dbc.pool." + metricName,
             tags,
             poolMetrics,
             (m) -> function.apply(m).doubleValue()
