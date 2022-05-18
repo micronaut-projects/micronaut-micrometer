@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.aggregator;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -72,7 +73,10 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      */
     private void addFilters(@NotNull CompositeMeterRegistry meterRegistry) {
         if (filters != null && !filters.isEmpty()) {
-            filters.forEach(meterRegistry.config()::meterFilter);
+            MeterRegistry.Config config = meterRegistry.config();
+            for (MeterFilter filter : filters) {
+                config.meterFilter(filter);
+            }
         }
     }
 
@@ -87,7 +91,9 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      */
     private void addBinders(@NotNull CompositeMeterRegistry meterRegistry) {
         if (binders != null && !binders.isEmpty()) {
-            binders.forEach((binder) -> binder.bindTo(meterRegistry));
+            for (MeterBinder binder : binders) {
+                binder.bindTo(meterRegistry);
+            }
         }
     }
 }

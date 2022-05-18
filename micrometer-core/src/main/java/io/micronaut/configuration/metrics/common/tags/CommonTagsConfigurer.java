@@ -41,7 +41,9 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
 
     public CommonTagsConfigurer(ExportConfigurationProperties configuration) {
         Properties tags = configuration.getTags();
-        tags.stringPropertyNames().forEach(key -> commonTags.add(Tag.of(key, tags.getProperty(key))));
+        for (String key : tags.stringPropertyNames()) {
+            commonTags.add(Tag.of(key, tags.getProperty(key)));
+        }
     }
 
     @Override

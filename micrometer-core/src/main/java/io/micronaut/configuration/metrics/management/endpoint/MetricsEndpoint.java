@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.management.endpoint;
 
+import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
@@ -147,7 +148,9 @@ public class MetricsEndpoint {
         }
         Map<Statistic, Double> samples = getSamples(meters);
         Map<String, Set<String>> availableTags = getAvailableTags(meters);
-        tags.forEach((t) -> availableTags.remove(t.getKey()));
+        for (Tag t : tags) {
+            availableTags.remove(t.getKey());
+        }
         Meter.Id meterId = meters.iterator().next().getId();
         return new MetricDetails(name,
                 asList(samples, Sample::new),
@@ -158,13 +161,17 @@ public class MetricsEndpoint {
 
     private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
         Map<Statistic, Double> samples = new LinkedHashMap<>();
-        meters.forEach((meter) -> mergeMeasurements(samples, meter));
+        for (Meter meter : meters) {
+            mergeMeasurements(samples, meter);
+        }
         return samples;
     }
 
     private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
-        meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(),
-                measurement.getValue(), mergeFunction(measurement.getStatistic())));
+        for (Measurement measurement : meter.measure()) {
+            samples.merge(measurement.getStatistic(),
+                    measurement.getValue(), mergeFunction(measurement.getStatistic()));
+        }
     }
 
     private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
@@ -179,7 +186,9 @@ public class MetricsEndpoint {
      */
     private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
         Map<String, Set<String>> availableTags = new HashMap<>();
-        meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
+        for (Meter meter : meters) {
+            mergeAvailableTags(availableTags, meter);
+        }
         return availableTags;
     }
 
@@ -190,10 +199,10 @@ public class MetricsEndpoint {
      * @param meter         the meter to get tags from
      */
     private void mergeAvailableTags(Map<String, Set<String>> availableTags, Meter meter) {
-        meter.getId().getTags().forEach((tag) -> {
+        for (Tag tag : meter.getId().getTags()) {
             Set<String> value = Collections.singleton(tag.getValue());
             availableTags.merge(tag.getKey(), value, this::merge);
-        });
+        }
     }
 
     /**
