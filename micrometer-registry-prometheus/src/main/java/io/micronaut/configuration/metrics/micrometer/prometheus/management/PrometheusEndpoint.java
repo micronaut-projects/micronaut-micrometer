@@ -18,7 +18,6 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.management;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
-import jakarta.inject.Inject;
 
 /**
  * Adds a management endpoint for Prometheus.
@@ -30,12 +29,12 @@ import jakarta.inject.Inject;
 public class PrometheusEndpoint {
 
     public static final String ID = "prometheus";
-    private PrometheusMeterRegistry prometheusMeterRegistry;
+
+    private final PrometheusMeterRegistry prometheusMeterRegistry;
 
     /**
      * @param prometheusMeterRegistry The meter registry
      */
-    @Inject
     public PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry) {
         this.prometheusMeterRegistry = prometheusMeterRegistry;
     }

@@ -33,7 +33,6 @@ import io.netty.buffer.PoolSubpageMetric;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocatorMetric;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import jakarta.inject.Inject;
 
 import javax.annotation.PostConstruct;
 import java.util.EnumSet;
@@ -112,7 +111,6 @@ final class ByteBufAllocatorMetricsBinder {
      * @param meterRegistryProvider The metric registry provider.
      * @param kinds The kinds of metrics to add.
      */
-    @Inject
     public ByteBufAllocatorMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider,
                                          @Value("${" + MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics:null}") Set<ByteBufAllocatorMetricKind> kinds) {
         this.meterRegistryProvider = meterRegistryProvider;

@@ -145,7 +145,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
                 bytesWritten.increment(buffer.content().readableBytes());
             }
         } else {
-            LOGGER.warn("Message type not supported: {}", msg.getClass());
+            LOGGER.warn("Message type not supported: {}", msg.getClass().getName());
         }
 
         ctx.write(msg, promise);
@@ -165,7 +165,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
         }
 
         @Override
-        public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        public void channelUnregistered(ChannelHandlerContext ctx) {
             start.stop(activeChannelTimer);
             ctx.pipeline().remove(this);
             ctx.fireChannelUnregistered();

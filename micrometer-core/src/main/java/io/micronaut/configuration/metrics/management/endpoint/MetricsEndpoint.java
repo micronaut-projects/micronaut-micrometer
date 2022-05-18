@@ -259,7 +259,7 @@ public class MetricsEndpoint {
          * @return set of names
          */
         public SortedSet<String> getNames() {
-            return this.names;
+            return names;
         }
     }
 
@@ -306,7 +306,7 @@ public class MetricsEndpoint {
          * @return name
          */
         public String getName() {
-            return this.name;
+            return name;
         }
 
         /**
@@ -315,7 +315,7 @@ public class MetricsEndpoint {
          * @return list of measurements
          */
         public List<Sample> getMeasurements() {
-            return this.measurements;
+            return measurements;
         }
 
         /**
@@ -324,7 +324,7 @@ public class MetricsEndpoint {
          * @return list of tags
          */
         public List<AvailableTag> getAvailableTags() {
-            return this.availableTags;
+            return availableTags;
         }
 
         /**
@@ -333,7 +333,7 @@ public class MetricsEndpoint {
          * @return metric description
          */
         public String getDescription() {
-            return this.description;
+            return description;
         }
 
         /**
@@ -342,7 +342,7 @@ public class MetricsEndpoint {
          * @return metric base unit
          */
         public String getBaseUnit() {
-            return this.baseUnit;
+            return baseUnit;
         }
 
     }
@@ -374,7 +374,7 @@ public class MetricsEndpoint {
          * @return tag name
          */
         public String getTag() {
-            return this.tag;
+            return tag;
         }
 
         /**
@@ -383,7 +383,7 @@ public class MetricsEndpoint {
          * @return list of tag values
          */
         public Set<String> getValues() {
-            return this.values;
+            return values;
         }
 
     }
@@ -415,7 +415,7 @@ public class MetricsEndpoint {
          * @return measurement name
          */
         public Statistic getStatistic() {
-            return this.statistic;
+            return statistic;
         }
 
         /**
@@ -424,12 +424,12 @@ public class MetricsEndpoint {
          * @return measurement value
          */
         public Double getValue() {
-            return this.value;
+            return value;
         }
 
         @Override
         public String toString() {
-            return "MeasurementSample{" + "statistic=" + this.statistic + ", value=" + this.value + '}';
+            return "MeasurementSample{" + "statistic=" + statistic + ", value=" + value + '}';
         }
     }
 }

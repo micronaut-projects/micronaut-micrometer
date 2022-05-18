@@ -26,7 +26,6 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.server.netty.NettyHttpServer;
 import io.netty.channel.EventLoopTaskQueueFactory;
 import io.netty.util.internal.PlatformDependent;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -60,8 +59,10 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(classes = EventLoopTaskQueueFactory.class)
 @Internal
 final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
-    private static AtomicInteger parentCounter = new AtomicInteger(-1);
-    private static AtomicInteger workerCounter = new AtomicInteger(-1);
+
+    private static final AtomicInteger PARENT_COUNTER = new AtomicInteger(-1);
+    private static final AtomicInteger WORKER_COUNTER = new AtomicInteger(-1);
+
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Counter parentTaskCounter;
     private final Counter workerTaskCounter;
@@ -73,7 +74,6 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
     /**
      * @param meterRegistryProvider the metric registry provider
      */
-    @Inject
     public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
         globalParentWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
@@ -108,7 +108,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
     public Queue<Runnable> newTaskQueue(int maxCapacity) {
         final String kind = findOrigin();
         final boolean parent = PARENT.equals(kind);
-        return new MonitoredQueue(parent ? parentCounter.incrementAndGet() : workerCounter.incrementAndGet(),
+        return new MonitoredQueue(parent ? PARENT_COUNTER.incrementAndGet() : WORKER_COUNTER.incrementAndGet(),
                 meterRegistryProvider.get(),
                 Tag.of(GROUP, kind),
                 parent ? parentTaskCounter : workerTaskCounter,
@@ -121,7 +121,8 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
         for (StackTraceElement elt: Thread.currentThread().getStackTrace()) {
             if (NettyHttpServer.class.getName().equals(elt.getClassName()) && "createWorkerEventLoopGroup".equals(elt.getMethodName())) {
                 return WORKER;
-            } else if (NettyHttpServer.class.getName().equals(elt.getClassName()) && "createParentEventLoopGroup".equals(elt.getMethodName())) {
+            }
+            if (NettyHttpServer.class.getName().equals(elt.getClassName()) && "createParentEventLoopGroup".equals(elt.getMethodName())) {
                 return PARENT;
             }
         }

@@ -36,7 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -64,16 +63,15 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * @param instrumentedEventLoopTaskQueueFactory InstrumentedEventLoopTaskQueueFactory
+     * @param factory InstrumentedEventLoopTaskQueueFactory
      */
-    @Inject
-    public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
-        this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
+    public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory factory) {
+        this.instrumentedEventLoopTaskQueueFactory = factory;
     }
 
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
-        return new EpollEventLoopGroup(threads, (Executor) null,
+        return new EpollEventLoopGroup(threads, null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
@@ -84,7 +82,7 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
     public EventLoopGroup createEventLoopGroup(int threads,
                                                ThreadFactory threadFactory,
                                                @Nullable Integer ioRatio) {
-        return new EpollEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
+        return new EpollEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),

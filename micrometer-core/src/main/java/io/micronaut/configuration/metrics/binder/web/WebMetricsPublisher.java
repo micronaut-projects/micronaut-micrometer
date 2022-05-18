@@ -190,7 +190,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param host         the host
      * @return A list of Tag objects
      */
-    private static List<Tag> getTags(HttpResponse httpResponse,
+    private static List<Tag> getTags(HttpResponse<?> httpResponse,
                                      String httpMethod,
                                      String requestPath,
                                      Throwable throwable,
@@ -208,11 +208,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @return Tag of method
      */
     private static Tag method(String httpMethod) {
-        Tag tag = null;
-        if (httpMethod != null) {
-            tag = Tag.of(METHOD, httpMethod);
-        }
-        return tag;
+        return httpMethod == null ? null : Tag.of(METHOD, httpMethod);
     }
 
     /**
@@ -221,7 +217,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param httpResponse the HTTP response
      * @return Tag of status
      */
-    private static Tag status(HttpResponse httpResponse) {
+    private static Tag status(HttpResponse<?> httpResponse) {
         if (httpResponse == null) {
             return Tag.of(STATUS, "500");
         }
@@ -240,7 +236,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param path         the path of the request
      * @return Tag of URI
      */
-    private static Tag uri(HttpResponse httpResponse, String path) {
+    private static Tag uri(HttpResponse<?> httpResponse, String path) {
         if (httpResponse != null) {
             HttpStatus status = httpResponse.getStatus();
             if (status != null && status.getCode() >= 300 && status.getCode() < 400) {
@@ -260,10 +256,10 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @return Tag of exception class name
      */
     private static Tag exception(Throwable throwable) {
-        if (throwable != null) {
-            return Tag.of(EXCEPTION, throwable.getClass().getSimpleName());
+        if (throwable == null) {
+            return Tag.of(EXCEPTION, "none");
         }
-        return Tag.of(EXCEPTION, "none");
+        return Tag.of(EXCEPTION, throwable.getClass().getSimpleName());
     }
 
     /**
@@ -273,11 +269,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @return Tag of host
      */
     private static Tag host(String host) {
-        Tag tag = null;
-        if (host != null) {
-            tag = Tag.of(HOST, host);
-        }
-        return tag;
+        return host == null ? null : Tag.of(HOST, host);
     }
 
     /**
@@ -304,7 +296,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param httpMethod   the name of the HTTP method (GET, POST, etc)
      * @param requestPath  the URI of the request
      */
-    private void success(HttpResponse httpResponse,
+    private void success(HttpResponse<?> httpResponse,
                          long start,
                          String httpMethod,
                          String requestPath,
@@ -324,12 +316,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      */
     private void error(long start, String httpMethod, String requestPath,
                        Throwable throwable, String host) {
-        HttpResponse response = null;
+        HttpResponse<?> response = null;
         if (throwable instanceof HttpResponseProvider) {
             response = ((HttpResponseProvider) throwable).getResponse();
         }
         Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host);
-        this.meterRegistry.timer(metricName, tags)
+        meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
     }
 }

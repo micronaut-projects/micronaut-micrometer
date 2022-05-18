@@ -65,8 +65,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         // have to unwrap any Micronaut instrumentations to get the target
         ExecutorService unwrapped = executorService;
         while (unwrapped instanceof InstrumentedExecutorService) {
-            InstrumentedExecutorService ies = (InstrumentedExecutorService) unwrapped;
-            unwrapped = ies.getTarget();
+            unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
         if (unwrapped.getClass().getName().startsWith("io.netty")) {

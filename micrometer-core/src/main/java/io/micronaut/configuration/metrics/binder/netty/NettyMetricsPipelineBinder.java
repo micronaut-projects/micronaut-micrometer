@@ -24,7 +24,6 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.netty.channel.ChannelPipelineCustomizer;
 import io.micronaut.runtime.server.EmbeddedServer;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.binder.netty.ChannelMetricsHandler.CHANNEL_METRICS;
@@ -32,7 +31,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
- * Adds netty's metrics handler to the pipeline.
+ * Adds Netty's metrics handler to the pipeline.
  *
  * @author croudet
  * @since 2.0
@@ -51,9 +50,8 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Chann
      *
      * @param meterRegistryProvider The metrics registry provider.
      */
-    @Inject
     NettyMetricsPipelineBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
-        this.metricsHandler = new ChannelMetricsHandler(meterRegistryProvider);
+        metricsHandler = new ChannelMetricsHandler(meterRegistryProvider);
     }
 
     @Override

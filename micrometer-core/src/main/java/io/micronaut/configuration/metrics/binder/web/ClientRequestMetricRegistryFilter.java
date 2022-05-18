@@ -41,7 +41,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
 
-    private final String HOST_HEADER = "host";
+    private static final String HOST_HEADER = "host";
 
     private final MeterRegistry meterRegistry;
 

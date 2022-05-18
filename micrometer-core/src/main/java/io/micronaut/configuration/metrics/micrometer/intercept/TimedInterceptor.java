@@ -184,9 +184,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     .register(meterRegistry);
             sample.stop(timer);
         } catch (Exception e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("Error registering timer in the registry", e);
-            }
+            LOGGER.error("Error registering timer in the registry", e);
         }
     }
 }

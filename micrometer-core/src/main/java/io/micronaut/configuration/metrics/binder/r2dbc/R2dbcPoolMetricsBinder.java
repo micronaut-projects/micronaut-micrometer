@@ -19,8 +19,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import javax.validation.constraints.NotNull;
-
+import io.micronaut.core.annotation.NonNull;
 import io.r2dbc.pool.PoolMetrics;
 
 import java.util.function.Function;
@@ -45,7 +44,7 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
     }
 
     @Override
-    public void bindTo(@NotNull MeterRegistry registry) {
+    public void bindTo(@NonNull MeterRegistry registry) {
         if (poolMetrics != null) {
             bindToPoolMetrics(registry, "acquired", PoolMetrics::acquiredSize);
             bindToPoolMetrics(registry, "allocated", PoolMetrics::allocatedSize);
@@ -60,7 +59,7 @@ public class R2dbcPoolMetricsBinder implements MeterBinder {
                                    String metricName,
                                    Function<PoolMetrics, Integer> function) {
         registry.gauge(
-            "r2dbc.pool" + "." + metricName,
+            "r2dbc.pool." + metricName,
             tags,
             poolMetrics,
             (m) -> function.apply(m).doubleValue()

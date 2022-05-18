@@ -62,7 +62,7 @@ public class MicronautCaffeineCacheMetricsBinder implements BeanCreatedEventList
         if (nativeCache instanceof io.micronaut.caffeine.cache.Cache) {
             MicronautCaffeineCacheMetrics.monitor(
                     meterRegistry,
-                    (io.micronaut.caffeine.cache.Cache) nativeCache,
+                    (io.micronaut.caffeine.cache.Cache<?, ?>) nativeCache,
                     cache.getName(),
                     Collections.emptyList()
             );

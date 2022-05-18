@@ -19,8 +19,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
+import io.micronaut.core.annotation.NonNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -56,7 +56,7 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      * @param meterRegistry Meter registry to bind metrics to.
      */
     @Override
-    public void configure(@NotNull CompositeMeterRegistry meterRegistry) {
+    public void configure(@NonNull CompositeMeterRegistry meterRegistry) {
         addFilters(meterRegistry);
         addBinders(meterRegistry);
     }
@@ -71,7 +71,7 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      *
      * @param meterRegistry the registry
      */
-    private void addFilters(@NotNull CompositeMeterRegistry meterRegistry) {
+    private void addFilters(@NonNull CompositeMeterRegistry meterRegistry) {
         if (filters != null && !filters.isEmpty()) {
             MeterRegistry.Config config = meterRegistry.config();
             for (MeterFilter filter : filters) {
@@ -89,7 +89,7 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
      *
      * @param meterRegistry the meter registry
      */
-    private void addBinders(@NotNull CompositeMeterRegistry meterRegistry) {
+    private void addBinders(@NonNull CompositeMeterRegistry meterRegistry) {
         if (binders != null && !binders.isEmpty()) {
             for (MeterBinder binder : binders) {
                 binder.bindTo(meterRegistry);

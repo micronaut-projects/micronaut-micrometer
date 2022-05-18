@@ -36,7 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -64,17 +63,16 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * @param instrumentedEventLoopTaskQueueFactory InstrumentedEventLoopTaskQueueFactory
+     * @param factory InstrumentedEventLoopTaskQueueFactory
      */
-    @Inject
-    public InstrumentedKQueueEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
-        this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
+    public InstrumentedKQueueEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory factory) {
+        this.instrumentedEventLoopTaskQueueFactory = factory;
     }
 
     @Override
     public EventLoopGroup createEventLoopGroup(int threads,
                                                @Nullable Integer ioRatio) {
-        return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) null,
+        return withIoRatio(new KQueueEventLoopGroup(threads, null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
@@ -85,7 +83,7 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
     public EventLoopGroup createEventLoopGroup(int threads,
                                                ThreadFactory threadFactory,
                                                @Nullable Integer ioRatio) {
-        return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
+        return withIoRatio(new KQueueEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),

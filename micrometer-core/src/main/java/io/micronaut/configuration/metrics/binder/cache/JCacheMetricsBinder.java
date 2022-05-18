@@ -64,9 +64,7 @@ public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManage
             try {
                 JCacheMetrics.monitor(meterRegistry, cacheManager.getCache(cacheName));
             } catch (Exception e) {
-                if (LOG.isWarnEnabled()) {
-                    LOG.warn("Unable to instrument JCache CacheManager with metrics: " + e.getMessage(), e);
-                }
+                LOG.warn("Unable to instrument JCache CacheManager with metrics: {}", e.getMessage(), e);
             }
         }
         return cacheManager;
