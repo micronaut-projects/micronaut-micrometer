@@ -110,7 +110,7 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDynatrace"><a href="#metricsAndReportersDynatrace"><strong>6.6</strong><span>Dynatrace Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersElastic"><a href="#metricsAndReportersElastic"><strong>6.7</strong><span>Elastic Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersElastic"><a href="#metricsAndReportersElastic"><strong>6.7</strong><span>Elasticsearch Registry</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGanglia"><a href="#metricsAndReportersGanglia"><strong>6.8</strong><span>Ganglia Registry</span></a></div>
         
@@ -120,7 +120,7 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersInflux"><a href="#metricsAndReportersInflux"><strong>6.11</strong><span>Influx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersJmx"><a href="#metricsAndReportersJmx"><strong>6.12</strong><span>Jmx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersJmx"><a href="#metricsAndReportersJmx"><strong>6.12</strong><span>JMX Registry</span></a></div>
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersKairos"><a href="#metricsAndReportersKairos"><strong>6.13</strong><span>Kairos Registry</span></a></div>
         
@@ -161,7 +161,7 @@
 
 
 <div class="paragraph">
-<p>This project integrates Micronaut and <a href="https://micrometer.io">Micrometer</a> allowing metrics collection for Micronaut applications.</p>
+<p>This project integrates Micronaut and <a href="https://micrometer.io/">Micrometer</a>, allowing metrics collection for Micronaut applications.</p>
 </div>
 
 <h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
@@ -174,7 +174,7 @@
 
 
 <div class="paragraph">
-<p>For this project, you can find a list of releases (with release notes) here:</p>
+<p>You can find a list of releases for this project (with release notes) here:</p>
 </div>
 <div class="paragraph">
 <p><a href="https://github.com/micronaut-projects/micronaut-micrometer/releases">https://github.com/micronaut-projects/micronaut-micrometer/releases</a></p>
@@ -198,7 +198,7 @@
 <td class="content">
 <div class="title">Using the CLI</div>
 <div class="paragraph">
-<p>If you are creating your project using the Micronaut CLI, supply one of <code>micrometer-atlas</code>, <code>micrometer-graphite</code>, <code>micrometer-prometheus</code>, or <code>micrometer-statsd</code> features to enable metrics and preconfigure the selected registery in your project:</p>
+<p>If you are creating your project using the Micronaut CLI, supply one of <code>micrometer-atlas</code>, <code>micrometer-graphite</code>, <code>micrometer-prometheus</code>, or <code>micrometer-statsd</code> features to enable metrics and preconfigure the selected registry in your project:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -210,10 +210,10 @@
 </table>
 </div>
 <div class="paragraph">
-<p>The metrics endpoint returns information about the "metrics" of the application. To execute the metrics endpoint, send a GET request to <code>/metrics</code>.  This will return a list of the metric names registered with the <code>MeterRegistry</code> bean.</p>
+<p>The metrics endpoint returns information about the "metrics" of the application. To execute the endpoint, send a GET request to <code>/metrics</code>. This returns the metric names registered with the <code>MeterRegistry</code> bean.</p>
 </div>
 <div class="paragraph">
-<p>You can get specific metrics by using <code>/metrics/[name]</code> such as <code>/metrics/jvm.memory.used</code>.  This would return something like:</p>
+<p>You can get specific metrics by using <code>/metrics/[name]</code>, for example <code>/metrics/jvm.memory.used</code>. This would return something like:</p>
 </div>
 <div class="listingblock">
 <div class="title">Sample Metric Detail Json</div>
@@ -275,7 +275,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p>You may even use multiple/nested tags like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&amp;tag=area:heap</code>.</p>
+<p>You may even use multiple or nested tags, for example <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&amp;tag=area:heap</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Sample Metric Detail Json</div>
@@ -295,7 +295,7 @@
 <h2 id="_configuration">Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Currently the metrics endpoint will only be enabled if you include the <code>micrometer-core</code> (or one of the typed registries such as <code>micrometer-registry-statsd</code> or <code>micrometer-registry-graphite</code>) AND the <code>management</code> dependencies.  You will also need to have the global metrics flag enabled (true by default).</p>
+<p>Currently, the metrics endpoint is only enabled if you include the <code>micrometer-core</code> (or one of the typed registries such as <code>micrometer-registry-statsd</code>, <code>micrometer-registry-graphite</code>, etc.) AND the <code>management</code> dependencies. You must also enable the global metrics flag (<code>true</code> by default).</p>
 </div>
 <div class="listingblock">
 <div class="title">Property</div>
@@ -310,11 +310,11 @@
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
     ...
-    compile "io.micronaut.micrometer:micronaut-micrometer-core"
+    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
     // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    compile "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
+    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
     // Also required to enable endpoint
-    compile "io.micronaut:micronaut-management"
+    implementation "io.micronaut:micronaut-management"
     ...
 }</code></pre>
 </div>
@@ -348,9 +348,9 @@
 <div class="title">Metrics Endpoint Configuration Example</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
-    metrics:
-        enabled: Boolean
-        sensitive: Boolean</code></pre>
+  metrics:
+    enabled: Boolean
+    sensitive: Boolean</code></pre>
 </div>
 </div>
 </div>
@@ -369,9 +369,8 @@
 <h2 id="_metric_concepts">Metric Concepts</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Key <code>Micrometer.io</code> <a href="http://micrometer.io/docs/concepts">concepts</a> include
-a <a href="http://micrometer.io/docs/concepts#_registry">MeterRegistry</a> to register and use
-meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is something that produces metrics.</p>
+<p>Key Micrometer <a href="https://micrometer.io/docs/concepts">concepts</a> include a <a href="https://micrometer.io/docs/concepts#_registry">MeterRegistry</a> to register and use meters.
+A <a href="https://micrometer.io/docs/concepts#_meters">Meter</a> is something that produces metrics.</p>
 </div>
 <div class="paragraph">
 <p>A MeterRegistry can have some customizations automatically applied.</p>
@@ -388,16 +387,16 @@ meters. A <a href="http://micrometer.io/docs/concepts#_meters">Meter</a> is some
 <div class="ulist">
 <ul>
 <li>
-<p>If you want all registries to get the customization, simply return return <code>true</code></p>
+<p>If you want all registries to get the customization, return <code>true</code></p>
 </li>
 <li>
-<p>Otherwise, you can evaluate the registry for its class type, its class hierarchy, or other criteria.</p>
+<p>Otherwise, you can evaluate the registry for its class type, class hierarchy, or other criteria.</p>
 </li>
 <li>
 <p>Remember you only get one shot for autoconfiguration; i.e. when the bean context is started.</p>
 </li>
 <li>
-<p>However, in code, you can apply additional customizations to the registry config</p>
+<p>However, in code you can apply additional customizations to the registry config.</p>
 </li>
 </ul>
 </div>
@@ -427,8 +426,8 @@ package io.micronaut.configuration.metrics.aggregator;
 import io.micrometer.core.instrument.MeterRegistry;
 
 /**
- * Class that will configure meter registries.  This is done on bean added event so that
- * composite registry can be skipped and non-composite registries can be added to composite.
+ * Configures meter registries. This is done on bean added event so composite
+ * registry can be skipped and non-composite registries can be added to composite.
  *
  * @author Christian Oestreich
  * @param &lt;T&gt; an instance of a meter registry that will be configured
@@ -437,14 +436,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; {
 
     /**
-     * Method to configure a meter registry with binders, filters, etc.
+     * Configures a meter registry with binders, filters, etc.
      *
      * @param meterRegistry Meter Registry
      */
     void configure(T meterRegistry);
 
     /**
-     * Method to determine if this configurer supports the meter registry type.
+     * Determines if this configurer supports the meter registry type.
      *
      * @param meterRegistry a meter registry
      * @return boolean whether is supported
@@ -480,10 +479,10 @@ public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; {
  */
 package io.micronaut.docs;
 
-import io.micronaut.core.annotation.Order;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Order;
 import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 
@@ -510,35 +509,20 @@ public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt
 <div class="ulist">
 <ul>
 <li>
-<p>A meter filter can be used to determine if a Meter is to be added to the registry. See <a href="http://micrometer.io/docs/concepts#_meter_filters">Meter Filters</a></p>
+<p>A <a href="https://micrometer.io/docs/concepts#_meter_filters">meter filter</a> can be used to determine if a Meter is to be added to the registry.</p>
 </li>
 <li>
-<p>Any bean that implements MeterFilter will be applied to all registries when the registry is first created</p>
+<p>Any bean that implements <code>MeterFilter</code> will be applied to all registries when the registry is first created</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>You can create custom filters similar to the following inside your application.  Micrometer&#8217;s <code>MeterFilter</code> class provides several convenience methods to help with the creation of these filters.</p>
+<p>You can create custom filters similar to the following inside your application. <code>MeterFilter</code> provides several convenience methods to help with the creation of these filters.</p>
 </div>
 <div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.micronaut.docs;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
 
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -584,17 +568,17 @@ public class MeterFilterFactory {
 <div class="sect2">
 <h3 id="_meter_binder">Meter Binder</h3>
 <div class="paragraph">
-<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer.io defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These all extend a simple interface MeterBinder, but these are not auto wired as beans and manual wiring is required given how micrometer is currently implemented.</p>
+<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These implement <code>MeterBinder</code>, but they are not autowired as beans; manual wiring is required given how Micrometer is currently implemented.</p>
 </div>
 <div class="sect3">
 <h4 id="_provided_binders">Provided Binders</h4>
 <div class="paragraph">
-<p>The following metrics currently have binders and are enabled by default.  The settings listed below can disable the specific metric binders if you do not with to collect or report the specific metrics.</p>
+<p>The following metrics currently have binders and are enabled by default. The settings listed below can disable individual metric binders if you do not wish to collect or report those metrics.</p>
 </div>
 <div class="sect4">
-<h5 id="_jvm_metrics">Jvm Metrics</h5>
+<h5 id="_jvm_metrics">JVM Metrics</h5>
 <div class="paragraph">
-<p>The JVM metrics bindings will provide several jvm metrics.</p>
+<p>The JVM metrics bindings provide several JVM metrics.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jvm.enabled</code></p>
@@ -659,14 +643,14 @@ public class MeterFilterFactory {
 <div class="sect4">
 <h5 id="_web_metrics">Web Metrics</h5>
 <div class="paragraph">
-<p>There is a default web filter provided for web metrics.  All routes, status codes, methods and exceptions will be timed and counted.</p>
+<p>There is a default web filter provided for web metrics. All routes, status codes, methods, and exceptions are timed and counted.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.web.enabled</code></p>
 </div>
 <div class="paragraph">
 <div class="title">Filter Path</div>
-<p>If enabled, be default the path <code>/**</code> will be intercepted.  If you wish to change which paths are run through the filter for the server set <code>micronaut.metrics.http.path</code>. For the client set <code>micronaut.metrics.http.client.path</code>.</p>
+<p>If enabled, by default the path <code>/**</code> is intercepted. To change which paths are run through the filter for the server, set <code>micronaut.metrics.http.path</code>. For the client, set <code>micronaut.metrics.http.client.path</code>.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 2. Metrics provided</caption>
@@ -694,7 +678,7 @@ public class MeterFilterFactory {
 <div class="sect5">
 <h6 id="_uptime_metrics">Uptime Metrics</h6>
 <div class="paragraph">
-<p>The uptime metrics bindings will provide system uptime metrics.</p>
+<p>The uptime metrics bindings provide system uptime metrics.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.uptime.enabled</code></p>
@@ -721,7 +705,7 @@ public class MeterFilterFactory {
 <div class="sect4">
 <h5 id="_processor_metrics">Processor Metrics</h5>
 <div class="paragraph">
-<p>The processor metrics bindings will provide system processor metrics.</p>
+<p>The processor metrics bindings provide system processor metrics.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.processor.enabled</code></p>
@@ -753,7 +737,7 @@ public class MeterFilterFactory {
 <div class="sect4">
 <h5 id="_file_descriptor_metrics">File Descriptor Metrics</h5>
 <div class="paragraph">
-<p>The file descriptor metrics bindings will provide system file descriptor metrics.</p>
+<p>The file descriptor metrics bindings provide system file descriptor metrics.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.files.enabled</code></p>
@@ -779,7 +763,7 @@ public class MeterFilterFactory {
 <div class="sect4">
 <h5 id="_logback_metrics">Logback Metrics</h5>
 <div class="paragraph">
-<p>The logging metrics bindings will provide logging metrics if using Logback.</p>
+<p>The logging metrics bindings provide logging metrics if using <a href="https://logback.qos.ch/">Logback</a>.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.logback.enabled</code></p>
@@ -802,7 +786,7 @@ public class MeterFilterFactory {
 <div class="sect4">
 <h5 id="_hibernate_metrics">Hibernate Metrics</h5>
 <div class="paragraph">
-<p>You can enable metrics for Hibernate by setting the <code>hibernate.generate_statistics</code> property to <code>true</code> in configuration. For example for the default entity manager:</p>
+<p>You can enable metrics for <a href="https://hibernate.org/orm/">Hibernate</a> by setting the <code>hibernate.generate_statistics</code> property to <code>true</code> in configuration. For example, for the default entity manager:</p>
 </div>
 <div class="paragraph">
 <p>Enabling Hibernate Metrics</p>
@@ -810,20 +794,20 @@ public class MeterFilterFactory {
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jpa:
-    default:
-        properties:
-            hibernate:
-                generate_statistics: true</code></pre>
+  default:
+    properties:
+      hibernate:
+        generate_statistics: true</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Micrometer will automatically expose Hibernate statistics. See the source code for <a href="https://github.com/micrometer-metrics/micrometer/blob/8b5a2cfd0c8fcc121cb936bb40a04f45571ce073/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jpa/HibernateMetrics.java#L79">HibernateMetrics</a> for the available metrics.</p>
+<p>Micrometer automatically exposes Hibernate statistics. See the source code for <a href="https://github.com/micrometer-metrics/micrometer/blob/8b5a2cfd0c8fcc121cb936bb40a04f45571ce073/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jpa/HibernateMetrics.java#L79">HibernateMetrics</a> for the available metrics.</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_datasource_metrics">DataSource Metrics</h5>
 <div class="paragraph">
-<p>The data source metrics bindings will provide data source pool metrics.</p>
+<p>The <code>DataSource</code> metrics bindings provide data source pool metrics.</p>
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jdbc.enabled</code></p>
@@ -841,7 +825,7 @@ There is a different set of pool metric names for HikariCP and other pool provid
 </table>
 </div>
 <div class="paragraph">
-<p>If you are using <code>io.micronaut.sql:micronaut-jdbc-hikari</code> you will get additional pool metrics as HikariCP has built in support for meter registries.</p>
+<p>If you use <code>io.micronaut.sql:micronaut-jdbc-hikari</code> you will get additional pool metrics, as HikariCP has built-in support for meter registries.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 7. HikariCP Metrics Provided</caption>
@@ -885,7 +869,7 @@ There is a different set of pool metric names for HikariCP and other pool provid
 </tbody>
 </table>
 <div class="paragraph">
-<p>If you are using <code>io.micronaut.sql:micronaut-jdbc-tomcat</code> or <code>io.micronaut.sql:micronaut-jdbc-dbcp</code> you will get the following metrics</p>
+<p>If you use <code>io.micronaut.sql:micronaut-jdbc-tomcat</code> or <code>io.micronaut.sql:micronaut-jdbc-dbcp</code>, you will get the following metrics</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 8. Generic Pool Metrics provided</caption>
@@ -914,19 +898,19 @@ There is a different set of pool metric names for HikariCP and other pool provid
 <div class="sect4">
 <h5 id="_netty_server_metrics">Netty Server Metrics</h5>
 <div class="paragraph">
-<p>The main <strong>Control Property</strong> for netty&#8217;s server metrics is <code>micronaut.metrics.binders.netty.enabled</code>, which is <strong>false</strong> by default.</p>
+<p>The main <strong>Control Property</strong> for Netty server metrics is <code>micronaut.metrics.binders.netty.enabled</code>, which is <strong>false</strong> by default.</p>
 </div>
 <div class="paragraph">
-<p>Currently the following binders are provided to instrument netty server:</p>
+<p>Currently, the following binders are provided to instrument Netty server:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>EventLoopGroupFactoryBinder</strong>: Instrument and expose event loop group queues metrics, use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
+<p><strong>EventLoopGroupFactoryBinder</strong>: Instrument and expose event loop group queues metrics; use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
 </li>
 <li>
-<p><strong>ByteBufAllocatorMetricsBinder</strong>: Expose <code>ByteBuf</code> default allocators (<a href="https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html">UnpooledByteBufAllocator</a>, <a href="https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html">PooledByteBufAllocator</a>) metrics, use <code>micronaut.metrics.binders.netty.bytebuf-allocators.enabled</code> to toggle. Default is <strong>false</strong>.
-You can customize what metrics are exposed using <code>micronaut.metrics.binders.netty.bytebuf-allocators.metrics</code>. By default all available metrics are exposed. Here are the supported flags:</p>
+<p><strong>ByteBufAllocatorMetricsBinder</strong>: Expose <code>ByteBuf</code> default allocators (<a href="https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html">UnpooledByteBufAllocator</a>, <a href="https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html">PooledByteBufAllocator</a>) metrics; use <code>micronaut.metrics.binders.netty.bytebuf-allocators.enabled</code> to toggle. Default is <strong>false</strong>.
+You can customize what metrics are exposed using <code>micronaut.metrics.binders.netty.bytebuf-allocators.metrics</code>. By default, all available metrics are exposed. These flags are supported:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -951,8 +935,8 @@ You can customize what metrics are exposed using <code>micronaut.metrics.binders
 </div>
 </li>
 <li>
-<p><strong>NettyMetricsPipelineBinder</strong>: Instrument netty&#8217;s channel, use <code>micronaut.metrics.binders.netty.channels.enabled</code> to toggle. Default is <strong>false</strong>.
-Some of the provided metrics are: the channel count, current active channel count, channel error count, bytes read and written.</p>
+<p><strong>NettyMetricsPipelineBinder</strong>: Instrument Netty&#8217;s channel, use <code>micronaut.metrics.binders.netty.channels.enabled</code> to toggle. Default is <strong>false</strong>.
+The provided metrics include the channel count, current active channel count, channel error count, bytes read and written.</p>
 </li>
 </ul>
 </div>
@@ -965,30 +949,15 @@ Some of the provided metrics are: the channel count, current active channel coun
 <h2 id="_adding_custom_metrics">Adding Custom Metrics</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To add metrics to your application you can inject a MeterRegistry bean to your class and use the provided methods to access counters, timers, etc.</p>
+<p>To add metrics to your application, dependency-inject a <code>MeterRegistry</code> bean and use the provided methods to access counters, timers, etc.</p>
 </div>
 <div class="paragraph">
-<p>See the Micrometer.io docs at <a href="https://micrometer.io/docs" class="bare">https://micrometer.io/docs</a> for more information.</p>
+<p>See the <a href="https://micrometer.io/docs">Micrometer docs</a> for more information.</p>
 </div>
 <div class="listingblock">
 <div class="title">Custom Metrics Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.micronaut.docs;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.http.annotation.Controller;
@@ -997,23 +966,22 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 
-@Controller("/")
-public class IndexController {
+@Controller
+class IndexController {
 
-    private MeterRegistry meterRegistry;
+    private final MeterRegistry meterRegistry;
 
-    public IndexController(MeterRegistry meterRegistry) {
+    IndexController(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 
     @Get("/hello/{name}")
-    public Mono hello(@NotBlank String name) {
+    Mono&lt;String&gt; hello(@NotBlank String name) {
         meterRegistry
                 .counter("web.access", "controller", "index", "action", "hello")
                 .increment();
         return Mono.just("Hello " + name);
     }
-
 }</code></pre>
 </div>
 </div>
@@ -1023,41 +991,26 @@ public class IndexController {
 <h2 id="_custom_exception_metrics">Custom Exception Metrics</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To report on response codes for custom handled exceptions, implement import io.micronaut.http.HttpResponseProvider.
-The default value reported for ExceptionHandlers is 500.</p>
+<p>To report on response codes for custom handled exceptions, implement <code>io.micronaut.http.HttpResponseProvider</code>.
+The default value reported for an <code>ExceptionHandler</code> is 500.</p>
 </div>
 <div class="paragraph">
-<p>See the Micronaut docs at <a href="https://docs.micronaut.io/latest/guide/index.html" class="bare">https://docs.micronaut.io/latest/guide/index.html</a> for more information on ExceptionHandlers.</p>
+<p>See the <a href="https://docs.micronaut.io/latest/guide/">Micronaut docs</a> for more information on <code>ExceptionHandler</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">ExceptionHandler Reporting Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.micronaut.docs;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
 
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
 
 public class OutOfStockException extends RuntimeException implements HttpResponseProvider {
 
-  @Override
-  public HttpResponse&lt;?&gt; getResponse() {
-    return HttpResponse.ok(0);
-  }
+    @Override
+    public HttpResponse&lt;?&gt; getResponse() {
+        return HttpResponse.ok(0);
+    }
 }</code></pre>
 </div>
 </div>
@@ -1109,7 +1062,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 <h2 id="_metrics_registries_reporters">Metrics Registries &amp; Reporters</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>By default there a metrics endpoint wired up and metrics are provided to it for viewing or retrieving via http.  If you want to register a specific type of reporter you will need to include a typed registry configuration.  The following are the currently supported libraries for reporting metrics.</p>
+<p>By default, there is a <code>/metrics</code> endpoint configured, and metrics are provided to it for viewing or retrieving via HTTP. To register a specific type of reporter, include a typed registry configuration. The following are the currently supported libraries for reporting metrics.</p>
 </div>
 </div>
 </div>
@@ -1143,8 +1096,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.appoptics</code>. The most commonly changed configuration properties are listed below,
-but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java">AppOpticsConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.appoptics</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java">AppOpticsConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1162,15 +1114,15 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AppOptics Api token. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AppOptics API token. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The uri for the AppOptics backend. Default: <code><a href="https://api.appoptics.com/v1/measurements" class="bare">https://api.appoptics.com/v1/measurements</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The URI for the AppOptics backend. Default: <code>https://api.appoptics.com/v1/measurements</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1218,7 +1170,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.atlas</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/Netflix/spectator/blob/master/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java">AtlasConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.atlas</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/Netflix/spectator/blob/main/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java">AtlasConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1232,15 +1184,15 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The uri for the atlas backend. Default: <code><a href="http://localhost:7101/api/v1/publish" class="bare">http://localhost:7101/api/v1/publish</a></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The URI for the Atlas backend. Default: <code>http://localhost:7101/api/v1/publish</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1287,8 +1239,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.azuremonitor</code>. The most commonly changed configuration properties are listed below,
-but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-azure-monitor/src/main/java/io/micrometer/azuremonitor/AzureMonitorConfig.java">AzureMonitorConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.azuremonitor</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-azure-monitor/src/main/java/io/micrometer/azuremonitor/AzureMonitorConfig.java">AzureMonitorConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1302,15 +1253,15 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">instrumentationKey</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Azure Monitor Instrumentatoin key. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Azure Monitor instrumentation key. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1338,7 +1289,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 
 
 <div class="paragraph">
-<p>You can include the Cloudwatch reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch</code></p>
+<p>You can include the CloudWatch reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1357,7 +1308,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.cloudwatch</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java">CloudWatchConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.cloudwatch</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java">CloudWatchConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1371,20 +1322,20 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">namespace</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">String Namespace that will show up in cloudwatch for these metrics. Default: <code>micronaut</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespace that will be displayed in CloudWatch for these metrics. Default: <code>micronaut</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">batchSize</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Number Number of metrics to send in a batch to Cloudwatch. Default: <code>20</code> Matches max limit found on <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html">Cloudwatch API Reference</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of metrics to send in a batch to CloudWatch. Default: <code>20</code>. Matches max limit found on <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html">Cloudwatch API Reference</a>.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="listingblock">
-<div class="title">Example Cloudwatch Config</div>
+<div class="title">Example CloudWatch Config</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
   metrics:
@@ -1426,9 +1377,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.datadog</code>.  The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-datadog/src/main/java/io/micrometer/datadog/DatadogConfig.java">DatadogConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.datadog</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-datadog/src/main/java/io/micrometer/datadog/DatadogConfig.java">DatadogConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1442,19 +1391,19 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Datadog Api Key, required</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datadog API Key. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to DataDog. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to Datadog. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1501,9 +1450,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.dynatrace</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-dynatrace/src/main/java/io/micrometer/dynatrace/DynatraceConfig.java">DynatraceConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.dynatrace</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-dynatrace/src/main/java/io/micrometer/dynatrace/DynatraceConfig.java">DynatraceConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1517,11 +1464,11 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Dynatrace Api Token. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dynatrace API Token. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
@@ -1529,15 +1476,15 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">decideId</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Device Id to be reported. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Device ID to be reported. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1560,7 +1507,7 @@ micronaut:
 </div>
 </div>
 
-<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elastic Registry</h2>
+<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elasticsearch Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
@@ -1570,7 +1517,7 @@ micronaut:
 
 
 <div class="paragraph">
-<p>You can include the Elastic reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-elastic</code></p>
+<p>You can include the Elasticsearch reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-elastic</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1589,9 +1536,7 @@ micronaut:
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.elastic</code>.  The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java">ElasticConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.elastic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java">ElasticConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1605,11 +1550,11 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1655,8 +1600,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.ganglia</code>. The most commonly changed configuration properties are listed below,
-but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-ganglia/src/main/java/io/micrometer/ganglia/GangliaConfig.java">GangliaConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.ganglia</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-ganglia/src/main/java/io/micrometer/ganglia/GangliaConfig.java">GangliaConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1670,15 +1614,15 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">protocolVersion</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Ganglia protocol version. Required, <code>3.0</code> or <code>3.1</code>, default <code>3.1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ganglia protocol version (<code>3.0</code> or <code>3.1</code>). Default: <code>3.1</code>. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1725,7 +1669,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.graphite</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java">GraphiteConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.graphite</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java">GraphiteConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1739,19 +1683,19 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The host to communicate with graphite. Default: <code>localhost</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Graphite server location. Default: <code>localhost</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The port to communicate with graphite. Default: <code>2004</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Graphite server port. Default: <code>2004</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1799,8 +1743,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.humio</code>. The most commonly changed configuration properties are listed below,
-but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-humio/src/main/java/io/micrometer/humio/HumioConfig.java">HumioConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.humio</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-humio/src/main/java/io/micrometer/humio/HumioConfig.java">HumioConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1814,11 +1757,11 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1864,9 +1807,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.influx</code>.  The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-influx/src/main/java/io/micrometer/influx/InfluxConfig.java">InfluxConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.influx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-influx/src/main/java/io/micrometer/influx/InfluxConfig.java">InfluxConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1880,15 +1821,15 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -1905,7 +1846,7 @@ for more options.</p>
 </div>
 </div>
 
-<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 Jmx Registry</h2>
+<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 JMX Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
@@ -1915,7 +1856,7 @@ for more options.</p>
 
 
 <div class="paragraph">
-<p>You can include the Jmx reporter via <code>io.micronaut.micrometer:micronaut-micrometer-jmx</code></p>
+<p>You can include the JMX reporter via <code>io.micronaut.micrometer:micronaut-micrometer-jmx</code></p>
 </div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
@@ -1934,8 +1875,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.jmx</code>. The most commonly changed configuration properties are listed below,
-but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-jmx/src/main/java/io/micrometer/jmx/JmxConfig.java">JmxConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.jmx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-jmx/src/main/java/io/micrometer/jmx/JmxConfig.java">JmxConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1949,16 +1889,16 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
 <div class="listingblock">
-<div class="title">Example Jmx Config</div>
+<div class="title">Example JMX Config</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yml hljs" data-lang="yml">micronaut:
   metrics:
@@ -1999,9 +1939,7 @@ but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/im
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.kairos</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-kairos/src/main/java/io/micrometer/kairos/KairosConfig.java">KairosConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.kairos</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-kairos/src/main/java/io/micrometer/kairos/KairosConfig.java">KairosConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2015,19 +1953,19 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Kairos server uri. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kairos server URI. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2074,9 +2012,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-new-relic/src/main/java/io/micrometer/newrelic/NewRelicConfig.java">NewRelicConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-new-relic/src/main/java/io/micrometer/newrelic/NewRelicConfig.java">NewRelicConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2090,23 +2026,23 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic api key. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic API key. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">accountId</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic account Id. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic account ID. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2157,9 +2093,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java">NewRelicRegistryConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java">NewRelicRegistryConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2173,11 +2107,11 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic api key. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic API key. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">serviceName</p></td>
@@ -2185,7 +2119,7 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2233,7 +2167,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.prometheus</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java">PrometheusConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.prometheus</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java">PrometheusConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2247,15 +2181,15 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to Prometheus. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to Prometheus. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2276,7 +2210,7 @@ micronaut:
 </div>
 </div>
 <div class="paragraph">
-<p><strong>IMPORTANT NOTE</strong>: Once set up, the Prometheus-compatible metrics can be scraped from the path <code>/prometheus</code>. Note: by default Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
+<p><strong>IMPORTANT NOTE</strong>: Once configured, the Prometheus-compatible metrics can be accessed from the path <code>/prometheus</code>. By default, Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
 </div>
 <div class="sect2">
 <h3 id="_prometheus_default_metrics">Prometheus Default Metrics</h3>
@@ -2301,27 +2235,27 @@ micronaut:
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_count</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the total number of requests per second your application made to an endpoint via HTTP Client interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total number of requests per second your application made to an endpoint via HTTP Client interface</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_sum</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the sum of the duration of every request your application made to an endpoint via HTTP Client interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sum of the duration of every request your application made to an endpoint via HTTP Client interface</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_max</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_count</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the total number of requests your application received at an endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total number of requests your application received at an endpoint</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_sum</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the sum of the the duration of every request your application received at an endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sum of the duration of every request your application received at an endpoint</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_max</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes</p></td>
 </tr>
 </tbody>
 </table>
@@ -2357,9 +2291,7 @@ micronaut:
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.signalfx</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalFxConfig.java">SignalFxConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.signalfx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalFxConfig.java">SignalFxConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2373,7 +2305,7 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">accessToken</p></td>
@@ -2381,11 +2313,11 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2432,9 +2364,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2448,19 +2378,19 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">projectId</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stackdriver Project Id. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stackdriver Project ID. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2507,7 +2437,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.statsd</code>.  The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java">StatdsConfig</a> for more options</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.statsd</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java">StatsdConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2521,23 +2451,23 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">flavor</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The type of metric to use (datadog, etsy or telegraf). Default: <code>datadog</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of metric to use (<code>datadog</code>, <code>etsy</code> or <code>telegraf</code>). Default: <code>datadog</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The host to communicate to statsd on. Default: <code>localhost</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The StatsD server. Default: <code>localhost</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The port to communicate to statsd on. Default: <code>8125</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The StatsD port. Default: <code>8125</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2586,9 +2516,7 @@ for more options.</p>
 </div></p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.wavefront</code>. The most commonly changed configuration properties are listed below, but see
-<a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-wavefront/src/main/java/io/micrometer/wavefront/WavefrontConfig.java">WavefrontConfig</a>
-for more options.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.wavefront</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-wavefront/src/main/java/io/micrometer/wavefront/WavefrontConfig.java">WavefrontConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2602,23 +2530,23 @@ for more options.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront Api token. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront API token. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront service uri. Required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront service URI. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min).  See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
 </tr>
 </tbody>
 </table>

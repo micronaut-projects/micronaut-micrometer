@@ -114,7 +114,7 @@ var activeTableTab = "activeTableTab";
 <pre>public class <span class="typeNameLabel">R2dbcPoolMetricsBinder</span>
 extends java.lang.Object
 implements io.micrometer.core.instrument.binder.MeterBinder</pre>
-<div class="block">A <code>MeterBinder</code> for a <code>ConnectionPool</code>.</div>
+<div class="block">A <code>MeterBinder</code> for <code>PoolMetrics</code>.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>4.2.1</dd>
@@ -160,7 +160,7 @@ implements io.micrometer.core.instrument.binder.MeterBinder</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html#bindTo-io.micrometer.core.instrument.MeterRegistry-">bindTo</a></span>(@NotNull io.micrometer.core.instrument.MeterRegistry&nbsp;registry)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html#bindTo-io.micrometer.core.instrument.MeterRegistry-">bindTo</a></span>(io.micrometer.core.instrument.MeterRegistry&nbsp;registry)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -209,8 +209,8 @@ implements io.micrometer.core.instrument.binder.MeterBinder</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>bindTo</h4>
-<pre>public&nbsp;void&nbsp;bindTo(@NotNull
-                   @NotNull io.micrometer.core.instrument.MeterRegistry&nbsp;registry)</pre>
+<pre>public&nbsp;void&nbsp;bindTo(@NonNull
+                   io.micrometer.core.instrument.MeterRegistry&nbsp;registry)</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code>bindTo</code>&nbsp;in interface&nbsp;<code>io.micrometer.core.instrument.binder.MeterBinder</code></dd>
