@@ -5,6 +5,7 @@ io.micronaut.configuration.metrics.binder.datasource
 io.micronaut.configuration.metrics.binder.executor
 io.micronaut.configuration.metrics.binder.jvm
 io.micronaut.configuration.metrics.binder.logging
+io.micronaut.configuration.metrics.binder.r2dbc
 io.micronaut.configuration.metrics.binder.system
 io.micronaut.configuration.metrics.binder.web
 io.micronaut.configuration.metrics.common.tags

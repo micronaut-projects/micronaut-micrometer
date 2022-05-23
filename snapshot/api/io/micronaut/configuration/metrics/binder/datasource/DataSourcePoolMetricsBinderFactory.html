@@ -113,7 +113,7 @@ var activeTableTab = "activeTableTab";
           notEquals="false")
 public class <span class="typeNameLabel">DataSourcePoolMetricsBinderFactory</span>
 extends java.lang.Object</pre>
-<div class="block">Instruments Micronaut related jdbc pool metrics via Micrometer.</div>
+<div class="block">Instruments Micronaut related JDBC pool metrics via Micrometer.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
@@ -159,7 +159,7 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code>io.micrometer.core.instrument.binder.MeterBinder</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinderFactory.html#dataSourceMeterBinder-java.lang.String-io.micronaut.jdbc.metadata.DataSourcePoolMetadata-">dataSourceMeterBinder</a></span>(java.lang.String&nbsp;dataSourceName,
                      io.micronaut.jdbc.metadata.DataSourcePoolMetadata&nbsp;dataSourcePoolMetadata)</code>
-<div class="block">Method to wire beans for each type of datasource.</div>
+<div class="block">Wires beans for each DataSource.</div>
 </td>
 </tr>
 </table>
@@ -212,7 +212,7 @@ extends java.lang.Object</pre>
 public&nbsp;io.micrometer.core.instrument.binder.MeterBinder&nbsp;dataSourceMeterBinder(@Parameter
                                                                                                                                                                                                                                  java.lang.String&nbsp;dataSourceName,
                                                                                                                                                                                                                                  io.micronaut.jdbc.metadata.DataSourcePoolMetadata&nbsp;dataSourcePoolMetadata)</pre>
-<div class="block">Method to wire beans for each type of datasource.</div>
+<div class="block">Wires beans for each DataSource.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>dataSourceName</code> - The parameterized name of the datasource</dd>

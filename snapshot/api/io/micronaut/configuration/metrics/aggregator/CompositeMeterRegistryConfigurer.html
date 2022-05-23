@@ -115,7 +115,7 @@ var activeTableTab = "activeTableTab";
 extends java.lang.Object
 implements <a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a>&lt;io.micrometer.core.instrument.composite.CompositeMeterRegistry&gt;</pre>
 <div class="block">Default implementation of <a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator"><code>MeterRegistryConfigurer</code></a> that adds the binders and filters
- to the micrometer meter registry.  This is specifically needed for the <a href="../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html" title="class in io.micronaut.configuration.metrics.management.endpoint"><code>MetricsEndpoint</code></a></div>
+ to the micrometer meter registry. This is specifically needed for the <a href="../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html" title="class in io.micronaut.configuration.metrics.management.endpoint"><code>MetricsEndpoint</code></a></div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
@@ -162,8 +162,8 @@ implements <a href="../../../../../io/micronaut/configuration/metrics/aggregator
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html#configure-io.micrometer.core.instrument.composite.CompositeMeterRegistry-">configure</a></span>(@NotNull io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</code>
-<div class="block">Method to configure a meter registry with binders, filters, etc.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/aggregator/CompositeMeterRegistryConfigurer.html#configure-io.micrometer.core.instrument.composite.CompositeMeterRegistry-">configure</a></span>(io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</code>
+<div class="block">Configures a meter registry with binders, filters, etc.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -210,8 +210,8 @@ implements <a href="../../../../../io/micronaut/configuration/metrics/aggregator
 <div class="block">Constructor for the micrometer meter registry configurer.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>binders</code> - list of binder beans</dd>
-<dd><code>filters</code> - list of filter beans</dd>
+<dd><code>binders</code> - binder beans</dd>
+<dd><code>filters</code> - filter beans</dd>
 </dl>
 </li>
 </ul>
@@ -229,9 +229,9 @@ implements <a href="../../../../../io/micronaut/configuration/metrics/aggregator
 <ul class="blockList">
 <li class="blockList">
 <h4>configure</h4>
-<pre>public&nbsp;void&nbsp;configure(@NotNull
-                      @NotNull io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</pre>
-<div class="block">Method to configure a meter registry with binders, filters, etc.
+<pre>public&nbsp;void&nbsp;configure(@NonNull
+                      io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</pre>
+<div class="block">Configures a meter registry with binders, filters, etc.
  <p>
  It is Important that filters are the first thing added so that subsequent operations are
  appropriately filtered.</div>

@@ -118,8 +118,7 @@ var activeTableTab = "activeTableTab";
 public class <span class="typeNameLabel">ServerRequestMeterRegistryFilter</span>
 extends java.lang.Object
 implements io.micronaut.http.filter.HttpServerFilter</pre>
-<div class="block">Once per request web filter that will register the timers
- and meters for each request.
+<div class="block">Registers the timers and meters for each request.
 
  <p>The default is to intercept all paths /**, but using the
   property micronaut.metrics.http.path, this can be changed.</p></div>
@@ -162,9 +161,7 @@ implements io.micronaut.http.filter.HttpServerFilter</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html#ServerRequestMeterRegistryFilter-io.micrometer.core.instrument.MeterRegistry-">ServerRequestMeterRegistryFilter</a></span>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</code>
-<div class="block">Filter constructor.</div>
-</td>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html#ServerRequestMeterRegistryFilter-io.micrometer.core.instrument.MeterRegistry-">ServerRequestMeterRegistryFilter</a></span>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -238,7 +235,6 @@ implements io.micronaut.http.filter.HttpServerFilter</pre>
 <li class="blockList">
 <h4>ServerRequestMeterRegistryFilter</h4>
 <pre>public&nbsp;ServerRequestMeterRegistryFilter(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</pre>
-<div class="block">Filter constructor.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>meterRegistry</code> - the meter registry</dd>
@@ -263,7 +259,7 @@ implements io.micronaut.http.filter.HttpServerFilter</pre>
 protected&nbsp;org.reactivestreams.Publisher&lt;io.micronaut.http.MutableHttpResponse&lt;?&gt;&gt;&nbsp;doFilterOnce(io.micronaut.http.HttpRequest&lt;?&gt;&nbsp;request,
                                                                                                            io.micronaut.http.filter.ServerFilterChain&nbsp;chain)</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Override <a href="../../../../../../io/micronaut/configuration/metrics/binder/web/ServerRequestMeterRegistryFilter.html#doFilter-io.micronaut.http.HttpRequest-io.micronaut.http.filter.ServerFilterChain-"><code>doFilter(HttpRequest, ServerFilterChain)</code></a> instead.</span></div>
-<div class="block">This method is here for backwards compatibility. The class no longer implement
+<div class="block">This is here for backwards compatibility. The class no longer implements
  OncePerRequestHttpServerFilter, however the method was kept to maintain binary
  compatibility.</div>
 <dl>

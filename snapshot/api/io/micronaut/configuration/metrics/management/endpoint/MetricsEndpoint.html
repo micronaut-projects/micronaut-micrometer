@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
  <a href="../../../../../../io/micronaut/configuration/metrics/annotation/RequiresMetrics.html" title="annotation in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
 public class <span class="typeNameLabel">MetricsEndpoint</span>
 extends java.lang.Object</pre>
-<div class="block">Provides a metrics endpoint to visualize metrics.</div>
+<div class="block">Provides an endpoint to visualize metrics.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
@@ -177,9 +177,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html#MetricsEndpoint-io.micrometer.core.instrument.MeterRegistry-javax.sql.DataSource:A-">MetricsEndpoint</a></span>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
-               javax.sql.DataSource[]&nbsp;dataSources)</code>
-<div class="block">Constructor for metrics endpoint.</div>
-</td>
+               javax.sql.DataSource[]&nbsp;dataSources)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -200,13 +198,13 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code><a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.MetricDetails.html" title="class in io.micronaut.configuration.metrics.management.endpoint">MetricsEndpoint.MetricDetails</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html#getMetricDetails-java.lang.String-java.util.List-">getMetricDetails</a></span>(java.lang.String&nbsp;name,
                 java.util.List&lt;java.lang.String&gt;&nbsp;tag)</code>
-<div class="block">Method to read individual metric data.</div>
+<div class="block">Reads individual metric data.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.MetricNames.html" title="class in io.micronaut.configuration.metrics.management.endpoint">MetricsEndpoint.MetricNames</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.html#listNames--">listNames</a></span>()</code>
-<div class="block">Read operation to list metric names.</div>
+<div class="block">Lists metric names.</div>
 </td>
 </tr>
 </table>
@@ -239,7 +237,6 @@ extends java.lang.Object</pre>
 <h4>MetricsEndpoint</h4>
 <pre>public&nbsp;MetricsEndpoint(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
                        javax.sql.DataSource[]&nbsp;dataSources)</pre>
-<div class="block">Constructor for metrics endpoint.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>meterRegistry</code> - The meter registry</dd>
@@ -263,11 +260,10 @@ extends java.lang.Object</pre>
 <h4>listNames</h4>
 <pre>@Read
 public&nbsp;<a href="../../../../../../io/micronaut/configuration/metrics/management/endpoint/MetricsEndpoint.MetricNames.html" title="class in io.micronaut.configuration.metrics.management.endpoint">MetricsEndpoint.MetricNames</a>&nbsp;listNames()</pre>
-<div class="block">Read operation to list metric names.  To get the details
- the method getMetricDetails(name) should be invoked.</div>
+<div class="block">Lists metric names. To get the details, invoke the method <code>getMetricDetails(name)</code>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>single of http response with list of metric names</dd>
+<dd>single of HTTP response with metric names</dd>
 </dl>
 </li>
 </ul>
@@ -282,7 +278,7 @@ public&nbsp;<a href="../../../../../../io/micronaut/configuration/metrics/manage
                                                             java.lang.String&nbsp;name,
                                                             @Nullable
                                                             java.util.List&lt;java.lang.String&gt;&nbsp;tag)</pre>
-<div class="block">Method to read individual metric data.
+<div class="block">Reads individual metric data.
  <p>
  After calling the /metrics endpoint, you can pass the name in
  like /metrics/foo.bar and the details for the metrics and tags
