@@ -141,8 +141,8 @@ implements io.micrometer.core.instrument.binder.MeterBinder</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinder.html#bindTo-io.micrometer.core.instrument.MeterRegistry-">bindTo</a></span>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</code>
-<div class="block">Binds the pool metrics.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/micronaut/configuration/metrics/binder/datasource/DataSourcePoolMetricsBinder.html#bindTo-io.micrometer.core.instrument.MeterRegistry-">bindTo</a></span>(@NotNull io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</code>
+<div class="block">Method for getting metadataProvider object for datasource that will bind the pool metrics.</div>
 </td>
 </tr>
 </table>
@@ -173,14 +173,14 @@ implements io.micrometer.core.instrument.binder.MeterBinder</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>bindTo</h4>
-<pre>public&nbsp;void&nbsp;bindTo(@NonNull
-                   io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</pre>
-<div class="block">Binds the pool metrics.</div>
+<pre>public&nbsp;void&nbsp;bindTo(@NotNull
+                   @NotNull io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry)</pre>
+<div class="block">Method for getting metadataProvider object for datasource that will bind the pool metrics.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code>bindTo</code>&nbsp;in interface&nbsp;<code>io.micrometer.core.instrument.binder.MeterBinder</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>meterRegistry</code> - the meter registry</dd>
+<dd><code>meterRegistry</code> - the meter registry object</dd>
 </dl>
 </li>
 </ul>

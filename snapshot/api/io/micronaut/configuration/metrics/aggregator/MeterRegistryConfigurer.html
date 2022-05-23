@@ -108,8 +108,8 @@ var activeTableTab = "activeTableTab";
 <hr>
 <br>
 <pre>public interface <span class="typeNameLabel">MeterRegistryConfigurer&lt;T extends io.micrometer.core.instrument.MeterRegistry&gt;</span></pre>
-<div class="block">Configures meter registries. This is done on bean added event so composite
- registry can be skipped and non-composite registries can be added to composite.</div>
+<div class="block">Class that will configure meter registries.  This is done on bean added event so that
+ composite registry can be skipped and non-composite registries can be added to composite.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>1.0</dd>
@@ -137,7 +137,7 @@ var activeTableTab = "activeTableTab";
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#configure-T-">configure</a></span>(<a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="type parameter in MeterRegistryConfigurer">T</a>&nbsp;meterRegistry)</code>
-<div class="block">Configures a meter registry with binders, filters, etc.</div>
+<div class="block">Method to configure a meter registry with binders, filters, etc.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -147,7 +147,7 @@ var activeTableTab = "activeTableTab";
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>default boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#supports-T-">supports</a></span>(<a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="type parameter in MeterRegistryConfigurer">T</a>&nbsp;meterRegistry)</code>
-<div class="block">Determines if this configurer supports the meter registry type.</div>
+<div class="block">Method to determine if this configurer supports the meter registry type.</div>
 </td>
 </tr>
 </table>
@@ -174,7 +174,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <h4>configure</h4>
 <pre>void&nbsp;configure(<a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="type parameter in MeterRegistryConfigurer">T</a>&nbsp;meterRegistry)</pre>
-<div class="block">Configures a meter registry with binders, filters, etc.</div>
+<div class="block">Method to configure a meter registry with binders, filters, etc.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>meterRegistry</code> - Meter Registry</dd>
@@ -190,7 +190,7 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <h4>supports</h4>
 <pre>default&nbsp;boolean&nbsp;supports(<a href="../../../../../io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="type parameter in MeterRegistryConfigurer">T</a>&nbsp;meterRegistry)</pre>
-<div class="block">Determines if this configurer supports the meter registry type.</div>
+<div class="block">Method to determine if this configurer supports the meter registry type.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>meterRegistry</code> - a meter registry</dd>
