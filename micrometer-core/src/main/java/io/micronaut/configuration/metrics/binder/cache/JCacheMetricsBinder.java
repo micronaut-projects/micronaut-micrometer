@@ -22,7 +22,6 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.cache.CacheManager;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments the active JCache manager.
@@ -40,10 +40,11 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 @RequiresMetrics
 @Requires(beans = CacheManager.class)
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".cache.enabled", notEquals = FALSE)
 public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManager> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JCacheMetricsBinder.class);
+
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
@@ -60,19 +61,12 @@ public class JCacheMetricsBinder implements BeanCreatedEventListener<CacheManage
         final MeterRegistry meterRegistry = meterRegistryProvider.get();
         final CacheManager cacheManager = event.getBean();
         for (String cacheName : cacheManager.getCacheNames()) {
-
             try {
-                JCacheMetrics.monitor(
-                        meterRegistry,
-                        cacheManager.getCache(cacheName)
-                );
+                JCacheMetrics.monitor(meterRegistry, cacheManager.getCache(cacheName));
             } catch (Exception e) {
-                if (LOG.isWarnEnabled()) {
-                    LOG.warn("Unable to instrument JCache CacheManager with metrics: " + e.getMessage(), e);
-                }
+                LOG.warn("Unable to instrument JCache CacheManager with metrics: {}", e.getMessage(), e);
             }
         }
         return cacheManager;
     }
 }
-

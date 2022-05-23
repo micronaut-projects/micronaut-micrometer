@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Cloudwatch metrics.
+ * Configuration for Micrometer-CloudWatch metrics.
  */
 @Configuration
 @Requires(property = CloudWatchMeterRegistryFactory.CLOUDWATCH_ENABLED, notEquals = StringUtils.FALSE)

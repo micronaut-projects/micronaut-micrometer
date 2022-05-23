@@ -22,16 +22,16 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.ChannelPipelineCustomizer;
 import io.micronaut.runtime.server.EmbeddedServer;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import static io.micronaut.configuration.metrics.binder.netty.ChannelMetricsHandler.CHANNEL_METRICS;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
- * Adds netty's metrics handler to the pipeline.
+ * Adds Netty's metrics handler to the pipeline.
  *
  * @author croudet
  * @since 2.0
@@ -39,9 +39,10 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Singleton
 @Internal
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EmbeddedServer.class)
 final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<ChannelPipelineCustomizer> {
+
     private final ChannelMetricsHandler metricsHandler;
 
     /**
@@ -49,9 +50,8 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Chann
      *
      * @param meterRegistryProvider The metrics registry provider.
      */
-    @Inject
     NettyMetricsPipelineBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
-        this.metricsHandler = new ChannelMetricsHandler(meterRegistryProvider);
+        metricsHandler = new ChannelMetricsHandler(meterRegistryProvider);
     }
 
     @Override
@@ -59,11 +59,10 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Chann
         final ChannelPipelineCustomizer customizer = event.getBean();
         if (customizer.isServerChannel()) {
             customizer.doOnConnect(pipeline -> {
-                pipeline.addFirst(ChannelMetricsHandler.CHANNEL_METRICS, metricsHandler);
+                pipeline.addFirst(CHANNEL_METRICS, metricsHandler);
                 return pipeline;
             });
         }
         return customizer;
     }
-
 }

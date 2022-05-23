@@ -31,8 +31,7 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The NewRelicTelemetryRegistryFactory that will configure and create a new relic registry using the
- * New Relic provided, telemetry SDK based micrometer registry.
+ * Creates a New Relic registry using the New Relic provided, telemetry SDK based Micrometer registry.
  *
  * @author mparlee
  */
@@ -43,12 +42,12 @@ public class NewRelicTelemetryMeterRegistryFactory {
     public static final String NEWRELIC_ENABLED = NEWRELIC_CONFIG + ".enabled";
 
     /**
-     * Create a NewRelicRegistry bean if global metrics are enables
-     * and the newrelic is enabled.  Will be true by default when this
+     * Create a NewRelicRegistry bean if global metrics are enabled
+     * and New Relic is enabled. Will be true by default when this
      * configuration is included in project.
      *
-     * @param config The the new relic config
-     * @return A NewRelicRegistry
+     * @param config the New Relic config
+     * @return NewRelicRegistry
      */
     @Singleton
     NewRelicRegistry newRelicRegistry(NewRelicRegistryConfig config) throws UnknownHostException {
@@ -65,14 +64,13 @@ public class NewRelicTelemetryMeterRegistryFactory {
     }
 
     /**
-     * The new relic config bean.
-     * @param exportConfigurationProperties The properties
-     * @return The new relic bean
+     * The New Relic config bean.
+     * @param exportConfigurationProperties the properties
+     * @return the New Relic bean
      */
     @Singleton
     NewRelicTelemetryMicronautConfig newRelicRegistryConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
     }
-
 }

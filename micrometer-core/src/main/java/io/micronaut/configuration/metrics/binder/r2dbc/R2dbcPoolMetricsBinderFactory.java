@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 import io.r2dbc.spi.ConnectionFactory;
@@ -29,9 +28,10 @@ import io.r2dbc.spi.ConnectionFactory;
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
- * Instruments Micronaut related r2dbc pool metrics via Micrometer.
+ * Instruments Micronaut related R2DBC pool metrics via Micrometer.
  *
  * @author Leonardo Schick
  * @author Caroline Medeiros
@@ -39,11 +39,11 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".r2dbc.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".r2dbc.enabled", notEquals = FALSE)
 public class R2dbcPoolMetricsBinderFactory {
 
     /**
-     * Method to wire beans for each type of datasource.
+     * Wires beans for each DataSource.
      *
      * @param dataSourceName    The parameterized name of the datasource
      * @param factory           The datasource factory object to use for the binder
@@ -51,9 +51,8 @@ public class R2dbcPoolMetricsBinderFactory {
      */
     @EachBean(ConnectionFactory.class)
     @Requires(beans = {ConnectionFactory.class})
-    public MeterBinder r2dbcPoolMeterBinder(
-            @Parameter String dataSourceName,
-            ConnectionFactory factory) {
+    public MeterBinder r2dbcPoolMeterBinder(@Parameter String dataSourceName,
+                                            ConnectionFactory factory) {
         PoolMetrics poolMetrics = null;
         if (factory instanceof ConnectionPool) {
             poolMetrics = ((ConnectionPool) factory).getMetrics().orElse(null);

@@ -16,17 +16,17 @@
 package io.micronaut.configuration.metrics.micrometer.azuremonitor;
 
 import io.micrometer.azuremonitor.AzureMonitorMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The AzureMonitorMeterRegistryFactory that will configure and create a azuremonitor meter registry.
+ * Creates an AzureMonitor meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class AzureMonitorMeterRegistryFactory {
     public static final String AZUREMONITOR_ENABLED = AZUREMONITOR_CONFIG + ".enabled";
 
     /**
-     * Create a AzureMonitorMeterRegistry bean if global metrics are enables
-     * and the azuremonitor is enabled.  Will be true by default when this
+     * Create a AzureMonitorMeterRegistry bean if global metrics are enabled
+     * and AzureMonitor is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A AzureMonitorMeterRegistry
+     * @return AzureMonitorMeterRegistry
      */
     @Singleton
     AzureMonitorMeterRegistry azureMonitorMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new AzureMonitorMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new AzureMonitorMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.jmx;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.jmx.JmxMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,10 +22,11 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The JmxMeterRegistryFactory that will configure and create a jmx meter registry.
+ * Creates a JMX meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class JmxMeterRegistryFactory {
     public static final String JMX_ENABLED = JMX_CONFIG + ".enabled";
 
     /**
-     * Create a JmxMeterRegistry bean if global metrics are enables
-     * and the jmx is enabled.  Will be true by default when this
+     * Create a JmxMeterRegistry bean if global metrics are enabled
+     * and JMX is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A JmxMeterRegistry
+     * @return JmxMeterRegistry
      */
     @Singleton
     JmxMeterRegistry jmxMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new JmxMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new JmxMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

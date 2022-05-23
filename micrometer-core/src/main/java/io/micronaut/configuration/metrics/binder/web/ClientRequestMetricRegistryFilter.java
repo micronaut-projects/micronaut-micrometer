@@ -18,8 +18,6 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.annotation.Filter;
@@ -29,6 +27,9 @@ import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
+import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
+
 /**
  * A {@link HttpClientFilter} that produces metrics under the key {@code http.client.requests}.
  *
@@ -37,14 +38,14 @@ import java.util.Optional;
  */
 @Filter("${micronaut.metrics.http.client.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
-    private final String HOST_HEADER = "host";
+
+    private static final String HOST_HEADER = "host";
+
     private final MeterRegistry meterRegistry;
 
     /**
-     * Default constructor.
-     *
      * @param meterRegistry The metrics registry
      */
     public ClientRequestMetricRegistryFilter(MeterRegistry meterRegistry) {
@@ -69,7 +70,7 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
     }
 
     private String resolvePath(MutableHttpRequest<?> request) {
-        Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
+        Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
     }
 

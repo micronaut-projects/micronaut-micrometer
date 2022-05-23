@@ -18,8 +18,6 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
@@ -29,13 +27,14 @@ import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
+import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
+
 /**
- * Once per request web filter that will register the timers
- * and meters for each request.
+ * Registers the timers and meters for each request.
  *
  * <p>The default is to intercept all paths /**, but using the
  *  property micronaut.metrics.http.path, this can be changed.</p>
- *
  *
  * @author Christian Oestreich
  * @author graemerocher
@@ -43,15 +42,13 @@ import java.util.Optional;
  */
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = StringUtils.FALSE)
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private final MeterRegistry meterRegistry;
 
     /**
-     * Filter constructor.
-     *
      * @param meterRegistry the meter registry
      */
     public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry) {
@@ -59,12 +56,12 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> route = request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class);
+        Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
         return route.orElseGet(request::getPath);
     }
 
     /**
-     * This method is here for backwards compatibility. The class no longer implement
+     * This is here for backwards compatibility. The class no longer implements
      * OncePerRequestHttpServerFilter, however the method was kept to maintain binary
      * compatibility.
      *

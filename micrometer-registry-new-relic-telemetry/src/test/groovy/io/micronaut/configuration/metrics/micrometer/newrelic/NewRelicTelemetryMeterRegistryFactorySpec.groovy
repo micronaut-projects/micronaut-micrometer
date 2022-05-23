@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2021 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.micrometer.newrelic
 
 import com.newrelic.telemetry.micrometer.NewRelicRegistry
@@ -37,7 +22,7 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
     void "verify NewRelicTelemetryMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".apiKey"): MOCK_NEWRELIC_API_KEY,
         ])
 
         then:
@@ -51,7 +36,7 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
     void "verify CompositeMeterRegistry created by default"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".apiKey"): MOCK_NEWRELIC_API_KEY,
         ])
 
         when:
@@ -71,8 +56,8 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
     void "verify NewRelicTelemetryMeterRegistry bean exists = #result when config #cfg = #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (cfg): setting,
-                (NEWRELIC_CONFIG + ".apiKey") : MOCK_NEWRELIC_API_KEY,
+                (cfg)                        : setting,
+                (NEWRELIC_CONFIG + ".apiKey"): MOCK_NEWRELIC_API_KEY,
         ])
 
         then:
@@ -93,8 +78,8 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
 
         when: "no configuration supplied"
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_ENABLED)                  : true,
-                (NEWRELIC_CONFIG + ".apiKey")       : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_ENABLED)           : true,
+                (NEWRELIC_CONFIG + ".apiKey"): MOCK_NEWRELIC_API_KEY,
         ])
         Optional<NewRelicRegistry> newRelicMeterRegistry = context.findBean(NewRelicRegistry)
         def config = context.getBean(NewRelicTelemetryMicronautConfig)
@@ -112,12 +97,12 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
 
         when: "non-default configuration is supplied"
         ApplicationContext context = ApplicationContext.run([
-                (NEWRELIC_ENABLED)                   : true,
-                (NEWRELIC_CONFIG + ".numThreads")    : "77",
-                (NEWRELIC_CONFIG + ".apiKey")        : MOCK_NEWRELIC_API_KEY,
-                (NEWRELIC_CONFIG + ".serviceName")   : MOCK_NEWRELIC_SERVICE_NAME,
-                (NEWRELIC_CONFIG + ".uri")           : 'https://micronaut.io',
-                (NEWRELIC_CONFIG + ".step")          : "PT2M",
+                (NEWRELIC_ENABLED)                : true,
+                (NEWRELIC_CONFIG + ".numThreads") : "77",
+                (NEWRELIC_CONFIG + ".apiKey")     : MOCK_NEWRELIC_API_KEY,
+                (NEWRELIC_CONFIG + ".serviceName"): MOCK_NEWRELIC_SERVICE_NAME,
+                (NEWRELIC_CONFIG + ".uri")        : 'https://micronaut.io',
+                (NEWRELIC_CONFIG + ".step")       : "PT2M",
         ])
         Optional<NewRelicRegistry> newRelicMeterRegistry = context.findBean(NewRelicRegistry)
         def config = context.getBean(NewRelicTelemetryMicronautConfig)

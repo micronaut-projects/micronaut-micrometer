@@ -24,10 +24,10 @@ import io.micrometer.core.instrument.binder.grpc.MetricCollectingServerIntercept
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Provides interceptor beans to collect metrics.
@@ -37,20 +37,20 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Internal
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.enabled", notEquals = FALSE)
 @Factory
 class GrpcMetricsListenerFactory {
 
     @Singleton
     @Requires(classes = ServerInterceptor.class)
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.server.enabled", notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.server.enabled", notEquals = FALSE)
     MetricCollectingServerInterceptor grpcServerMetrics(MeterRegistry meterRegistry) {
         return new MetricCollectingServerInterceptor(meterRegistry);
     }
 
     @Singleton
     @Requires(classes = ClientInterceptor.class)
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.client.enabled", notEquals = StringUtils.FALSE)
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.client.enabled", notEquals = FALSE)
     MetricCollectingClientInterceptor grpcClientMetrics(MeterRegistry meterRegistry) {
         return new MetricCollectingClientInterceptor(meterRegistry);
     }
