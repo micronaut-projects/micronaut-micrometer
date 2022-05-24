@@ -1,18 +1,7 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-module'
+    id 'io.micronaut.build.internal.micrometer-registry'
 }
 
 dependencies {
-    api libs.micrometer.core
     api libs.micrometer.registry.graphite
-    api libs.validation.api
-    api projects.micrometerCore
-
-    compileOnly libs.micronaut.management
-
-    testAnnotationProcessor libs.micronaut.inject.java
-    testImplementation libs.micronaut.http.client
-    testImplementation libs.micronaut.inject.groovy
-    testImplementation libs.micronaut.management
-    testRuntimeOnly libs.micronaut.http.server.netty
 }

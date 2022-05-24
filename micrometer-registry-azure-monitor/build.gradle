@@ -1,19 +1,9 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-module'
+    id 'io.micronaut.build.internal.micrometer-registry'
 }
 
 dependencies {
-    api libs.micrometer.core
     api libs.micrometer.registry.azure.monitor
-    api libs.validation.api
-    api projects.micrometerCore
 
-    compileOnly libs.micronaut.inject.java
-    compileOnly libs.micronaut.management
-
-    testImplementation libs.micronaut.http.client
-    testImplementation libs.micronaut.inject.groovy
-    testImplementation libs.micronaut.management
     testRuntimeOnly 'javax.xml.bind:jaxb-api:2.3.+'
-    testRuntimeOnly libs.micronaut.http.server.netty
 }
