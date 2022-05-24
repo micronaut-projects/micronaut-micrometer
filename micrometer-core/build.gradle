@@ -22,7 +22,7 @@ dependencies {
     compileOnly(libs.micronaut.http.server.netty)
     compileOnly(libs.cache.api)
     compileOnly(libs.logback.classic)
-    testAnnotationProcessor project(":micrometer-annotation")
+    testAnnotationProcessor projects.micrometerAnnotation
     testAnnotationProcessor(libs.micronaut.inject.java)
     testImplementation(libs.micronaut.management)
     testImplementation(libs.micronaut.inject.groovy)

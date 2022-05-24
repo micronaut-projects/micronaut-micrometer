@@ -8,7 +8,7 @@ dependencies {
 
     compileOnly(libs.micronaut.management)
     api(libs.micrometer.core)
-    api project(":micrometer-core")
+    api projects.micrometerCore
     api(libs.validation.api)
     api(libs.micrometer.registry.ganglia)
 

@@ -35,3 +35,5 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'micrometer-registry-wavefront'
 include 'test-suite:micronaut-serialization'
+
+enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'

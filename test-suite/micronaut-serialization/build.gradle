@@ -11,9 +11,9 @@ dependencies {
 
     api(libs.micrometer.core)
     api(libs.micronaut.inject)
-    testImplementation project(":micrometer-core")
+    testImplementation projects.micrometerCore
 
-    testAnnotationProcessor project(":micrometer-annotation")
+    testAnnotationProcessor projects.micrometerAnnotation
     testAnnotationProcessor(libs.micronaut.inject.java)
     testImplementation(libs.micronaut.management)
     testImplementation(libs.micronaut.inject.groovy)
