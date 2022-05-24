@@ -5,8 +5,6 @@ plugins {
 dependencies {
     annotationProcessor libs.micronaut.graal
 
-    api libs.micrometer.core
-
     testAnnotationProcessor libs.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
     testImplementation libs.groovy.json

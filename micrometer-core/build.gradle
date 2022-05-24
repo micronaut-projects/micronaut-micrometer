@@ -5,8 +5,6 @@ plugins {
 dependencies {
     annotationProcessor libs.micronaut.graal
 
-    api libs.micrometer.core
-
     compileOnly libs.cache.api
     compileOnly libs.grpc.api
     compileOnly libs.logback.classic
