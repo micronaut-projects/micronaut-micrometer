@@ -8,8 +8,6 @@ plugins {
 
 dependencies {
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
-    testImplementation "org.spockframework:spock-core:$spockVersion"
-    testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
 }
 
 tasks.named('compileJava', JavaCompile) {

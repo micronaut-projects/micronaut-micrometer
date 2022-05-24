@@ -3,9 +3,6 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.docs.asciidoc.config.props
-    annotationProcessor libs.micronaut.inject.java
-
     api libs.micrometer.core
     api libs.micrometer.registry.prometheus
     api libs.validation.api

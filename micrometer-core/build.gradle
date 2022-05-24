@@ -3,12 +3,9 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.docs.asciidoc.config.props
     annotationProcessor libs.micronaut.graal
-    annotationProcessor libs.micronaut.inject.java
 
     api libs.micrometer.core
-    api libs.micronaut.inject
 
     compileOnly libs.cache.api
     compileOnly libs.grpc.api

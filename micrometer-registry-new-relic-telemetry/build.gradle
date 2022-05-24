@@ -3,9 +3,6 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.docs.asciidoc.config.props
-    annotationProcessor libs.micronaut.inject.java
-
     api libs.managed.micrometer.registry.new.relic.telemetry
     api libs.micrometer.core
     api libs.validation.api

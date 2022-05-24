@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     api libs.micrometer.core
-    api libs.micronaut.inject
     api libs.micronaut.aop
 
     if (!JavaVersion.current().isJava9Compatible()) {
