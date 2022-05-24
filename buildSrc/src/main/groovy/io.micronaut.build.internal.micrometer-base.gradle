@@ -1,3 +1,2 @@
-
 version projectVersion
-group "io.micronaut.micrometer"
+group 'io.micronaut.micrometer'

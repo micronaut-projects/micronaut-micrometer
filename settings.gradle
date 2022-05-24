@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id("io.micronaut.build.shared.settings") version "5.3.9"
+    id('io.micronaut.build.shared.settings') version '5.3.9'
 }
 
 rootProject.name = 'micrometer-parent'
@@ -35,3 +35,5 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'micrometer-registry-wavefront'
 include 'test-suite:micronaut-serialization'
+
+enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'

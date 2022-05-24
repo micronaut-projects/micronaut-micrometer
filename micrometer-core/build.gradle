@@ -3,41 +3,39 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor(libs.micronaut.inject.java)
-    annotationProcessor(libs.micronaut.graal)
-    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
+    annotationProcessor libs.micronaut.graal
 
-    api(libs.micrometer.core)
-    api(libs.micronaut.inject)
-    implementation(libs.reactor.core)
-    compileOnly(libs.micronaut.management)
-    compileOnly(libs.grpc.api)
-    compileOnly(libs.micronaut.jdbc)
-    compileOnly(libs.r2dbc.pool)
-    compileOnly(libs.micronaut.cache.core)
-    compileOnly(libs.netty.buffer)
-    compileOnly(libs.netty.transport)
-    compileOnly(libs.netty.transport.native.epoll)
-    compileOnly(libs.netty.transport.native.kqueue)
-    compileOnly(libs.micronaut.http.server.netty)
-    compileOnly(libs.cache.api)
-    compileOnly(libs.logback.classic)
-    testAnnotationProcessor project(":micrometer-annotation")
-    testAnnotationProcessor(libs.micronaut.inject.java)
-    testImplementation(libs.micronaut.management)
-    testImplementation(libs.micronaut.inject.groovy)
-    testImplementation(libs.micronaut.function.web)
-    testRuntimeOnly(libs.micronaut.http.server.netty)
-    testImplementation(libs.micronaut.http.client)
-    testImplementation(libs.micronaut.jdbc)
-    testImplementation(libs.r2dbc.pool)
-    testImplementation(libs.micronaut.rxjava2)
-    testImplementation(libs.groovy.json)
-    testImplementation(libs.netty.buffer)
-    testImplementation(libs.netty.transport)
-    testImplementation(libs.netty.transport.native.epoll)
-    testImplementation(libs.netty.transport.native.kqueue)
-    testImplementation(libs.micronaut.http.server.netty)
-    testImplementation(libs.reflections)
-    testImplementation(libs.grpc.api)
+    compileOnly libs.cache.api
+    compileOnly libs.grpc.api
+    compileOnly libs.logback.classic
+    compileOnly libs.micronaut.cache.core
+    compileOnly libs.micronaut.http.server.netty
+    compileOnly libs.micronaut.jdbc
+    compileOnly libs.micronaut.management
+    compileOnly libs.netty.buffer
+    compileOnly libs.netty.transport
+    compileOnly libs.netty.transport.native.epoll
+    compileOnly libs.netty.transport.native.kqueue
+    compileOnly libs.r2dbc.pool
+
+    implementation libs.reactor.core
+
+    testAnnotationProcessor libs.micronaut.inject.java
+    testAnnotationProcessor projects.micrometerAnnotation
+    testImplementation libs.groovy.json
+    testImplementation libs.grpc.api
+    testImplementation libs.micronaut.function.web
+    testImplementation libs.micronaut.http.client
+    testImplementation libs.micronaut.http.server.netty
+    testImplementation libs.micronaut.inject.groovy
+    testImplementation libs.micronaut.jdbc
+    testImplementation libs.micronaut.management
+    testImplementation libs.micronaut.rxjava2
+    testImplementation libs.netty.buffer
+    testImplementation libs.netty.transport
+    testImplementation libs.netty.transport.native.epoll
+    testImplementation libs.netty.transport.native.kqueue
+    testImplementation libs.r2dbc.pool
+    testImplementation libs.reflections
+    testRuntimeOnly libs.micronaut.http.server.netty
 }

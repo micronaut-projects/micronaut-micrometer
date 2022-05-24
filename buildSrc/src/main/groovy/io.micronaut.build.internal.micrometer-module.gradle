@@ -7,16 +7,13 @@ plugins {
 }
 
 dependencies {
+    api libs.micrometer.core
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
-    testImplementation("org.spockframework:spock-core:${spockVersion}") {
-        exclude module: 'groovy-all'
-    }
-    testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
 }
 
-tasks.named("compileJava", JavaCompile) {
+tasks.named('compileJava', JavaCompile) {
     options.compilerArgs += [
-            "-Amicronaut.processing.group=${project.group}".toString(),
-            "-Amicronaut.processing.module=micronaut-${project.name}".toString()
+            '-Amicronaut.processing.group=' + project.group,
+            '-Amicronaut.processing.module=micronaut-' + project.name
     ]
 }
