@@ -46,7 +46,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WRITT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 
 /**
- * Metrics for netty's Channels.
+ * Metrics for Netty Channels.
  *
  * @author Christophe Roudet
  * @since 2.0
@@ -75,7 +75,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
 
     ChannelMetricsHandler(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
-        activeChannelCount = meterRegistryProvider.get().gauge(dot(NETTY, CHANNEL, COUNT), Tags.of(CHANNEL, ACTIVE), new LongAdder());
+        activeChannelCount = meterRegistryProvider.get().gauge(dot(NETTY, CHANNEL, COUNT, ACTIVE), Tags.of(CHANNEL, ACTIVE), new LongAdder());
         channelCount = Counter.builder(dot(NETTY, CHANNEL, COUNT))
                 .tag(CHANNEL, COUNT)
                 .register(meterRegistryProvider.get());
@@ -100,10 +100,10 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
     public void channelRegistered(ChannelHandlerContext ctx) {
         channelCount.increment();
         activeChannelCount.increment();
-        ctx.pipeline()
-                .addAfter(CHANNEL_METRICS,
-                        ACTIVE_CHANNEL_TIMER,
-                        new ActiveChannelTimerHandler());
+        ctx.pipeline().addAfter(
+                CHANNEL_METRICS,
+                ACTIVE_CHANNEL_TIMER,
+                new ActiveChannelTimerHandler());
         ctx.fireChannelRegistered();
     }
 
@@ -145,7 +145,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
                 bytesWritten.increment(buffer.content().readableBytes());
             }
         } else {
-            LOGGER.warn("Message type not supported: {}", msg.getClass());
+            LOGGER.warn("Message type not supported: {}", msg.getClass().getName());
         }
 
         ctx.write(msg, promise);
@@ -165,7 +165,7 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
         }
 
         @Override
-        public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        public void channelUnregistered(ChannelHandlerContext ctx) {
             start.stop(activeChannelTimer);
             ctx.pipeline().remove(this);
             ctx.fireChannelUnregistered();

@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.KQueueAvailabilityCondition;
@@ -37,7 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -45,6 +43,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Factory for Instrumented KQueueEventLoopGroup.
@@ -58,63 +57,43 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Named(EventLoopGroupFactory.NATIVE)
 @Requires(classes = KQueue.class, condition = KQueueAvailabilityCondition.class)
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFactory {
+
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * Creates an InstrumentedKQueueEventLoopGroupFactory.
-     *
-     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     * @param factory InstrumentedEventLoopTaskQueueFactory
      */
-    @Inject
-    public InstrumentedKQueueEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
-        this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
+    public InstrumentedKQueueEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory factory) {
+        this.instrumentedEventLoopTaskQueueFactory = factory;
     }
 
-    /**
-     * Creates a KQueueEventLoopGroup.
-     *
-     * @param threads The number of threads to use.
-     * @param ioRatio The io ratio.
-     * @return A KQueueEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
-        return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) null,
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               @Nullable Integer ioRatio) {
+        return withIoRatio(new KQueueEventLoopGroup(threads, null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a KQueueEventLoopGroup.
-     *
-     * @param threads       The number of threads to use.
-     * @param threadFactory The thread factory.
-     * @param ioRatio       The io ratio.
-     * @return A KQueueEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
-        return withIoRatio(new KQueueEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               ThreadFactory threadFactory,
+                                               @Nullable Integer ioRatio) {
+        return withIoRatio(new KQueueEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a KQueueEventLoopGroup.
-     *
-     * @param threads  The number of threads to use.
-     * @param executor An Executor.
-     * @param ioRatio  The io ratio.
-     * @return A KQueueEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               Executor executor,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new KQueueEventLoopGroup(threads, executor,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -127,11 +106,6 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
         return true;
     }
 
-    /**
-     * Returns the server channel class.
-     *
-     * @return KQueueServerSocketChannel.
-     */
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return KQueueServerSocketChannel.class;
@@ -149,5 +123,4 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
         }
         return group;
     }
-
 }

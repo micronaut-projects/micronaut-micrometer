@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.NioEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
@@ -32,10 +31,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
-import io.netty.util.concurrent.EventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.nio.channels.spi.SelectorProvider;
@@ -43,6 +40,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Factory for Instrumented NioEventLoopGroup.
@@ -54,46 +52,32 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Internal
 @Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactory {
+
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * Creates an InstrumentedNioEventLoopGroupFactory.
-     *
-     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     * @param factory InstrumentedEventLoopTaskQueueFactory
      */
-    @Inject
-    public InstrumentedNioEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
-        this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
+    public InstrumentedNioEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory factory) {
+        this.instrumentedEventLoopTaskQueueFactory = factory;
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads The number of threads to use.
-     * @param ioRatio The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
-        return withIoRatio(new NioEventLoopGroup(threads, (Executor) null, (EventExecutorChooserFactory) null,
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               @Nullable Integer ioRatio) {
+        return withIoRatio(new NioEventLoopGroup(threads, null, null,
                 SelectorProvider.provider(),
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads       The number of threads to use.
-     * @param threadFactory The thread factory.
-     * @param ioRatio       The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               ThreadFactory threadFactory,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 SelectorProvider.provider(),
@@ -102,16 +86,10 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Creates a NioEventLoopGroup.
-     *
-     * @param threads  The number of threads to use.
-     * @param executor An Executor.
-     * @param ioRatio  The io ratio.
-     * @return A NioEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               Executor executor,
+                                               @Nullable Integer ioRatio) {
         return withIoRatio(new NioEventLoopGroup(threads, executor,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 SelectorProvider.provider(),
@@ -120,11 +98,6 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
     }
 
-    /**
-     * Returns the server channel class.
-     *
-     * @return NioServerSocketChannel.
-     */
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return NioServerSocketChannel.class;
@@ -136,7 +109,8 @@ final class InstrumentedNioEventLoopGroupFactory extends NioEventLoopGroupFactor
         return NioSocketChannel.class;
     }
 
-    private static NioEventLoopGroup withIoRatio(NioEventLoopGroup group, @Nullable Integer ioRatio) {
+    private static NioEventLoopGroup withIoRatio(NioEventLoopGroup group,
+                                                 @Nullable Integer ioRatio) {
         if (ioRatio != null) {
             group.setIoRatio(ioRatio);
         }

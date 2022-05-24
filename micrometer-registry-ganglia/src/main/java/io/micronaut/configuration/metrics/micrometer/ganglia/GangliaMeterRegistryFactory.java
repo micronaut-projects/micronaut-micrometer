@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.ganglia;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.ganglia.GangliaMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,10 +22,11 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The GangliaMeterRegistryFactory that will configure and create a ganglia meter registry.
+ * Creates a Ganglia meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class GangliaMeterRegistryFactory {
     public static final String GANGLIA_ENABLED = GANGLIA_CONFIG + ".enabled";
 
     /**
-     * Create a GangliaMeterRegistry bean if global metrics are enables
-     * and the ganglia is enabled.  Will be true by default when this
+     * Create a GangliaMeterRegistry bean if global metrics are enabled
+     * and Ganglia is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A GangliaMeterRegistry
+     * @return GangliaMeterRegistry
      */
     @Singleton
     GangliaMeterRegistry gangliaMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new GangliaMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new GangliaMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

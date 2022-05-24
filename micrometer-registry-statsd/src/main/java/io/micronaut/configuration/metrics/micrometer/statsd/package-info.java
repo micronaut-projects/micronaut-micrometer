@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Statsd metrics.
+ * Configuration for Micrometer-StatsD metrics.
  */
 @Configuration
 @Requires(property = StatsdMeterRegistryFactory.STATSD_ENABLED, notEquals = StringUtils.FALSE)

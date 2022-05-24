@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.micrometer.cloudwatch
 
 import io.micrometer.cloudwatch2.CloudWatchConfig
@@ -29,24 +14,24 @@ import static io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatc
 
 class CloudwatchRegistryFactorySpec extends Specification {
 
-    void setupSpec(){
+    void setupSpec() {
         System.setProperty("aws.region", "us-east-1")
     }
 
-    void cleanupSpec(){
+    void cleanupSpec() {
         System.clearProperty("aws.region")
     }
 
     void "verify CloudWatchMeterRegistry is created by default when this configuration used"() {
         when:
-            ApplicationContext context = ApplicationContext.run()
+        ApplicationContext context = ApplicationContext.run()
 
         then:
-            context.getBeansOfType(MeterRegistry).size() == 2
-            context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['CompositeMeterRegistry', 'CloudWatchMeterRegistry'])
+        context.getBeansOfType(MeterRegistry).size() == 2
+        context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['CompositeMeterRegistry', 'CloudWatchMeterRegistry'])
 
         cleanup:
-            context.stop()
+        context.stop()
     }
 
     void "verify CompositeMeterRegistry created by default"() {
@@ -104,10 +89,10 @@ class CloudwatchRegistryFactorySpec extends Specification {
     void "verify that configuration is applied"() {
         when: "non-default configuration is supplied"
         ApplicationContext context = ApplicationContext.run([
-                (MICRONAUT_METRICS_ENABLED)          : true,
-                (CLOUDWATCH_ENABLED)                 : true,
-                (CLOUDWATCH_CONFIG + ".namespace")   : "someNamespace",
-                (CLOUDWATCH_CONFIG + ".batchSize")   : 15,
+                (MICRONAUT_METRICS_ENABLED)       : true,
+                (CLOUDWATCH_ENABLED)              : true,
+                (CLOUDWATCH_CONFIG + ".namespace"): "someNamespace",
+                (CLOUDWATCH_CONFIG + ".batchSize"): 15,
         ])
         Optional<CloudWatchMeterRegistry> cloudWatchMeterRegistry = context.findBean(CloudWatchMeterRegistry)
 
@@ -119,7 +104,6 @@ class CloudwatchRegistryFactorySpec extends Specification {
 
         and: 'Prefix is hard coded in base library...???'
         cloudWatchMeterRegistry.get().config.prefix() == "cloudwatch"
-
 
         cleanup:
         context?.stop()

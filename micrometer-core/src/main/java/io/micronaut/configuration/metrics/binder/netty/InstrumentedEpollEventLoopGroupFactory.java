@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.netty.channel.EpollAvailabilityCondition;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
 import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
@@ -37,7 +36,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
@@ -45,6 +43,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Factory for Instrumented EpollEventLoopGroup.
@@ -58,63 +57,42 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Named(EventLoopGroupFactory.NATIVE)
 @Requires(classes = Epoll.class, condition = EpollAvailabilityCondition.class)
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = StringUtils.FALSE, notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFactory {
+
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
     /**
-     * Creates an InstrumentedEpollEventLoopGroupFactory.
-     *
-     * @param instrumentedEventLoopTaskQueueFactory An InstrumentedEventLoopTaskQueueFactory
+     * @param factory InstrumentedEventLoopTaskQueueFactory
      */
-    @Inject
-    public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory) {
-        this.instrumentedEventLoopTaskQueueFactory = instrumentedEventLoopTaskQueueFactory;
+    public InstrumentedEpollEventLoopGroupFactory(InstrumentedEventLoopTaskQueueFactory factory) {
+        this.instrumentedEventLoopTaskQueueFactory = factory;
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads The number of threads to use.
-     * @param ioRatio The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
     public EventLoopGroup createEventLoopGroup(int threads, @Nullable Integer ioRatio) {
-        return new EpollEventLoopGroup(threads, (Executor) null,
+        return new EpollEventLoopGroup(threads, null,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads       The number of threads to use.
-     * @param threadFactory The thread factory.
-     * @param ioRatio       The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, ThreadFactory threadFactory, @Nullable Integer ioRatio) {
-        return new EpollEventLoopGroup(threads, (Executor) threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               ThreadFactory threadFactory,
+                                               @Nullable Integer ioRatio) {
+        return new EpollEventLoopGroup(threads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory),
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Creates a EpollEventLoopGroup.
-     *
-     * @param threads  The number of threads to use.
-     * @param executor An Executor.
-     * @param ioRatio  The io ratio.
-     * @return A EpollEventLoopGroup.
-     */
     @Override
-    public EventLoopGroup createEventLoopGroup(int threads, Executor executor, @Nullable Integer ioRatio) {
+    public EventLoopGroup createEventLoopGroup(int threads,
+                                               Executor executor,
+                                               @Nullable Integer ioRatio) {
         return new EpollEventLoopGroup(threads, executor,
                 DefaultEventExecutorChooserFactory.INSTANCE,
                 DefaultSelectStrategyFactory.INSTANCE,
@@ -122,11 +100,6 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
                 instrumentedEventLoopTaskQueueFactory);
     }
 
-    /**
-     * Returns the server channel class.
-     *
-     * @return EpollServerSocketChannel.
-     */
     @Override
     public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
         return EpollServerSocketChannel.class;

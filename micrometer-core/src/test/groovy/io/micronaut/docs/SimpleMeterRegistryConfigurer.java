@@ -15,10 +15,10 @@
  */
 package io.micronaut.docs;
 
-import io.micronaut.core.annotation.Order;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Order;
 import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 

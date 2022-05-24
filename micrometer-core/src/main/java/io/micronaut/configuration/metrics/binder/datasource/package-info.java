@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains classes that bind metrics for configured JDBC data sources.
+ * Classes that bind metrics for configured JDBC data sources.
  *
  * @author graemerocher
  * @since 1.0

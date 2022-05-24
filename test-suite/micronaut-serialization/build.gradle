@@ -2,31 +2,24 @@ plugins {
     id 'io.micronaut.build.internal.micrometer-module'
 }
 
-
-
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut:micronaut-graal"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+    annotationProcessor libs.micronaut.graal
 
-    api "io.micrometer:micrometer-core:$micrometerVersion"
-    api "io.micronaut:micronaut-inject:$micronautVersion"
-    testImplementation project(":micrometer-core")
-
-    testAnnotationProcessor project(":micrometer-annotation")
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-    testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    testImplementation "io.micronaut:micronaut-function-web"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
-    testImplementation "io.micronaut:micronaut-http-client"
-    testImplementation "org.codehaus.groovy:groovy-json:$groovyVersion"
-    testImplementation "io.netty:netty-buffer"
-    testImplementation "io.netty:netty-transport"
-    testImplementation "io.netty:netty-transport-native-epoll"
-    testImplementation "io.netty:netty-transport-native-kqueue"
-    testImplementation "io.micronaut:micronaut-http-server-netty"
-    testImplementation "io.grpc:grpc-api"
+    testAnnotationProcessor libs.micronaut.inject.java
+    testAnnotationProcessor projects.micrometerAnnotation
+    testImplementation libs.groovy.json
+    testImplementation libs.grpc.api
+    testImplementation libs.micronaut.function.web
+    testImplementation libs.micronaut.http.client
+    testImplementation libs.micronaut.http.server.netty
+    testImplementation libs.micronaut.inject.groovy
+    testImplementation libs.micronaut.management
+    testImplementation libs.netty.buffer
+    testImplementation libs.netty.transport
+    testImplementation libs.netty.transport.native.epoll
+    testImplementation libs.netty.transport.native.kqueue
+    testImplementation projects.micrometerCore
+    testRuntimeOnly libs.micronaut.http.server.netty
 }
 
 configurations.all {

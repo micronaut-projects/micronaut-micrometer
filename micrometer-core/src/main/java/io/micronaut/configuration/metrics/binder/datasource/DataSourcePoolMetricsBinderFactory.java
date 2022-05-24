@@ -21,26 +21,26 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 
 import java.util.Collections;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
- * Instruments Micronaut related jdbc pool metrics via Micrometer.
+ * Instruments Micronaut related JDBC pool metrics via Micrometer.
  *
  * @author Christian Oestreich
  * @since 1.0
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = FALSE)
 public class DataSourcePoolMetricsBinderFactory {
 
     /**
-     * Method to wire beans for each type of datasource.
+     * Wires beans for each DataSource.
      *
      * @param dataSourceName         The parameterized name of the datasource
      * @param dataSourcePoolMetadata The datasource metadata object to use for the binder
@@ -48,9 +48,8 @@ public class DataSourcePoolMetricsBinderFactory {
      */
     @EachBean(DataSourcePoolMetadata.class)
     @Requires(beans = {DataSourcePoolMetadata.class})
-    public MeterBinder dataSourceMeterBinder(
-            @Parameter String dataSourceName,
-            DataSourcePoolMetadata dataSourcePoolMetadata) {
+    public MeterBinder dataSourceMeterBinder(@Parameter String dataSourceName,
+                                             DataSourcePoolMetadata dataSourcePoolMetadata) {
         return new DataSourcePoolMetricsBinder(dataSourcePoolMetadata.getDataSource(),
                 dataSourcePoolMetadata,
                 dataSourceName,

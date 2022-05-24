@@ -1,18 +1,3 @@
-/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package io.micronaut.configuration.metrics.micrometer.wavefront
 
 import io.micrometer.core.instrument.MeterRegistry
@@ -36,8 +21,8 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
     void "verify WavefrontMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (WAVEFRONT_CONFIG + ".apiToken")  : MOCK_WAVEFRONT_API_TOKEN,
-                (WAVEFRONT_CONFIG + ".uri")       : MOCK_WAVEFRONT_API_URI
+                (WAVEFRONT_CONFIG + ".apiToken"): MOCK_WAVEFRONT_API_TOKEN,
+                (WAVEFRONT_CONFIG + ".uri")     : MOCK_WAVEFRONT_API_URI
         ])
 
         then:
@@ -51,8 +36,8 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
     void "verify CompositeMeterRegistry created by default"() {
         given:
         ApplicationContext context = ApplicationContext.run([
-                (WAVEFRONT_CONFIG + ".apiToken")  : MOCK_WAVEFRONT_API_TOKEN,
-                (WAVEFRONT_CONFIG + ".uri")       : MOCK_WAVEFRONT_API_URI
+                (WAVEFRONT_CONFIG + ".apiToken"): MOCK_WAVEFRONT_API_TOKEN,
+                (WAVEFRONT_CONFIG + ".uri")     : MOCK_WAVEFRONT_API_URI
         ])
 
         when:
@@ -72,9 +57,9 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
     void "verify WavefrontMeterRegistry bean exists = #result when config #cfg = #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([
-                (cfg): setting,
-                (WAVEFRONT_CONFIG + ".apiToken")  : MOCK_WAVEFRONT_API_TOKEN,
-                (WAVEFRONT_CONFIG + ".uri")       : MOCK_WAVEFRONT_API_URI
+                (cfg)                           : setting,
+                (WAVEFRONT_CONFIG + ".apiToken"): MOCK_WAVEFRONT_API_TOKEN,
+                (WAVEFRONT_CONFIG + ".uri")     : MOCK_WAVEFRONT_API_URI
         ])
 
         then:
@@ -95,9 +80,9 @@ class WavefrontMeterRegistryFactorySpec extends Specification {
 
         when: "no configuration supplied"
         ApplicationContext context = ApplicationContext.run([
-                (WAVEFRONT_ENABLED)           : true,
-                (WAVEFRONT_CONFIG + ".apiToken")  : MOCK_WAVEFRONT_API_TOKEN,
-                (WAVEFRONT_CONFIG + ".uri")       : 'https://longboard.wavefront.com'
+                (WAVEFRONT_ENABLED)             : true,
+                (WAVEFRONT_CONFIG + ".apiToken"): MOCK_WAVEFRONT_API_TOKEN,
+                (WAVEFRONT_CONFIG + ".uri")     : 'https://longboard.wavefront.com'
         ])
         Optional<WavefrontMeterRegistry> wavefrontMeterRegistry = context.findBean(WavefrontMeterRegistry)
 

@@ -16,7 +16,7 @@
 package io.micronaut.configuration.metrics.binder.netty;
 
 /**
- * Defines netty metric.
+ * Defines Netty metrics.
  *
  * @author croudet
  * @since 2.0
@@ -80,7 +80,6 @@ final class NettyMetrics {
     static final String WRITTEN = "written";
 
     private NettyMetrics() {
-
     }
 
     static String dot(String... strings) {

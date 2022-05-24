@@ -16,7 +16,6 @@
 package io.micronaut.configuration.metrics.micrometer.cloudwatch;
 
 import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -26,10 +25,11 @@ import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClientBuilder;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The CloudWatchMeterRegistryFactory that will configure and create a cloudwatch meter registry.
+ * Creates a CloudWatch meter registry.
  */
 @Factory
 public class CloudWatchMeterRegistryFactory {
@@ -39,17 +39,16 @@ public class CloudWatchMeterRegistryFactory {
     public static final String CLOUDWATCH_DEFAULT_NAMESPACE = "micronaut";
 
     /**
-     * @return The cloud watch async client builder.
+     * @return the CloudWatch async client builder
      */
     @Singleton
     CloudWatchAsyncClientBuilder cloudWatchAsyncClientBuilder() {
         return CloudWatchAsyncClient.builder();
     }
 
-
     /**
      * @param builder The builder to use
-     * @return The cloud watch async client.
+     * @return The CloudWatch async client.
      */
     @Bean(preDestroy = "close")
     @Singleton
@@ -58,28 +57,23 @@ public class CloudWatchMeterRegistryFactory {
     }
 
     /**
-     * Create a CloudWatchMeterRegistry bean if global metrics are enables
-     * and the cloudwatch is enabled.  Will be true by default when this
+     * Create a CloudWatchMeterRegistry bean if global metrics are enabled
+     * and CloudWatch is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @param cloudWatchAsyncClient  The cloud watch async client
+     * @param cloudWatchAsyncClient  The CloudWatch async client
      * @return A CloudWatchMeterRegistry
      */
     @Singleton
-    CloudWatchMeterRegistry cloudWatchMeterRegistry(
-            ExportConfigurationProperties exportConfigurationProperties,
-            CloudWatchAsyncClient cloudWatchAsyncClient) {
+    CloudWatchMeterRegistry cloudWatchMeterRegistry(ExportConfigurationProperties exportConfigurationProperties,
+                                                    CloudWatchAsyncClient cloudWatchAsyncClient) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         String cloudwatchNamespace = "cloudwatch.namespace";
         if (!exportConfig.containsKey(cloudwatchNamespace)) {
             exportConfig.setProperty(cloudwatchNamespace, CLOUDWATCH_DEFAULT_NAMESPACE);
         }
 
-        return new CloudWatchMeterRegistry(
-                exportConfig::getProperty,
-                Clock.SYSTEM,
-                cloudWatchAsyncClient
-        );
+        return new CloudWatchMeterRegistry(exportConfig::getProperty, SYSTEM, cloudWatchAsyncClient);
     }
 }

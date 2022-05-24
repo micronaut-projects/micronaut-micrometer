@@ -1,21 +1,9 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-module'
+    id 'io.micronaut.build.internal.micrometer-registry'
 }
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+    api libs.micrometer.registry.ganglia
 
-    compileOnly "io.micronaut:micronaut-management"
-    api "io.micrometer:micrometer-core:$micrometerVersion"
-    api project(":micrometer-core")
-    api "javax.validation:validation-api:$validationVersion"
-    api "io.micrometer:micrometer-registry-ganglia:$micrometerVersion"
-
-    testImplementation "io.micronaut:micronaut-management"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-    testRuntimeOnly "io.micronaut:micronaut-http-server-netty"
-    testRuntimeOnly "io.dropwizard.metrics:metrics-core:4.2.8"
-    testImplementation "io.micronaut:micronaut-http-client"
+    testRuntimeOnly libs.managed.metrics.core
 }

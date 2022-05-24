@@ -1,17 +1,17 @@
-You can include the Cloudwatch reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch`
+You can include the CloudWatch reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch`
 
 dependency:micronaut-micrometer-registry-cloudwatch[groupId="io.micronaut.micrometer"]
 
-You can configure this reporter using `micronaut.metrics.export.cloudwatch`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig] for more options
+You can configure this reporter using `micronaut.metrics.export.cloudwatch`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig] for more options.
 
 |=======
 |*Name* |*Description*
-|enabled | Boolean whether to enable the reporter. Could disable to local dev for example. Default: `true`
-|namespace | String Namespace that will show up in cloudwatch for these metrics. Default: `micronaut`.
-|batchSize | Number Number of metrics to send in a batch to Cloudwatch. Default: `20` Matches max limit found on https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html[Cloudwatch API Reference].
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|namespace | Namespace that will be displayed in CloudWatch for these metrics. Default: `micronaut`.
+|batchSize | Number of metrics to send in a batch to CloudWatch. Default: `20`. Matches max limit found on https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html[Cloudwatch API Reference].
 |=======
 
-.Example Cloudwatch Config
+.Example CloudWatch Config
 [source,yml]
 ----
 micronaut:
