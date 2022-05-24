@@ -16,6 +16,6 @@ dependencies {
     testImplementation(libs.micronaut.inject.groovy)
     annotationProcessor(libs.micronaut.inject.java)
     testRuntimeOnly(libs.micronaut.http.server.netty)
-    testRuntimeOnly(libs.metrics.core)
+    testRuntimeOnly(libs.managed.metrics.core)
     testImplementation(libs.micronaut.http.client)
 }

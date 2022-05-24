@@ -11,7 +11,7 @@ dependencies {
     api(libs.micrometer.core)
     api project(":micrometer-core")
     api(libs.validation.api)
-    api(libs.micrometer.registry.new.relic.telemetry)
+    api(libs.managed.micrometer.registry.new.relic.telemetry)
 
     testImplementation(libs.micronaut.management)
     testImplementation(libs.micronaut.inject.groovy)

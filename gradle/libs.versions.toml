@@ -1,11 +1,11 @@
 [versions]
 managed-micrometer = "1.9.0"
+managed-metrics-core = "4.2.9"
+managed-new-relic-registry = "0.8.0"
 
 groovy = "3.0.10"
 jcache = "1.1.1"
 logback-classic = "1.2.11"
-metrics-core = "4.2.9"
-new-relic-registry = "0.8.0"
 reflections = "0.10.2"
 validation = "2.0.1.Final"
 
@@ -16,6 +16,9 @@ micronaut-docs = "2.0.0"
 
 [libraries]
 boms-micrometer = { module = "io.micrometer:micrometer-bom", version.ref = "managed-micrometer" }
+
+managed-metrics-core = { module = "io.dropwizard.metrics:metrics-core", version.ref = "managed-metrics-core" }
+managed-micrometer-registry-new-relic-telemetry = { module = "com.newrelic.telemetry:micrometer-registry-new-relic", version.ref = "managed-new-relic-registry" }
 
 # Micronaut
 micronaut-aop = { module = "io.micronaut:micronaut-aop", version.ref = "micronaut" }
@@ -38,7 +41,6 @@ cache-api = { module = "javax.cache:cache-api", version.ref = "jcache" }
 groovy-json = { module = "org.codehaus.groovy:groovy-json", version.ref = "groovy" }
 grpc-api = { module = "io.grpc:grpc-api" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
-metrics-core = { module = "io.dropwizard.metrics:metrics-core", version.ref = "metrics-core" }
 micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "managed-micrometer" }
 micrometer-registry-appoptics = { module = "io.micrometer:micrometer-registry-appoptics", version.ref = "managed-micrometer" }
 micrometer-registry-atlas = { module = "io.micrometer:micrometer-registry-atlas", version.ref = "managed-micrometer" }
@@ -66,5 +68,4 @@ netty-transport-native-kqueue = { module = "io.netty:netty-transport-native-kque
 reactor-core = { module = "io.projectreactor:reactor-core" }
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 validation-api = { module = "javax.validation:validation-api", version.ref = "validation" }
-micrometer-registry-new-relic-telemetry = { module = "com.newrelic.telemetry:micrometer-registry-new-relic", version.ref = "new-relic-registry" }
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool" }
