@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.management.endpoint;
 
+import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
@@ -44,20 +45,24 @@ import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS;
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_PUBLIC_METHODS;
+
 /**
- * Provides a metrics endpoint to visualize metrics.
+ * Provides an endpoint to visualize metrics.
  *
  * @author Christian Oestreich
  * @since 1.0
  */
 @Endpoint(value = MetricsEndpoint.NAME, defaultSensitive = MetricsEndpoint.DEFAULT_SENSITIVE)
 @RequiresMetrics
-@TypeHint(value = {io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricNames.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.MetricDetails.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.AvailableTag.class,
-        io.micronaut.configuration.metrics.management.endpoint.MetricsEndpoint.Sample.class},
-        accessType = {TypeHint.AccessType.ALL_DECLARED_CONSTRUCTORS, TypeHint.AccessType.ALL_PUBLIC_METHODS})
+@TypeHint(value = {
+        MetricsEndpoint.class,
+        MetricsEndpoint.MetricNames.class,
+        MetricsEndpoint.MetricDetails.class,
+        MetricsEndpoint.AvailableTag.class,
+        MetricsEndpoint.Sample.class},
+        accessType = {ALL_DECLARED_CONSTRUCTORS, ALL_PUBLIC_METHODS})
 public class MetricsEndpoint {
 
     /**
@@ -73,8 +78,6 @@ public class MetricsEndpoint {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Constructor for metrics endpoint.
-     *
      * @param meterRegistry The meter registry
      * @param dataSources   To ensure data sources are loaded
      */
@@ -84,10 +87,9 @@ public class MetricsEndpoint {
     }
 
     /**
-     * Read operation to list metric names.  To get the details
-     * the method getMetricDetails(name) should be invoked.
+     * Lists metric names. To get the details, invoke the method {@code getMetricDetails(name)}.
      *
-     * @return single of http response with list of metric names
+     * @return single of HTTP response with metric names
      */
     @Read
     public MetricNames listNames() {
@@ -98,7 +100,7 @@ public class MetricsEndpoint {
     }
 
     /**
-     * Method to read individual metric data.
+     * Reads individual metric data.
      * <p>
      * After calling the /metrics endpoint, you can pass the name in
      * like /metrics/foo.bar and the details for the metrics and tags
@@ -111,12 +113,13 @@ public class MetricsEndpoint {
      * @return single with metric details response
      */
     @Read
-    public MetricDetails getMetricDetails(@Selector String name, @Nullable List<String> tag) {
+    public MetricDetails getMetricDetails(@Selector String name,
+                                          @Nullable List<String> tag) {
         return getMetricDetailsResponse(name, tag);
     }
 
     /**
-     * Method to read individual metric data.
+     * Read individual metric data.
      * <p>
      * After calling the /metrics endpoint, you can pass the name in
      * like /metrics/foo.bar and the details for the metrics and tags
@@ -145,7 +148,9 @@ public class MetricsEndpoint {
         }
         Map<Statistic, Double> samples = getSamples(meters);
         Map<String, Set<String>> availableTags = getAvailableTags(meters);
-        tags.forEach((t) -> availableTags.remove(t.getKey()));
+        for (Tag t : tags) {
+            availableTags.remove(t.getKey());
+        }
         Meter.Id meterId = meters.iterator().next().getId();
         return new MetricDetails(name,
                 asList(samples, Sample::new),
@@ -156,13 +161,17 @@ public class MetricsEndpoint {
 
     private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
         Map<Statistic, Double> samples = new LinkedHashMap<>();
-        meters.forEach((meter) -> mergeMeasurements(samples, meter));
+        for (Meter meter : meters) {
+            mergeMeasurements(samples, meter);
+        }
         return samples;
     }
 
     private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
-        meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(),
-                measurement.getValue(), mergeFunction(measurement.getStatistic())));
+        for (Measurement measurement : meter.measure()) {
+            samples.merge(measurement.getStatistic(),
+                    measurement.getValue(), mergeFunction(measurement.getStatistic()));
+        }
     }
 
     private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
@@ -177,7 +186,9 @@ public class MetricsEndpoint {
      */
     private Map<String, Set<String>> getAvailableTags(Collection<Meter> meters) {
         Map<String, Set<String>> availableTags = new HashMap<>();
-        meters.forEach((meter) -> mergeAvailableTags(availableTags, meter));
+        for (Meter meter : meters) {
+            mergeAvailableTags(availableTags, meter);
+        }
         return availableTags;
     }
 
@@ -188,10 +199,10 @@ public class MetricsEndpoint {
      * @param meter         the meter to get tags from
      */
     private void mergeAvailableTags(Map<String, Set<String>> availableTags, Meter meter) {
-        meter.getId().getTags().forEach((tag) -> {
+        for (Tag tag : meter.getId().getTags()) {
             Set<String> value = Collections.singleton(tag.getValue());
             availableTags.merge(tag.getKey(), value, this::merge);
-        });
+        }
     }
 
     /**
@@ -248,7 +259,7 @@ public class MetricsEndpoint {
          * @return set of names
          */
         public SortedSet<String> getNames() {
-            return this.names;
+            return names;
         }
     }
 
@@ -295,7 +306,7 @@ public class MetricsEndpoint {
          * @return name
          */
         public String getName() {
-            return this.name;
+            return name;
         }
 
         /**
@@ -304,7 +315,7 @@ public class MetricsEndpoint {
          * @return list of measurements
          */
         public List<Sample> getMeasurements() {
-            return this.measurements;
+            return measurements;
         }
 
         /**
@@ -313,7 +324,7 @@ public class MetricsEndpoint {
          * @return list of tags
          */
         public List<AvailableTag> getAvailableTags() {
-            return this.availableTags;
+            return availableTags;
         }
 
         /**
@@ -322,7 +333,7 @@ public class MetricsEndpoint {
          * @return metric description
          */
         public String getDescription() {
-            return this.description;
+            return description;
         }
 
         /**
@@ -331,7 +342,7 @@ public class MetricsEndpoint {
          * @return metric base unit
          */
         public String getBaseUnit() {
-            return this.baseUnit;
+            return baseUnit;
         }
 
     }
@@ -363,7 +374,7 @@ public class MetricsEndpoint {
          * @return tag name
          */
         public String getTag() {
-            return this.tag;
+            return tag;
         }
 
         /**
@@ -372,7 +383,7 @@ public class MetricsEndpoint {
          * @return list of tag values
          */
         public Set<String> getValues() {
-            return this.values;
+            return values;
         }
 
     }
@@ -404,7 +415,7 @@ public class MetricsEndpoint {
          * @return measurement name
          */
         public Statistic getStatistic() {
-            return this.statistic;
+            return statistic;
         }
 
         /**
@@ -413,15 +424,12 @@ public class MetricsEndpoint {
          * @return measurement value
          */
         public Double getValue() {
-            return this.value;
+            return value;
         }
 
         @Override
         public String toString() {
-            return "MeasurementSample{" + "statistic=" + this.statistic + ", value="
-                    + this.value + '}';
+            return "MeasurementSample{" + "statistic=" + statistic + ", value=" + value + '}';
         }
-
     }
 }
-

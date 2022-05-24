@@ -16,17 +16,17 @@
 package io.micronaut.configuration.metrics.micrometer.atlas;
 
 import io.micrometer.atlas.AtlasMeterRegistry;
-import io.micrometer.core.instrument.Clock;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The AtlasMeterRegistryFactory that will configure and create a atlas meter registry.
+ * Creates an Atlas meter registry.
  */
 @Factory
 public class AtlasMeterRegistryFactory {
@@ -35,17 +35,16 @@ public class AtlasMeterRegistryFactory {
     public static final String ATLAS_ENABLED = ATLAS_CONFIG + ".enabled";
 
     /**
-     * Create a AtlasMeterRegistry bean if global metrics are enables
-     * and the atlas is enabled.  Will be true by default when this
+     * Create a AtlasMeterRegistry bean if global metrics are enabled
+     * and Atlas is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     *
-     * @return A AtlasMeterRegistry
+     * @return AtlasMeterRegistry
      */
     @Singleton
     AtlasMeterRegistry atlasMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new AtlasMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new AtlasMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
 }

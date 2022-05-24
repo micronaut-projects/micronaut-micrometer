@@ -25,7 +25,6 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
@@ -38,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instruments Micronaut related thread pools via Micrometer.
@@ -47,14 +47,12 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  */
 @Singleton
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = StringUtils.FALSE)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = FALSE)
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
-     * Default constructor.
-     *
      * @param meterRegistryProvider The meter registry provider
      */
     public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
@@ -67,13 +65,13 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         // have to unwrap any Micronaut instrumentations to get the target
         ExecutorService unwrapped = executorService;
         while (unwrapped instanceof InstrumentedExecutorService) {
-            InstrumentedExecutorService ies = (InstrumentedExecutorService) unwrapped;
-            unwrapped = ies.getTarget();
+            unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
         if (unwrapped.getClass().getName().startsWith("io.netty")) {
             return unwrapped;
         }
+
         MeterRegistry meterRegistry = meterRegistryProvider.get();
         BeanIdentifier beanIdentifier = event.getBeanIdentifier();
 
@@ -120,6 +118,5 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
-
     }
 }

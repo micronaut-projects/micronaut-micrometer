@@ -25,20 +25,21 @@ import java.util.Properties;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The PrometheusMeterRegistryFactory that will configure and create a prometheus meter registry.
+ * Creates a Prometheus meter registry.
  */
 @Factory
 public class PrometheusMeterRegistryFactory {
+
     public static final String PROMETHEUS_CONFIG = MICRONAUT_METRICS_EXPORT + ".prometheus";
     public static final String PROMETHEUS_ENABLED = PROMETHEUS_CONFIG + ".enabled";
 
     /**
-     * Create a PrometheusMeterRegistry bean if global metrics are enables
-     * and the prometheus is enabled.  Will be true by default when this
+     * Create a PrometheusMeterRegistry bean if global metrics are enabled
+     * and Prometheus is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A PrometheusMeterRegistry
+     * @return PrometheusMeterRegistry
      */
     @Singleton
     PrometheusMeterRegistry prometheusConfig(ExportConfigurationProperties exportConfigurationProperties) {

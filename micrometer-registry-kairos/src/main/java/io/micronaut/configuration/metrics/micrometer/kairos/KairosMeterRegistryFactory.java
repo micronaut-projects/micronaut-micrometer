@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.kairos;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.kairos.KairosMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,10 +22,11 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The KairosMeterRegistryFactory that will configure and create a kairos meter registry.
+ * Creates a Kairos meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class KairosMeterRegistryFactory {
     public static final String KAIROS_ENABLED = KAIROS_CONFIG + ".enabled";
 
     /**
-     * Create a KairosMeterRegistry bean if global metrics are enables
-     * and the kairos is enabled.  Will be true by default when this
+     * Create a KairosMeterRegistry bean if global metrics are enabled
+     * and Kairos is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A KairosMeterRegistry
+     * @return KairosMeterRegistry
      */
     @Singleton
     KairosMeterRegistry kairosMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new KairosMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new KairosMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

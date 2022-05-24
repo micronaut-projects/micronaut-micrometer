@@ -2,13 +2,13 @@ You can include the Prometheus reporter via `io.micronaut.micrometer:micronaut-m
 
 dependency:micronaut-micrometer-registry-prometheus[groupId="io.micronaut.micrometer"]
 
-You can configure this reporter using `micronaut.metrics.export.prometheus`.  The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java[PrometheusConfig] for more options
+You can configure this reporter using `micronaut.metrics.export.prometheus`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java[PrometheusConfig] for more options.
 
 |=======
 |*Name* |*Description*
-|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
-|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
-|descriptions | Boolean if meter descriptions should be sent to Prometheus. Turn this off to minimize the amount of data sent on each scrape. Default: `true`
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
+|descriptions | Whether meter descriptions should be sent to Prometheus. Disable to minimize the amount of data sent on each scrape. Default: `true`
 |=======
 
 .Example Prometheus Config
@@ -27,7 +27,7 @@ micronaut:
         descriptions: true
 ----
 
-*IMPORTANT NOTE*: Once set up, the Prometheus-compatible metrics can be scraped from the path `/prometheus`. Note: by default Prometheus looks for `/metrics`, but that path serves the core Micronaut metrics, hence the need to point to `/prometheus`.
+*IMPORTANT NOTE*: Once configured, the Prometheus-compatible metrics can be accessed from the path `/prometheus`. By default, Prometheus looks for `/metrics`, but that path serves the core Micronaut metrics, hence the need to point to `/prometheus`.
 
 === Prometheus Default Metrics
 
@@ -36,13 +36,14 @@ By default, there is a set of metrics that are exposed by the different binders.
 Here you will find the definition of all default metrics exposed by a binder.
 
 ===== Web Metrics
+
 .Metrics provided
 |=======
 |*Name* |*Description*
-|http_client_requests_seconds_count|Is the total number of requests per second your application made to an endpoint via HTTP Client interface
-|http_client_requests_seconds_sum|Is the sum of the duration of every request your application made to an endpoint via HTTP Client interface
-|http_client_requests_seconds_max|Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes.
-|http_server_requests_seconds_count|Is the total number of requests your application received at an endpoint
-|http_server_requests_seconds_sum|Is the sum of the the duration of every request your application received at an endpoint
-|http_server_requests_seconds_max|Is the maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is 2 minutes
+|http_client_requests_seconds_count|Total number of requests per second your application made to an endpoint via HTTP Client interface
+|http_client_requests_seconds_sum|Sum of the duration of every request your application made to an endpoint via HTTP Client interface
+|http_client_requests_seconds_max|Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes.
+|http_server_requests_seconds_count|Total number of requests your application received at an endpoint
+|http_server_requests_seconds_sum|Sum of the duration of every request your application received at an endpoint
+|http_server_requests_seconds_max|Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes
 |=======

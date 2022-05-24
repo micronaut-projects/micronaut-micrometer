@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Annotations specific to metrics configuration.
+ * Metrics configuration annotations.
  *
  * @author graemerocher
  * @since 1.0

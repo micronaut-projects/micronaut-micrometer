@@ -17,22 +17,29 @@ package io.micronaut.configuration.metrics.annotation;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
+import static io.micronaut.core.util.StringUtils.FALSE;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PACKAGE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An annotation that can be applied to any bean that requires Metrics is enabled.
+ * Apply to a bean that requires metrics to be enabled.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-@Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = StringUtils.FALSE)
+@Retention(RUNTIME)
+@Target({PACKAGE, TYPE, ANNOTATION_TYPE, METHOD})
+@Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = FALSE)
 @Requires(beans = MeterRegistry.class)
 public @interface RequiresMetrics {
 }

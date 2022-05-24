@@ -19,7 +19,6 @@
  * @author James Kleeh
  * @since 1.0
  */
-
 @Configuration
 @Requires(property = AppOpticsMeterRegistryFactory.APPOPTICS_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.appoptics;

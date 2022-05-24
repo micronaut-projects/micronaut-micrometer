@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Configuration for Micrometer-Influx metrics.
+ * Configuration for Micrometer-Ganglia metrics.
  *
  * @author thiagolocatelli
  * @since 1.2.0

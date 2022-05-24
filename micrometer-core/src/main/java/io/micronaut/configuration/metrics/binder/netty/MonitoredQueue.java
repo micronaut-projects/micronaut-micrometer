@@ -15,17 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.netty;
 
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.*;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Spliterator;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -34,14 +23,32 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.core.annotation.Internal;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECUTION_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NUMBER;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 /**
- * An Instrumented Queue.
+ * An instrumented Queue.
  *
  * @author croudet
  * @since 2.0
  */
 @Internal
 final class MonitoredQueue implements Queue<Runnable> {
+
     private final Queue<Runnable> delegate;
     private final MeterRegistry meterRegistry;
     private final Timer waitTimeTimer;
@@ -51,17 +58,21 @@ final class MonitoredQueue implements Queue<Runnable> {
     private final Counter globalTaskCounter;
 
     /**
-     * An InstrumentedQueue.
-     *
-     * @param index An index.
-     * @param meterRegistry The meter registry.
-     * @param tag A Tag.
-     * @param globalTaskCounter A counter.
-     * @param globalWaitTimeTimer The global wait time timer.
+     * @param index                    An index.
+     * @param meterRegistry            The meter registry.
+     * @param tag                      A Tag.
+     * @param globalTaskCounter        A counter.
+     * @param globalWaitTimeTimer      The global wait time timer.
      * @param globalExecutionTimeTimer The global execution time timer.
-     * @param queue The Queue.
+     * @param queue                    The Queue.
      */
-    MonitoredQueue(int index, MeterRegistry meterRegistry, Tag tag, Counter globalTaskCounter, Timer globalWaitTimeTimer, Timer globalExecutionTimeTimer, Queue<Runnable> queue) {
+    MonitoredQueue(int index,
+                   MeterRegistry meterRegistry,
+                   Tag tag,
+                   Counter globalTaskCounter,
+                   Timer globalWaitTimeTimer,
+                   Timer globalExecutionTimeTimer,
+                   Queue<Runnable> queue) {
         this.delegate = queue;
         this.meterRegistry = meterRegistry;
         this.globalExecutionTimeTimer = globalExecutionTimeTimer;
@@ -162,7 +173,7 @@ final class MonitoredQueue implements Queue<Runnable> {
 
     @Override
     public boolean addAll(Collection<? extends Runnable> c) {
-        for (Runnable r: c) {
+        for (Runnable r : c) {
             if (!add(r)) {
                 return false;
             }
@@ -218,7 +229,6 @@ final class MonitoredQueue implements Queue<Runnable> {
     /**
      * Runnable Wrapper that register time spent in queue and execution time.
      *
-     * @author croudet
      * @since 2.0
      */
     static final class TimedRunnable implements Runnable {
@@ -230,7 +240,12 @@ final class MonitoredQueue implements Queue<Runnable> {
         private final Runnable delegate;
         private final Timer.Sample idleSample;
 
-        TimedRunnable(MeterRegistry registry, Timer executionTimer, Timer waitTimeTimer, Timer globalExecutionTimeTimer, Timer globalWaitTimeTimer, Runnable delegate) {
+        TimedRunnable(MeterRegistry registry,
+                      Timer executionTimer,
+                      Timer waitTimeTimer,
+                      Timer globalExecutionTimeTimer,
+                      Timer globalWaitTimeTimer,
+                      Runnable delegate) {
             this.registry = registry;
             this.executionTimer = executionTimer;
             this.waitTimeTimer = waitTimeTimer;
@@ -242,14 +257,13 @@ final class MonitoredQueue implements Queue<Runnable> {
 
         @Override
         public void run() {
-            globalWaitTimeTimer.record(idleSample.stop(waitTimeTimer), TimeUnit.NANOSECONDS);
+            globalWaitTimeTimer.record(idleSample.stop(waitTimeTimer), NANOSECONDS);
             final Timer.Sample executionSample = Timer.start(registry);
             try {
                 delegate.run();
             } finally {
-                globalExecutionTimeTimer.record(executionSample.stop(executionTimer), TimeUnit.NANOSECONDS);
+                globalExecutionTimeTimer.record(executionSample.stop(executionTimer), NANOSECONDS);
             }
         }
-
     }
 }

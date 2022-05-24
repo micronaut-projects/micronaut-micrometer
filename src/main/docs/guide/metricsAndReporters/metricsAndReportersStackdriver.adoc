@@ -2,16 +2,14 @@ You can include the Stackdriver reporter via `io.micronaut.micrometer:micronaut-
 
 dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.micrometer"]
 
-You can configure this reporter using `micronaut.metrics.export.stackdriver`. The most commonly changed configuration properties are listed below, but see
-https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java[StackdriverConfig]
-for more options.
+You can configure this reporter using `micronaut.metrics.export.stackdriver`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java[StackdriverConfig] for more options.
 
 |=======
 |*Name* |*Description*
-|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
-|projectId |Stackdriver Project Id. Required.
-|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
-|descriptions | Boolean if meter descriptions should be sent to InfluxDB. Turn this off to minimize the amount of data sent on each scrape. Default: `true`
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|projectId |Stackdriver Project ID. Required.
+|step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
+|descriptions | Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: `true`
 |=======
 
 .Example Stackdriver Config

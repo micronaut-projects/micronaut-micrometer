@@ -20,25 +20,18 @@ public class CountedTarget {
         throw new NumberFormatException("cannot");
     }
 
-
     @Counted(value = "counted.test.max.future", description = "some desc", extraTags = {"one", "two"})
     CompletableFuture<Integer> maxFuture(int a, int b) {
-        return CompletableFuture.completedFuture(
-                Math.max(a, b)
-        );
+        return CompletableFuture.completedFuture(Math.max(a, b));
     }
 
     @Counted(value = "counted.test.max.single", description = "some desc", extraTags = {"one", "two"})
     Mono<Integer> maxSingle(int a, int b) {
-        return Mono.just(
-                Math.max(a, b)
-        );
+        return Mono.just(Math.max(a, b));
     }
 
     @Counted(value = "counted.test.max.flowable", description = "some desc", extraTags = {"one", "two"})
     Flux<Integer> maxFlow(int a, int b) {
-        return Flux.just(
-                Math.max(a, b)
-        );
+        return Flux.just(Math.max(a, b));
     }
 }

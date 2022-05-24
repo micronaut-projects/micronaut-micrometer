@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.micrometer.elastic;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.elastic.ElasticMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
@@ -23,10 +22,11 @@ import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
- * The ElasticMeterRegistryFactory that will configure and create a elastic meter registry.
+ * Creates an Elasticsearch meter registry.
  *
  * @author thiagolocatelli
  * @since 1.2.0
@@ -38,17 +38,16 @@ public class ElasticMeterRegistryFactory {
     public static final String ELASTIC_ENABLED = ELASTIC_CONFIG + ".enabled";
 
     /**
-     * Create a ElasticMeterRegistry bean if global metrics are enables
-     * and the datadog is enabled.  Will be true by default when this
+     * Create a ElasticMeterRegistry bean if global metrics are enabled
+     * and Elasticsearch is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param exportConfigurationProperties The export configuration
-     * @return A ElasticMeterRegistry
+     * @return ElasticMeterRegistry
      */
     @Singleton
     ElasticMeterRegistry elasticConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new ElasticMeterRegistry(exportConfig::getProperty, Clock.SYSTEM);
+        return new ElasticMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
-
 }

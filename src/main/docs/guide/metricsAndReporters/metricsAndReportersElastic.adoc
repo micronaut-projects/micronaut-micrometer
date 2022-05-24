@@ -1,15 +1,13 @@
-You can include the Elastic reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-elastic`
+You can include the Elasticsearch reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-elastic`
 
 dependency:micronaut-micrometer-registry-elastic[groupId="io.micronaut.micrometer"]
 
-You can configure this reporter using `micronaut.metrics.export.elastic`.  The most commonly changed configuration properties are listed below, but see
-https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig]
-for more options.
+You can configure this reporter using `micronaut.metrics.export.elastic`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java[ElasticConfig] for more options.
 
 |=======
 |*Name* |*Description*
-|enabled |Whether to enable the reporter. Could disable to local dev for example. Default: `true`
-|step |How frequently to report metrics. Default: `PT1M` (1 min).  See `java.time.Duration#parse(CharSequence)`
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
 |=======
 
 .Example Elastic Config
