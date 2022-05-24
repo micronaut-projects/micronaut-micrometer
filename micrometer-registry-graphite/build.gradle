@@ -3,18 +3,19 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor(libs.micronaut.inject.java)
-    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
+    annotationProcessor libs.micronaut.docs.asciidoc.config.props
+    annotationProcessor libs.micronaut.inject.java
 
-    compileOnly(libs.micronaut.management)
-    api(libs.micrometer.core)
+    api libs.micrometer.core
+    api libs.micrometer.registry.graphite
+    api libs.validation.api
     api projects.micrometerCore
-    api(libs.validation.api)
-    api(libs.micrometer.registry.graphite)
 
-    testImplementation(libs.micronaut.management)
-    testImplementation(libs.micronaut.inject.groovy)
-    testAnnotationProcessor(libs.micronaut.inject.java)
-    testRuntimeOnly(libs.micronaut.http.server.netty)
-    testImplementation(libs.micronaut.http.client)
+    compileOnly libs.micronaut.management
+
+    testAnnotationProcessor libs.micronaut.inject.java
+    testImplementation libs.micronaut.http.client
+    testImplementation libs.micronaut.inject.groovy
+    testImplementation libs.micronaut.management
+    testRuntimeOnly libs.micronaut.http.server.netty
 }

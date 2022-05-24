@@ -2,31 +2,29 @@ plugins {
     id 'io.micronaut.build.internal.micrometer-module'
 }
 
-
-
 dependencies {
-    annotationProcessor(libs.micronaut.inject.java)
-    annotationProcessor(libs.micronaut.graal)
-    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
+    annotationProcessor libs.micronaut.docs.asciidoc.config.props
+    annotationProcessor libs.micronaut.graal
+    annotationProcessor libs.micronaut.inject.java
 
-    api(libs.micrometer.core)
-    api(libs.micronaut.inject)
-    testImplementation projects.micrometerCore
+    api libs.micrometer.core
+    api libs.micronaut.inject
 
+    testAnnotationProcessor libs.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
-    testAnnotationProcessor(libs.micronaut.inject.java)
-    testImplementation(libs.micronaut.management)
-    testImplementation(libs.micronaut.inject.groovy)
-    testImplementation(libs.micronaut.function.web)
-    testRuntimeOnly(libs.micronaut.http.server.netty)
-    testImplementation(libs.micronaut.http.client)
-    testImplementation(libs.groovy.json)
-    testImplementation(libs.netty.buffer)
-    testImplementation(libs.netty.transport)
-    testImplementation(libs.netty.transport.native.epoll)
-    testImplementation(libs.netty.transport.native.kqueue)
-    testImplementation(libs.micronaut.http.server.netty)
-    testImplementation(libs.grpc.api)
+    testImplementation libs.groovy.json
+    testImplementation libs.grpc.api
+    testImplementation libs.micronaut.function.web
+    testImplementation libs.micronaut.http.client
+    testImplementation libs.micronaut.http.server.netty
+    testImplementation libs.micronaut.inject.groovy
+    testImplementation libs.micronaut.management
+    testImplementation libs.netty.buffer
+    testImplementation libs.netty.transport
+    testImplementation libs.netty.transport.native.epoll
+    testImplementation libs.netty.transport.native.kqueue
+    testImplementation projects.micrometerCore
+    testRuntimeOnly libs.micronaut.http.server.netty
 }
 
 configurations.all {

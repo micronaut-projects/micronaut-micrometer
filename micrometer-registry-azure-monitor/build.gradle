@@ -3,21 +3,20 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor(libs.micronaut.inject.java)
-    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
+    annotationProcessor libs.micronaut.docs.asciidoc.config.props
+    annotationProcessor libs.micronaut.inject.java
 
-    compileOnly(libs.micronaut.inject.java)
-    compileOnly(libs.micronaut.management)
-    api(libs.micrometer.core)
+    api libs.micrometer.core
+    api libs.micrometer.registry.azure.monitor
+    api libs.validation.api
     api projects.micrometerCore
 
-    api(libs.validation.api)
-    api(libs.micrometer.registry.azure.monitor)
+    compileOnly libs.micronaut.inject.java
+    compileOnly libs.micronaut.management
 
-    testImplementation(libs.micronaut.management)
-    testImplementation(libs.micronaut.inject.groovy)
-    annotationProcessor(libs.micronaut.inject.java)
-    testRuntimeOnly(libs.micronaut.http.server.netty)
+    testImplementation libs.micronaut.http.client
+    testImplementation libs.micronaut.inject.groovy
+    testImplementation libs.micronaut.management
     testRuntimeOnly 'javax.xml.bind:jaxb-api:2.3.+'
-    testImplementation(libs.micronaut.http.client)
+    testRuntimeOnly libs.micronaut.http.server.netty
 }

@@ -1,20 +1,23 @@
+import org.gradle.internal.jvm.Jvm
+
 plugins {
     id 'io.micronaut.build.internal.micrometer-module'
 }
 
 dependencies {
-    api(libs.micrometer.core)
-    api(libs.micronaut.inject)
-    api(libs.micronaut.aop)
+    api libs.micrometer.core
+    api libs.micronaut.inject
+    api libs.micronaut.aop
+
     if (!JavaVersion.current().isJava9Compatible()) {
-        testImplementation files(org.gradle.internal.jvm.Jvm.current().toolsJar)
+        testImplementation files(Jvm.current().toolsJar)
     }
-    testImplementation(libs.micronaut.inject.java.test)
-    testImplementation(libs.micronaut.inject.groovy.test)
+    testImplementation libs.micronaut.inject.java.test
+    testImplementation libs.micronaut.inject.groovy.test
 }
 
 tasks.withType(Test).configureEach {
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_15)) {
-        jvmArgs "--enable-preview"
+        jvmArgs '--enable-preview'
     }
 }
