@@ -69,7 +69,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         }
         // Netty EventLoopGroups require separate instrumentation.
         if (unwrapped.getClass().getName().startsWith("io.netty")) {
-            return unwrapped;
+            return executorService;
         }
 
         MeterRegistry meterRegistry = meterRegistryProvider.get();
