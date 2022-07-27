@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    api libs.micrometer.core
+    api libs.managed.micrometer.core
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
 }
 

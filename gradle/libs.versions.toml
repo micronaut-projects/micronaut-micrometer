@@ -15,9 +15,11 @@ cache-api = { module = 'javax.cache:cache-api', version.ref = 'jcache' }
 groovy-json = { module = 'org.codehaus.groovy:groovy-json', version.ref = 'groovy' }
 grpc-api = { module = 'io.grpc:grpc-api' }
 logback-classic = { module = 'ch.qos.logback:logback-classic', version.ref = 'logback-classic' }
+
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
+managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
+
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
 micrometer-registry-azure-monitor = { module = 'io.micrometer:micrometer-registry-azure-monitor', version.ref = 'managed-micrometer' }
