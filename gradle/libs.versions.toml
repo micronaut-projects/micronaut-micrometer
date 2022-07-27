@@ -2,7 +2,7 @@
 groovy = '3.0.12'
 jcache = '1.1.1'
 logback-classic = '1.2.11'
-managed-metrics-core = '4.2.9'
+managed-metrics-core = '4.2.10'
 managed-micrometer = '1.9.0'
 managed-new-relic-registry = '0.8.0'
 micronaut = '3.4.3'
