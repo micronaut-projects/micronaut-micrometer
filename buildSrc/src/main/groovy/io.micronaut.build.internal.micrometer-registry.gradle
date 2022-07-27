@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api libs.micrometer.core
+    api libs.managed.micrometer.core
     api libs.validation.api
     api projects.micrometerCore
 
