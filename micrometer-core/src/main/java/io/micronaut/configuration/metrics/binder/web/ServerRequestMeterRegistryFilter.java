@@ -60,18 +60,8 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
         return route.orElseGet(request::getPath);
     }
 
-    /**
-     * This is here for backwards compatibility. The class no longer implements
-     * OncePerRequestHttpServerFilter, however the method was kept to maintain binary
-     * compatibility.
-     *
-     * @param request The request
-     * @param chain The filter chain
-     * @return A response publisher
-     * @deprecated Override {@link #doFilter(HttpRequest, ServerFilterChain)} instead.
-     */
-    @Deprecated
-    protected Publisher<MutableHttpResponse<?>> doFilterOnce(HttpRequest<?> request, ServerFilterChain chain) {
+    @Override
+    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
         long start = System.nanoTime();
         Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
         String path = resolvePath(request);
@@ -81,17 +71,12 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             request.setAttribute(ATTRIBUTE_KEY, true);
         }
         return new WebMetricsPublisher<>(
-                responsePublisher,
-                meterRegistry,
-                path,
-                start,
-                request.getMethod().toString(),
-                reportErrors
+            responsePublisher,
+            meterRegistry,
+            path,
+            start,
+            request.getMethod().toString(),
+            reportErrors
         );
-    }
-
-    @Override
-    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-        return doFilterOnce(request, chain);
     }
 }
