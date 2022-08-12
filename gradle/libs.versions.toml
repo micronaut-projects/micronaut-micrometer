@@ -4,16 +4,18 @@ jcache = '1.1.1'
 logback-classic = '1.2.11'
 managed-metrics-core = '4.2.10'
 managed-micrometer = '1.9.2'
-managed-new-relic-registry = '0.8.0'
-micronaut = '3.4.3'
+managed-new-relic-registry = '0.9.0'
+micronaut = '3.5.4'
 reflections = '0.10.2'
 validation = '2.0.1.Final'
+# TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
+grpc = '1.48.1'
 
 [libraries]
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 cache-api = { module = 'javax.cache:cache-api', version.ref = 'jcache' }
 groovy-json = { module = 'org.codehaus.groovy:groovy-json', version.ref = 'groovy' }
-grpc-api = { module = 'io.grpc:grpc-api' }
+grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
 logback-classic = { module = 'ch.qos.logback:logback-classic', version.ref = 'logback-classic' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
