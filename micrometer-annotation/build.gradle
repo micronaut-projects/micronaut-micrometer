@@ -4,11 +4,6 @@ plugins {
     id 'io.micronaut.build.internal.micrometer-module'
 }
 
-repositories {
-    maven { setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
-    mavenCentral()
-}
-
 dependencies {
     api libs.micronaut.aop
 
