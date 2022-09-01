@@ -1,0 +1,22 @@
+[
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Constructor io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference()",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetrics",
+    "member": "Constructor io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetrics(io.micronaut.caffeine.cache.Cache,java.lang.String,java.lang.Iterable)",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder",
+    "member": "Constructor io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder(io.micronaut.context.BeanProvider)",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  }
+]
