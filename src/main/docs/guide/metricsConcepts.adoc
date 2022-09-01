@@ -200,8 +200,6 @@ If you use `io.micronaut.sql:micronaut-jdbc-tomcat` or `io.micronaut.sql:microna
 
 ===== Netty Server Metrics
 
-The main *Control Property* for Netty server metrics is `micronaut.metrics.binders.netty.enabled`, which is *false* by default.
-
 Currently, the following binders are provided to instrument Netty server:
 
 * *EventLoopGroupFactoryBinder*: Instrument and expose event loop group queues metrics; use `micronaut.metrics.binders.netty.queues.enabled` to toggle. Default is *false*. The queues' size and tasks wait and execution time are exposed.
