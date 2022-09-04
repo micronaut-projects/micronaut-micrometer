@@ -11,6 +11,7 @@ io.micronaut.configuration.metrics.binder.web
 io.micronaut.configuration.metrics.common.tags
 io.micronaut.configuration.metrics.management.endpoint
 io.micronaut.configuration.metrics.micrometer
+io.micronaut.configuration.metrics.micrometer.annotation
 io.micronaut.configuration.metrics.micrometer.appoptics
 io.micronaut.configuration.metrics.micrometer.atlas
 io.micronaut.configuration.metrics.micrometer.azuremonitor
