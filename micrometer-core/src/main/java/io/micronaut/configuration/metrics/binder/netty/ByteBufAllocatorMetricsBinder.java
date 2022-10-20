@@ -33,8 +33,8 @@ import io.netty.buffer.PoolSubpageMetric;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocatorMetric;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import jakarta.annotation.PostConstruct;
 
-import javax.annotation.PostConstruct;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;

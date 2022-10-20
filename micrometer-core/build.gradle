@@ -3,39 +3,37 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.graal
+    annotationProcessor mn.micronaut.graal
 
-    compileOnly libs.cache.api
+    compileOnly mn.jcache
     compileOnly libs.grpc.api
-    compileOnly libs.logback.classic
-    compileOnly libs.micronaut.cache.core
-    compileOnly libs.micronaut.http.server.netty
-    compileOnly libs.micronaut.jdbc
-    compileOnly libs.micronaut.management
-    compileOnly libs.netty.buffer
-    compileOnly libs.netty.transport
-    compileOnly libs.netty.transport.native.epoll
-    compileOnly libs.netty.transport.native.kqueue
-    compileOnly libs.r2dbc.pool
+    compileOnly mn.logback
+    compileOnly mn.micronaut.cache.core
+    compileOnly mn.micronaut.http.server.netty
+    compileOnly mn.micronaut.jdbc
+    compileOnly mn.micronaut.management
+    compileOnly mn.netty.buffer
+    compileOnly mn.netty.transport.native.epoll
+    compileOnly mn.netty.transport.native.kqueue
+    compileOnly mn.r2dbc.pool
 
-    implementation libs.reactor.core
+    implementation mn.reactor.core
 
-    testAnnotationProcessor libs.micronaut.inject.java
+    testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
-    testImplementation libs.groovy.json
+    testImplementation mn.groovy.json
     testImplementation libs.grpc.api
-    testImplementation libs.micronaut.function.web
-    testImplementation libs.micronaut.http.client
-    testImplementation libs.micronaut.http.server.netty
-    testImplementation libs.micronaut.inject.groovy
-    testImplementation libs.micronaut.jdbc
-    testImplementation libs.micronaut.management
-    testImplementation libs.micronaut.rxjava2
-    testImplementation libs.netty.buffer
-    testImplementation libs.netty.transport
-    testImplementation libs.netty.transport.native.epoll
-    testImplementation libs.netty.transport.native.kqueue
-    testImplementation libs.r2dbc.pool
+    testImplementation mn.micronaut.function.web
+    testImplementation mn.micronaut.http.client
+    testImplementation mn.micronaut.http.server.netty
+    testImplementation mn.micronaut.inject.groovy
+    testImplementation mn.micronaut.jdbc
+    testImplementation mn.micronaut.management
+    testImplementation mn.micronaut.rxjava2
+    testImplementation mn.netty.buffer
+    testImplementation mn.netty.transport.native.epoll
+    testImplementation mn.netty.transport.native.kqueue
+    testImplementation mn.r2dbc.pool
     testImplementation libs.reflections
-    testRuntimeOnly libs.micronaut.http.server.netty
+    testRuntimeOnly mn.micronaut.http.server.netty
 }

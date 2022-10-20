@@ -1,22 +1,15 @@
 [versions]
-groovy = '3.0.13'
-jcache = '1.1.1'
-logback-classic = '1.2.11'
 managed-metrics-core = '4.2.12'
 managed-micrometer = '1.9.4'
 managed-new-relic-registry = '0.10.0'
 micronaut = '4.0.0-SNAPSHOT'
 reflections = '0.10.2'
-validation = '2.0.1.Final'
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
 grpc = '1.49.0'
 
 [libraries]
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
-cache-api = { module = 'javax.cache:cache-api', version.ref = 'jcache' }
-groovy-json = { module = 'org.codehaus.groovy:groovy-json', version.ref = 'groovy' }
 grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
-logback-classic = { module = 'ch.qos.logback:logback-classic', version.ref = 'logback-classic' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
@@ -41,24 +34,6 @@ micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-sig
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }
 micrometer-registry-statsd = { module = 'io.micrometer:micrometer-registry-statsd', version.ref = 'managed-micrometer' }
 micrometer-registry-wavefront = { module = 'io.micrometer:micrometer-registry-wavefront', version.ref = 'managed-micrometer' }
-micronaut-aop = { module = 'io.micronaut:micronaut-aop', version.ref = 'micronaut' }
-micronaut-cache-core = { module = 'io.micronaut.cache:micronaut-cache-core' }
-micronaut-function-web = { module = 'io.micronaut:micronaut-function-web' }
-micronaut-graal = { module = 'io.micronaut:micronaut-graal' }
-micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
-micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
-micronaut-inject-groovy = { module = 'io.micronaut:micronaut-inject-groovy' }
-micronaut-inject-groovy-test = { module = 'io.micronaut:micronaut-inject-groovy-test', version.ref = 'micronaut' }
-micronaut-inject-java = { module = 'io.micronaut:micronaut-inject-java' }
-micronaut-inject-java-test = { module = 'io.micronaut:micronaut-inject-java-test', version.ref = 'micronaut' }
-micronaut-jdbc = { module = 'io.micronaut.sql:micronaut-jdbc' }
-micronaut-management = { module = 'io.micronaut:micronaut-management' }
-micronaut-rxjava2 = { module = 'io.micronaut.rxjava2:micronaut-rxjava2' }
-netty-buffer = { module = 'io.netty:netty-buffer' }
-netty-transport = { module = 'io.netty:netty-transport' }
-netty-transport-native-epoll = { module = 'io.netty:netty-transport-native-epoll' }
-netty-transport-native-kqueue = { module = 'io.netty:netty-transport-native-kqueue' }
+
 r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
-reactor-core = { module = 'io.projectreactor:reactor-core' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
-validation-api = { module = 'javax.validation:validation-api', version.ref = 'validation' }
