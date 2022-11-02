@@ -18,12 +18,7 @@ dependencies {
     testImplementation mn.netty.transport.native.epoll
     testImplementation mn.netty.transport.native.kqueue
     testImplementation projects.micrometerCore
+    testImplementation mn.micronaut.serde.jackson
     testRuntimeOnly mn.micronaut.http.server.netty
 }
 
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("io.micronaut:micronaut-jackson-databind"))
-                .using(module("io.micronaut.serde:micronaut-serde-jackson:$micronautSerializationVersion"))
-    }
-}

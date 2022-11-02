@@ -58,5 +58,25 @@
     "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder",
     "member": "Implemented interface io.micronaut.context.event.BeanCreatedEventListener",
     "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.CountedAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.TypedAnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.CountedAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.AnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.TypedAnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.AnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
   }
 ]

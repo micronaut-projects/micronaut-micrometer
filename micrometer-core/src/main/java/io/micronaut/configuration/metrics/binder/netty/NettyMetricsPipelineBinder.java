@@ -62,23 +62,22 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Netty
         return registry;
     }
 
-    private static final class MetricsCustomizer implements NettyServerCustomizer {
-        private final Channel channel;
-        private final ChannelMetricsHandler metricsHandler;
-
-        MetricsCustomizer(Channel channel, ChannelMetricsHandler metricsHandler) {
-            this.channel = channel;
-            this.metricsHandler = metricsHandler;
-        }
+    private record MetricsCustomizer(Channel channel,
+                                     ChannelMetricsHandler metricsHandler) implements NettyServerCustomizer {
 
         @Override
         public NettyServerCustomizer specializeForChannel(Channel channel, ChannelRole role) {
-            return new MetricsCustomizer(channel, metricsHandler);
+            if (role == ChannelRole.CONNECTION) {
+                return new MetricsCustomizer(channel, metricsHandler);
+            }
+            return this;
         }
 
         @Override
         public void onStreamPipelineBuilt() {
-            channel.pipeline().addFirst(CHANNEL_METRICS, metricsHandler);
+            if (channel != null) {
+                channel.pipeline().addFirst(CHANNEL_METRICS, metricsHandler);
+            }
         }
     }
 }
