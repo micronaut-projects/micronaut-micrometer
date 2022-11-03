@@ -3,23 +3,23 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.graal
+    annotationProcessor mn.micronaut.graal
 
-    testAnnotationProcessor libs.micronaut.inject.java
+    testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
-    testImplementation libs.groovy.json
+    testImplementation mn.groovy.json
     testImplementation libs.grpc.api
-    testImplementation libs.micronaut.function.web
-    testImplementation libs.micronaut.http.client
-    testImplementation libs.micronaut.http.server.netty
-    testImplementation libs.micronaut.inject.groovy
-    testImplementation libs.micronaut.management
-    testImplementation libs.netty.buffer
+    testImplementation mn.micronaut.function.web
+    testImplementation mn.micronaut.http.client
+    testImplementation mn.micronaut.http.server.netty
+    testImplementation mn.micronaut.inject.groovy
+    testImplementation mn.micronaut.management
+    testImplementation mn.netty.buffer
     testImplementation libs.netty.transport
-    testImplementation libs.netty.transport.native.epoll
-    testImplementation libs.netty.transport.native.kqueue
+    testImplementation mn.netty.transport.native.epoll
+    testImplementation mn.netty.transport.native.kqueue
     testImplementation projects.micrometerCore
-    testRuntimeOnly libs.micronaut.http.server.netty
+    testRuntimeOnly mn.micronaut.http.server.netty
 }
 
 configurations.all {
