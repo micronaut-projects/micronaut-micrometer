@@ -160,7 +160,19 @@ jpa:
         generate_statistics: true
 ----
 
-Micrometer automatically exposes Hibernate statistics. See the source code for https://github.com/micrometer-metrics/micrometer/blob/8b5a2cfd0c8fcc121cb936bb40a04f45571ce073/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jpa/HibernateMetrics.java#L79[HibernateMetrics] for the available metrics.
+https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] needs to be on the classpath, so https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer[hibernate-micrometer] should be downloaded:
+
+.Gradle
+
+[source,groovy]
+----
+dependencies {
+    ...
+    implementation("org.hibernate:hibernate-micrometer")
+    ...
+}
+----
+Micrometer automatically exposes Hibernate statistics. See the source code for https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] for the available metrics.
 
 ===== DataSource Metrics
 
