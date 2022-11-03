@@ -1,11 +1,11 @@
 [versions]
 managed-metrics-core = '4.2.12'
-managed-micrometer = '1.9.4'
+managed-micrometer = '1.9.5'
 managed-new-relic-registry = '0.10.0'
 micronaut = '4.0.0-SNAPSHOT'
 reflections = '0.10.2'
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
-grpc = '1.49.0'
+grpc = '1.50.2'
 
 [libraries]
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
