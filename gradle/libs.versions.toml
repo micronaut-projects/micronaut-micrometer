@@ -41,24 +41,6 @@ micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-sig
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }
 micrometer-registry-statsd = { module = 'io.micrometer:micrometer-registry-statsd', version.ref = 'managed-micrometer' }
 micrometer-registry-wavefront = { module = 'io.micrometer:micrometer-registry-wavefront', version.ref = 'managed-micrometer' }
-micronaut-aop = { module = 'io.micronaut:micronaut-aop', version.ref = 'micronaut' }
-micronaut-cache-core = { module = 'io.micronaut.cache:micronaut-cache-core' }
-micronaut-function-web = { module = 'io.micronaut:micronaut-function-web' }
-micronaut-graal = { module = 'io.micronaut:micronaut-graal' }
-micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
-micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
-micronaut-inject-groovy = { module = 'io.micronaut:micronaut-inject-groovy' }
-micronaut-inject-groovy-test = { module = 'io.micronaut:micronaut-inject-groovy-test', version.ref = 'micronaut' }
-micronaut-inject-java = { module = 'io.micronaut:micronaut-inject-java' }
-micronaut-inject-java-test = { module = 'io.micronaut:micronaut-inject-java-test', version.ref = 'micronaut' }
-micronaut-jdbc = { module = 'io.micronaut.sql:micronaut-jdbc' }
-micronaut-management = { module = 'io.micronaut:micronaut-management' }
-micronaut-rxjava2 = { module = 'io.micronaut.rxjava2:micronaut-rxjava2' }
-netty-buffer = { module = 'io.netty:netty-buffer' }
 netty-transport = { module = 'io.netty:netty-transport' }
-netty-transport-native-epoll = { module = 'io.netty:netty-transport-native-epoll' }
-netty-transport-native-kqueue = { module = 'io.netty:netty-transport-native-kqueue' }
-r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
-reactor-core = { module = 'io.projectreactor:reactor-core' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
 validation-api = { module = 'javax.validation:validation-api', version.ref = 'validation' }
