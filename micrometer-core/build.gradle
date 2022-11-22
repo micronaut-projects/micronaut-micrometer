@@ -17,7 +17,7 @@ dependencies {
     compileOnly mn.netty.transport.native.kqueue
     compileOnly mnR2dbc.r2dbc.pool
 
-    implementation mn.reactor
+    implementation mnReactor.micronaut.reactor
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation

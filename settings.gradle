@@ -42,6 +42,7 @@ micronautBuild {
     addSnapshotRepository()
     importMicronautCatalog()
     importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-reactor")
     importMicronautCatalog("micronaut-r2dbc")
     importMicronautCatalog("micronaut-rxjava2")
     importMicronautCatalog("micronaut-serde")
