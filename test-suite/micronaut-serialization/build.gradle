@@ -18,7 +18,7 @@ dependencies {
     testImplementation mn.netty.transport.native.epoll
     testImplementation mn.netty.transport.native.kqueue
     testImplementation projects.micrometerCore
-    testImplementation mn.micronaut.serde.jackson
+    testImplementation mnSerde.micronaut.serde.jackson
     testRuntimeOnly mn.micronaut.http.server.netty
 }
 

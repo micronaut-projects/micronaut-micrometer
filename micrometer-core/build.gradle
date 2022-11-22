@@ -5,36 +5,36 @@ plugins {
 dependencies {
     annotationProcessor mn.micronaut.graal
 
-    compileOnly mn.jcache
+    compileOnly libs.jcache
     compileOnly libs.grpc.api
-    compileOnly mn.logback
-    compileOnly mn.micronaut.cache.core
+    compileOnly libs.logback.classic
+    compileOnly mnCache.micronaut.cache.core
     compileOnly mn.micronaut.http.server.netty
-    compileOnly mn.micronaut.jdbc
+    compileOnly mnSql.micronaut.jdbc
     compileOnly mn.micronaut.management
     compileOnly mn.netty.buffer
     compileOnly mn.netty.transport.native.epoll
     compileOnly mn.netty.transport.native.kqueue
-    compileOnly mn.r2dbc.pool
+    compileOnly mnR2dbc.r2dbc.pool
 
-    implementation mn.reactor.core
+    implementation mn.reactor
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
-    testImplementation mn.groovy.json
+    testImplementation "org.apache.groovy:groovy-json:$groovyVersion"
     testImplementation libs.grpc.api
     testImplementation mn.micronaut.function.web
     testImplementation mn.micronaut.http.client
     testImplementation mn.micronaut.http.server.netty
     testImplementation mn.micronaut.inject.groovy
-    testImplementation mn.micronaut.jdbc
+    testImplementation mnSql.micronaut.jdbc
     testImplementation mn.micronaut.management
-    testImplementation mn.rxjava2
-    testImplementation mn.micronaut.serde.jackson
+    testImplementation mnRxjava2.rxjava2
+    testImplementation mnSerde.micronaut.serde.jackson
     testImplementation mn.netty.buffer
     testImplementation mn.netty.transport.native.epoll
     testImplementation mn.netty.transport.native.kqueue
-    testImplementation mn.r2dbc.pool
+    testImplementation mnR2dbc.r2dbc.pool
     testImplementation libs.reflections
     testRuntimeOnly mn.micronaut.http.server.netty
 }
