@@ -1,5 +1,5 @@
 [versions]
-managed-metrics-core = '4.2.12'
+managed-metrics-core = '4.2.13'
 managed-micrometer = '1.9.5'
 managed-new-relic-registry = '0.10.0'
 micronaut = '4.0.0-SNAPSHOT'
