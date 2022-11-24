@@ -4,6 +4,4 @@ plugins {
 
 dependencies {
     api libs.micrometer.registry.azure.monitor
-
-    testRuntimeOnly 'javax.xml.bind:jaxb-api:2.3.+'
 }

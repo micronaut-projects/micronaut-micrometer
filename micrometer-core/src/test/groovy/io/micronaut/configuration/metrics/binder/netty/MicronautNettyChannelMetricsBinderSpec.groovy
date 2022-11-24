@@ -90,7 +90,7 @@ class MicronautNettyChannelMetricsBinderSpec extends Specification {
         client.root() == 'root'
         channelCounter.count() > 0
         bytesRead.count() > 0
-        activeChannelTimer.count() > 0
+        activeChannelTimer.count() == 0
 
         cleanup:
         context.close()

@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     api libs.micrometer.registry.prometheus
+    testImplementation(mnSerde.micronaut.serde.jackson)
 }

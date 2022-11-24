@@ -22,8 +22,9 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.http.netty.channel.ChannelPipelineCustomizer;
+import io.micronaut.http.server.netty.NettyServerCustomizer;
 import io.micronaut.runtime.server.EmbeddedServer;
+import io.netty.channel.Channel;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.binder.netty.ChannelMetricsHandler.CHANNEL_METRICS;
@@ -41,7 +42,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.channels.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EmbeddedServer.class)
-final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<ChannelPipelineCustomizer> {
+final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<NettyServerCustomizer.Registry> {
 
     private final ChannelMetricsHandler metricsHandler;
 
@@ -55,14 +56,28 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Chann
     }
 
     @Override
-    public ChannelPipelineCustomizer onCreated(BeanCreatedEvent<ChannelPipelineCustomizer> event) {
-        final ChannelPipelineCustomizer customizer = event.getBean();
-        if (customizer.isServerChannel()) {
-            customizer.doOnConnect(pipeline -> {
-                pipeline.addFirst(CHANNEL_METRICS, metricsHandler);
-                return pipeline;
-            });
+    public NettyServerCustomizer.Registry onCreated(BeanCreatedEvent<NettyServerCustomizer.Registry> event) {
+        NettyServerCustomizer.Registry registry = event.getBean();
+        registry.register(new MetricsCustomizer(null, metricsHandler));
+        return registry;
+    }
+
+    private record MetricsCustomizer(Channel channel,
+                                     ChannelMetricsHandler metricsHandler) implements NettyServerCustomizer {
+
+        @Override
+        public NettyServerCustomizer specializeForChannel(Channel channel, ChannelRole role) {
+            if (role == ChannelRole.CONNECTION) {
+                return new MetricsCustomizer(channel, metricsHandler);
+            }
+            return this;
         }
-        return customizer;
+
+        @Override
+        public void onStreamPipelineBuilt() {
+            if (channel != null) {
+                channel.pipeline().addFirst(CHANNEL_METRICS, metricsHandler);
+            }
+        }
     }
 }
