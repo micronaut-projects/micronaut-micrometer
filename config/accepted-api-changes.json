@@ -10,13 +10,73 @@
     "reason": "removed deprecated class for Micronaut 4.0.x"
   },
   {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationSource",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanContextConditional",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Implemented interface io.micronaut.core.annotation.AnnotationMetadataProvider",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanType",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
     "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetrics",
     "member": "Constructor io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetrics(io.micronaut.caffeine.cache.Cache,java.lang.String,java.lang.Iterable)",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
+    "member": "Implemented interface io.micronaut.inject.BeanDefinitionReference",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetrics",
+    "member": "Implemented interface io.micrometer.core.instrument.binder.MeterBinder",
     "reason": "removed deprecated class for Micronaut 4.0.x"
   },
   {
     "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder",
     "member": "Constructor io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder(io.micronaut.context.BeanProvider)",
     "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder",
+    "member": "Implemented interface java.util.EventListener",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.cache.MicronautCaffeineCacheMetricsBinder",
+    "member": "Implemented interface io.micronaut.context.event.BeanCreatedEventListener",
+    "reason": "removed deprecated class for Micronaut 4.0.x"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.CountedAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.TypedAnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.CountedAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.AnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.TypedAnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper",
+    "member": "Implemented interface io.micronaut.inject.annotation.AnnotationMapper",
+    "reason": "Provide a human readable reason for the change"
   }
 ]
