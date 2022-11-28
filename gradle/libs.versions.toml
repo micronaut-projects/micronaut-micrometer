@@ -4,10 +4,12 @@ managed-micrometer = '1.10.2'
 managed-new-relic-registry = '0.10.0'
 micronaut = '4.0.0-SNAPSHOT'
 reflections = '0.10.2'
+
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
 grpc = '1.51.0'
 logback = "1.4.5"
 jcache = "1.1.1"
+hdr-histogram = '2.1.12'
 
 micronaut-cache = "4.0.0-SNAPSHOT"
 micronaut-r2dbc = "4.0.0"
@@ -25,6 +27,7 @@ groovy-json = { module = "org.codehaus.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
+hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
