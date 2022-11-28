@@ -1,5 +1,6 @@
 [versions]
 groovy = '3.0.13'
+hdr-histogram = '2.1.12'
 jcache = '1.1.1'
 logback-classic = '1.2.11'
 managed-metrics-core = '4.2.13'
@@ -22,6 +23,7 @@ managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
 managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
 
+hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
 micrometer-registry-azure-monitor = { module = 'io.micrometer:micrometer-registry-azure-monitor', version.ref = 'managed-micrometer' }
