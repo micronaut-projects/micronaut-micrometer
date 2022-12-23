@@ -10,7 +10,7 @@ micronaut = '3.7.4'
 reflections = '0.10.2'
 validation = '2.0.1.Final'
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
-grpc = '1.50.2'
+grpc = '1.51.1'
 
 [libraries]
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
