@@ -4,14 +4,15 @@ managed-micrometer = '1.10.2'
 managed-new-relic-registry = '0.10.0'
 micronaut = '4.0.0-SNAPSHOT'
 reflections = '0.10.2'
+
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
 grpc = '1.51.1'
 logback = "1.4.5"
 jcache = "1.1.1"
+hdr-histogram = '2.1.12'
 
 micronaut-cache = "4.0.0-SNAPSHOT"
 micronaut-r2dbc = "4.0.0"
-micronaut-reactor = "3.0.0-SNAPSHOT"
 micronaut-rxjava2 = "2.0.0-SNAPSHOT"
 micronaut-serde = "2.0.0-SNAPSHOT"
 micronaut-sql = "4.7.2"
@@ -19,7 +20,6 @@ micronaut-sql = "4.7.2"
 [libraries]
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
 micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.ref = "micronaut-r2dbc" }
-micronaut-reactor = { module = "io.micronaut.reactor:micronaut-reactor-bom", version.ref = "micronaut-reactor" }
 micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", version.ref = "micronaut-rxjava2" }
 micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
 micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
@@ -27,6 +27,7 @@ groovy-json = { module = "org.codehaus.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
+hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
