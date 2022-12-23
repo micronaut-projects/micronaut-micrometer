@@ -17,6 +17,7 @@ dependencies {
     compileOnly mn.netty.transport.native.epoll
     compileOnly mn.netty.transport.native.kqueue
     compileOnly mn.r2dbc.pool
+    compileOnly libs.hdr.histogram
 
     implementation mn.reactor.core
 
