@@ -1,9 +1,6 @@
-import org.gradle.internal.jvm.Jvm
-
 plugins {
     id 'io.micronaut.build.internal.micrometer-module'
 }
-
 dependencies {
     api mn.micronaut.aop
     compileOnly mn.micronaut.core.processor

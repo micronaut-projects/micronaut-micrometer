@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
-    api libs.micrometer.registry.signalfx
+    api(libs.micrometer.registry.signalfx) {
+        exclude(group: 'org.slf4j')
+    }
 }

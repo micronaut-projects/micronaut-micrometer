@@ -22,7 +22,7 @@ dependencies {
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micrometerAnnotation
-    testImplementation "org.apache.groovy:groovy-json:$groovyVersion"
+    testImplementation libs.groovy.json
     testImplementation libs.grpc.api
     testImplementation mn.micronaut.function.web
     testImplementation mn.micronaut.http.client

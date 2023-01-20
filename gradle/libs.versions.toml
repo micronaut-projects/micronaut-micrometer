@@ -1,8 +1,12 @@
 [versions]
+micronaut = "4.0.0-SNAPSHOT"
+micronaut-docs = "2.0.0"
+groovy = "4.0.7"
+spock = "2.3-groovy-4.0"
+
 managed-metrics-core = '4.2.13'
 managed-micrometer = '1.10.2'
 managed-new-relic-registry = '0.10.0'
-micronaut = '4.0.0-SNAPSHOT'
 reflections = '0.10.2'
 
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
@@ -23,7 +27,7 @@ micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.r
 micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", version.ref = "micronaut-rxjava2" }
 micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
 micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
-groovy-json = { module = "org.codehaus.groovy:groovy-json" }
+groovy-json = { module = "org.apache.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
