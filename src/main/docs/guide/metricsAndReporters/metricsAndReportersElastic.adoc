@@ -11,7 +11,7 @@ You can configure this reporter using `micronaut.metrics.export.elastic`. The mo
 |=======
 
 .Example Elastic Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:
