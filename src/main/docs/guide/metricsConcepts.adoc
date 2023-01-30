@@ -88,13 +88,14 @@ Percentile configurations can be added to HTTP server and client metrics. Percen
 
 [configuration]
 ----
-metrics:
-  binders:
-    web:
-      server:
-        percentiles: "0.95,0.99"
-      client:
-        percentiles: "0.95,0.99"
+micronaut:
+  metrics:
+    binders:
+      web:
+        server:
+          percentiles: "0.95,0.99"
+        client:
+          percentiles: "0.95,0.99"
 ----
 
 .Metrics provided
