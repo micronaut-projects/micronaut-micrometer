@@ -86,7 +86,7 @@ If enabled, by default the path `/**` is intercepted. To change which paths are 
 
 Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.
 
-[source,yaml]
+[configuration]
 ----
 metrics:
   binders:
