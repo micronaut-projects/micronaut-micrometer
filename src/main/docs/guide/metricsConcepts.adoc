@@ -151,7 +151,7 @@ The logging metrics bindings provide logging metrics if using https://logback.qo
 You can enable metrics for https://hibernate.org/orm/[Hibernate] by setting the `hibernate.generate_statistics` property to `true` in configuration. For example, for the default entity manager:
 
 Enabling Hibernate Metrics
-[source,yaml]
+[configuration]
 ----
 jpa:
   default:

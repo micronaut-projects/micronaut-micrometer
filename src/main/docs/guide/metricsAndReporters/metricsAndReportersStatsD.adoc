@@ -14,7 +14,7 @@ You can configure this reporter using `micronaut.metrics.export.statsd`. The mos
 |=======
 
 .Example Statsd Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

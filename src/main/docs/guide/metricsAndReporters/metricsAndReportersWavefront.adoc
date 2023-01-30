@@ -14,7 +14,7 @@ You can configure this reporter using `micronaut.metrics.export.wavefront`. The 
 |=======
 
 .Example Wavefront Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

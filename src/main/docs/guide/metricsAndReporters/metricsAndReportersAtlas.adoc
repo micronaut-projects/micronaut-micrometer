@@ -12,7 +12,7 @@ You can configure this reporter using `micronaut.metrics.export.atlas`. The most
 |=======
 
 .Example Atlas Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:
