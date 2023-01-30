@@ -13,7 +13,7 @@ You can configure this reporter using `micronaut.metrics.export.kairos`. The mos
 |=======
 
 .Example Kairos Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

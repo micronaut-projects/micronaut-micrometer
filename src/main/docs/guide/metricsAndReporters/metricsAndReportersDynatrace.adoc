@@ -15,7 +15,7 @@ You can configure this reporter using `micronaut.metrics.export.dynatrace`. The 
 |=======
 
 .Example Dynatrace Config
-[source,yml]
+[configuration]
 ----
 endpoints:
   prometheus:

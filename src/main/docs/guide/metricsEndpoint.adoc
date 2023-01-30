@@ -88,7 +88,7 @@ Currently, the metrics endpoint is only enabled if you include the `micrometer-c
 
 .Property
 
-[source,yaml]
+[configuration]
 ----
 micronaut:
   metrics:
@@ -135,7 +135,7 @@ dependencies {
 To configure the metrics endpoint, supply configuration through `endpoints.metrics`.
 
 .Metrics Endpoint Configuration Example
-[source,yaml]
+[configuration]
 ----
 endpoints:
   metrics:

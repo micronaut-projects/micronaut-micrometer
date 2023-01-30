@@ -11,7 +11,7 @@ You can configure this reporter using `micronaut.metrics.export.humio`. The most
 |=======
 
 .Example Humio Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:
