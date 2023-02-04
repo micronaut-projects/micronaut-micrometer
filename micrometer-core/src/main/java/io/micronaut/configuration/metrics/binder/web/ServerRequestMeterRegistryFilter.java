@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
@@ -47,12 +48,15 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private final MeterRegistry meterRegistry;
+    private final ExportConfigurationProperties config;
 
     /**
-     * @param meterRegistry the meter registry
+     * @param meterRegistry                 the meter registry
+     * @param config
      */
-    public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry) {
+    public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry, ExportConfigurationProperties config) {
         this.meterRegistry = meterRegistry;
+        this.config = config;
     }
 
     private String resolvePath(HttpRequest<?> request) {
@@ -76,7 +80,8 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             path,
             start,
             request.getMethod().toString(),
-            reportErrors
+            reportErrors,
+            config
         );
     }
 }

@@ -31,10 +31,16 @@ import static io.micronaut.core.naming.conventions.StringConvention.CAMEL_CASE;
  */
 @ConfigurationProperties("micronaut.metrics")
 public class ExportConfigurationProperties {
-
+    /**
+     * The default value for enabling 404 uris as tags
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final boolean DEFAULT_404_URI_ENABLED = false;
     private Properties export = new Properties();
 
     private Properties tags = new Properties();
+
+    private boolean enable404uriTag = DEFAULT_404_URI_ENABLED;
 
     /**
      * @return The export properties
@@ -62,5 +68,19 @@ public class ExportConfigurationProperties {
      */
     public void setTags(Properties tags) {
         this.tags = tags;
+    }
+
+    /**
+     * @return if 404 uri tag should be set
+     */
+    public boolean isEnable404uriTag() {
+        return enable404uriTag;
+    }
+
+    /**
+     * @param enable404uriTag set uri tag if http status is 404. Default value ({@value #DEFAULT_404_URI_ENABLED}).
+     */
+    public void setEnable404uriTag(boolean enable404uriTag) {
+        this.enable404uriTag = enable404uriTag;
     }
 }

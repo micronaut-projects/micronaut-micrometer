@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
@@ -44,12 +45,15 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
     private static final String HOST_HEADER = "host";
 
     private final MeterRegistry meterRegistry;
+    private final ExportConfigurationProperties exportConfigurationProperties;
 
     /**
-     * @param meterRegistry The metrics registry
+     * @param meterRegistry                 The metrics registry
+     * @param exportConfigurationProperties
      */
-    public ClientRequestMetricRegistryFilter(MeterRegistry meterRegistry) {
+    public ClientRequestMetricRegistryFilter(MeterRegistry meterRegistry, ExportConfigurationProperties exportConfigurationProperties) {
         this.meterRegistry = meterRegistry;
+        this.exportConfigurationProperties = exportConfigurationProperties;
     }
 
     @Override
@@ -65,7 +69,8 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 request.getMethod().toString(),
                 false,
                 resolveHost(request),
-                true
+                true,
+                exportConfigurationProperties
         );
     }
 

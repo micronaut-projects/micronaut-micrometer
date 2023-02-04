@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
@@ -73,6 +74,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private final String metricName;
     private final String host;
     private final boolean reportErrors;
+    private final ExportConfigurationProperties config;
 
     /**
      * @param publisher     The original publisher
@@ -89,8 +91,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                         long start,
                         String httpMethod,
                         boolean isServer,
-                        boolean reportErrors) {
-        this(publisher, meterRegistry, requestPath, start, httpMethod, isServer, null, reportErrors);
+                        boolean reportErrors,
+                        ExportConfigurationProperties config) {
+        this(publisher, meterRegistry, requestPath, start, httpMethod, isServer, null, reportErrors, config);
     }
 
     /**
@@ -110,7 +113,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                         String httpMethod,
                         boolean isServer,
                         String host,
-                        boolean reportErrors) {
+                        boolean reportErrors,
+                        ExportConfigurationProperties config) {
         this.publisher = Flux.from(publisher);
         this.meterRegistry = meterRegistry;
         this.requestPath = requestPath;
@@ -119,6 +123,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
         this.host = host;
         this.reportErrors = reportErrors;
+        this.config = config;
     }
 
     /**
@@ -134,8 +139,9 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                         String requestPath,
                         long start,
                         String httpMethod,
-                        boolean reportErrors) {
-        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null, reportErrors);
+                        boolean reportErrors,
+                        ExportConfigurationProperties config) {
+        this(publisher, meterRegistry, requestPath, start, httpMethod, true, null, reportErrors, config);
     }
 
     /**
@@ -194,9 +200,10 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                                      String httpMethod,
                                      String requestPath,
                                      Throwable throwable,
-                                     String host) {
+                                     String host,
+                                     ExportConfigurationProperties config) {
         return Stream
-                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath), exception(throwable), host(host))
+                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath, config), exception(throwable), host(host))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -236,13 +243,13 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param path         the path of the request
      * @return Tag of URI
      */
-    private static Tag uri(HttpResponse<?> httpResponse, String path) {
+    private static Tag uri(HttpResponse<?> httpResponse, String path, ExportConfigurationProperties config) {
         if (httpResponse != null) {
             HttpStatus status = httpResponse.getStatus();
             if (status != null && status.getCode() >= 300 && status.getCode() < 400) {
                 return URI_REDIRECTION;
             }
-            if (status != null && status.equals(NOT_FOUND)) {
+            if (status != null && status.equals(NOT_FOUND) && !config.isEnable404uriTag()) {
                 return URI_NOT_FOUND;
             }
         }
@@ -301,7 +308,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                          String httpMethod,
                          String requestPath,
                          String host) {
-        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host);
+        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host, config);
         this.meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
     }
@@ -320,7 +327,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         if (throwable instanceof HttpResponseProvider) {
             response = ((HttpResponseProvider) throwable).getResponse();
         }
-        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host);
+        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host, config);
         meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
     }

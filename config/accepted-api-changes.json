@@ -78,5 +78,15 @@
     "type": "io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper",
     "member": "Implemented interface io.micronaut.inject.annotation.AnnotationMapper",
     "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.web.ServerRequestMeterRegistryFilter",
+    "member": "Constructor io.micronaut.configuration.metrics.binder.web.ServerRequestMeterRegistryFilter(io.micrometer.core.instrument.MeterRegistry)",
+    "reason": "Provide a human readable reason for the change"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.web.ClientRequestMetricRegistryFilter",
+    "member": "Constructor io.micronaut.configuration.metrics.binder.web.ClientRequestMetricRegistryFilter(io.micrometer.core.instrument.MeterRegistry)",
+    "reason": "Provide a human readable reason for the change"
   }
 ]
