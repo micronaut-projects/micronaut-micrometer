@@ -20,6 +20,7 @@ metricsAndReporters:
   metricsAndReportersKairos: Kairos Registry
   metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersNewRelicTelemetry: New Relic Telemetry Registry
+  metricsAndReportersOracleCloud: Oracle Cloud Monitoring Registry
   metricsAndReportersPrometheus: Prometheus Registry
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry

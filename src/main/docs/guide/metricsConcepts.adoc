@@ -82,6 +82,22 @@ There is a default web filter provided for web metrics. All routes, status codes
 .Filter Path
 If enabled, by default the path `/**` is intercepted. To change which paths are run through the filter for the server, set `micronaut.metrics.http.path`. For the client, set `micronaut.metrics.http.client.path`.
 
+.Enabling Percentiles
+
+Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      web:
+        server:
+          percentiles: "0.95,0.99"
+        client:
+          percentiles: "0.95,0.99"
+----
+
 .Metrics provided
 |=======
 |*Name*
