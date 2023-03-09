@@ -18,17 +18,20 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
 import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
+import io.micronaut.http.uri.UriMatchTemplate;
+import io.micronaut.web.router.UriRoute;
+import io.micronaut.web.router.UriRouteMatch;
 import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
-import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
  * Registers the timers and meters for each request.
@@ -56,8 +59,13 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
-        return route.orElseGet(request::getPath);
+        Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO, UriRouteMatch.class)
+            .map(UriRouteMatch::getRoute)
+            .map(UriRoute::getUriMatchTemplate)
+            .map(UriMatchTemplate::toPathString);
+
+        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE).map(Object::toString)
+            .orElse(request.getUri().toString()));
     }
 
     /**
