@@ -49,6 +49,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
+    private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final MeterRegistry meterRegistry;
 
     /**
@@ -64,8 +65,8 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             .map(UriRoute::getUriMatchTemplate)
             .map(UriMatchTemplate::toPathString);
 
-        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE).map(Object::toString)
-            .orElse(request.getUri().toString()));
+        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
+                        .orElse(UNMATCHED_URI));
     }
 
     /**
