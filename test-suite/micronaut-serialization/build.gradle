@@ -1,12 +1,13 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-module'
+    id 'io.micronaut.build.internal.micrometer-base'
+    id 'io.micronaut.build.internal.common'
 }
 
 dependencies {
     annotationProcessor mn.micronaut.graal
 
     testAnnotationProcessor mn.micronaut.inject.java
-    testAnnotationProcessor projects.micrometerAnnotation
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
     testImplementation mn.groovy.json
     testImplementation libs.grpc.api
     testImplementation mn.micronaut.function.web
@@ -15,9 +16,10 @@ dependencies {
     testImplementation mn.micronaut.inject.groovy
     testImplementation mn.micronaut.management
     testImplementation mn.netty.buffer
+    testImplementation mnTest.micronaut.test.spock
     testImplementation mn.netty.transport.native.epoll
     testImplementation mn.netty.transport.native.kqueue
-    testImplementation projects.micrometerCore
+    testImplementation projects.micronautMicrometerCore
     testImplementation mnSerde.micronaut.serde.jackson
     testRuntimeOnly mn.micronaut.http.server.netty
 }

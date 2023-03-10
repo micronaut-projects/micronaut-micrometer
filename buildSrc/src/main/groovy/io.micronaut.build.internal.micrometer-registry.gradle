@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api libs.managed.micrometer.core
-    api projects.micrometerCore
+    api projects.micronautMicrometerCore
 
     compileOnly mn.micronaut.management
 
