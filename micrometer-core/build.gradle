@@ -21,15 +21,19 @@ dependencies {
     implementation mn.reactor
 
     testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor mnValidation.micronaut.validation.processor
+    testCompileOnly mnValidation.micronaut.validation.processor // for Groovy
     testAnnotationProcessor projects.micrometerAnnotation
     testImplementation libs.groovy.json
     testImplementation libs.grpc.api
+    testImplementation mnValidation.micronaut.validation
     testImplementation mn.micronaut.function.web
     testImplementation mn.micronaut.http.client
     testImplementation mn.micronaut.http.server.netty
     testImplementation mn.micronaut.inject.groovy
     testImplementation mnSql.micronaut.jdbc
     testImplementation mn.micronaut.management
+    testImplementation mn.micronaut.http.validation
     testImplementation mnRxjava2.micronaut.rxjava2
     testImplementation mnSerde.micronaut.serde.jackson
     testImplementation mn.netty.buffer

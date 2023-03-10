@@ -46,4 +46,5 @@ micronautBuild {
     importMicronautCatalog("micronaut-rxjava2")
     importMicronautCatalog("micronaut-serde")
     importMicronautCatalog("micronaut-sql")
+    importMicronautCatalog("micronaut-validation")
 }
