@@ -23,7 +23,7 @@ dependencies {
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor mnValidation.micronaut.validation.processor
     testCompileOnly mnValidation.micronaut.validation.processor // for Groovy
-    testAnnotationProcessor projects.micrometerAnnotation
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
     testImplementation libs.groovy.json
     testImplementation libs.grpc.api
     testImplementation mnValidation.micronaut.validation
