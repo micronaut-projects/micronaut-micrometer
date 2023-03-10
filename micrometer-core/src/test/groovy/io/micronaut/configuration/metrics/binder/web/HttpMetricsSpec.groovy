@@ -73,7 +73,7 @@ class HttpMetricsSpec extends Specification {
         result == 'ok foo'
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('host', 'localhost').timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('serviceId', 'embedded-server').timer()
 
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/foo').timer()
