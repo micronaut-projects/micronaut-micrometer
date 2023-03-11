@@ -11,7 +11,7 @@ You can configure this reporter using `micronaut.metrics.export.jmx`. The most c
 |=======
 
 .Example JMX Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

@@ -12,7 +12,7 @@ You can configure this reporter using `micronaut.metrics.export.cloudwatch`. The
 |=======
 
 .Example CloudWatch Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

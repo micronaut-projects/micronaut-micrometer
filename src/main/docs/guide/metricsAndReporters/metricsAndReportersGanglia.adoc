@@ -12,7 +12,7 @@ You can configure this reporter using `micronaut.metrics.export.ganglia`. The mo
 |=======
 
 .Example Ganglia Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

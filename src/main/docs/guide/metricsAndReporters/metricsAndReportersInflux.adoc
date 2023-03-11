@@ -12,7 +12,7 @@ You can configure this reporter using `micronaut.metrics.export.influx`. The mos
 |=======
 
 .Example Influx Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:
