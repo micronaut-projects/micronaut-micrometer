@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
@@ -5,3 +6,6 @@ dependencyResolutionManagement {
         }
     }
 }
+=======
+rootProject.name = 'micrometer-parent'
+>>>>>>> Stashed changes

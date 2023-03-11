@@ -29,7 +29,9 @@ import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
@@ -40,6 +42,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -76,15 +79,27 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TimedInterceptor.class);
 
     private final MeterRegistry meterRegistry;
+    private final ConversionService conversionService;
 
     /**
      * @param meterRegistry The meter registry
      */
     protected TimedInterceptor(MeterRegistry meterRegistry) {
+        this(meterRegistry, ConversionService.SHARED);
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     */
+    @Inject
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
+        this.conversionService = conversionService;
     }
 
     @Override
+    @SuppressWarnings("java:S3776") // performance
     public Object intercept(MethodInvocationContext<Object, Object> context) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final AnnotationValue<TimedSet> timedSet = metadata.getAnnotation(TimedSet.class);
@@ -94,11 +109,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
                 String exceptionClass = "none";
                 List<Timer.Sample> syncInvokeSamples = null;
-                InterceptedMethod interceptedMethod = InterceptedMethod.of(context);
+                InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
                 try {
                     InterceptedMethod.ResultType resultType = interceptedMethod.resultType();
                     switch (resultType) {
-                        case PUBLISHER:
+                        case PUBLISHER -> {
                             Object interceptResult = context.proceed();
                             if (interceptResult == null) {
                                 return null;
@@ -106,47 +121,51 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                             Object result;
                             AtomicReference<List<Timer.Sample>> reactiveInvokeSample = new AtomicReference<>();
                             if (context.getReturnType().isSingleResult()) {
-                                Mono<?> single = Mono.from(Publishers.convertPublisher(interceptResult, Publisher.class));
+                                Mono<?> single = Mono.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                                 result = single.doOnSubscribe(d -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
-                                        .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get()))
-                                        .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get()));
+                                    .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get()))
+                                    .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get()));
                             } else {
                                 AtomicReference<String> exceptionClassHolder = new AtomicReference<>("none");
-                                Flux<?> flowable = Flux.from(Publishers.convertPublisher(interceptResult, Publisher.class));
+                                Flux<?> flowable = Flux.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                                 result = flowable.doOnRequest(n -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
-                                        .doOnError(throwable -> exceptionClassHolder.set(throwable.getClass().getSimpleName()))
-                                        .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get()));
+                                    .doOnError(throwable -> exceptionClassHolder.set(throwable.getClass().getSimpleName()))
+                                    .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get()));
                             }
-                            return Publishers.convertPublisher(result, context.getReturnType().getType());
-                        case COMPLETION_STAGE:
+                            return Publishers.convertPublisher(conversionService, result, context.getReturnType().getType());
+                        }
+                        case COMPLETION_STAGE -> {
                             List<Timer.Sample> completionStageInvokeSamples = initSamples(timedAnnotations);
                             CompletionStage<?> completionStage = interceptedMethod.interceptResultAsCompletionStage();
                             CompletionStage<?> completionStageResult = completionStage
-                                    .whenComplete((o, throwable) ->
-                                            finalizeSamples(
-                                                    timedAnnotations, throwable == null ? "none" : throwable.getClass().getSimpleName(),
-                                                    completionStageInvokeSamples
-                                            )
-                                    );
-
+                                .whenComplete((o, throwable) ->
+                                    finalizeSamples(
+                                        timedAnnotations, throwable == null ? "none" : throwable.getClass().getSimpleName(),
+                                        completionStageInvokeSamples
+                                    )
+                                );
                             return interceptedMethod.handleResult(completionStageResult);
-                        case SYNCHRONOUS:
+                        }
+                        case SYNCHRONOUS -> {
                             syncInvokeSamples = initSamples(timedAnnotations);
                             return context.proceed();
-                        default:
+                        }
+                        default -> {
                             return interceptedMethod.unsupported();
+                        }
                     }
                 } catch (Exception e) {
                     exceptionClass = e.getClass().getSimpleName();
                     return interceptedMethod.handleException(e);
                 } finally {
-                    finalizeSamples(timedAnnotations, exceptionClass, syncInvokeSamples);
+                    finalizeSamples(timedAnnotations, exceptionClass, syncInvokeSamples != null ? syncInvokeSamples : Collections.emptyList());
                 }
             }
         }
         return context.proceed();
     }
 
+    @SuppressWarnings("java:S1481")
     private List<Timer.Sample> initSamples(List<AnnotationValue<Timed>> timedAnnotations) {
         List<Timer.Sample> syncInvokeSamples = new ArrayList<>(timedAnnotations.size());
         for (AnnotationValue<Timed> ignored : timedAnnotations) {
@@ -173,7 +192,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
-            final double[] percentiles = metadata.get("percentiles", double[].class).orElse(null);
+            final double[] percentiles = metadata.doubleValues("percentiles");
             final boolean histogram = metadata.isTrue("histogram");
             final Timer timer = Timer.builder(metricName)
                     .description(description)
