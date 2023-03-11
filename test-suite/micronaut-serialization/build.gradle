@@ -1,6 +1,6 @@
 plugins {
     id 'io.micronaut.build.internal.micrometer-base'
-    id 'io.micronaut.build.internal.common'
+    id("io.micronaut.application")
 }
 
 dependencies {
@@ -8,19 +8,41 @@ dependencies {
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation
-    testImplementation mn.groovy.json
-    testImplementation libs.grpc.api
-    testImplementation mn.micronaut.function.web
     testImplementation mn.micronaut.http.client
     testImplementation mn.micronaut.http.server.netty
-    testImplementation mn.micronaut.inject.groovy
     testImplementation mn.micronaut.management
-    testImplementation mn.netty.buffer
-    testImplementation mnTest.micronaut.test.spock
+    testImplementation mnTest.micronaut.test.junit5
     testImplementation mn.netty.transport.native.epoll
     testImplementation mn.netty.transport.native.kqueue
     testImplementation projects.micronautMicrometerCore
     testImplementation mnSerde.micronaut.serde.jackson
-    testRuntimeOnly mn.micronaut.http.server.netty
 }
 
+micronaut {
+    testRuntime("junit5")
+}
+
+tasks.named("check") { task ->
+    def graal = ["jvmci.Compiler", "java.vendor.version", "java.vendor"].any {
+        println "$it ${System.getProperty(it)}"
+        System.getProperty(it)?.toLowerCase(Locale.ENGLISH)?.contains("graal")
+    }
+    if (graal) {
+        task.dependsOn("nativeTest")
+    }
+}
+
+graalvmNative {
+    toolchainDetection = false
+    metadataRepository {
+        enabled = true
+    }
+    binaries {
+        all {
+            resources.autodetect()
+//            openGraalModules.each { module ->
+//                jvmArgs.add("--add-exports=" + module + "=ALL-UNNAMED")
+//            }
+        }
+    }
+}

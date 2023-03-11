@@ -2,6 +2,7 @@
 micronaut = "4.0.0-SNAPSHOT"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.0-SNAPSHOT"
+micronaut-gradle-plugin = "3.7.5"
 groovy = "4.0.7"
 spock = "2.3-groovy-4.0"
 
@@ -65,3 +66,4 @@ reflections = { module = 'org.reflections:reflections', version.ref = 'reflectio
 
 jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
