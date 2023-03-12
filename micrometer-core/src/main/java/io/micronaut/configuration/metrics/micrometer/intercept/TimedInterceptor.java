@@ -83,7 +83,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**
      * @param meterRegistry The meter registry
+     * @deprecated Pass conversion service in new constructor
      */
+    @Deprecated
     protected TimedInterceptor(MeterRegistry meterRegistry) {
         this(meterRegistry, ConversionService.SHARED);
     }

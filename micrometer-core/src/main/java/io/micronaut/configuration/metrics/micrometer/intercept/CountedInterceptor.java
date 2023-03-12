@@ -53,10 +53,19 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
 
+    /**
+     * @param meterRegistry The meter registry
+     * @deprecated Pass conversion service in new constructor
+     */
+    @Deprecated
     public CountedInterceptor(MeterRegistry meterRegistry) {
         this(meterRegistry, ConversionService.SHARED);
     }
 
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     */
     @Inject
     public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
