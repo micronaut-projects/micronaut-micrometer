@@ -1,9 +1,9 @@
 [versions]
-micronaut = "4.0.0-SNAPSHOT"
+micronaut = "4.0.0-M1"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.0-SNAPSHOT"
-micronaut-gradle-plugin = "3.7.5"
-groovy = "4.0.9"
+micronaut-gradle-plugin = "4.0.0-SNAPSHOT"
+groovy = "4.0.10"
 spock = "2.3-groovy-4.0"
 
 managed-metrics-core = '4.2.15'
@@ -17,12 +17,12 @@ logback = "1.4.5"
 jcache = "1.1.1"
 hdr-histogram = '2.1.12'
 
-micronaut-cache = "4.0.0-SNAPSHOT"
+micronaut-cache = "4.0.0-M1"
 micronaut-r2dbc = "4.0.0"
-micronaut-rxjava2 = "2.0.0-SNAPSHOT"
-micronaut-serde = "2.0.0-SNAPSHOT"
+micronaut-rxjava2 = "2.0.0-M1"
+micronaut-serde = "2.0.0-M1"
 micronaut-sql = "4.7.2"
-micronaut-validation = "4.0.0-SNAPSHOT"
+micronaut-validation = "4.0.0-M2"
 
 [libraries]
 micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-bom", version.ref = "micronaut-validation" }

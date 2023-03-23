@@ -19,6 +19,7 @@ dependencies {
 }
 
 micronaut {
+    version = "4.0.0-SNAPSHOT"
     testRuntime("junit5")
 }
 
