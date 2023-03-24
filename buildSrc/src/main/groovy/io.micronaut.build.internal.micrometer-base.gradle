@@ -2,9 +2,6 @@ plugins {
     id 'io.micronaut.build.internal.base'
 }
 
-version projectVersion
-group 'io.micronaut.micrometer'
-
 repositories {
     maven { setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
     mavenCentral()

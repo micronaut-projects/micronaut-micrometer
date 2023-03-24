@@ -1,12 +1,3 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-base'
     id 'io.micronaut.build.internal.bom'
-}
-micronautBom {
-    excludeProject.set({ p ->    
-        p.name == 'test-suite' || 
-        p.name == 'doc-examples' || 
-        p.path.contains('test-suite:') || 
-        p.path.contains('doc-examples:')
-    } as Spec<String>)
 }
