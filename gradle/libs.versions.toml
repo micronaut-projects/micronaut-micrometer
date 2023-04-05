@@ -7,7 +7,7 @@ groovy = "4.0.10"
 spock = "2.3-groovy-4.0"
 
 managed-metrics-core = '4.2.18'
-managed-micrometer = '1.10.4'
+managed-micrometer = '1.10.5'
 managed-new-relic-registry = '0.10.0'
 reflections = '0.10.2'
 
