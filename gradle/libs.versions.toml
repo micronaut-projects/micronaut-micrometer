@@ -13,7 +13,7 @@ reflections = '0.10.2'
 
 # TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
 grpc = '1.54.0'
-logback = "1.4.5"
+logback = "1.4.6"
 jcache = "1.1.1"
 hdr-histogram = '2.1.12'
 
