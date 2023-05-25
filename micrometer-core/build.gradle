@@ -19,7 +19,7 @@ dependencies {
     compileOnly libs.hdr.histogram
 
     implementation mn.reactor
-    implementation mn.micronaut.retry
+    compileOnly(mn.micronaut.retry)
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor mnValidation.micronaut.validation.processor
