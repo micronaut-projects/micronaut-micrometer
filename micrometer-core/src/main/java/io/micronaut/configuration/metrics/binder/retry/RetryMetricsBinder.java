@@ -37,6 +37,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  *
  * @author Robert Young
  */
+@Requires(classes = { RetryEventListener.class, RetryEvent.class })
 @Singleton
 @RequiresMetrics
 @Requires(property = RetryMetricsBinder.RETRY_METRICS_ENABLED, notEquals = StringUtils.FALSE, defaultValue = StringUtils.FALSE)
