@@ -21,7 +21,7 @@ micronaut-cache = "4.0.0-M2"
 micronaut-r2dbc = "5.0.0-M5"
 micronaut-rxjava2 = "2.0.0-M1"
 micronaut-serde = "2.0.0-M8"
-micronaut-sql = "5.0.0-M6"
+micronaut-sql = "5.0.0-M7"
 micronaut-validation = "4.0.0-M7"
 
 [libraries]
