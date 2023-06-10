@@ -122,7 +122,7 @@ implements <a href="MeterRegistryConfigurer.html" title="interface in io.microna
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure(io.micrometer.core.instrument.composite.CompositeMeterRegistry)" class="member-name-link">configure</a><wbr>(io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configure(io.micrometer.core.instrument.composite.CompositeMeterRegistry)" class="member-name-link">configure</a><wbr>(@NonNull io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Configures a meter registry with binders, filters, etc.</div>
 </div>
@@ -174,7 +174,7 @@ implements <a href="MeterRegistryConfigurer.html" title="interface in io.microna
 <section class="detail" id="configure(io.micrometer.core.instrument.composite.CompositeMeterRegistry)">
 <h3>configure</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configure</span><wbr><span class="parameters">(@NonNull
- io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</span></div>
+ @NonNull io.micrometer.core.instrument.composite.CompositeMeterRegistry&nbsp;meterRegistry)</span></div>
 <div class="block">Configures a meter registry with binders, filters, etc.
  <p>
  It is Important that filters are the first thing added so that subsequent operations are
