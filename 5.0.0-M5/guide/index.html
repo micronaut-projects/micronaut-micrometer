@@ -1,0 +1,4458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>Micronaut Micrometer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/custom.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <link rel="stylesheet" href="../css/highlight/agate.css">
+    <script src="../js/highlight.pack.js"></script>
+    <script src="../js/guide.js"></script>
+    <script src="../js/multi-language-sample.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="stylesheet" href="../css/multi-language-sample.css"/>
+    <script src="../js/docs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
+    <script type="text/javascript">
+        function addJsClass(el) {
+            var classes = document.body.className.split(" ");
+            classes.push("js");
+            document.body.className = classes.join(" ");
+        }
+    </script>
+
+</head>
+
+<body class="body" id="docs" onload="addJsClass();" onhashchange="highlightMenu()">
+
+<div id="table-of-content-nav-link" class="desktop">
+    <a id="theme-switcher" title="Switch to dark theme" href="javascript:switchTheme(true)"><i class="fa fa-moon-o"></i></a>
+    <a title="Collapse/Open Table of contents" title="Hide Table of Contents" href="javascript:hideTableOfContents();" class="button">[ + ]</a>
+</div>
+
+<div id="main">
+    <div id="navigation" class="no-print">
+        <div class="navTitle">
+            <span id="logo"><a href="http://micronaut.io" title="Go to Micronaut Website"><img src="../img/micronaut-logo-white.svg" alt="Micronaut"/></a></span>
+        </div>
+        <div class="navLinks">
+            <ul>
+                    <li><div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)" class="desktop">
+                            <a href="../guide/index.html" class="button">Table of contents</a>
+                            <div id="nav-summary-childs" style="display:none;">
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsEndpoint"><strong>3</strong><span>Metrics Endpoint</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsConcepts"><strong>4</strong><span>Metrics Concepts</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsAnnotations"><strong>5</strong><span>Metrics Annotations</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#metricsAndReporters"><strong>6</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+                                
+                            </div>
+                        </div>
+                    </li>
+
+                <li id="table-of-content-nav-link-mobile" class="mobile">
+                    <a title="Scroll to Table of contents" href="javascript:scrollToTop();" class="button">Toc</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to API documentation" href="../api/index.html" class="button">API</a>
+                </li>
+                <li class="desktop">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Configuration Reference</a>
+                </li>
+                <li class="mobile">
+                    <a title="Go to Configuration Reference documentation" href="../guide/configurationreference.html" class="button">Conf</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    
+    <div id="table-of-content">
+        <div class="toc-content">
+
+        <h2>Table of Contents</h2>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-introduction"><a href="#introduction"><strong>1</strong><span>Introduction</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-releaseHistory"><a href="#releaseHistory"><strong>2</strong><span>Release History</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsEndpoint"><a href="#metricsEndpoint"><strong>3</strong><span>Metrics Endpoint</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsConcepts"><a href="#metricsConcepts"><strong>4</strong><span>Metrics Concepts</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsAnnotations"><a href="#metricsAnnotations"><strong>5</strong><span>Metrics Annotations</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metricsAndReporters"><a href="#metricsAndReporters"><strong>6</strong><span>Metrics Registries &amp; Reporters</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAppOptics"><a href="#metricsAndReportersAppOptics"><strong>6.1</strong><span>AppOptics Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAtlas"><a href="#metricsAndReportersAtlas"><strong>6.2</strong><span>Atlas Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersAzureMonitor"><a href="#metricsAndReportersAzureMonitor"><strong>6.3</strong><span>Azure Monitor Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersCloudWatch"><a href="#metricsAndReportersCloudWatch"><strong>6.4</strong><span>CloudWatch Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDatadog"><a href="#metricsAndReportersDatadog"><strong>6.5</strong><span>Datadog Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersDynatrace"><a href="#metricsAndReportersDynatrace"><strong>6.6</strong><span>Dynatrace Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersElastic"><a href="#metricsAndReportersElastic"><strong>6.7</strong><span>Elasticsearch Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGanglia"><a href="#metricsAndReportersGanglia"><strong>6.8</strong><span>Ganglia Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersGraphite"><a href="#metricsAndReportersGraphite"><strong>6.9</strong><span>Graphite Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersHumio"><a href="#metricsAndReportersHumio"><strong>6.10</strong><span>Humio Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersInflux"><a href="#metricsAndReportersInflux"><strong>6.11</strong><span>Influx Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersJmx"><a href="#metricsAndReportersJmx"><strong>6.12</strong><span>JMX Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersKairos"><a href="#metricsAndReportersKairos"><strong>6.13</strong><span>Kairos Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelic"><a href="#metricsAndReportersNewRelic"><strong>6.14</strong><span>New Relic Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersNewRelicTelemetry"><a href="#metricsAndReportersNewRelicTelemetry"><strong>6.15</strong><span>New Relic Telemetry Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersOracleCloud"><a href="#metricsAndReportersOracleCloud"><strong>6.16</strong><span>Oracle Cloud Monitoring Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>6.17</strong><span>Prometheus Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.18</strong><span>SignalFx Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.19</strong><span>Stackdriver Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.20</strong><span>StatsD Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.21</strong><span>Wavefront Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+        
+        </div>
+    </div>
+    
+    <div class="docs-content">
+    <div class="project">
+        <h1>Micronaut Micrometer</h1>
+        <p></p>
+        <p>Provides integration between Micronaut and Micrometer</p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option value='https://micronaut-projects.github.io/micronaut-micrometer/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-micrometer/latest/guide/index.html'>LATEST</option></select> </p>
+    </div>
+    
+<h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/introduction.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This project integrates Micronaut and <a href="https://micrometer.io/">Micrometer</a>, allowing metrics collection for Micronaut applications.</p>
+</div>
+
+<h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/releaseHistory.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can find a list of releases for this project (with release notes) here:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-micrometer/releases">https://github.com/micronaut-projects/micronaut-micrometer/releases</a></p>
+</div>
+
+<h1 id="metricsEndpoint"><a class="anchor" href="#metricsEndpoint"></a>3 Metrics Endpoint</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsEndpoint.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply one of <code>micrometer-atlas</code>, <code>micrometer-graphite</code>, <code>micrometer-prometheus</code>, or <code>micrometer-statsd</code> features to enable metrics and preconfigure the selected registry in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features micrometer-atlas</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The metrics endpoint returns information about the "metrics" of the application. To execute the endpoint, send a GET request to <code>/metrics</code>. This returns the metric names registered with the <code>MeterRegistry</code> bean.</p>
+</div>
+<div class="paragraph">
+<p>You can get specific metrics by using <code>/metrics/[name]</code>, for example <code>/metrics/jvm.memory.used</code>. This would return something like:</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.45397552E8
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap",
+        "nonheap"
+      ]
+    },
+    {
+      "tag": "id",
+      "values": [
+        "Compressed Class Space",
+        "PS Survivor Space",
+        "PS Old Gen",
+        "Metaspace",
+        "PS Eden Space",
+        "Code Cache"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can further limit the metric by using a tag like <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "area",
+      "values": [
+        "heap"
+      ]
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may even use multiple or nested tags, for example <code>/metrics/jvm.memory.used?tag=id:PS%20Old%20Gen&amp;tag=area:heap</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sample Metric Detail Json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "jvm.memory.used",
+  "measurements": [
+    {
+      "statistic": "VALUE",
+      "value": 1.1434488E7
+    }
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Currently, the metrics endpoint is only enabled if you include the <code>micrometer-core</code> (or one of the typed registries such as <code>micrometer-registry-statsd</code>, <code>micrometer-registry-graphite</code>, etc.) AND the <code>management</code> dependencies. You must also enable the global metrics flag (<code>true</code> by default).</p>
+</div>
+<div class="openblock">
+<div class="title">Property</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Gradle</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
+    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
+    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
+    // Also required to enable endpoint
+    implementation "io.micronaut:micronaut-management"
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Maven</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- Also required to enable endpoint --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To configure the metrics endpoint, supply configuration through <code>endpoints.metrics</code>.</p>
+</div>
+<div class="openblock">
+<div class="title">Metrics Endpoint Configuration Example</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">endpoints.metrics.enabled=Boolean
+endpoints.metrics.sensitive=Boolean</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  metrics:
+    enabled: Boolean
+    sensitive: Boolean</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.metrics]
+    enabled="Boolean"
+    sensitive="Boolean"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">endpoints {
+  metrics {
+    enabled = "Boolean"
+    sensitive = "Boolean"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  endpoints {
+    metrics {
+      enabled = "Boolean"
+      sensitive = "Boolean"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "endpoints": {
+    "metrics": {
+      "enabled": "Boolean",
+      "sensitive": "Boolean"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<h1 id="metricsConcepts"><a class="anchor" href="#metricsConcepts"></a>4 Metrics Concepts</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsConcepts.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_metric_concepts">Metric Concepts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Key Micrometer <a href="https://micrometer.io/docs/concepts">concepts</a> include a <a href="https://micrometer.io/docs/concepts#_registry">MeterRegistry</a> to register and use meters.
+A <a href="https://micrometer.io/docs/concepts#_meters">Meter</a> is something that produces metrics.</p>
+</div>
+<div class="paragraph">
+<p>A MeterRegistry can have some customizations automatically applied.</p>
+</div>
+<div class="sect2">
+<h3 id="_meter_registry_configurer">Meter Registry Configurer</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Any bean that implements <code>MeterRegistryConfigurer</code> gets applied to every <em>applicable</em> MeterRegistry bean on creation</p>
+</li>
+<li>
+<p>The implementation of the MeterRegistryConfigurer <code>supports()</code> method determines if the configurer is applied to a particular registry</p>
+<div class="ulist">
+<ul>
+<li>
+<p>If you want all registries to get the customization, return <code>true</code></p>
+</li>
+<li>
+<p>Otherwise, you can evaluate the registry for its class type, class hierarchy, or other criteria.</p>
+</li>
+<li>
+<p>Remember you only get one shot for autoconfiguration; i.e. when the bean context is started.</p>
+</li>
+<li>
+<p>However, in code you can apply additional customizations to the registry config.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">MeterRegistryConfigurer Interface</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
+ * Copyright 2017-2019 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.micronaut.configuration.metrics.aggregator;
+
+import io.micrometer.core.instrument.MeterRegistry;
+
+/**
+ * Configures meter registries. This is done on bean added event so composite
+ * registry can be skipped and non-composite registries can be added to composite.
+ *
+ * @author Christian Oestreich
+ * @param &lt;T&gt; an instance of a meter registry that will be configured
+ * @since 1.0
+ */
+public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; {
+
+    /**
+     * Configures a meter registry with binders, filters, etc.
+     *
+     * @param meterRegistry Meter Registry
+     */
+    void configure(T meterRegistry);
+
+    /**
+     * Determines if this configurer supports the meter registry type.
+     *
+     * @param meterRegistry a meter registry
+     * @return boolean whether is supported
+     */
+    default boolean supports(T meterRegistry) {
+        return true;
+    }
+
+    /**
+     * @return the type parameter
+     */
+    Class&lt;T&gt; getType();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
+ * Copyright 2017-2019 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.micronaut.docs;
+
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.core.annotation.Order;
+import io.micronaut.core.order.Ordered;
+import jakarta.inject.Singleton;
+
+@Order(Integer.MAX_VALUE)
+@Singleton
+@RequiresMetrics
+public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt;, Ordered {
+
+    @Override
+    public void configure(SimpleMeterRegistry meterRegistry) {
+        meterRegistry.config().commonTags("key", "value");
+    }
+
+    @Override
+    public Class&lt;SimpleMeterRegistry&gt; getType() {
+        return SimpleMeterRegistry.class;
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_meter_filter">Meter Filter</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>A <a href="https://micrometer.io/docs/concepts#_meter_filters">meter filter</a> can be used to determine if a Meter is to be added to the registry.</p>
+</li>
+<li>
+<p>Any bean that implements <code>MeterFilter</code> will be applied to all registries when the registry is first created</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can create custom filters similar to the following inside your application. <code>MeterFilter</code> provides several convenience methods to help with the creation of these filters.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
+
+import java.util.Collections;
+
+@Factory
+public class MeterFilterFactory {
+
+    /**
+     * Add global tags to all metrics.
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter addCommonTagFilter() {
+        return MeterFilter.commonTags(Collections.singletonList(Tag.of("scope", "demo")));
+    }
+
+    /**
+     * Rename a tag key for every metric beginning with a given prefix.
+     * &lt;p&gt;
+     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
+     * &lt;p&gt;
+     * OLD: http.server.requests ['method':'GET", ...]
+     * NEW: http.server.requests ['httpmethod':'GET", ...]
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter renameFilter() {
+        return MeterFilter.renameTag("http.server.requests", "method", "httpmethod");
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_meter_binder">Meter Binder</h3>
+<div class="paragraph">
+<p>Meter Binders get applied to Meter Registry to <em>mix in</em> metrics producers. Micrometer defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These implement <code>MeterBinder</code>, but they are not autowired as beans; manual wiring is required given how Micrometer is currently implemented.</p>
+</div>
+<div class="sect3">
+<h4 id="_provided_binders">Provided Binders</h4>
+<div class="paragraph">
+<p>The following metrics currently have binders and are enabled by default. The settings listed below can disable individual metric binders if you do not wish to collect or report those metrics.</p>
+</div>
+<div class="sect4">
+<h5 id="_jvm_metrics">JVM Metrics</h5>
+<div class="paragraph">
+<p>The JVM metrics bindings provide several JVM metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jvm.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.memory.used</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.buffer.total.capacity</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.classes.loaded</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.classes.unloaded</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.live.data.size</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.max.data.size</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.memory.allocated</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.gc.memory.promoted</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.committed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.memory.used</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.daemon</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.live</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jvm.threads.peak</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_web_metrics">Web Metrics</h5>
+<div class="paragraph">
+<p>There is a default web filter provided for web metrics. All routes, status codes, methods, and exceptions are timed and counted.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.web.enabled</code></p>
+</div>
+<div class="paragraph">
+<div class="title">Filter Path</div>
+<p>If enabled, by default the path <code>/**</code> is intercepted. To change which paths are run through the filter for the server, set <code>micronaut.metrics.http.path</code>. For the client, set <code>micronaut.metrics.http.client.path</code>.</p>
+</div>
+<div class="paragraph">
+<div class="title">Enabling Percentiles</div>
+<p>Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.binders.web.server.percentiles=0.95,0.99
+micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    binders:
+      web:
+        server:
+          percentiles: "0.95,0.99"
+        client:
+          percentiles: "0.95,0.99"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    [micronaut.metrics.binders]
+      [micronaut.metrics.binders.web]
+        [micronaut.metrics.binders.web.server]
+          percentiles="0.95,0.99"
+        [micronaut.metrics.binders.web.client]
+          percentiles="0.95,0.99"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    binders {
+      web {
+        server {
+          percentiles = "0.95,0.99"
+        }
+        client {
+          percentiles = "0.95,0.99"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      binders {
+        web {
+          server {
+            percentiles = "0.95,0.99"
+          }
+          client {
+            percentiles = "0.95,0.99"
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "binders": {
+        "web": {
+          "server": {
+            "percentiles": "0.95,0.99"
+          },
+          "client": {
+            "percentiles": "0.95,0.99"
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http.server.requests</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http.client.requests</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_system_metrics">System Metrics</h5>
+<div class="paragraph">
+<p>There are multiple metrics that can be separately toggled.</p>
+</div>
+<div class="sect5">
+<h6 id="_uptime_metrics">Uptime Metrics</h6>
+<div class="paragraph">
+<p>The uptime metrics bindings provide system uptime metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.uptime.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.uptime</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.start.time</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_processor_metrics">Processor Metrics</h5>
+<div class="paragraph">
+<p>The processor metrics bindings provide system processor metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.processor.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.load.average.1m</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.cpu.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">system.cpu.count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.cpu.usage</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_file_descriptor_metrics">File Descriptor Metrics</h5>
+<div class="paragraph">
+<p>The file descriptor metrics bindings provide system file descriptor metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.files.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.files.open</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">process.files.max</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_logback_metrics">Logback Metrics</h5>
+<div class="paragraph">
+<p>The logging metrics bindings provide logging metrics if using <a href="https://logback.qos.ch/">Logback</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.logback.enabled</code></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logback.events</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_hibernate_metrics">Hibernate Metrics</h5>
+<div class="paragraph">
+<p>You can enable metrics for <a href="https://hibernate.org/orm/">Hibernate</a> by setting the <code>hibernate.generate_statistics</code> property to <code>true</code> in configuration. For example, for the default entity manager:</p>
+</div>
+<div class="paragraph">
+<p>Enabling Hibernate Metrics</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">jpa.default.properties.hibernate.generate_statistics=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">jpa:
+  default:
+    properties:
+      hibernate:
+        generate_statistics: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[jpa]
+  [jpa.default]
+    [jpa.default.properties]
+      [jpa.default.properties.hibernate]
+        generate_statistics=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">jpa {
+  'default' {
+    properties {
+      hibernate {
+        generate_statistics = true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  jpa {
+    default {
+      properties {
+        hibernate {
+          generate_statistics = true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "jpa": {
+    "default": {
+      "properties": {
+        "hibernate": {
+          "generate_statistics": true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> needs to be on the classpath, so <a href="https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer">hibernate-micrometer</a> should be downloaded:</p>
+</div>
+<div class="listingblock">
+<div class="title">Gradle</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    implementation("org.hibernate:hibernate-micrometer")
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Micrometer automatically exposes Hibernate statistics. See the source code for <a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> for the available metrics.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_datasource_metrics">DataSource Metrics</h5>
+<div class="paragraph">
+<p>The <code>DataSource</code> metrics bindings provide data source pool metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jdbc.enabled</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+There is a different set of pool metric names for HikariCP and other pool providers.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you use <code>io.micronaut.sql:micronaut-jdbc-hikari</code> you will get additional pool metrics, as HikariCP has built-in support for meter registries.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. HikariCP Metrics Provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.idle</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.pending</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.active</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.creation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.min</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.timeout</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">hikaricp.connections.acquire</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If you use <code>io.micronaut.sql:micronaut-jdbc-tomcat</code> or <code>io.micronaut.sql:micronaut-jdbc-dbcp</code>, you will get the following metrics</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. Generic Pool Metrics provided</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.usage</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.active</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.max</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jdbc.connections.min</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_netty_server_metrics">Netty Server Metrics</h5>
+<div class="paragraph">
+<p>Currently, the following binders are provided to instrument Netty server:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>EventLoopGroupFactoryBinder</strong>: Instrument and expose event loop group queues metrics; use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
+</li>
+<li>
+<p><strong>ByteBufAllocatorMetricsBinder</strong>: Expose <code>ByteBuf</code> default allocators (<a href="https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html">UnpooledByteBufAllocator</a>, <a href="https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html">PooledByteBufAllocator</a>) metrics; use <code>micronaut.metrics.binders.netty.bytebuf-allocators.enabled</code> to toggle. Default is <strong>false</strong>.
+You can customize what metrics are exposed using <code>micronaut.metrics.binders.netty.bytebuf-allocators.metrics</code>. By default, all available metrics are exposed. These flags are supported:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>POOLED_ALLOCATOR</code>: expose <code>PooledByteBufAllocator</code> metrics,</p>
+</li>
+<li>
+<p><code>UNPOOLED_ALLOCATOR</code>: expose <code>UnpooledByteBufAllocator</code> metrics,</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas metrics (requires <code>POOLED_ALLOCATOR</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_SUBPAGES</code>: expose <code>PooledByteBufAllocator</code> pooled arenas sub pages metrics (requires <code>POOLED_ARENAS</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_CHUNKLISTS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas chunk lists metrics (requires <code>POOLED_ARENAS</code>),</p>
+</li>
+<li>
+<p><code>POOLED_ARENAS_CHUNKS</code>: expose <code>PooledByteBufAllocator</code> pooled arenas chunks metrics (requires <code>POOLED_ARENAS_CHUNKLISTS</code>).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>NettyMetricsPipelineBinder</strong>: Instrument Netty&#8217;s channel, use <code>micronaut.metrics.binders.netty.channels.enabled</code> to toggle. Default is <strong>false</strong>.
+The provided metrics include the channel count, current active channel count, channel error count, bytes read and written.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_custom_metrics">Adding Custom Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To add metrics to your application, dependency-inject a <code>MeterRegistry</code> bean and use the provided methods to access counters, timers, etc.</p>
+</div>
+<div class="paragraph">
+<p>See the <a href="https://micrometer.io/docs">Micrometer docs</a> for more information.</p>
+</div>
+<div class="listingblock">
+<div class="title">Custom Metrics Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import jakarta.validation.constraints.NotBlank;
+import reactor.core.publisher.Mono;
+
+@Controller
+class IndexController {
+
+    private final MeterRegistry meterRegistry;
+
+    IndexController(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
+
+    @Get("/hello/{name}")
+    Mono&lt;String&gt; hello(@NotBlank String name) {
+        meterRegistry
+                .counter("web.access", "controller", "index", "action", "hello")
+                .increment();
+        return Mono.just("Hello " + name);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_exception_metrics">Custom Exception Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To report on response codes for custom handled exceptions, implement <code>io.micronaut.http.HttpResponseProvider</code>.
+The default value reported for an <code>ExceptionHandler</code> is 500.</p>
+</div>
+<div class="paragraph">
+<p>See the <a href="https://docs.micronaut.io/latest/guide/">Micronaut docs</a> for more information on <code>ExceptionHandler</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">ExceptionHandler Reporting Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpResponseProvider;
+
+public class OutOfStockException extends RuntimeException implements HttpResponseProvider {
+
+    @Override
+    public HttpResponse&lt;?&gt; getResponse() {
+        return HttpResponse.ok(0);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h1 id="metricsAnnotations"><a class="anchor" href="#metricsAnnotations"></a>5 Metrics Annotations</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAnnotations.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can use the Micrometer <code>@Timed</code> and <code>@Counted</code> annotations on any bean method by adding the <code>micronaut-micrometer-annotation</code> dependency to your annotation processor classpath:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">annotationProcessor(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-annotation")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;annotationProcessorPaths&gt;
+    &lt;path&gt;
+        &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+        &lt;artifactId&gt;micronaut-micrometer-annotation&lt;/artifactId&gt;
+    &lt;/path&gt;
+&lt;/annotationProcessorPaths&gt;</code></pre>
+</div>
+</div></p>
+</div>
+
+<h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_metrics_registries_reporters">Metrics Registries &amp; Reporters</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, there is a <code>/metrics</code> endpoint configured, and metrics are provided to it for viewing or retrieving via HTTP. To register a specific type of reporter, include a typed registry configuration. The following are the currently supported libraries for reporting metrics.</p>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>6.1 AppOptics Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the AppOptics reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-appoptics</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-appoptics")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-appoptics&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.appoptics</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-appoptics/src/main/java/io/micrometer/appoptics/AppOpticsConfig.java">AppOpticsConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter. Could disable to local dev for example. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AppOptics API token. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The URI for the AppOptics backend. Default: <code>https://api.appoptics.com/v1/measurements</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example AppOptics Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.appoptics.enabled=true
+micronaut.metrics.export.appoptics.apiToken=${APPOPTICS_API_TOKEN}
+micronaut.metrics.export.appoptics.uri=https://api.appoptics.com/v1/measurements
+micronaut.metrics.export.appoptics.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      appoptics:
+        enabled: true
+        apiToken: ${APPOPTICS_API_TOKEN}
+        uri: https://api.appoptics.com/v1/measurements
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.appoptics]
+        enabled=true
+        apiToken="${APPOPTICS_API_TOKEN}"
+        uri="https://api.appoptics.com/v1/measurements"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      appoptics {
+        enabled = true
+        apiToken = "${APPOPTICS_API_TOKEN}"
+        uri = "https://api.appoptics.com/v1/measurements"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        appoptics {
+          enabled = true
+          apiToken = "${APPOPTICS_API_TOKEN}"
+          uri = "https://api.appoptics.com/v1/measurements"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "appoptics": {
+          "enabled": true,
+          "apiToken": "${APPOPTICS_API_TOKEN}",
+          "uri": "https://api.appoptics.com/v1/measurements",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>6.2 Atlas Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Atlas reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-atlas</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-atlas")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-atlas&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.atlas</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/Netflix/spectator/blob/main/spectator-reg-atlas/src/main/java/com/netflix/spectator/atlas/AtlasConfig.java">AtlasConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The URI for the Atlas backend. Default: <code>http://localhost:7101/api/v1/publish</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Atlas Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.atlas.enabled=true
+micronaut.metrics.export.atlas.uri=http://localhost:7101/api/v1/publish
+micronaut.metrics.export.atlas.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      atlas:
+        enabled: true
+        uri: http://localhost:7101/api/v1/publish
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.atlas]
+        enabled=true
+        uri="http://localhost:7101/api/v1/publish"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      atlas {
+        enabled = true
+        uri = "http://localhost:7101/api/v1/publish"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        atlas {
+          enabled = true
+          uri = "http://localhost:7101/api/v1/publish"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "atlas": {
+          "enabled": true,
+          "uri": "http://localhost:7101/api/v1/publish",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>6.3 Azure Monitor Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Azure Monitor reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-azure-monitor</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-azure-monitor")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-azure-monitor&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.azuremonitor</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-azure-monitor/src/main/java/io/micrometer/azuremonitor/AzureMonitorConfig.java">AzureMonitorConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">instrumentationKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Azure Monitor instrumentation key. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Azure Monitor Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.azuremonitor.enabled=true
+micronaut.metrics.export.azuremonitor.instrumentationKey=${AZUREMONITOR_INSTRUMENTATION_KEY}
+micronaut.metrics.export.azuremonitor.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      azuremonitor:
+        enabled: true
+        instrumentationKey: ${AZUREMONITOR_INSTRUMENTATION_KEY}
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.azuremonitor]
+        enabled=true
+        instrumentationKey="${AZUREMONITOR_INSTRUMENTATION_KEY}"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      azuremonitor {
+        enabled = true
+        instrumentationKey = "${AZUREMONITOR_INSTRUMENTATION_KEY}"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        azuremonitor {
+          enabled = true
+          instrumentationKey = "${AZUREMONITOR_INSTRUMENTATION_KEY}"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "azuremonitor": {
+          "enabled": true,
+          "instrumentationKey": "${AZUREMONITOR_INSTRUMENTATION_KEY}",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>6.4 CloudWatch Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the CloudWatch reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-cloudwatch&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.cloudwatch</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java">CloudWatchConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespace that will be displayed in CloudWatch for these metrics. Default: <code>micronaut</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">batchSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of metrics to send in a batch to CloudWatch. Default: <code>20</code>. Matches max limit found on <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_MetricDatum.html">Cloudwatch API Reference</a>.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example CloudWatch Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.cloudwatch.enabled=true
+micronaut.metrics.export.cloudwatch.namespace=myAwesomeAppMetrics
+micronaut.metrics.export.cloudwatch.batchSize=10</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      cloudwatch:
+        enabled: true
+        namespace: myAwesomeAppMetrics
+        batchSize: 10</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.cloudwatch]
+        enabled=true
+        namespace="myAwesomeAppMetrics"
+        batchSize=10</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      cloudwatch {
+        enabled = true
+        namespace = "myAwesomeAppMetrics"
+        batchSize = 10
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        cloudwatch {
+          enabled = true
+          namespace = "myAwesomeAppMetrics"
+          batchSize = 10
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "cloudwatch": {
+          "enabled": true,
+          "namespace": "myAwesomeAppMetrics",
+          "batchSize": 10
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>6.5 Datadog Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Datadog reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-datadog</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-datadog")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-datadog&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.datadog</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-datadog/src/main/java/io/micrometer/datadog/DatadogConfig.java">DatadogConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datadog API Key. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to Datadog. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Datadog Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.datadog.apiKey=${DATADOG_APIKEY}
+micronaut.metrics.export.datadog.enabled=true
+micronaut.metrics.export.datadog.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      datadog:
+        apiKey: ${DATADOG_APIKEY}
+        enabled: true
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.datadog]
+        apiKey="${DATADOG_APIKEY}"
+        enabled=true
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      datadog {
+        apiKey = "${DATADOG_APIKEY}"
+        enabled = true
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        datadog {
+          apiKey = "${DATADOG_APIKEY}"
+          enabled = true
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "datadog": {
+          "apiKey": "${DATADOG_APIKEY}",
+          "enabled": true,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>6.6 Dynatrace Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Dynatrace reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-dynatrace</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-dynatrace")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-dynatrace&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.dynatrace</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-dynatrace/src/main/java/io/micrometer/dynatrace/DynatraceConfig.java">DynatraceConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dynatrace API Token. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dynatrace server URI. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">decideId</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Device ID to be reported. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Dynatrace Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">endpoints.prometheus.sensitive=false
+micronaut.metrics.enabled=true
+micronaut.metrics.export.dynatrace.enabled=true
+micronaut.metrics.export.dynatrace.apiToken=${DYNATRACE_DEVICE_API_TOKEN}
+micronaut.metrics.export.dynatrace.uri=${DYNATRACE_DEVICE_URI}
+micronaut.metrics.export.dynatrace.deviceId=${DYNATRACE_DEVICE_ID}
+micronaut.metrics.export.dynatrace.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      dynatrace:
+        enabled: true
+        apiToken: ${DYNATRACE_DEVICE_API_TOKEN}
+        uri: ${DYNATRACE_DEVICE_URI}
+        deviceId: ${DYNATRACE_DEVICE_ID}
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.dynatrace]
+        enabled=true
+        apiToken="${DYNATRACE_DEVICE_API_TOKEN}"
+        uri="${DYNATRACE_DEVICE_URI}"
+        deviceId="${DYNATRACE_DEVICE_ID}"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">endpoints {
+  prometheus {
+    sensitive = false
+  }
+}
+micronaut {
+  metrics {
+    enabled = true
+    export {
+      dynatrace {
+        enabled = true
+        apiToken = "${DYNATRACE_DEVICE_API_TOKEN}"
+        uri = "${DYNATRACE_DEVICE_URI}"
+        deviceId = "${DYNATRACE_DEVICE_ID}"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  endpoints {
+    prometheus {
+      sensitive = false
+    }
+  }
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        dynatrace {
+          enabled = true
+          apiToken = "${DYNATRACE_DEVICE_API_TOKEN}"
+          uri = "${DYNATRACE_DEVICE_URI}"
+          deviceId = "${DYNATRACE_DEVICE_ID}"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "endpoints": {
+    "prometheus": {
+      "sensitive": false
+    }
+  },
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "dynatrace": {
+          "enabled": true,
+          "apiToken": "${DYNATRACE_DEVICE_API_TOKEN}",
+          "uri": "${DYNATRACE_DEVICE_URI}",
+          "deviceId": "${DYNATRACE_DEVICE_ID}",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elasticsearch Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Elasticsearch reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-elastic</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-elastic")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-elastic&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.elastic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-elastic/src/main/java/io/micrometer/elastic/ElasticConfig.java">ElasticConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Elastic Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.elastic.enabled=true
+micronaut.metrics.export.elastic.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      elastic:
+        enabled: true
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.elastic]
+        enabled=true
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      elastic {
+        enabled = true
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        elastic {
+          enabled = true
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "elastic": {
+          "enabled": true,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>6.8 Ganglia Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Ganglia reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-ganglia</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-ganglia")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-ganglia&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.ganglia</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-ganglia/src/main/java/io/micrometer/ganglia/GangliaConfig.java">GangliaConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">protocolVersion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ganglia protocol version (<code>3.0</code> or <code>3.1</code>). Default: <code>3.1</code>. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Ganglia Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.ganglia.enabled=true
+micronaut.metrics.export.ganglia.protocolVersion=3.1
+micronaut.metrics.export.ganglia.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      ganglia:
+        enabled: true
+        protocolVersion: 3.1
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.ganglia]
+        enabled=true
+        protocolVersion=3.1
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      ganglia {
+        enabled = true
+        protocolVersion = 3.1
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        ganglia {
+          enabled = true
+          protocolVersion = 3.1
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "ganglia": {
+          "enabled": true,
+          "protocolVersion": 3.1,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>6.9 Graphite Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Graphite reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-graphite</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-graphite")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-graphite&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.graphite</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-graphite/src/main/java/io/micrometer/graphite/GraphiteConfig.java">GraphiteConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Graphite server location. Default: <code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Graphite server port. Default: <code>2004</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Graphite Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.graphite.enabled=true
+micronaut.metrics.export.graphite.step=PT1M
+micronaut.metrics.export.graphite.host=localhost
+micronaut.metrics.export.graphite.port=2004</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      graphite:
+        enabled: true
+        step: PT1M
+        host: localhost
+        port: 2004</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.graphite]
+        enabled=true
+        step="PT1M"
+        host="localhost"
+        port=2004</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      graphite {
+        enabled = true
+        step = "PT1M"
+        host = "localhost"
+        port = 2004
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        graphite {
+          enabled = true
+          step = "PT1M"
+          host = "localhost"
+          port = 2004
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "graphite": {
+          "enabled": true,
+          "step": "PT1M",
+          "host": "localhost",
+          "port": 2004
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>6.10 Humio Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Humio reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-humio</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-humio")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-humio&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.humio</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-humio/src/main/java/io/micrometer/humio/HumioConfig.java">HumioConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Humio Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.humio.enabled=true
+micronaut.metrics.export.humio.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      humio:
+        enabled: true
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.humio]
+        enabled=true
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      humio {
+        enabled = true
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        humio {
+          enabled = true
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "humio": {
+          "enabled": true,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>6.11 Influx Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Influx reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-influx</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-influx")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-influx&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.influx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-influx/src/main/java/io/micrometer/influx/InfluxConfig.java">InfluxConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Influx Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.influx.enabled=true
+micronaut.metrics.export.influx.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      influx:
+        enabled: true
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.influx]
+        enabled=true
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      influx {
+        enabled = true
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        influx {
+          enabled = true
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "influx": {
+          "enabled": true,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 JMX Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the JMX reporter via <code>io.micronaut.micrometer:micronaut-micrometer-jmx</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-jmx")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-jmx&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.jmx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-jmx/src/main/java/io/micrometer/jmx/JmxConfig.java">JmxConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example JMX Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.jmx.enabled=true
+micronaut.metrics.export.jmx.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      jmx:
+        enabled: true
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.jmx]
+        enabled=true
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      jmx {
+        enabled = true
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        jmx {
+          enabled = true
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "jmx": {
+          "enabled": true,
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>6.13 Kairos Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Kairos reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-kairos</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-kairos")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-kairos&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.kairos</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-kairos/src/main/java/io/micrometer/kairos/KairosConfig.java">KairosConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kairos server URI. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Kairos Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.kairos.enabled=true
+micronaut.metrics.export.kairos.uri=http://localhost:8080/api/v1/datapoints
+micronaut.metrics.export.kairos.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      kairos:
+        enabled: true
+        uri: http://localhost:8080/api/v1/datapoints
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.kairos]
+        enabled=true
+        uri="http://localhost:8080/api/v1/datapoints"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      kairos {
+        enabled = true
+        uri = "http://localhost:8080/api/v1/datapoints"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        kairos {
+          enabled = true
+          uri = "http://localhost:8080/api/v1/datapoints"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "kairos": {
+          "enabled": true,
+          "uri": "http://localhost:8080/api/v1/datapoints",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>6.14 New Relic Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the New Relic reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-new-relic</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-new-relic&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-new-relic/src/main/java/io/micrometer/newrelic/NewRelicConfig.java">NewRelicConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic API key. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">accountId</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic account ID. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example New Relic Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.newrelic.enabled=true
+micronaut.metrics.export.newrelic.apiKey=${NEWRELIC_API_KEY}
+micronaut.metrics.export.newrelic.accountId=${NEWRELIC_ACCOUNT_ID}
+micronaut.metrics.export.newrelic.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      newrelic:
+        enabled: true
+        apiKey: ${NEWRELIC_API_KEY}
+        accountId: ${NEWRELIC_ACCOUNT_ID}
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.newrelic]
+        enabled=true
+        apiKey="${NEWRELIC_API_KEY}"
+        accountId="${NEWRELIC_ACCOUNT_ID}"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      newrelic {
+        enabled = true
+        apiKey = "${NEWRELIC_API_KEY}"
+        accountId = "${NEWRELIC_ACCOUNT_ID}"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        newrelic {
+          enabled = true
+          apiKey = "${NEWRELIC_API_KEY}"
+          accountId = "${NEWRELIC_ACCOUNT_ID}"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "newrelic": {
+          "enabled": true,
+          "apiKey": "${NEWRELIC_API_KEY}",
+          "accountId": "${NEWRELIC_ACCOUNT_ID}",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>6.15 New Relic Telemetry Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>A New Relic Registry using <a href="https://github.com/newrelic/micrometer-registry-newrelic">New Relic&#8217;s own Micrometer Registry</a> rather than the New Relic registry provided by the Micrometer project.</p>
+</div>
+<div class="paragraph">
+<p>You can include the New Relic Telemetry reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-new-relic-telemetry&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.newrelic</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/newrelic/micrometer-registry-newrelic/blob/main/src/main/java/com/newrelic/telemetry/micrometer/NewRelicRegistryConfig.java">NewRelicRegistryConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiKey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New Relic API key. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">serviceName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The service name this registry will report as in New Relic.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example New Relic Telemetry Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.newrelic.enabled=true
+micronaut.metrics.export.newrelic.apiKey=${NEWRELIC_API_KEY}
+micronaut.metrics.export.newrelic.serviceName=My Micronaut Service
+micronaut.metrics.export.newrelic.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      newrelic:
+        enabled: true
+        apiKey: ${NEWRELIC_API_KEY}
+        serviceName: My Micronaut Service
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.newrelic]
+        enabled=true
+        apiKey="${NEWRELIC_API_KEY}"
+        serviceName="My Micronaut Service"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      newrelic {
+        enabled = true
+        apiKey = "${NEWRELIC_API_KEY}"
+        serviceName = "My Micronaut Service"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        newrelic {
+          enabled = true
+          apiKey = "${NEWRELIC_API_KEY}"
+          serviceName = "My Micronaut Service"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "newrelic": {
+          "enabled": true,
+          "apiKey": "${NEWRELIC_API_KEY}",
+          "serviceName": "My Micronaut Service",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersOracleCloud"><a class="anchor" href="#metricsAndReportersOracleCloud"></a>6.16 Oracle Cloud Monitoring Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersOracleCloud.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The <a href="https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm">OCI Monitoring service</a> enables you to actively and passively monitor your cloud resources using the Metrics and Alarms features on Oracle Cloud.</p>
+</div>
+<div class="paragraph">
+<p>To configure the module see the documentation for <a href="https://micronaut-projects.github.io/micronaut-oracle-cloud/latest/guide/#micrometer">Micrometer Support For Oracle Monitoring</a> in the Oracle Cloud module.</p>
+</div>
+
+<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.17 Prometheus Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Prometheus reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-prometheus</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.prometheus</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-prometheus/src/main/java/io/micrometer/prometheus/PrometheusConfig.java">PrometheusConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to Prometheus. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Prometheus Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">endpoints.prometheus.sensitive=false
+micronaut.metrics.enabled=true
+micronaut.metrics.export.prometheus.enabled=true
+micronaut.metrics.export.prometheus.step=PT1M
+micronaut.metrics.export.prometheus.descriptions=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.prometheus]
+        enabled=true
+        step="PT1M"
+        descriptions=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">endpoints {
+  prometheus {
+    sensitive = false
+  }
+}
+micronaut {
+  metrics {
+    enabled = true
+    export {
+      prometheus {
+        enabled = true
+        step = "PT1M"
+        descriptions = true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  endpoints {
+    prometheus {
+      sensitive = false
+    }
+  }
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        prometheus {
+          enabled = true
+          step = "PT1M"
+          descriptions = true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "endpoints": {
+    "prometheus": {
+      "sensitive": false
+    }
+  },
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "prometheus": {
+          "enabled": true,
+          "step": "PT1M",
+          "descriptions": true
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>IMPORTANT NOTE</strong>: Once configured, the Prometheus-compatible metrics can be accessed from the path <code>/prometheus</code>. By default, Prometheus looks for <code>/metrics</code>, but that path serves the core Micronaut metrics, hence the need to point to <code>/prometheus</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="_prometheus_default_metrics">Prometheus Default Metrics</h3>
+<div class="paragraph">
+<p>By default, there is a set of metrics that are exposed by the different binders. If you include the Prometheus reporter, those metrics will be available in Prometheus format as well.</p>
+</div>
+<div class="paragraph">
+<p>Here you will find the definition of all default metrics exposed by a binder.</p>
+</div>
+<div class="sect4">
+<h5 id="_web_metrics">Web Metrics</h5>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Metrics provided</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total number of requests per second your application made to an endpoint via HTTP Client interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_sum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sum of the duration of every request your application made to an endpoint via HTTP Client interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_client_requests_seconds_max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total number of requests your application received at an endpoint</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_sum</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sum of the duration of every request your application received at an endpoint</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">http_server_requests_seconds_max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum request duration during a time window. The value resets to 0 when a new time window starts. The default time window is two minutes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.18 SignalFx Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the SignalFx reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-signalfx</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-signalfx")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-signalfx&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.signalfx</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalFxConfig.java">SignalFxConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">accessToken</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SignalFX access token. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example SignalFx Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.signalfx.enabled=true
+micronaut.metrics.export.signalfx.accessToken=${SIGNALFX_API_TOKEN}
+micronaut.metrics.export.signalfx.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      signalfx:
+        enabled: true
+        accessToken: ${SIGNALFX_API_TOKEN}
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.signalfx]
+        enabled=true
+        accessToken="${SIGNALFX_API_TOKEN}"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      signalfx {
+        enabled = true
+        accessToken = "${SIGNALFX_API_TOKEN}"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        signalfx {
+          enabled = true
+          accessToken = "${SIGNALFX_API_TOKEN}"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "signalfx": {
+          "enabled": true,
+          "accessToken": "${SIGNALFX_API_TOKEN}",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.19 Stackdriver Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Stackdriver reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-stackdriver</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-stackdriver")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-stackdriver&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">projectId</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stackdriver Project ID. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Stackdriver Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.stackdriver.enabled=true
+micronaut.metrics.export.stackdriver.projectId=${STACKDRIVER_PROJECT_ID}
+micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      stackdriver:
+        enabled: true
+        projectId: ${STACKDRIVER_PROJECT_ID}
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.stackdriver]
+        enabled=true
+        projectId="${STACKDRIVER_PROJECT_ID}"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      stackdriver {
+        enabled = true
+        projectId = "${STACKDRIVER_PROJECT_ID}"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        stackdriver {
+          enabled = true
+          projectId = "${STACKDRIVER_PROJECT_ID}"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "stackdriver": {
+          "enabled": true,
+          "projectId": "${STACKDRIVER_PROJECT_ID}",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.20 StatsD Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the StatsD reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-statsd</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.statsd</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-statsd/src/main/java/io/micrometer/statsd/StatsdConfig.java">StatsdConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flavor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of metric to use (<code>datadog</code>, <code>etsy</code> or <code>telegraf</code>). Default: <code>datadog</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The StatsD server. Default: <code>localhost</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The StatsD port. Default: <code>8125</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Statsd Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.statsd.enabled=true
+micronaut.metrics.export.statsd.flavor=datadog
+micronaut.metrics.export.statsd.step=PT1M
+micronaut.metrics.export.statsd.host=localhost
+micronaut.metrics.export.statsd.port=8125</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      statsd:
+        enabled: true
+        flavor: datadog
+        step: PT1M
+        host: localhost
+        port: 8125</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.statsd]
+        enabled=true
+        flavor="datadog"
+        step="PT1M"
+        host="localhost"
+        port=8125</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      statsd {
+        enabled = true
+        flavor = "datadog"
+        step = "PT1M"
+        host = "localhost"
+        port = 8125
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        statsd {
+          enabled = true
+          flavor = "datadog"
+          step = "PT1M"
+          host = "localhost"
+          port = 8125
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "statsd": {
+          "enabled": true,
+          "flavor": "datadog",
+          "step": "PT1M",
+          "host": "localhost",
+          "port": 8125
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.21 Wavefront Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Wavefront reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-wavefront</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-wavefront")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-wavefront&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.wavefront</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/master/implementations/micrometer-registry-wavefront/src/main/java/io/micrometer/wavefront/WavefrontConfig.java">WavefrontConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">apiToken</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront API token. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wavefront service URI. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to report metrics. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">descriptions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: <code>true</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Wavefront Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.wavefront.enabled=true
+micronaut.metrics.export.wavefront.apiToken=${WAVEFRONT_API_TOKEN}
+micronaut.metrics.export.wavefront.uri=https://longboard.wavefront.com
+micronaut.metrics.export.wavefront.step=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      wavefront:
+        enabled: true
+        apiToken: ${WAVEFRONT_API_TOKEN}
+        uri: https://longboard.wavefront.com
+        step: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.wavefront]
+        enabled=true
+        apiToken="${WAVEFRONT_API_TOKEN}"
+        uri="https://longboard.wavefront.com"
+        step="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      wavefront {
+        enabled = true
+        apiToken = "${WAVEFRONT_API_TOKEN}"
+        uri = "https://longboard.wavefront.com"
+        step = "PT1M"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        wavefront {
+          enabled = true
+          apiToken = "${WAVEFRONT_API_TOKEN}"
+          uri = "https://longboard.wavefront.com"
+          step = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "wavefront": {
+          "enabled": true,
+          "apiToken": "${WAVEFRONT_API_TOKEN}",
+          "uri": "https://longboard.wavefront.com",
+          "step": "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>7 Repository</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/repository.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can find the source code of this project in this repository:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/micronaut-projects/micronaut-micrometer">https://github.com/micronaut-projects/micronaut-micrometer</a></p>
+</div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>
