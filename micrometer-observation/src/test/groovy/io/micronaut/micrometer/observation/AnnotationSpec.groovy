@@ -8,7 +8,6 @@ import io.micrometer.observation.tck.TestObservationRegistryAssert
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Primary
-import io.micronaut.context.annotation.Replaces
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.http.HttpRequest
@@ -83,12 +82,12 @@ class AnnotationSpec extends Specification {
             // check your observation
             TestObservationRegistryAssert.assertThat(testObservationRegistry)
                     .doesNotHaveAnyRemainingCurrentObservation()
-                    .hasObservationWithNameEqualTo("foo")
+                    .hasObservationWithNameEqualTo("enter")
                     .that()
                     .hasHighCardinalityKeyValue("highTag", "highTagValue")
                     .hasLowCardinalityKeyValue("lowTag", "lowTagValue")
                     .hasBeenStarted()
-                    .hasBeenStopped();
+                    .hasBeenStopped()
 
 //            testExporter.finishedSpanItems.size() == count * spanNumbers
 //

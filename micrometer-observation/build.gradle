@@ -23,3 +23,9 @@ dependencies {
     testImplementation mnSerde.micronaut.serde.jackson
 
 }
+
+micronautBuild {
+    binaryCompatibility {
+        enabled = false
+    }
+}

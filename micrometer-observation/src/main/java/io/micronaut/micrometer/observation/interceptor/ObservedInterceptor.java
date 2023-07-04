@@ -57,14 +57,22 @@ public final class ObservedInterceptor implements MethodInterceptor<Object, Obje
         }
         // must be new
         // don't create a nested span if you're not supposed to.
-        String name = observed.stringValue("name").orElse(context.getDeclaringType().getName());
-        String contextualName = observed.stringValue("contextualName").orElse(context.getMethodName());
+        String name = observed.stringValue("name").orElse("method.observed");
+
+        String contextualName = observed.stringValue("contextualName").orElse(context.getDeclaringType().getSimpleName() + "#" + context.getMethodName());
         String[] lowCardinalityKeyValues = observed.stringValues("lowCardinalityKeyValues");
 
         InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
 
-        Observation observation = Observation.createNotStarted(name, observationRegistry).contextualName(contextualName)
+        Observation observation = Observation.createNotStarted(name, observationRegistry)
+            .contextualName(contextualName)
+            .lowCardinalityKeyValue("class", context.getDeclaringType().getSimpleName())
+            .lowCardinalityKeyValue("method", context.getMethodName())
             .lowCardinalityKeyValues(KeyValues.of(lowCardinalityKeyValues));
+
+//        if (observationConvention != null) {
+//            observation.observationConvention(observationConvention);
+//        }
 
         observation.start();
 
