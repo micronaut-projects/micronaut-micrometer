@@ -23,18 +23,22 @@ import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.AnnotationValue;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.propagation.PropagatedContext;
-import io.micronaut.micrometer.observation.annotation.RequiresObservation;
+import jakarta.inject.Singleton;
 import reactor.core.publisher.Flux;
 
 import java.util.concurrent.CompletionStage;
 
-@RequiresObservation
+@Internal
+@Singleton
+@Requires(beans = ObservationRegistry.class)
 @InterceptorBean(Observed.class)
-public class ObservedInterceptor implements MethodInterceptor<Object, Object> {
+public final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final ObservationRegistry observationRegistry;
     private final ConversionService conversionService;
