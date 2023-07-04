@@ -1,2 +1,3 @@
 io.micronaut.micrometer.annotation.processing.CountedAnnotationMapper
 io.micronaut.micrometer.annotation.processing.TimedSetAnnotationMapper
+io.micronaut.micrometer.annotation.processing.ObservedAnnotationMapper

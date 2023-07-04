@@ -1,0 +1,25 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    implementation libs.managed.micrometer.observation
+    compileOnly libs.logback.classic
+    compileOnly mnCache.micronaut.cache.core
+    compileOnly mn.micronaut.http.server.netty
+
+    implementation mn.reactor
+    compileOnly(mn.micronaut.retry)
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+    testImplementation mn.micronaut.http.client
+    testImplementation mn.micronaut.http.server.netty
+    testImplementation mnReactor.micronaut.reactor
+    testImplementation mnReactor.micronaut.reactor.http.client
+    testImplementation libs.managed.micrometer.observation.test
+    testImplementation mnSerde.micronaut.serde.jackson
+
+}

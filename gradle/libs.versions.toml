@@ -20,6 +20,7 @@ hdr-histogram = '2.1.12'
 micronaut-cache = "4.0.0-M5"
 micronaut-r2dbc = "5.0.0-M10"
 micronaut-rxjava2 = "2.0.0-M5"
+micronaut-reactor = '3.0.0-M9'
 micronaut-serde = "2.0.0-M12"
 micronaut-sql = "5.0.0-M8"
 micronaut-validation = "4.0.0-M9"
@@ -32,6 +33,7 @@ micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
 micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.ref = "micronaut-r2dbc" }
 micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", version.ref = "micronaut-rxjava2" }
+micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
 micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
 micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
 groovy-json = { module = "org.apache.groovy:groovy-json" }
@@ -43,6 +45,8 @@ hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-h
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
 managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
+managed-micrometer-observation = { module = 'io.micrometer:micrometer-observation', version.ref = 'managed-micrometer' }
+managed-micrometer-observation-test = { module = 'io.micrometer:micrometer-observation-test', version.ref = 'managed-micrometer' }
 
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }

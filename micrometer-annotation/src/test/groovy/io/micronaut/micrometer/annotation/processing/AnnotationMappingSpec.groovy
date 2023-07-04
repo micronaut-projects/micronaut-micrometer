@@ -41,4 +41,23 @@ class Test {
         bean instanceof Intercepted
     }
 
+
+    void 'test map observed annotation'() {
+        given:
+        def context = buildContext('test.Test', '''
+package test;
+
+@jakarta.inject.Singleton
+class Test {
+    @io.micrometer.observation.annotation.Observed(name="foo")
+    void test() {
+    }
+}
+''')
+        def bean = getBean(context, "test.Test")
+
+        expect:
+        bean instanceof Intercepted
+    }
+
 }
