@@ -5,6 +5,8 @@ plugins {
 dependencies {
     annotationProcessor mn.micronaut.graal
 
+    api projects.micronautMicrometerAnnotation
+
     implementation libs.managed.micrometer.observation
     compileOnly libs.logback.classic
     compileOnly mnCache.micronaut.cache.core
@@ -12,6 +14,7 @@ dependencies {
 
     implementation mn.reactor
     compileOnly(mn.micronaut.retry)
+    compileOnly(libs.managed.micrometer.tracing)
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation
@@ -19,6 +22,8 @@ dependencies {
     testImplementation mn.micronaut.http.server.netty
     testImplementation mnReactor.micronaut.reactor
     testImplementation mnReactor.micronaut.reactor.http.client
+    testImplementation mnRxjava2.micronaut.rxjava2
+    testImplementation mnRxjava2.micronaut.rxjava2.http.client
     testImplementation libs.managed.micrometer.observation.test
     testImplementation mnSerde.micronaut.serde.jackson
 
@@ -26,6 +31,9 @@ dependencies {
 
 micronautBuild {
     binaryCompatibility {
-        enabled = false
+        def dash = version.indexOf('-')
+        def v = dash > 0 ? version.substring(0, dash) : version
+        def (major, minor, patch) = v.split('[.]').collect { it.toInteger() }
+        enabled = major > 5 || (major == 5 && minor > 1) || (major == 5 && minor == 1 && patch > 0)
     }
 }

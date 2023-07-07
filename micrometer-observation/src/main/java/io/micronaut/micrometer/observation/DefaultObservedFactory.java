@@ -15,15 +15,95 @@
  */
 package io.micronaut.micrometer.observation;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.observation.GlobalObservationConvention;
+import io.micrometer.observation.ObservationFilter;
+import io.micrometer.observation.ObservationHandler;
+import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
+import io.micrometer.tracing.propagation.Propagator;
+import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
+import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
+import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
+import java.util.List;
+
+/**
+ * Factory for {@link ObservationRegistry}.
+ */
 @Factory
 public final class DefaultObservedFactory {
+    @Singleton
+    ObservationRegistry observationRegistry(
+        @Nullable List<ObservationPredicate> observationPredicates,
+        @Nullable List<GlobalObservationConvention<?>> observationConventions,
+        @Nullable List<ObservationHandler<?>> observationHandlers,
+        @Nullable List<ObservationFilter> observationFilters
+
+    ) {
+        ObservationRegistry observationRegistry = ObservationRegistry.create();
+
+        if (observationHandlers != null) {
+            observationHandlers.forEach(observationRegistry.observationConfig()::observationHandler);
+        }
+
+        if (observationPredicates != null) {
+            observationPredicates.forEach(observationRegistry.observationConfig()::observationPredicate);
+        }
+
+        if (observationFilters != null) {
+            observationFilters.forEach(observationRegistry.observationConfig()::observationFilter);
+        }
+
+        if (observationConventions != null) {
+            observationConventions.forEach(observationRegistry.observationConfig()::observationConvention);
+        }
+
+        return observationRegistry;
+    }
 
     @Singleton
-    ObservationRegistry observationRegistry() {
-        return ObservationRegistry.create();
+    @Requires(classes = Tracer.class)
+    @Requires(bean = Tracer.class)
+    public ObservationHandler<?> defaultTracingObservationHandler(Tracer tracer) {
+        return new DefaultTracingObservationHandler(tracer);
     }
+
+    @Singleton
+    @Requires(classes = Tracer.class)
+    @Requires(beans = { Tracer.class, Propagator.class })
+    public ObservationHandler<?> propagatingSenderTracingObservationHandler(Tracer tracer, Propagator propagator) {
+        return new PropagatingSenderTracingObservationHandler<>(tracer, propagator);
+    }
+
+    @Singleton
+    @Requires(classes = Tracer.class)
+    @Requires(beans = { Tracer.class, Propagator.class })
+    public ObservationHandler<?> propagatingReceiverTracingObservationHandler(Tracer tracer, Propagator propagator) {
+        return new PropagatingReceiverTracingObservationHandler<>(tracer, propagator);
+    }
+
+    @Singleton
+    @Requires(missingClasses = "io.micrometer.tracing.Tracer")
+    @Requires(classes = MeterRegistry.class)
+    @Requires(beans = MeterRegistry.class)
+    public ObservationHandler<?> defaultMeterObservationHandler(MeterRegistry meterRegistry) {
+        return new DefaultMeterObservationHandler(meterRegistry);
+    }
+
+    @Singleton
+    @Requires(classes = {MeterRegistry.class, Tracer.class})
+    @Requires(beans = {MeterRegistry.class, Tracer.class})
+    public ObservationHandler<?> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry, Tracer tracer) {
+        DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
+        return new TracingAwareMeterObservationHandler<>(delegate, tracer);
+    }
+
 }

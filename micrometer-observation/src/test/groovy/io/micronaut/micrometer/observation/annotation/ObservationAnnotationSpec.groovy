@@ -7,7 +7,6 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Primary
 import io.micronaut.context.annotation.Requires
-import io.micronaut.runtime.server.EmbeddedServer
 
 import java.util.function.Consumer
 import jakarta.inject.Singleton

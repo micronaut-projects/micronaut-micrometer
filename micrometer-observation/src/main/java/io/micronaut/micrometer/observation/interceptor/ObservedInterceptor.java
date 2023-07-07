@@ -34,6 +34,9 @@ import reactor.core.publisher.Flux;
 
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Implements observation logic for {@link Observed} annotation using the Micrometer Observation API.
+ */
 @Internal
 @Singleton
 @Requires(beans = ObservationRegistry.class)
@@ -70,14 +73,9 @@ public final class ObservedInterceptor implements MethodInterceptor<Object, Obje
             .lowCardinalityKeyValue("method", context.getMethodName())
             .lowCardinalityKeyValues(KeyValues.of(lowCardinalityKeyValues));
 
-//        if (observationConvention != null) {
-//            observation.observationConvention(observationConvention);
-//        }
-
         observation.start();
 
-        try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty()
-            .propagate()) {
+        try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty().propagate()) {
             switch (interceptedMethod.resultType()) {
                 case PUBLISHER -> {
                     return observation.scoped(() -> interceptedMethod.handleResult(
