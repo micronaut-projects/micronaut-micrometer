@@ -47,6 +47,7 @@ import java.util.Map;
  * </ul>
  */
 @Factory
+@SuppressWarnings("rawtypes")
 public final class DefaultObservedFactory {
     @Singleton
     ObservationRegistry observationRegistry(
@@ -117,10 +118,10 @@ public final class DefaultObservedFactory {
     @Singleton
     public static ObservationFilter commonKeyValuesFilter(ObservationProperties properties) {
         if (properties.commonKeyValue() == null || properties.commonKeyValue().isEmpty()) {
-            return (context) -> context;
+            return context -> context;
         }
         KeyValues keyValues = KeyValues.of(properties.commonKeyValue().entrySet(), Map.Entry::getKey, Map.Entry::getValue);
-        return (context) -> context.addLowCardinalityKeyValues(keyValues);
+        return context -> context.addLowCardinalityKeyValues(keyValues);
     }
 
 }

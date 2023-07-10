@@ -26,9 +26,7 @@ dependencies {
     testImplementation mnRxjava2.micronaut.rxjava2.http.client
     testImplementation mnSerde.micronaut.serde.jackson
     testImplementation libs.managed.micrometer.observation.test
-    testImplementation(libs.managed.micrometer.tracing) {
-        exclude(group: 'io.micrometer', module: 'context-propagation')
-    }
+    testImplementation(libs.managed.micrometer.tracing)
 }
 
 micronautBuild {

@@ -23,19 +23,18 @@ import io.micronaut.core.propagation.ThreadPropagatedContextElement;
  * Observation propagated context.
  *
  * @param observation The {@link Observation}
- * @param scope The {@link Observation.Scope}
  */
 @Internal
-public record ObservationPropagationContext(Observation observation, Observation.Scope scope) implements ThreadPropagatedContextElement<Observation.Scope> {
+public record ObservationPropagationContext(Observation observation) implements ThreadPropagatedContextElement<Observation.Scope> {
 
     @Override
     public Observation.Scope updateThreadContext() {
-        scope.makeCurrent();
-        return scope;
+        return observation.openScope();
     }
 
     @Override
     public void restoreThreadContext(Observation.Scope oldScope) {
         oldScope.close();
     }
+
 }

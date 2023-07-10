@@ -101,10 +101,10 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
 
     private KeyValue clientName(ClientRequestObservationContext context) {
         if (context.getCarrier() != null) {
-            String name = context.getCarrier().getAttribute(SERVICE_ID, String.class)
-                .filter(serviceId -> !serviceId.contains("/"))
+            String serviceId = context.getCarrier().getAttribute(SERVICE_ID, String.class)
+                .filter(x -> !x.contains("/"))
                 .orElseGet(() -> context.getCarrier().getRemoteAddress().getHostString());
-            return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.CLIENT_NAME, name);
+            return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.CLIENT_NAME, serviceId);
         }
         return CLIENT_NAME_NONE;
     }

@@ -75,9 +75,8 @@ public final class ObservationClientFilter extends AbstractObservationFilter imp
 
         Observation observation = ClientHttpObservationDocumentation.HTTP_CLIENT_EXCHANGES.observation(this.observationConvention,
             DEFAULT_OBSERVATION_CONVENTION, () -> observationContext, this.observationRegistry).start();
-        try (Observation.Scope scope = observation.openScope()) {
             try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty()
-                .plus(new ObservationPropagationContext(observation, scope))
+                .plus(new ObservationPropagationContext(observation))
                 .propagate()) {
                 PropagatedContext propagatedContext = PropagatedContext.get();
 
@@ -91,6 +90,5 @@ public final class ObservationClientFilter extends AbstractObservationFilter imp
                         observation.stop();
                     }).contextWrite(ctx -> ReactorPropagation.addPropagatedContext(ctx, propagatedContext));
             }
-        }
     }
 }

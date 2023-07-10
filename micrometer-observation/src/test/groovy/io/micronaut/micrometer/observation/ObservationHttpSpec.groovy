@@ -69,6 +69,7 @@ class ObservationHttpSpec extends Specification {
             'micrometer.observation.http.exclusions[0]': '.*exclude.*',
             'spec.name': 'ObservationHttpSpec',
             'micrometer.observations.common-key-value.common_key': 'common_value',
+            'reactor.enableAutomaticContextPropagation': false
         ).start()
 
         embeddedServer = context.getBean(EmbeddedServer).start()
