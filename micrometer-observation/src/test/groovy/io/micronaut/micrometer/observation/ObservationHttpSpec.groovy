@@ -1,6 +1,7 @@
 package io.micronaut.micrometer.observation
 
 import groovy.util.logging.Slf4j
+import io.micrometer.observation.ObservationFilter
 import io.micrometer.observation.ObservationRegistry
 import io.micrometer.observation.annotation.Observed
 import io.micrometer.observation.tck.TestObservationRegistry
@@ -66,7 +67,8 @@ class ObservationHttpSpec extends Specification {
         context = ApplicationContext.builder(
             'micronaut.application.name': 'test-app',
             'micrometer.observation.http.exclusions[0]': '.*exclude.*',
-            'spec.name': 'ObservationHttpSpec'
+            'spec.name': 'ObservationHttpSpec',
+            'micrometer.observations.common-key-value.common_key': 'common_value',
         ).start()
 
         embeddedServer = context.getBean(EmbeddedServer).start()
@@ -269,6 +271,23 @@ class ObservationHttpSpec extends Specification {
                 it.hasContextualNameEqualTo("http get /client/order/{orderId}")
                 it.hasNameEqualTo("http.server.requests")
                 it.hasLowCardinalityKeyValue("uri", "/client/order/{orderId}")
+            }
+        }
+
+        cleanup:
+        testObservationRegistry.clear()
+    }
+
+    void 'test filter for common low cardinality key values'() {
+        def warehouseClient = embeddedServer.applicationContext.getBean(WarehouseClient)
+
+        expect:
+
+        warehouseClient.order(UUID.randomUUID())
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry).hasNumberOfObservationsEqualTo(2)
+            TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
+                it.hasLowCardinalityKeyValue("common-key", "common_value")
             }
         }
 
@@ -618,8 +637,10 @@ class ObservationHttpSpec extends Specification {
 
         @Singleton
         @Primary
-        ObservationRegistry observationRegistry() {
-            return TestObservationRegistry.create()
+        ObservationRegistry observationRegistry(ObservationFilter observationFilter) {
+            def registry = TestObservationRegistry.create()
+            registry.observationConfig().observationFilter {observationFilter(it) }
+            return registry
         }
 
     }

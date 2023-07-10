@@ -24,9 +24,9 @@ dependencies {
     testImplementation mnReactor.micronaut.reactor.http.client
     testImplementation mnRxjava2.micronaut.rxjava2
     testImplementation mnRxjava2.micronaut.rxjava2.http.client
-    testImplementation libs.managed.micrometer.observation.test
     testImplementation mnSerde.micronaut.serde.jackson
-
+    testImplementation libs.managed.micrometer.observation.test
+    testImplementation libs.managed.micrometer.tracing
 }
 
 micronautBuild {

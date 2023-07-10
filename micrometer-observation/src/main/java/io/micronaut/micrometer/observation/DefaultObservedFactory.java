@@ -15,6 +15,7 @@
  */
 package io.micronaut.micrometer.observation;
 
+import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.observation.GlobalObservationConvention;
@@ -34,9 +35,16 @@ import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * Factory for {@link ObservationRegistry}.
+ * Factory for Micrometer Observation integration. Creates the following beans:
+ *
+ * <ul>
+ *     <li>{@link ObservationRegistry} - Instrumented ObservationRegistry</li>
+ *     <li>{@link ObservationHandler} - Observation Handlers for exporting metrics, traces</li>
+ *     <li>{@link ObservationFilter} - ObservationFilter that adds common low cardinality key values to all observations</li>
+ * </ul>
  */
 @Factory
 public final class DefaultObservedFactory {
@@ -91,9 +99,9 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
-    @Requires(missingClasses = "io.micrometer.tracing.Tracer")
     @Requires(classes = MeterRegistry.class)
     @Requires(beans = MeterRegistry.class)
+    @Requires(missingBeans = Tracer.class)
     public ObservationHandler<?> defaultMeterObservationHandler(MeterRegistry meterRegistry) {
         return new DefaultMeterObservationHandler(meterRegistry);
     }
@@ -104,6 +112,15 @@ public final class DefaultObservedFactory {
     public ObservationHandler<?> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry, Tracer tracer) {
         DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
         return new TracingAwareMeterObservationHandler<>(delegate, tracer);
+    }
+
+    @Singleton
+    public static ObservationFilter commonKeyValuesFilter(ObservationProperties properties) {
+        if (properties.commonKeyValue() == null || properties.commonKeyValue().isEmpty()) {
+            return (context) -> context;
+        }
+        KeyValues keyValues = KeyValues.of(properties.commonKeyValue().entrySet(), Map.Entry::getKey, Map.Entry::getValue);
+        return (context) -> context.addLowCardinalityKeyValues(keyValues);
     }
 
 }
