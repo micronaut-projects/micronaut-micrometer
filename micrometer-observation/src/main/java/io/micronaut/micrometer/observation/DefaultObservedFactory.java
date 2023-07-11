@@ -32,7 +32,6 @@ import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 import java.util.List;
