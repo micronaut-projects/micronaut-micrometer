@@ -52,29 +52,16 @@ import java.util.Map;
 public final class DefaultObservedFactory {
     @Singleton
     ObservationRegistry observationRegistry(
-        @Nullable List<ObservationPredicate> observationPredicates,
-        @Nullable List<GlobalObservationConvention<?>> observationConventions,
-        @Nullable List<ObservationHandler<?>> observationHandlers,
-        @Nullable List<ObservationFilter> observationFilters
+        List<ObservationPredicate> observationPredicates,
+        List<GlobalObservationConvention<?>> observationConventions,
+        List<ObservationHandler<?>> observationHandlers,
+        List<ObservationFilter> observationFilters
     ) {
         ObservationRegistry observationRegistry = ObservationRegistry.create();
-
-        if (observationHandlers != null) {
-            observationHandlers.forEach(observationRegistry.observationConfig()::observationHandler);
-        }
-
-        if (observationPredicates != null) {
-            observationPredicates.forEach(observationRegistry.observationConfig()::observationPredicate);
-        }
-
-        if (observationFilters != null) {
-            observationFilters.forEach(observationRegistry.observationConfig()::observationFilter);
-        }
-
-        if (observationConventions != null) {
-            observationConventions.forEach(observationRegistry.observationConfig()::observationConvention);
-        }
-
+        observationHandlers.forEach(observationRegistry.observationConfig()::observationHandler);
+        observationPredicates.forEach(observationRegistry.observationConfig()::observationPredicate);
+        observationFilters.forEach(observationRegistry.observationConfig()::observationFilter);
+        observationConventions.forEach(observationRegistry.observationConfig()::observationConvention);
         return observationRegistry;
     }
 
