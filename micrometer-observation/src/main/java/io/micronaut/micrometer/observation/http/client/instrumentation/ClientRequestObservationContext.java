@@ -16,6 +16,7 @@
 package io.micronaut.micrometer.observation.http.client.instrumentation;
 
 import io.micrometer.observation.transport.RequestReplySenderContext;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
@@ -26,7 +27,8 @@ import io.micronaut.http.MutableHttpRequest;
  * <p>This context also extends {@link RequestReplySenderContext} for propagating observation
  * information with the HTTP client exchange.
  */
-public class ClientRequestObservationContext extends RequestReplySenderContext<MutableHttpRequest<?>, HttpResponse<?>> {
+@Internal
+public final class ClientRequestObservationContext extends RequestReplySenderContext<MutableHttpRequest<?>, HttpResponse<?>> {
 
     /**
      * Create an observation context for {@link MutableHttpRequest} observations.

@@ -20,10 +20,12 @@ import io.micrometer.common.docs.KeyName;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationConvention;
 import io.micrometer.observation.docs.ObservationDocumentation;
+import io.micronaut.core.annotation.Internal;
 
 /**
  * Documented {@link io.micrometer.common.KeyValue KeyValues} for the HTTP client observations.
  */
+@Internal
 public enum ClientHttpObservationDocumentation implements ObservationDocumentation {
 
     /**

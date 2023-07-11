@@ -31,6 +31,7 @@ import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandle
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 
@@ -47,7 +48,7 @@ import java.util.Map;
  * </ul>
  */
 @Factory
-@SuppressWarnings("rawtypes")
+@Internal
 public final class DefaultObservedFactory {
     @Singleton
     ObservationRegistry observationRegistry(
@@ -55,7 +56,6 @@ public final class DefaultObservedFactory {
         @Nullable List<GlobalObservationConvention<?>> observationConventions,
         @Nullable List<ObservationHandler<?>> observationHandlers,
         @Nullable List<ObservationFilter> observationFilters
-
     ) {
         ObservationRegistry observationRegistry = ObservationRegistry.create();
 

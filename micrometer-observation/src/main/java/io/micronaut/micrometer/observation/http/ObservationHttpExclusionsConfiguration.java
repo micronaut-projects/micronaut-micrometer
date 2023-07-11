@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * Exclusions configuration for Micrometer Observation.
  */
 @ConfigurationProperties(ObservationHttpExclusionsConfiguration.PREFIX)
-public class ObservationHttpExclusionsConfiguration {
+public final class ObservationHttpExclusionsConfiguration {
 
     public static final String PREFIX = "micrometer.observation.http";
 

@@ -17,6 +17,7 @@ package io.micronaut.micrometer.observation.http.client.instrumentation;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 
@@ -26,6 +27,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 /**
  * Default implementation for a {@link ClientRequestObservationConvention} extracting information from the {@link ClientRequestObservationContext}.
  */
+@Internal
 public final class DefaultClientRequestObservationConvention implements ClientRequestObservationConvention {
 
     private static final String DEFAULT_NAME = "http.client.requests";

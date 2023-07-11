@@ -41,7 +41,7 @@ import java.util.concurrent.CompletionStage;
 @Singleton
 @Requires(beans = ObservationRegistry.class)
 @InterceptorBean(Observed.class)
-public final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
+final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final ObservationRegistry observationRegistry;
     private final ConversionService conversionService;

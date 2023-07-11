@@ -17,6 +17,7 @@ package io.micronaut.micrometer.observation.http.server.instrumentation;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
@@ -29,6 +30,7 @@ import java.util.Optional;
 /**
  * Default {@link ServerRequestObservationConvention}.
  */
+@Internal
 public final class DefaultServerRequestObservationConvention implements ServerRequestObservationConvention {
     private static final String DEFAULT_NAME = "http.server.requests";
 
