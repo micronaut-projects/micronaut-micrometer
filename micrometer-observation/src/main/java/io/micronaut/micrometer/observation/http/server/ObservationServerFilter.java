@@ -20,14 +20,12 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.async.propagation.ReactorPropagation;
-import io.micronaut.core.propagation.PropagatedContext;
-import io.micronaut.http.HttpAttributes;
+import io.micronaut.core.propagation.MutablePropagatedContext;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.Filter;
-import io.micronaut.http.filter.HttpServerFilter;
-import io.micronaut.http.filter.ServerFilterChain;
+import io.micronaut.http.annotation.RequestFilter;
+import io.micronaut.http.annotation.ResponseFilter;
+import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.micrometer.observation.ObservationPropagationContext;
 import io.micronaut.micrometer.observation.http.AbstractObservationFilter;
 import io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration;
@@ -35,20 +33,18 @@ import io.micronaut.micrometer.observation.http.server.instrumentation.DefaultSe
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerHttpObservationDocumentation;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationContext;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationConvention;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.http.HttpAttributes.EXCEPTION;
 import static io.micronaut.micrometer.observation.http.AbstractObservationFilter.SERVER_PATH;
 
 /**
  * An HTTP server instrumentation filter that uses Micrometer Observation API.
  */
 @Internal
-@Filter(SERVER_PATH)
+@ServerFilter(SERVER_PATH)
 @Requires(property = "micrometer.observation.http.server.enabled", notEquals = FALSE)
-public final class ObservationServerFilter extends AbstractObservationFilter implements HttpServerFilter {
-
+public final class ObservationServerFilter extends AbstractObservationFilter {
     private static final ServerRequestObservationConvention DEFAULT_OBSERVATION_CONVENTION = new DefaultServerRequestObservationConvention();
 
     private final ObservationRegistry observationRegistry;
@@ -65,43 +61,24 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
         this.observationConvention = observationConvention;
     }
 
-    @Override
-    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-
+    @RequestFilter
+    public void request(HttpRequest<?> request, MutablePropagatedContext mutablePropagatedContext) {
         if (shouldExclude(request.getPath())) {
-            return chain.proceed(request);
+            return;
         }
-
         ServerRequestObservationContext context = new ServerRequestObservationContext(request);
         Observation observation = ServerHttpObservationDocumentation.HTTP_SERVER_REQUESTS.observation(this.observationConvention,
             DEFAULT_OBSERVATION_CONVENTION, () -> context, this.observationRegistry).start();
-
-            try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty()
-                .plus(new ObservationPropagationContext(observation))
-                .propagate()) {
-
-                PropagatedContext propagatedContext = PropagatedContext.get();
-                return Mono.from(chain.proceed(request))
-                    .doOnNext(mutableHttpResponse -> mutableHttpResponse.getAttribute(HttpAttributes.EXCEPTION, Exception.class)
-                        .ifPresentOrElse(
-                            e -> onError(mutableHttpResponse, context, observation, e), () -> {
-                                if (mutableHttpResponse.status().getCode() >= 400) {
-                                    onError(mutableHttpResponse, context, observation, null);
-                                } else {
-                                    context.setResponse(mutableHttpResponse);
-                                    observation.stop();
-                                }
-                            }))
-                    .doOnError(throwable -> onError(null, context, observation, throwable))
-                    .contextWrite(ctx -> ReactorPropagation.addPropagatedContext(ctx, propagatedContext));
-        }
+        request.setAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, observation);
+        mutablePropagatedContext.add(new ObservationPropagationContext(observation));
     }
 
-    private void onError(MutableHttpResponse<?> response, ServerRequestObservationContext context, Observation observation, @Nullable Throwable e) {
-        if (response != null) {
-            context.setResponse(response);
-        }
-        observation.error(e);
-        observation.stop();
+    @ResponseFilter
+    public void response(HttpRequest<?> request, MutableHttpResponse<?> response) {
+        request.getAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY).ifPresent(x -> {
+            response.getAttribute(EXCEPTION).ifPresent(e -> ((Observation) x).error((Throwable) e));
+            ((ServerRequestObservationContext) ((Observation) x).getContext()).setResponse(response);
+            ((Observation) x).stop();
+        });
     }
 }

@@ -17,7 +17,6 @@ package io.micronaut.micrometer.observation.http;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.filter.HttpFilter;
 
 import java.util.function.Predicate;
 
@@ -25,10 +24,11 @@ import java.util.function.Predicate;
  * Abstract filter used for Micrometer Observation.
  */
 @Internal
-public abstract class AbstractObservationFilter implements HttpFilter {
+public abstract class AbstractObservationFilter {
 
     public static final String CLIENT_PATH = "${micrometer.observation.http.client.path:/**}";
     public static final String SERVER_PATH = "${micrometer.observation.http.server.path:/**}";
+    public static final String MICROMETER_OBSERVATION_ATTRIBUTE_KEY = "micrometer.observation";
 
     @Nullable
     private final Predicate<String> pathExclusionTest;
