@@ -76,10 +76,10 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
 
     @ResponseFilter
     public void response(MutableHttpRequest<?> request, HttpResponse<?> response) {
-        request.getAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY).ifPresent(x -> {
-            response.getAttribute(EXCEPTION).ifPresent(e -> ((Observation) x).error((Throwable) e));
-            ((ClientRequestObservationContext) ((Observation) x).getContext()).setResponse(response);
-            ((Observation) x).stop();
+        request.getAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, Observation.class).ifPresent(observation -> {
+            response.getAttribute(EXCEPTION, Throwable.class).ifPresent(observation::error);
+            ((ClientRequestObservationContext) observation.getContext()).setResponse(response);
+            observation.stop();
         });
     }
 }
