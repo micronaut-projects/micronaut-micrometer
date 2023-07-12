@@ -19,6 +19,7 @@ import io.micrometer.context.ContextRegistry;
 import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Prototype;
+import io.micronaut.context.annotation.Requires;
 import jakarta.annotation.PostConstruct;
 
 /**
@@ -26,6 +27,7 @@ import jakarta.annotation.PostConstruct;
  */
 @Prototype
 @Context
+@Requires(classes = ContextRegistry.class)
 public final class ContextRegistryConfigurer {
 
     @PostConstruct
