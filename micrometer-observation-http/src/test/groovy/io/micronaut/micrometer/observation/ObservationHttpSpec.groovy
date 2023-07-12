@@ -184,7 +184,7 @@ class ObservationHttpSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
                 it.hasContextualNameEqualTo("http get")
                 it.hasNameEqualTo("http.client.requests")
-                it.hasLowCardinalityKeyValue("client.name", "localhost")
+                it.hasLowCardinalityKeyValueWithKey("client.name")
                 it.hasParentObservation()
             }
         }

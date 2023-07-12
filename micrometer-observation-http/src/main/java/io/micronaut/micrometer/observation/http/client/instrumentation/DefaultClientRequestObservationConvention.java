@@ -32,6 +32,8 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
 
     private static final String DEFAULT_NAME = "http.client.requests";
 
+    private static final String HOST_HEADER = "host";
+
     private static final KeyValue URI_NONE = KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.URI, KeyValue.NONE_VALUE);
 
     private static final KeyValue METHOD_NONE = KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.METHOD, KeyValue.NONE_VALUE);
@@ -105,7 +107,7 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
         if (context.getCarrier() != null) {
             String serviceId = context.getCarrier().getAttribute(SERVICE_ID, String.class)
                 .filter(x -> !x.contains("/"))
-                .orElseGet(() -> context.getCarrier().getRemoteAddress().getHostString());
+                .orElseGet(() -> context.getCarrier().getHeaders().get(HOST_HEADER, String.class).orElse(context.getCarrier().getUri().getHost()));
             return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.CLIENT_NAME, serviceId);
         }
         return CLIENT_NAME_NONE;
