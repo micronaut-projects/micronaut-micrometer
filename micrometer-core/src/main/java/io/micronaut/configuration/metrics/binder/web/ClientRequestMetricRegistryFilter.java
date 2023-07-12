@@ -28,7 +28,6 @@ import org.reactivestreams.Publisher;
 import java.util.Optional;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
-import static io.micronaut.core.util.StringUtils.TRUE;
 import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
@@ -40,7 +39,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 @Filter("${micronaut.metrics.http.client.path:/**}")
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
-@Requires(property = "micrometer.observation.http.client.enabled", notEquals = TRUE, defaultValue = TRUE)
+@Requires(condition = WebMetricsClientCondition.class)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
     private static final String HOST_HEADER = "host";
 
