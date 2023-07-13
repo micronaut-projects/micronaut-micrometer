@@ -89,6 +89,7 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
+    @SuppressWarnings("java:S1452")
     @Requires(classes = Tracer.class)
     @Requires(bean = Tracer.class)
     @Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
@@ -97,6 +98,7 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
+    @SuppressWarnings("java:S1452")
     @Requires(classes = Tracer.class)
     @Requires(beans = { Tracer.class, Propagator.class })
     @Order(SENDER_TRACING_OBSERVATION_HANDLER_ORDER)
@@ -105,6 +107,7 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
+    @SuppressWarnings("java:S1452")
     @Requires(classes = Tracer.class)
     @Requires(beans = { Tracer.class, Propagator.class })
     @Order(RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER)
@@ -113,6 +116,7 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
+    @SuppressWarnings("java:S1452")
     @Requires(classes = MeterRegistry.class)
     @Requires(beans = MeterRegistry.class)
     @Requires(missingBeans = Tracer.class)
@@ -121,6 +125,7 @@ public final class DefaultObservedFactory {
     }
 
     @Singleton
+    @SuppressWarnings("java:S1452")
     @Requires(classes = {MeterRegistry.class, Tracer.class})
     @Requires(beans = {MeterRegistry.class, Tracer.class})
     public ObservationHandler<?> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry, Tracer tracer) {
