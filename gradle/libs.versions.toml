@@ -20,7 +20,7 @@ hdr-histogram = '2.1.12'
 micronaut-cache = "4.0.1"
 micronaut-r2dbc = "5.0.0"
 micronaut-rxjava2 = "2.0.1"
-micronaut-serde = "2.0.0"
+micronaut-serde = "2.0.1"
 micronaut-sql = "5.0.1"
 micronaut-validation = "4.0.0"
 
