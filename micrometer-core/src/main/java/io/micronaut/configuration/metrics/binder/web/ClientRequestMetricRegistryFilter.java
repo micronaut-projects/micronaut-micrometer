@@ -39,8 +39,8 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 @Filter("${micronaut.metrics.http.client.path:/**}")
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(condition = WebMetricsClientCondition.class)
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
-
     private static final String HOST_HEADER = "host";
 
     private final MeterRegistry meterRegistry;

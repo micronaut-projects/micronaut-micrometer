@@ -1,0 +1,30 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    api projects.micronautMicrometerAnnotation
+    implementation libs.managed.micrometer.observation
+
+    implementation mn.reactor
+    implementation mn.micronaut.core.reactive
+    compileOnly(libs.managed.micrometer.tracing)
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+    testImplementation mnReactor.micronaut.reactor
+    testImplementation mnSerde.micronaut.serde.jackson
+    testImplementation libs.managed.micrometer.observation.test
+    testImplementation(libs.managed.micrometer.tracing)
+}
+
+micronautBuild {
+    binaryCompatibility {
+        def dash = version.indexOf('-')
+        def v = dash > 0 ? version.substring(0, dash) : version
+        def (major, minor, patch) = v.split('[.]').collect { it.toInteger() }
+        enabled = major > 5 || (major == 5 && minor > 1) || (major == 5 && minor == 1 && patch > 0)
+    }
+}

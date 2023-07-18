@@ -43,6 +43,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 @Filter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(condition = WebMetricsServerCondition.class)
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
