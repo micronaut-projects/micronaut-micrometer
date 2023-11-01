@@ -1,39 +1,35 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-base'
     id("io.micronaut.application")
 }
 
-dependencies {
-    annotationProcessor mn.micronaut.graal
+version = "0.1"
+group = "example"
 
-    testAnnotationProcessor mn.micronaut.inject.java
-    testAnnotationProcessor projects.micronautMicrometerAnnotation
-    testImplementation mn.micronaut.http.client
-    testImplementation mn.micronaut.http.server.netty
-    testImplementation mn.micronaut.management
-    testImplementation mnTest.micronaut.test.junit5
-    testImplementation mn.netty.transport.native.epoll
-    testImplementation mn.netty.transport.native.kqueue
-    testImplementation projects.micronautMicrometerCore
-    testImplementation mnSerde.micronaut.serde.jackson
+repositories {
+    mavenCentral()
 }
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+
+    implementation(mn.micronaut.management)
+    implementation(projects.micronautMicrometerCore)
+    implementation(mnSerde.micronaut.serde.jackson)
+
+    runtimeOnly(mnLogging.logback.classic)
+
+    testImplementation(mn.micronaut.http.client)
+}
+
+graalvmNative.toolchainDetection = false
 
 micronaut {
-    version = "4.0.0-M2"
+    version.set(libs.versions.micronaut.platform)
+    runtime("netty")
     testRuntime("junit5")
-}
-
-graalvmNative {
-    toolchainDetection = false
-    metadataRepository {
-        enabled = true
-    }
-    binaries {
-        all {
-            resources.autodetect()
-//            openGraalModules.each { module ->
-//                jvmArgs.add("--add-exports=" + module + "=ALL-UNNAMED")
-//            }
-        }
+    processing {
+        incremental(true)
+        annotations("serialization.*")
     }
 }
