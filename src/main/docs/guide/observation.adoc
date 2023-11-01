@@ -1,0 +1,23 @@
+== Micrometer Observation
+
+The Micronaut Micrometer Observation module simplifies the process of instrumenting your code for gathering traces and metrics. To get started, add the following dependency to your project:
+
+dependency:micronaut-micrometer-observation[groupId="io.micronaut.micrometer", scope="implementation"]
+
+This module enables you to leverage the https://micrometer.io/docs/observation#_using_annotations_with_observed[`@Observed`] annotation in your code, making it easier to monitor your application. Additionally, it allows you to create custom Observations.
+
+When your application registers a singleton instance of the `MeterRegistry` class, the Observation API will export metrics. Similarly, registering a singleton instance of the `Trace` class will enable the export of traces.
+
+You can also specify key-value pairs inside the `micrometer.observations.common-key-value` configuration, which will be added as low-cardinality key-values to all your observations.
+
+
+=== Micrometer Observation HTTP
+
+The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics. To include this module in your project, add the following dependency:
+
+dependency:micronaut-micrometer-observation-http[groupId="io.micronaut.micrometer", scope="implementation"]
+
+You can configure the behavior of this module by modifying the following properties:
+
+- To disable HTTP server instrumentation, set the `micrometer.observation.http.server.enabled` property to `false` (the default value is `true`).
+- To disable HTTP client instrumentation, set the `micrometer.observation.http.client.enabled` property to `false` (the default value is `true`).
