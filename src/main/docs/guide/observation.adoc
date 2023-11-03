@@ -8,12 +8,20 @@ This module enables you to leverage the https://micrometer.io/docs/observation#_
 
 When your application registers a singleton instance of the `MeterRegistry` class, the Observation API will export metrics. Similarly, registering a singleton instance of the `Trace` class will enable the export of traces.
 
+To effortlessly establish a singleton instance of MeterRegistry, you can include the following dependency, which takes care of the registration process for you:
+
+dependency:micronaut-micrometer-core[groupId="io.micronaut.micrometer", scope="implementation"]
+
+It's worth noting that at present, the creation of a singleton instance for Trace requires manual configuration and is not automated by default.
+
 You can also specify key-value pairs inside the `micrometer.observations.common-key-value` configuration, which will be added as low-cardinality key-values to all your observations.
 
 
 === Micrometer Observation HTTP
 
-The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics. To include this module in your project, add the following dependency:
+The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics and traces. . With this module, every request received by the server and every request sent from the server triggers the creation of an observation with the necessary low and high cardinality values. Depending on your application's configuration, these values can be displayed as metrics (if you have registered the `MeterRegistry` singleton bean) and as trace spans (if you have registered the `Trace` singleton bean).
+
+To include this module in your project, add the following dependency:
 
 dependency:micronaut-micrometer-observation-http[groupId="io.micronaut.micrometer", scope="implementation"]
 
