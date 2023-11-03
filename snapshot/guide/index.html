@@ -56,7 +56,9 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#metricsAndReporters"><strong>6</strong><span>Metrics Registries &amp; Reporters</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#observation"><strong>7</strong><span>Observation</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -141,7 +143,9 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.21</strong><span>Wavefront Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-observation"><a href="#observation"><strong>7</strong><span>Observation</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -4432,7 +4436,110 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 </div>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>7 Repository</h1>
+<h1 id="observation"><a class="anchor" href="#observation"></a>7 Observation</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/observation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_micrometer_observation">Micrometer Observation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Micronaut Micrometer Observation module simplifies the process of instrumenting your code for gathering traces and metrics. To get started, add the following dependency to your project:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-observation&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>This module enables you to leverage the <a href="https://micrometer.io/docs/observation#_using_annotations_with_observed"><code>@Observed</code></a> annotation in your code, making it easier to monitor your application. Additionally, it allows you to create custom Observations.</p>
+</div>
+<div class="paragraph">
+<p>When your application registers a singleton instance of the <code>MeterRegistry</code> class, the Observation API will export metrics. Similarly, registering a singleton instance of the <code>Trace</code> class will enable the export of traces.</p>
+</div>
+<div class="paragraph">
+<p>To effortlessly establish a singleton instance of MeterRegistry, you can include the following dependency, which takes care of the registration process for you:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth noting that at present, the creation of a singleton instance for Trace requires manual configuration and is not automated by default.</p>
+</div>
+<div class="paragraph">
+<p>You can also specify key-value pairs inside the <code>micrometer.observations.common-key-value</code> configuration, which will be added as low-cardinality key-values to all your observations.</p>
+</div>
+<div class="sect2">
+<h3 id="_micrometer_observation_http">Micrometer Observation HTTP</h3>
+<div class="paragraph">
+<p>The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics and traces. . With this module, every request received by the server and every request sent from the server triggers the creation of an observation with the necessary low and high cardinality values. Depending on your application&#8217;s configuration, these values can be displayed as metrics (if you have registered the <code>MeterRegistry</code> singleton bean) and as trace spans (if you have registered the <code>Trace</code> singleton bean).</p>
+</div>
+<div class="paragraph">
+<p>To include this module in your project, add the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-http")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-observation-http&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure the behavior of this module by modifying the following properties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To disable HTTP server instrumentation, set the <code>micrometer.observation.http.server.enabled</code> property to <code>false</code> (the default value is <code>true</code>).</p>
+</li>
+<li>
+<p>To disable HTTP client instrumentation, set the <code>micrometer.observation.http.client.enabled</code> property to <code>false</code> (the default value is <code>true</code>).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>8 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/repository.adoc"'>
