@@ -27,6 +27,7 @@ import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.URI_NO_ROUTE_MATCH;
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
@@ -34,7 +35,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
  * Registers the timers and meters for each request.
  *
  * <p>The default is to intercept all paths /**, but using the
- *  property micronaut.metrics.http.path, this can be changed.</p>
+ * property micronaut.metrics.http.path, this can be changed.</p>
  *
  * @author Christian Oestreich
  * @author graemerocher
@@ -58,7 +59,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private String resolvePath(HttpRequest<?> request) {
         Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
-        return route.orElseGet(request::getPath);
+        return route.orElse(URI_NO_ROUTE_MATCH);
     }
 
     @Override

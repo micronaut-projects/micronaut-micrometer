@@ -6,10 +6,14 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.context.ApplicationContext
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Header
+import io.micronaut.http.annotation.Produces
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
@@ -123,6 +127,16 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
 
+        when: "A request is made that does not match a route"
+        client.noRouteMatchForMediaType()
+
+        then:
+        thrown(HttpClientResponseException)
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics-no-route-match').timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "406").timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', 'NO_ROUTE_MATCH').timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "406").timer()
+
         cleanup:
         embeddedServer.close()
 
@@ -174,6 +188,10 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
+
+        @Get("/test-http-metrics-no-route-match")
+        @Header(name = HttpHeaders.ACCEPT, value = MediaType.TEXT_PLAIN)
+        HttpResponse noRouteMatchForMediaType()
     }
 
     @Controller('/')
@@ -205,6 +223,11 @@ class HttpMetricsSpec extends Specification {
         @Error(exception = MyException)
         HttpResponse<?> myExceptionHandler() {
             return HttpResponse.badRequest()
+        }
+        @Get("/test-http-metrics-no-route-match")
+        @Produces(MediaType.APPLICATION_JSON)
+        HttpResponse noRouteMatchForMediaType() {
+            return HttpResponse.ok()
         }
     }
 
