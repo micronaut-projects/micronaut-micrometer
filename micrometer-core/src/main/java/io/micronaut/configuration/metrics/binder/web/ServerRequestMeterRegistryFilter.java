@@ -27,7 +27,7 @@ import org.reactivestreams.Publisher;
 
 import java.util.Optional;
 
-import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.URI_NO_ROUTE_MATCH;
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.UNKNOWN;
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
@@ -59,7 +59,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private String resolvePath(HttpRequest<?> request) {
         Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
-        return route.orElse(URI_NO_ROUTE_MATCH);
+        return route.orElse(UNKNOWN);
     }
 
     @Override

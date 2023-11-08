@@ -68,7 +68,7 @@ class NotAcceptableRouteWithPathVariableDoesNotPolluteMetricsSpec extends Specif
 
         then:
         noExceptionThrown()
-        ['NO_ROUTE_MATCH', '/metrics/{name}','/books/{id}'] == uris
+        ['/metrics/{name}','/books/{id}','UNKNOWN'] == uris
     }
 
     private static List<String> fetchHttpServerRequestMetricsUris(BlockingHttpClient client) {
@@ -76,7 +76,7 @@ class NotAcceptableRouteWithPathVariableDoesNotPolluteMetricsSpec extends Specif
     }
 
     private static Map<String, Object> fetchHttpServerRequestMetrics(BlockingHttpClient client) {
-        client.retrieve(HttpRequest.GET("/metrics/http.server.requests"), Argument.mapOf(String, Object));
+        client.retrieve(HttpRequest.GET("/metrics/http.server.requests"), Argument.mapOf(String, Object))
     }
 
     @Requires(property = "spec.name", value = "RoutePathVariableNotFoundMetricsSpec")
