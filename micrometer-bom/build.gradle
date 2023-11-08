@@ -1,3 +1,13 @@
 plugins {
     id 'io.micronaut.build.internal.bom'
 }
+
+micronautBom {
+    suppressions {
+        dependencies.addAll([
+                // bomCheck fails because this version is unresolvable (1.11.1 is latest)
+                // and it's not in this catalog or used anyway.
+                "io.micrometer:micrometer-osgi-test:1.11.5",
+        ])
+    }
+}
