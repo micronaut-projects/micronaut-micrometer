@@ -58,7 +58,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 
     private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
     private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
-    private static final String UNKNOWN = "UNKNOWN";
+    static final String UNKNOWN = "UNKNOWN";
     private static final String METHOD = "method";
     private static final String STATUS = "status";
     private static final String URI = "uri";
