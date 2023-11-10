@@ -36,10 +36,3 @@ io.micronaut.configuration.metrics.micrometer.stackdriver
 io.micronaut.configuration.metrics.micrometer.statsd
 io.micronaut.configuration.metrics.micrometer.wavefront
 io.micronaut.micrometer.annotation.processing
-io.micronaut.micrometer.observation
-io.micronaut.micrometer.observation.http
-io.micronaut.micrometer.observation.http.client
-io.micronaut.micrometer.observation.http.client.instrumentation
-io.micronaut.micrometer.observation.http.server
-io.micronaut.micrometer.observation.http.server.instrumentation
-io.micronaut.micrometer.observation.utils
