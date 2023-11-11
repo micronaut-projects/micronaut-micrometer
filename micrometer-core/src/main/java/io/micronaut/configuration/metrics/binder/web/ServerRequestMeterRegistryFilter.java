@@ -18,18 +18,18 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
 import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
+import io.micronaut.http.uri.UriMatchTemplate;
+import io.micronaut.web.router.UriRouteInfo;
+import io.micronaut.web.router.UriRouteMatch;
 import org.reactivestreams.Publisher;
-
 import java.util.Optional;
-
-import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.UNKNOWN;
 import static io.micronaut.core.util.StringUtils.FALSE;
-import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
  * Registers the timers and meters for each request.
@@ -47,6 +47,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
+    private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final MeterRegistry meterRegistry;
 
     /**
@@ -57,8 +58,12 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
-        return route.orElse(UNKNOWN);
+        Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO, UriRouteMatch.class)
+            .map(UriRouteMatch::getRouteInfo)
+            .map(UriRouteInfo::getUriMatchTemplate)
+            .map(UriMatchTemplate::toPathString);
+        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
+                        .orElse(UNMATCHED_URI));
     }
 
     @Override
