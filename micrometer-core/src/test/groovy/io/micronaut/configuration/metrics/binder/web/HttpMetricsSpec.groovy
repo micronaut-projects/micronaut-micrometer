@@ -1,20 +1,31 @@
 package io.micronaut.configuration.metrics.binder.web
 
 import groovy.transform.InheritConstructors
+import io.micrometer.common.lang.NonNull
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.context.ApplicationContext
+import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
+import io.micronaut.http.uri.UriBuilder
 import io.micronaut.runtime.server.EmbeddedServer
+import io.micronaut.websocket.WebSocketBroadcaster
+import io.micronaut.websocket.WebSocketClient
+import io.micronaut.websocket.WebSocketSession
+import io.micronaut.websocket.annotation.*
+import org.reactivestreams.Publisher
+import reactor.core.publisher.Flux
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import jakarta.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
@@ -62,7 +73,7 @@ class HttpMetricsSpec extends Specification {
         result == 'ok foo'
         registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('host', 'localhost').timer()
+        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('serviceId', 'embedded-server').timer()
 
         when:
         registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/foo').timer()
@@ -152,6 +163,36 @@ class HttpMetricsSpec extends Specification {
         (WebMetricsPublisher.ENABLED) | false
     }
 
+    void "test websocket"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(MICRONAUT_METRICS_ENABLED): true])
+        MeterRegistry registry = embeddedServer.getApplicationContext().getBean(MeterRegistry)
+        createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
+
+        then:
+        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/ws/{username}').timer()
+    }
+
+    @ClientWebSocket
+    static abstract class TestWebSocketClient implements AutoCloseable {
+        abstract void send(@NonNull @NotBlank String message);
+
+        @OnMessage
+        void onMessage(String message) {}
+    }
+
+
+    private TestWebSocketClient createWebSocketClient(ApplicationContext context, int port, String username) {
+        WebSocketClient webSocketClient = context.getBean(WebSocketClient.class)
+        URI uri = UriBuilder.of("ws://localhost")
+                .port(port)
+                .path("ws")
+                .path("{username}")
+                .expand(CollectionUtils.mapOf("username", username))
+        Publisher<TestWebSocketClient> client = webSocketClient.connect(TestWebSocketClient.class, uri)
+        return Flux.from(client).blockFirst()
+    }
+
     @Client('/')
     static interface TestClient {
         @Get
@@ -206,6 +247,33 @@ class HttpMetricsSpec extends Specification {
         HttpResponse<?> myExceptionHandler() {
             return HttpResponse.badRequest()
         }
+    }
+
+    @ServerWebSocket("/ws/{username}")
+    static class TestWSController {
+
+        private final WebSocketBroadcaster broadcaster
+
+        @OnOpen
+        Publisher<String> onOpen(String username, WebSocketSession session) {
+            return broadcaster.broadcast(String.format("Joined %s!", username))
+        }
+
+        @OnMessage
+        Publisher<String> onMessage(
+                String username,
+                String message,
+                WebSocketSession session) {
+            return broadcaster.broadcast(String.format("[%s] %s", username, message))
+        }
+
+        @OnClose
+        Publisher<String> onClose(
+                String username,
+                WebSocketSession session) {
+            return broadcaster.broadcast(String.format("Leaving %s!", username))
+        }
+
     }
 
     @InheritConstructors

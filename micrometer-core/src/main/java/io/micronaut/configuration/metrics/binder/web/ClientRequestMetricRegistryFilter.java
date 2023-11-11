@@ -18,6 +18,8 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.util.StringUtils;
+import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.annotation.Filter;
@@ -64,18 +66,23 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 start,
                 request.getMethod().toString(),
                 false,
-                resolveHost(request),
+                resolveServiceID(request),
                 true
         );
     }
 
     private String resolvePath(MutableHttpRequest<?> request) {
         Optional<String> route = request.getAttribute(URI_TEMPLATE, String.class);
-        return route.orElseGet(request::getPath);
+        // only include templated paths
+        return route.orElse(null);
     }
 
-    private String resolveHost(MutableHttpRequest<?> request) {
-        Optional<String> host = request.getHeaders().get(HOST_HEADER, String.class);
-        return host.orElse(request.getUri().getHost());
+    @SuppressWarnings("java:S2259") // false positive
+    private String resolveServiceID(MutableHttpRequest<?> request) {
+        String serviceId = request.getAttributes().get(HttpAttributes.SERVICE_ID.toString(), String.class).orElse(null);
+        if (StringUtils.isNotEmpty(serviceId) && serviceId.charAt(0) == '/') {
+            return "embedded-server";
+        }
+        return serviceId;
     }
 }

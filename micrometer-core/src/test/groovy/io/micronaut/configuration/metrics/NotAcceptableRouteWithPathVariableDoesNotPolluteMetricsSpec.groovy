@@ -68,7 +68,7 @@ class NotAcceptableRouteWithPathVariableDoesNotPolluteMetricsSpec extends Specif
 
         then:
         noExceptionThrown()
-        ['/metrics/{name}','/books/{id}','UNKNOWN'] == uris
+        uris == ['UNMATCHED_URI', '/metrics/{name}','/books/{id}']
     }
 
     private static List<String> fetchHttpServerRequestMetricsUris(BlockingHttpClient client) {
