@@ -7,6 +7,7 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
 import software.amazon.awssdk.core.client.config.SdkClientConfiguration
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -49,6 +50,20 @@ class CloudwatchRegistryFactorySpec extends Specification {
         def properties = clientConfiguration.getProperties().get("attributes")["attributes"]
         def result = properties.entrySet().stream().filter(x -> x.getValue().toString().startsWith("micronaut")).collect(Collectors.toList())
         result.size() == 1
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify that cloudwatch clients can be created"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+
+        then:
+        def cloudWatchAsyncClientList = context.getBeansOfType(CloudWatchAsyncClient)
+        cloudWatchAsyncClientList.size() == 1
+        def cloudWatchClient = context.getBeansOfType(CloudWatchClient)
+        cloudWatchClient.size() == 1
 
         cleanup:
         context.stop()
