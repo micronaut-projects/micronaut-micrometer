@@ -27,4 +27,5 @@ metricsAndReporters:
   metricsAndReportersStatsD: StatsD Registry
   metricsAndReportersWavefront: Wavefront Registry
 observation: Observation
+metricsGuides: Guides
 repository: Repository
