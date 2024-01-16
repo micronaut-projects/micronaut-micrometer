@@ -20,7 +20,7 @@ jcache = "1.1.1"
 hdr-histogram = '2.1.12'
 
 micronaut-aws = "4.1.1"
-micronaut-cache = "4.1.1"
+micronaut-cache = "4.2.0"
 micronaut-logging = "1.1.2"
 micronaut-r2dbc = "5.2.0"
 micronaut-rxjava2 = "2.2.0"
