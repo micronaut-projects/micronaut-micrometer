@@ -62,7 +62,7 @@ public class CloudWatchMeterRegistryFactory extends AwsClientFactory<CloudWatchC
     /**
      * @deprecated Use {@link CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "5.2.0", forRemoval = true)
     public CloudWatchMeterRegistryFactory() {
         this(AwsCredentialsProviderChain.builder().build(), new AwsRegionProviderChain(), null, null);
     }
@@ -71,7 +71,7 @@ public class CloudWatchMeterRegistryFactory extends AwsClientFactory<CloudWatchC
      *
      * @deprecated Use {@link #createAsyncBuilder()} instead.
      */
-    @Deprecated
+    @Deprecated(since = "5.2.0", forRemoval = true)
     CloudWatchAsyncClientBuilder cloudWatchAsyncClientBuilder() {
         return createAsyncBuilder();
     }
@@ -120,7 +120,7 @@ public class CloudWatchMeterRegistryFactory extends AwsClientFactory<CloudWatchC
      * @return A {@link CloudWatchAsyncClient}
      * @deprecated Use {{@link #asyncClient(CloudWatchAsyncClientBuilder)}} instead.
      */
-    @Deprecated
+    @Deprecated(since = "5.2.0", forRemoval = true)
     CloudWatchAsyncClient cloudWatchAsyncClient(CloudWatchAsyncClientBuilder builder) {
        return asyncClient(builder);
     }
