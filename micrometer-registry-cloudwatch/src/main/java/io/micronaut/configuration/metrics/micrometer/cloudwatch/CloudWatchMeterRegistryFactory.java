@@ -23,7 +23,6 @@ import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperti
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
