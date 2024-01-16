@@ -23,7 +23,9 @@ import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperti
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
@@ -50,11 +52,29 @@ public class CloudWatchMeterRegistryFactory extends AwsClientFactory<CloudWatchC
     public static final String CLOUDWATCH_ENABLED = CLOUDWATCH_CONFIG + ".enabled";
     public static final String CLOUDWATCH_DEFAULT_NAMESPACE = "micronaut";
 
+    @Inject
     protected CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain credentialsProvider,
                                           AwsRegionProviderChain regionProvider,
                                           @Nullable UserAgentProvider userAgentProvider,
                                           @Nullable @Named(CloudWatchClient.SERVICE_NAME) AWSServiceConfiguration awsServiceConfiguration) {
         super(credentialsProvider, regionProvider, userAgentProvider, awsServiceConfiguration);
+    }
+
+    /**
+     * @deprecated Use {@link CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)} instead.
+     */
+    @Deprecated
+    public CloudWatchMeterRegistryFactory() {
+        this(AwsCredentialsProviderChain.builder().build(), new AwsRegionProviderChain(), null, null);
+    }
+
+    /**
+     *
+     * @deprecated Use {@link #createAsyncBuilder()} instead.
+     */
+    @Deprecated
+    CloudWatchAsyncClientBuilder cloudWatchAsyncClientBuilder() {
+        return createAsyncBuilder();
     }
 
     @Override
@@ -96,14 +116,26 @@ public class CloudWatchMeterRegistryFactory extends AwsClientFactory<CloudWatchC
     }
 
     /**
-     * Create a CloudWatchMeterRegistry bean if global metrics are enabled
-     * and CloudWatch is enabled. Will be true by default when this
-     * configuration is included in project.
      *
-     * @param exportConfigurationProperties The export configuration
-     * @param cloudWatchAsyncClient  The CloudWatch async client
-     * @return A CloudWatchMeterRegistry
+     * @param builder A {@link CloudWatchAsyncClient} builder.
+     * @return A {@link CloudWatchAsyncClient}
+     * @deprecated Use {{@link #asyncClient(CloudWatchAsyncClientBuilder)}} instead.
      */
+    @Deprecated
+    CloudWatchAsyncClient cloudWatchAsyncClient(CloudWatchAsyncClientBuilder builder) {
+       return asyncClient(builder);
+    }
+
+
+        /**
+         * Create a CloudWatchMeterRegistry bean if global metrics are enabled
+         * and CloudWatch is enabled. Will be true by default when this
+         * configuration is included in project.
+         *
+         * @param exportConfigurationProperties The export configuration
+         * @param cloudWatchAsyncClient  The CloudWatch async client
+         * @return A CloudWatchMeterRegistry
+         */
     @Singleton
     CloudWatchMeterRegistry cloudWatchMeterRegistry(ExportConfigurationProperties exportConfigurationProperties,
                                                     CloudWatchAsyncClient cloudWatchAsyncClient) {
