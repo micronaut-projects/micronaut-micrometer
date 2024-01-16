@@ -46,9 +46,13 @@ class CloudwatchRegistryFactorySpec extends Specification {
         then:
         def list = context.getBeansOfType(CloudWatchAsyncClient)
         list.size() == 1
-        SdkClientConfiguration clientConfiguration = list[0].getProperties().get("clientConfiguration")
-        def properties = clientConfiguration.getProperties().get("attributes")["attributes"]
-        def result = properties.entrySet().stream().filter(x -> x.getValue().toString().startsWith("micronaut")).collect(Collectors.toList())
+
+        when:
+        SdkClientConfiguration clientConfiguration = list[0].properties.clientConfiguration
+        def properties = clientConfiguration.properties.attributes.attributes
+        def result = properties.findAll { it.value.value.toString().startsWith("micronaut") }
+
+        then:
         result.size() == 1
 
         cleanup:
