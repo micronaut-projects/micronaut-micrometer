@@ -51,9 +51,25 @@ loadScripts(document, 'script');</script>
 <h1 title="Deprecated API" class="title">Deprecated API</h1>
 <h2 title="Contents">Contents</h2>
 <ul>
+<li><a href="#for-removal">Terminally Deprecated</a></li>
 <li><a href="#constructor">Constructors</a></li>
 </ul>
 </div>
+<ul class="block-list">
+<li>
+<div id="for-removal">
+<div class="caption"><span>Terminally Deprecated Elements</span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Element</div>
+<div class="table-header col-last">Description</div>
+<div class="col-summary-item-name even-row-color"><a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html#%3Cinit%3E()">io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory()</a></div>
+<div class="col-last even-row-color">
+<div class="deprecation-comment">Use <a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html#%3Cinit%3E(software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain,software.amazon.awssdk.regions.providers.AwsRegionProviderChain,io.micronaut.aws.ua.UserAgentProvider,io.micronaut.aws.sdk.v2.service.AWSServiceConfiguration)"><code>CloudWatchMeterRegistryFactory(software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain,software.amazon.awssdk.regions.providers.AwsRegionProviderChain,@io.micronaut.core.annotation.Nullable io.micronaut.aws.ua.UserAgentProvider,@io.micronaut.core.annotation.Nullable io.micronaut.aws.sdk.v2.service.AWSServiceConfiguration)</code></a> instead.</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
 <ul class="block-list">
 <li>
 <div id="constructor">
@@ -61,12 +77,16 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-summary-item-name even-row-color"><a href="io/micronaut/configuration/metrics/micrometer/intercept/CountedInterceptor.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)">io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor<wbr>(MeterRegistry)</a></div>
+<div class="col-summary-item-name even-row-color"><a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html#%3Cinit%3E()">io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory()</a></div>
 <div class="col-last even-row-color">
+<div class="deprecation-comment">Use <a href="io/micronaut/configuration/metrics/micrometer/cloudwatch/CloudWatchMeterRegistryFactory.html#%3Cinit%3E(software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain,software.amazon.awssdk.regions.providers.AwsRegionProviderChain,io.micronaut.aws.ua.UserAgentProvider,io.micronaut.aws.sdk.v2.service.AWSServiceConfiguration)"><code>CloudWatchMeterRegistryFactory(software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain,software.amazon.awssdk.regions.providers.AwsRegionProviderChain,@io.micronaut.core.annotation.Nullable io.micronaut.aws.ua.UserAgentProvider,@io.micronaut.core.annotation.Nullable io.micronaut.aws.sdk.v2.service.AWSServiceConfiguration)</code></a> instead.</div>
+</div>
+<div class="col-summary-item-name odd-row-color"><a href="io/micronaut/configuration/metrics/micrometer/intercept/CountedInterceptor.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)">io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor<wbr>(MeterRegistry)</a></div>
+<div class="col-last odd-row-color">
 <div class="deprecation-comment">Pass conversion service in new constructor</div>
 </div>
-<div class="col-summary-item-name odd-row-color"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)">io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor<wbr>(MeterRegistry)</a></div>
-<div class="col-last odd-row-color">
+<div class="col-summary-item-name even-row-color"><a href="io/micronaut/configuration/metrics/micrometer/intercept/TimedInterceptor.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)">io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor<wbr>(MeterRegistry)</a></div>
+<div class="col-last even-row-color">
 <div class="deprecation-comment">Pass conversion service in new constructor</div>
 </div>
 </div>
