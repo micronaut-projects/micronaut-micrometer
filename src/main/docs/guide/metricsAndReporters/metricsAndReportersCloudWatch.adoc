@@ -23,3 +23,6 @@ micronaut:
         namespace: myAwesomeAppMetrics
         batchSize: 10
 ----
+
+TIP: See the guide for https://guides.micronaut.io/latest/micronaut-metrics-aws.html[Collect Metrics with the Micronaut Framework and Monitor Them on Amazon Cloudwatch] to learn more.
+
