@@ -27,7 +27,7 @@ micronaut-rxjava2 = "2.2.1"
 micronaut-reactor = '3.2.1'
 micronaut-serde = "2.7.1"
 micronaut-sql = "5.4.1"
-micronaut-validation = "4.2.0"
+micronaut-validation = "4.3.0"
 
 [libraries]
 # Core
