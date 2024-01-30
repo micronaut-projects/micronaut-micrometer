@@ -19,7 +19,7 @@ logback = "1.4.14"
 jcache = "1.1.1"
 hdr-histogram = '2.1.12'
 
-micronaut-aws = "4.2.3"
+micronaut-aws = "4.4.0"
 micronaut-cache = "4.2.1"
 micronaut-logging = "1.1.2"
 micronaut-r2dbc = "5.2.0"
