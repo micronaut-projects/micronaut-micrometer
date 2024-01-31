@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2024 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
@@ -51,6 +52,9 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final MeterRegistry meterRegistry;
 
+    @Value("${" + WebMetricsPublisher.CLIENT_ERROR_URIS_ENABLED + ":true}")
+    private boolean reportClientErrorURIs;
+
     /**
      * @param meterRegistry the meter registry
      */
@@ -83,7 +87,8 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             path,
             start,
             request.getMethod().toString(),
-            reportErrors
+            reportErrors,
+            reportClientErrorURIs
         );
     }
 }
