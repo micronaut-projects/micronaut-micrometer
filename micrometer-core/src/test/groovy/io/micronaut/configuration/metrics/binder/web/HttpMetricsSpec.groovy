@@ -23,7 +23,6 @@ import io.micronaut.websocket.annotation.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import jakarta.validation.constraints.NotBlank
 
@@ -34,8 +33,7 @@ import static io.micronaut.http.HttpStatus.NOT_FOUND
 
 class HttpMetricsSpec extends Specification {
 
-    @Unroll
-    void "test client / server metrics"() {
+    void "test client / server metrics with #cfg #setting"() {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting])
         def context = embeddedServer.applicationContext
@@ -53,7 +51,6 @@ class HttpMetricsSpec extends Specification {
         HistogramSnapshot clientSnapshot = clientTimer.takeSnapshot()
 
         then:
-        serverTimer
         serverTimer.count() == 1
         clientTimer.count() == 1
         serverSnapshot.percentileValues().length == serverPercentilesCount
@@ -143,7 +140,6 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0
     }
 
-    @Unroll
     void "test client / server metrics ignored uris for client errors"() {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
@@ -162,7 +158,6 @@ class HttpMetricsSpec extends Specification {
         Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics').timer()
 
         then:
-        serverTimer != null
         serverTimer.count() == 1
         clientTimer.count() == 1
 
@@ -229,7 +224,6 @@ class HttpMetricsSpec extends Specification {
         embeddedServer.close()
     }
 
-    @Unroll
     void "test getting the beans #cfg #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([(cfg): setting])
