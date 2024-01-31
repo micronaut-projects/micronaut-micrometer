@@ -763,6 +763,12 @@ public class MeterFilterFactory {
 <p>If enabled, by default the path <code>/**</code> is intercepted. To change which paths are run through the filter for the server, set <code>micronaut.metrics.http.path</code>. For the client, set <code>micronaut.metrics.http.client.path</code>.</p>
 </div>
 <div class="paragraph">
+<div class="title">Client error URI reporting</div>
+<p>By default, client URIs are captured when an error is handled.
+This can cause trouble in some monitoring tools due to a large amount of distinct URIs captured.
+This URI capturing can be disabled by setting <code>micronaut.metrics.binders.web.client-errors-uris.enabled</code> to <code>false</code>.</p>
+</div>
+<div class="paragraph">
 <div class="title">Enabling Percentiles</div>
 <p>Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.</p>
 </div>
