@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2024 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private final String metricName;
     private final String serviceID;
     private final boolean reportErrors;
-    private boolean reportClientErrorURIs;
+    private final boolean reportClientErrorURIs;
 
     /**
      * @param publisher     The original publisher
@@ -212,7 +212,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         return Stream
                 .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath, reportClientErrorURIs), exception(throwable), serviceId(serviceId))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -337,8 +337,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private void error(long start, String httpMethod, String requestPath,
                        Throwable throwable, String serviceId) {
         HttpResponse<?> response = null;
-        if (throwable instanceof HttpResponseProvider) {
-            response = ((HttpResponseProvider) throwable).getResponse();
+        if (throwable instanceof HttpResponseProvider httpResponseProvider) {
+            response = httpResponseProvider.getResponse();
         }
         Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, serviceId, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
