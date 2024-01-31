@@ -29,7 +29,6 @@ import reactor.util.context.Context;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
@@ -59,11 +58,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     public static final String METRIC_HTTP_SERVER_REQUESTS = "http.server.requests";
     public static final String METRIC_HTTP_CLIENT_REQUESTS = "http.client.requests";
 
+    static final String UNKNOWN = "UNKNOWN";
+
     private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
     private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
     private static final Tag URI_UNAUTHORIZED = Tag.of("uri", "UNAUTHORIZED");
     private static final Tag URI_BAD_REQUEST = Tag.of("uri", "BAD_REQUEST");
-    static final String UNKNOWN = "UNKNOWN";
     private static final String METHOD = "method";
     private static final String STATUS = "status";
     private static final String URI = "uri";
