@@ -26,7 +26,9 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
+import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Inject;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -49,9 +51,25 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     public static final String RESULT_TAG = "result";
 
     private final MeterRegistry meterRegistry;
+    private final ConversionService conversionService;
 
+    /**
+     * @param meterRegistry The meter registry
+     * @deprecated Pass conversion service in new constructor
+     */
+    @Deprecated
     public CountedInterceptor(MeterRegistry meterRegistry) {
+        this(meterRegistry, ConversionService.SHARED);
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     */
+    @Inject
+    public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
+        this.conversionService = conversionService;
     }
 
     @Override
@@ -59,35 +77,36 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final String metricName = metadata.stringValue(Counted.class).orElse(DEFAULT_METRIC_NAME);
         if (StringUtils.isNotEmpty(metricName)) {
-            InterceptedMethod interceptedMethod = InterceptedMethod.of(context);
+            InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
             try {
                 InterceptedMethod.ResultType resultType = interceptedMethod.resultType();
                 switch (resultType) {
-                    case PUBLISHER:
+                    case PUBLISHER -> {
                         Object interceptResult = context.proceed();
                         if (interceptResult == null) {
                             return null;
                         }
                         Object reactiveResult;
                         if (context.getReturnType().isSingleResult()) {
-                            Mono<?> single = Mono.from(Publishers.convertPublisher(interceptResult, Publisher.class));
+                            Mono<?> single = Mono.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                             reactiveResult = single
-                                    .doOnError(throwable -> doCount(metadata, metricName, throwable))
-                                    .doOnSuccess(o -> doCount(metadata, metricName, null));
+                                .doOnError(throwable -> doCount(metadata, metricName, throwable))
+                                .doOnSuccess(o -> doCount(metadata, metricName, null));
                         } else {
-                            Flux<?> flowable = Flux.from(Publishers.convertPublisher(interceptResult, Publisher.class));
+                            Flux<?> flowable = Flux.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                             reactiveResult = flowable
-                                    .doOnError(throwable -> doCount(metadata, metricName, throwable))
-                                    .doOnComplete(() -> doCount(metadata, metricName, null));
+                                .doOnError(throwable -> doCount(metadata, metricName, throwable))
+                                .doOnComplete(() -> doCount(metadata, metricName, null));
                         }
-                        return Publishers.convertPublisher(reactiveResult, context.getReturnType().getType());
-                    case COMPLETION_STAGE:
+                        return Publishers.convertPublisher(conversionService, reactiveResult, context.getReturnType().getType());
+                    }
+                    case COMPLETION_STAGE -> {
                         CompletionStage<?> completionStage = interceptedMethod.interceptResultAsCompletionStage();
                         CompletionStage<?> completionStageResult = completionStage
-                                .whenComplete((o, throwable) -> doCount(metadata, metricName, throwable));
-
+                            .whenComplete((o, throwable) -> doCount(metadata, metricName, throwable));
                         return interceptedMethod.handleResult(completionStageResult);
-                    case SYNCHRONOUS:
+                    }
+                    case SYNCHRONOUS -> {
                         final Object result = context.proceed();
                         try {
                             return result;
@@ -96,8 +115,10 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                                 doCount(metadata, metricName, null);
                             }
                         }
-                    default:
+                    }
+                    default -> {
                         return interceptedMethod.unsupported();
+                    }
                 }
             } catch (Exception e) {
                 try {

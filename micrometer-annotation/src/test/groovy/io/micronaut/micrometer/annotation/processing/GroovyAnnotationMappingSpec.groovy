@@ -24,4 +24,25 @@ class Test {
         cleanup:
         context.close()
     }
+
+    void 'test map observed annotation'() {
+        given:
+        def context = buildContext('test.Test', '''
+package test;
+
+@io.micrometer.observation.annotation.Observed(name="foo")
+@jakarta.inject.Singleton
+class Test {
+
+}
+''')
+        def bean = context.getBean(context.classLoader.loadClass( "test.Test"))
+
+        expect:
+        bean instanceof Intercepted
+
+        cleanup:
+        context.close()
+    }
+
 }

@@ -5,8 +5,13 @@ import io.micrometer.cloudwatch2.CloudWatchMeterRegistry
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micronaut.context.ApplicationContext
+import software.amazon.awssdk.core.client.config.SdkClientConfiguration
+import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.util.stream.Collectors
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 import static io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory.CLOUDWATCH_CONFIG
@@ -29,6 +34,40 @@ class CloudwatchRegistryFactorySpec extends Specification {
         then:
         context.getBeansOfType(MeterRegistry).size() == 2
         context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['CompositeMeterRegistry', 'CloudWatchMeterRegistry'])
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify CloudWatchAsyncClient is created by default when this configuration used"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+
+        then:
+        def list = context.getBeansOfType(CloudWatchAsyncClient)
+        list.size() == 1
+
+        when:
+        SdkClientConfiguration clientConfiguration = list[0].properties.clientConfiguration
+        def properties = clientConfiguration.properties.attributes.attributes
+        def result = properties.findAll { it.value.value.toString().startsWith("micronaut") }
+
+        then:
+        result.size() == 1
+
+        cleanup:
+        context.stop()
+    }
+
+    void "verify that cloudwatch clients can be created"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+
+        then:
+        def cloudWatchAsyncClientList = context.getBeansOfType(CloudWatchAsyncClient)
+        cloudWatchAsyncClientList.size() == 1
+        def cloudWatchClient = context.getBeansOfType(CloudWatchClient)
+        cloudWatchClient.size() == 1
 
         cleanup:
         context.stop()

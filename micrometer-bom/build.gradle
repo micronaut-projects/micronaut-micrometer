@@ -1,12 +1,13 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-base'
     id 'io.micronaut.build.internal.bom'
 }
+
 micronautBom {
-    excludeProject.set({ p ->    
-        p.name == 'test-suite' || 
-        p.name == 'doc-examples' || 
-        p.path.contains('test-suite:') || 
-        p.path.contains('doc-examples:')
-    } as Spec<String>)
+    suppressions {
+        dependencies.addAll([
+                // bomCheck fails because io.micrometer:docs is in the bom, but isn't a published artifact.
+                // See: https://github.com/micrometer-metrics/micrometer/issues/4606
+                "io.micrometer:docs:${libs.versions.managed.micrometer.asProvider().get()}",
+        ])
+    }
 }

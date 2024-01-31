@@ -1,30 +1,35 @@
 plugins {
-    id 'io.micronaut.build.internal.micrometer-module'
+    id("io.micronaut.application")
+}
+
+version = "0.1"
+group = "example"
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    annotationProcessor libs.micronaut.graal
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
 
-    testAnnotationProcessor libs.micronaut.inject.java
-    testAnnotationProcessor projects.micrometerAnnotation
-    testImplementation libs.groovy.json
-    testImplementation libs.grpc.api
-    testImplementation libs.micronaut.function.web
-    testImplementation libs.micronaut.http.client
-    testImplementation libs.micronaut.http.server.netty
-    testImplementation libs.micronaut.inject.groovy
-    testImplementation libs.micronaut.management
-    testImplementation libs.netty.buffer
-    testImplementation libs.netty.transport
-    testImplementation libs.netty.transport.native.epoll
-    testImplementation libs.netty.transport.native.kqueue
-    testImplementation projects.micrometerCore
-    testRuntimeOnly libs.micronaut.http.server.netty
+    implementation(mn.micronaut.management)
+    implementation(projects.micronautMicrometerCore)
+    implementation(mnSerde.micronaut.serde.jackson)
+
+    runtimeOnly(mnLogging.logback.classic)
+
+    testImplementation(mn.micronaut.http.client)
 }
 
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("io.micronaut:micronaut-jackson-databind"))
-                .using(module("io.micronaut.serde:micronaut-serde-jackson:$micronautSerializationVersion"))
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    version.set(libs.versions.micronaut.platform)
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("serialization.*")
     }
 }

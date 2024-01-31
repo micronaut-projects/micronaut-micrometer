@@ -1,23 +1,60 @@
 [versions]
-groovy = '3.0.10'
-jcache = '1.1.1'
-logback-classic = '1.2.11'
-managed-metrics-core = '4.2.9'
-managed-micrometer = '1.9.0'
-managed-new-relic-registry = '0.8.0'
-micronaut = '3.4.3'
+micronaut-platform = "4.2.4"
+micronaut = "4.3.3"
+micronaut-docs = "2.0.0"
+micronaut-test = "4.2.0"
+micronaut-gradle-plugin = "4.2.1"
+groovy = "4.0.15"
+spock = "2.3-groovy-4.0"
+
+managed-metrics-core = '4.2.25'
+managed-micrometer = '1.12.2'
+managed-micrometer-tracing = '1.2.2'
+managed-new-relic-registry = '0.10.0'
 reflections = '0.10.2'
-validation = '2.0.1.Final'
+
+# TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
+grpc = '1.61.0'
+logback = "1.4.14"
+jcache = "1.1.1"
+hdr-histogram = '2.1.12'
+
+micronaut-aws = "4.4.0"
+micronaut-cache = "4.2.1"
+micronaut-logging = "1.2.2"
+micronaut-r2dbc = "5.3.0"
+micronaut-rxjava2 = "2.2.1"
+micronaut-reactor = '3.2.1'
+micronaut-serde = "2.7.1"
+micronaut-sql = "5.4.1"
+micronaut-validation = "4.3.0"
 
 [libraries]
+# Core
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+micronaut-platform = { module = 'io.micronaut.platform:micronaut-platform', version.ref = 'micronaut-platform' }
+
+micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-bom", version.ref = "micronaut-validation" }
+micronaut-aws = { module = "io.micronaut.aws:micronaut-aws-bom", version.ref = "micronaut-aws" }
+micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
+micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.ref = "micronaut-r2dbc" }
+micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", version.ref = "micronaut-rxjava2" }
+micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
+micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
+micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
+groovy-json = { module = "org.apache.groovy:groovy-json" }
+
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
-cache-api = { module = 'javax.cache:cache-api', version.ref = 'jcache' }
-groovy-json = { module = 'org.codehaus.groovy:groovy-json', version.ref = 'groovy' }
-grpc-api = { module = 'io.grpc:grpc-api' }
-logback-classic = { module = 'ch.qos.logback:logback-classic', version.ref = 'logback-classic' }
+grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
+hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
+
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
+managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'managed-micrometer' }
+managed-micrometer-tracing = { module = 'io.micrometer:micrometer-tracing', version.ref = 'managed-micrometer-tracing' }
+managed-micrometer-observation = { module = 'io.micrometer:micrometer-observation', version.ref = 'managed-micrometer' }
+managed-micrometer-observation-test = { module = 'io.micrometer:micrometer-observation-test', version.ref = 'managed-micrometer' }
+
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
 micrometer-registry-azure-monitor = { module = 'io.micrometer:micrometer-registry-azure-monitor', version.ref = 'managed-micrometer' }
@@ -37,24 +74,10 @@ micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-sig
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }
 micrometer-registry-statsd = { module = 'io.micrometer:micrometer-registry-statsd', version.ref = 'managed-micrometer' }
 micrometer-registry-wavefront = { module = 'io.micrometer:micrometer-registry-wavefront', version.ref = 'managed-micrometer' }
-micronaut-aop = { module = 'io.micronaut:micronaut-aop', version.ref = 'micronaut' }
-micronaut-cache-core = { module = 'io.micronaut.cache:micronaut-cache-core' }
-micronaut-function-web = { module = 'io.micronaut:micronaut-function-web' }
-micronaut-graal = { module = 'io.micronaut:micronaut-graal' }
-micronaut-http-client = { module = 'io.micronaut:micronaut-http-client' }
-micronaut-http-server-netty = { module = 'io.micronaut:micronaut-http-server-netty' }
-micronaut-inject-groovy = { module = 'io.micronaut:micronaut-inject-groovy' }
-micronaut-inject-groovy-test = { module = 'io.micronaut:micronaut-inject-groovy-test', version.ref = 'micronaut' }
-micronaut-inject-java = { module = 'io.micronaut:micronaut-inject-java' }
-micronaut-inject-java-test = { module = 'io.micronaut:micronaut-inject-java-test', version.ref = 'micronaut' }
-micronaut-jdbc = { module = 'io.micronaut.sql:micronaut-jdbc' }
-micronaut-management = { module = 'io.micronaut:micronaut-management' }
-micronaut-rxjava2 = { module = 'io.micronaut.rxjava2:micronaut-rxjava2' }
-netty-buffer = { module = 'io.netty:netty-buffer' }
-netty-transport = { module = 'io.netty:netty-transport' }
-netty-transport-native-epoll = { module = 'io.netty:netty-transport-native-epoll' }
-netty-transport-native-kqueue = { module = 'io.netty:netty-transport-native-kqueue' }
+
 r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
-reactor-core = { module = 'io.projectreactor:reactor-core' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
-validation-api = { module = 'javax.validation:validation-api', version.ref = 'validation' }
+
+jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

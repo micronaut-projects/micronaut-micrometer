@@ -12,7 +12,7 @@ You can configure this reporter using `micronaut.metrics.export.azuremonitor`. T
 |=======
 
 .Example Azure Monitor Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

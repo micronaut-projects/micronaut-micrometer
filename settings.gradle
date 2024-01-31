@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id('io.micronaut.build.shared.settings') version '5.3.9'
+    id('io.micronaut.build.shared.settings') version '6.6.2'
 }
 
 rootProject.name = 'micrometer-parent'
@@ -14,6 +14,8 @@ rootProject.name = 'micrometer-parent'
 include 'micrometer-annotation'
 include 'micrometer-bom'
 include 'micrometer-core'
+include 'micrometer-observation'
+include 'micrometer-observation-http'
 include 'micrometer-registry-appoptics'
 include 'micrometer-registry-atlas'
 include 'micrometer-registry-azure-monitor'
@@ -37,3 +39,16 @@ include 'micrometer-registry-wavefront'
 include 'test-suite:micronaut-serialization'
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
+
+micronautBuild {
+    useStandardizedProjectNames = true
+    importMicronautCatalog()
+    importMicronautCatalog("micronaut-aws")
+    importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-r2dbc")
+    importMicronautCatalog("micronaut-rxjava2")
+    importMicronautCatalog("micronaut-serde")
+    importMicronautCatalog("micronaut-sql")
+    importMicronautCatalog("micronaut-validation")
+    importMicronautCatalog("micronaut-reactor")
+}

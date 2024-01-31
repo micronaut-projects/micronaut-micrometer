@@ -3,9 +3,8 @@ package io.micronaut.docs;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import jakarta.validation.constraints.NotBlank;
 import reactor.core.publisher.Mono;
-
-import javax.validation.constraints.NotBlank;
 
 @Controller
 class IndexController {

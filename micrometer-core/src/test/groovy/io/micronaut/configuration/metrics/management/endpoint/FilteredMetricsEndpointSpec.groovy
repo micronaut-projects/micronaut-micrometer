@@ -20,6 +20,7 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.reactivex.Single
 import jakarta.inject.Singleton
+import jakarta.validation.constraints.NotBlank
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
 import spock.lang.IgnoreIf
@@ -27,7 +28,6 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 
-import javax.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 import static io.micronaut.core.util.StringUtils.FALSE

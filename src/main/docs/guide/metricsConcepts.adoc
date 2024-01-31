@@ -82,6 +82,22 @@ There is a default web filter provided for web metrics. All routes, status codes
 .Filter Path
 If enabled, by default the path `/**` is intercepted. To change which paths are run through the filter for the server, set `micronaut.metrics.http.path`. For the client, set `micronaut.metrics.http.client.path`.
 
+.Enabling Percentiles
+
+Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      web:
+        server:
+          percentiles: "0.95,0.99"
+        client:
+          percentiles: "0.95,0.99"
+----
+
 .Metrics provided
 |=======
 |*Name*
@@ -151,7 +167,7 @@ The logging metrics bindings provide logging metrics if using https://logback.qo
 You can enable metrics for https://hibernate.org/orm/[Hibernate] by setting the `hibernate.generate_statistics` property to `true` in configuration. For example, for the default entity manager:
 
 Enabling Hibernate Metrics
-[source,yaml]
+[configuration]
 ----
 jpa:
   default:
@@ -160,7 +176,19 @@ jpa:
         generate_statistics: true
 ----
 
-Micrometer automatically exposes Hibernate statistics. See the source code for https://github.com/micrometer-metrics/micrometer/blob/8b5a2cfd0c8fcc121cb936bb40a04f45571ce073/micrometer-core/src/main/java/io/micrometer/core/instrument/binder/jpa/HibernateMetrics.java#L79[HibernateMetrics] for the available metrics.
+https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] needs to be on the classpath, so https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer[hibernate-micrometer] should be downloaded:
+
+.Gradle
+
+[source,groovy]
+----
+dependencies {
+    ...
+    implementation("org.hibernate:hibernate-micrometer")
+    ...
+}
+----
+Micrometer automatically exposes Hibernate statistics. See the source code for https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] for the available metrics.
 
 ===== DataSource Metrics
 
@@ -199,8 +227,6 @@ If you use `io.micronaut.sql:micronaut-jdbc-tomcat` or `io.micronaut.sql:microna
 |=======
 
 ===== Netty Server Metrics
-
-The main *Control Property* for Netty server metrics is `micronaut.metrics.binders.netty.enabled`, which is *false* by default.
 
 Currently, the following binders are provided to instrument Netty server:
 

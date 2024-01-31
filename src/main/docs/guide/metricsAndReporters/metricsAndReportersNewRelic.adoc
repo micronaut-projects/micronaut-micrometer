@@ -14,7 +14,7 @@ You can configure this reporter using `micronaut.metrics.export.newrelic`. The m
 |=======
 
 .Example New Relic Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

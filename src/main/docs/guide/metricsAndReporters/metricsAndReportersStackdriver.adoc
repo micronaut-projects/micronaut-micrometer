@@ -13,7 +13,7 @@ You can configure this reporter using `micronaut.metrics.export.stackdriver`. Th
 |=======
 
 .Example Stackdriver Config
-[source,yml]
+[configuration]
 ----
 micronaut:
   metrics:

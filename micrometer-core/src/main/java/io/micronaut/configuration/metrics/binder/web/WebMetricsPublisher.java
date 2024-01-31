@@ -55,6 +55,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     @SuppressWarnings("WeakerAccess")
     public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
     public static final String CLIENT_ERROR_URIS_ENABLED = MICRONAUT_METRICS_BINDERS + ".web.client-errors-uris.enabled";
+
     public static final String METRIC_HTTP_SERVER_REQUESTS = "http.server.requests";
     public static final String METRIC_HTTP_CLIENT_REQUESTS = "http.client.requests";
 
@@ -62,12 +63,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
     private static final Tag URI_UNAUTHORIZED = Tag.of("uri", "UNAUTHORIZED");
     private static final Tag URI_BAD_REQUEST = Tag.of("uri", "BAD_REQUEST");
-    private static final String UNKNOWN = "UNKNOWN";
+    static final String UNKNOWN = "UNKNOWN";
     private static final String METHOD = "method";
     private static final String STATUS = "status";
     private static final String URI = "uri";
     private static final String EXCEPTION = "exception";
-    private static final String HOST = "host";
+    private static final String SERVICE_ID = "serviceId";
 
     private final Flux<T> publisher;
     private final MeterRegistry meterRegistry;
@@ -75,7 +76,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     private final long start;
     private final String httpMethod;
     private final String metricName;
-    private final String host;
+    private final String serviceID;
     private final boolean reportErrors;
     private boolean reportClientErrorURIs;
 
@@ -107,7 +108,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param start         The start time of the request
      * @param httpMethod    The HTTP method name used
      * @param isServer      Whether the metric relates to the server or the client
-     * @param host          The host called in the request
+     * @param serviceID     The ID of the service called in the request
      * @param reportErrors  Whether errors should be reported
      * @param reportClientErrorURIs Whether client errors provide uris or not
      */
@@ -117,7 +118,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                         long start,
                         String httpMethod,
                         boolean isServer,
-                        String host,
+                        String serviceID,
                         boolean reportErrors,
                         boolean reportClientErrorURIs) {
         this.publisher = Flux.from(publisher);
@@ -126,7 +127,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         this.start = start;
         this.httpMethod = httpMethod;
         this.metricName = isServer ? METRIC_HTTP_SERVER_REQUESTS : METRIC_HTTP_CLIENT_REQUESTS;
-        this.host = host;
+        this.serviceID = serviceID;
         this.reportErrors = reportErrors;
         this.reportClientErrorURIs = reportClientErrorURIs;
     }
@@ -173,14 +174,14 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 
             @Override
             public void onNext(T httpResponse) {
-                success(httpResponse, start, httpMethod, requestPath, host);
+                success(httpResponse, start, httpMethod, requestPath, serviceID);
                 actual.onNext(httpResponse);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 if (reportErrors) {
-                    error(start, httpMethod, requestPath, throwable, host);
+                    error(start, httpMethod, requestPath, throwable, serviceID);
                 }
                 actual.onError(throwable);
             }
@@ -199,17 +200,17 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param httpMethod   The name of the HTTP method (GET, POST, etc)
      * @param requestPath  The request path (/foo, /foo/bar, etc)
      * @param throwable    The throwable (optional)
-     * @param host         the host
+     * @param serviceId         the service ID
      * @return A list of Tag objects
      */
     private static List<Tag> getTags(HttpResponse<?> httpResponse,
                                      String httpMethod,
                                      String requestPath,
                                      Throwable throwable,
-                                     String host,
+                                     String serviceId,
                                      boolean reportClientErrorURIs) {
         return Stream
-                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath, reportClientErrorURIs), exception(throwable), host(host))
+                .of(method(httpMethod), status(httpResponse), uri(httpResponse, requestPath, reportClientErrorURIs), exception(throwable), serviceId(serviceId))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -282,13 +283,13 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
     }
 
     /**
-     * Get a tag with the host used in the call.
+     * Get a tag with the serviceId used in the call.
      *
-     * @param host The host used in the call.
-     * @return Tag of host
+     * @param serviceId The serviceId used in the call.
+     * @return Tag of serviceId
      */
-    private static Tag host(String host) {
-        return host == null ? null : Tag.of(HOST, host);
+    private static Tag serviceId(String serviceId) {
+        return serviceId == null ? null : Tag.of(SERVICE_ID, serviceId);
     }
 
     /**
@@ -319,8 +320,8 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
                          long start,
                          String httpMethod,
                          String requestPath,
-                         String host) {
-        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, host, reportClientErrorURIs);
+                         String serviceId) {
+        Iterable<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, serviceId, reportClientErrorURIs);
         this.meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
     }
@@ -334,12 +335,12 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      * @param throwable   exception that occurred
      */
     private void error(long start, String httpMethod, String requestPath,
-                       Throwable throwable, String host) {
+                       Throwable throwable, String serviceId) {
         HttpResponse<?> response = null;
         if (throwable instanceof HttpResponseProvider) {
             response = ((HttpResponseProvider) throwable).getResponse();
         }
-        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, host, reportClientErrorURIs);
+        Iterable<Tag> tags = getTags(response, httpMethod, requestPath, throwable, serviceId, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
                 .record(System.nanoTime() - start, NANOSECONDS);
     }

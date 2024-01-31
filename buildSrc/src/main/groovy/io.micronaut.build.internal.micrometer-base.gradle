@@ -1,2 +1,7 @@
-version projectVersion
-group 'io.micronaut.micrometer'
+plugins {
+    id 'io.micronaut.build.internal.base'
+}
+
+repositories {
+    mavenCentral()
+}

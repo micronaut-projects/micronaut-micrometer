@@ -1,0 +1,5 @@
+The https://docs.oracle.com/en-us/iaas/Content/Monitoring/Concepts/monitoringoverview.htm[OCI Monitoring service] enables you to actively and passively monitor your cloud resources using the Metrics and Alarms features on Oracle Cloud.
+
+To configure the module see the documentation for https://micronaut-projects.github.io/micronaut-oracle-cloud/latest/guide/#micrometer[Micrometer Support For Oracle Monitoring] in the Oracle Cloud module.
+
+TIP: See the guide for https://guides.micronaut.io/latest/micronaut-metrics-oci.html[Collect Metrics with the Micronaut Framework and Monitor Them on Oracle Cloud] to learn more.

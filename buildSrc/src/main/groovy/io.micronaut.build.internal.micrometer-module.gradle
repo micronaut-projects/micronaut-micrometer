@@ -6,14 +6,7 @@ plugins {
     id 'io.micronaut.build.internal.module'
 }
 
-dependencies {
-    api libs.micrometer.core
-    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
-}
 
-tasks.named('compileJava', JavaCompile) {
-    options.compilerArgs += [
-            '-Amicronaut.processing.group=' + project.group,
-            '-Amicronaut.processing.module=micronaut-' + project.name
-    ]
+dependencies {
+    api libs.managed.micrometer.core
 }
