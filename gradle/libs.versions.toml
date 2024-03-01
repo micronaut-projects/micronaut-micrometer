@@ -13,14 +13,13 @@ managed-micrometer-tracing = '1.2.3'
 managed-new-relic-registry = '0.10.0'
 reflections = '0.10.2'
 
-# TODO: Fix this in the core bom (see https://github.com/micronaut-projects/micronaut-micrometer/pull/425)
-grpc = '1.62.2'
 logback = "1.4.14"
 jcache = "1.1.1"
 hdr-histogram = '2.1.12'
 
 micronaut-aws = "4.4.2"
 micronaut-cache = "4.2.2"
+micronaut-grpc = "4.3.0"
 micronaut-logging = "1.2.2"
 micronaut-r2dbc = "5.3.0"
 micronaut-rxjava2 = "2.2.1"
@@ -37,6 +36,7 @@ micronaut-platform = { module = 'io.micronaut.platform:micronaut-platform', vers
 micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-bom", version.ref = "micronaut-validation" }
 micronaut-aws = { module = "io.micronaut.aws:micronaut-aws-bom", version.ref = "micronaut-aws" }
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
+micronaut-grpc = { module = "io.micronaut.grpc:micronaut-grpc-bom", version.ref = "micronaut-grpc" }
 micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.ref = "micronaut-r2dbc" }
 micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", version.ref = "micronaut-rxjava2" }
 micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
@@ -45,7 +45,7 @@ micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "
 groovy-json = { module = "org.apache.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
-grpc-api = { module = 'io.grpc:grpc-api', version.ref = 'grpc' }
+grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
