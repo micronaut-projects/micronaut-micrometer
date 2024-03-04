@@ -76,7 +76,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
         if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR)) {
-            return unwrapped;
+            return executorService;
         }
 
         MeterRegistry meterRegistry = meterRegistryProvider.get();
