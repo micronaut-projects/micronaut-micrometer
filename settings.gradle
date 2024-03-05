@@ -45,6 +45,7 @@ micronautBuild {
     importMicronautCatalog()
     importMicronautCatalog("micronaut-aws")
     importMicronautCatalog("micronaut-cache")
+    importMicronautCatalog("micronaut-grpc")
     importMicronautCatalog("micronaut-r2dbc")
     importMicronautCatalog("micronaut-rxjava2")
     importMicronautCatalog("micronaut-serde")
