@@ -8,7 +8,7 @@ dependencies {
 
     compileOnly libs.jcache
     compileOnly libs.grpc.api
-    compileOnly libs.logback.classic
+    compileOnly mnLogging.logback.classic
     compileOnly mnCache.micronaut.cache.core
     compileOnly mn.micronaut.http.server.netty
     compileOnly mnSql.micronaut.jdbc
