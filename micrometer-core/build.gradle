@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     annotationProcessor mn.micronaut.graal
+    implementation platform(mnGrpc.boms.grpc)
 
     compileOnly libs.jcache
     compileOnly libs.grpc.api

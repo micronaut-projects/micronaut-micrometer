@@ -3,6 +3,7 @@ package io.micronaut.configuration.metrics.binder.executor
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
+import io.micrometer.core.instrument.search.Search
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
@@ -12,6 +13,9 @@ import io.netty.channel.DefaultEventLoop
 import io.netty.channel.EventLoopGroup
 import jakarta.inject.Named
 import jakarta.inject.Singleton
+import org.spockframework.runtime.IStandardStreamsListener
+import org.spockframework.runtime.StandardStreamsCapturer
+import spock.lang.AutoCleanup
 import spock.lang.Issue
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -23,6 +27,16 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class ExecutorServiceMetricsBinderSpec extends Specification {
+
+    SimpleStreamsListener captured = new SimpleStreamsListener()
+
+    @AutoCleanup("stop")
+    StandardStreamsCapturer capturer = new StandardStreamsCapturer()
+
+    void setup() {
+        capturer.addStandardStreamsListener(captured)
+        capturer.start()
+    }
 
     void "test executor service metrics"() {
         when:
@@ -65,6 +79,28 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         context.close()
     }
 
+    @Issue("https://github.com/micronaut-projects/micronaut-micrometer/issues/679")
+    void "test the virtual task executor is unbound with no warnings logged"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+        ExecutorService executorService = context.getBean(ExecutorService, Qualifiers.byName(TaskExecutors.BLOCKING))
+
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        Search search = registry.find("executor.pool.size")
+        search.tag("name", "virtual")
+
+        then:
+        executorService
+        !search.gauge()
+        !captured.messages.any {
+            it.contains("WARN") &&
+                    it.contains("Failed to bind as java.util.concurrent.ThreadPerTaskExecutor is unsupported.")
+        }
+
+        cleanup:
+        context.close()
+    }
+
     @Unroll
     void "test getting the beans #cfg #setting"() {
         when:
@@ -92,5 +128,11 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         EventLoopGroup eventLoopGroup() {
             return new DefaultEventLoop()
         }
+    }
+
+    class SimpleStreamsListener implements IStandardStreamsListener {
+        List<String> messages = []
+        @Override void standardOut(String m) { messages << m }
+        @Override void standardErr(String m) { messages << m }
     }
 }

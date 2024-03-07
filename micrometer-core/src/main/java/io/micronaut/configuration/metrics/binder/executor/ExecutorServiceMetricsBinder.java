@@ -28,6 +28,7 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
+import io.netty.util.concurrent.ThreadPerTaskExecutor;
 import jakarta.inject.Singleton;
 
 import java.util.Collections;
@@ -50,6 +51,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = FALSE)
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
+    private static final String THREAD_PER_TASK_EXECUTOR = "java.util.concurrent.ThreadPerTaskExecutor";
+
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
     /**
@@ -70,6 +73,10 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         // Netty EventLoopGroups require separate instrumentation.
         if (unwrapped.getClass().getName().startsWith("io.netty")) {
             return unwrapped;
+        }
+        // ExecutorServiceMetrics does not provide metrics for virtual threads
+        if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR)) {
+            return executorService;
         }
 
         MeterRegistry meterRegistry = meterRegistryProvider.get();
