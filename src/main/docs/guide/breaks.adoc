@@ -1,0 +1,19 @@
+This section documents breaking changes between Micronaut Micrometer versions:
+
+=== Micronaut Micrometer 6.0.0
+
+- The factory default constructor for `io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory` deprecated previously has been removed.
+`CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)` is used instead.
+
+- The `CloudWatchMeterRegistryFactory` factory method `CloudWatchAsyncClientBuilder cloudWatchAsyncClientBuilder()` deprecated previously has been removed.
+`CloudWatchClientBuilder createSyncBuilder()` is used instead.
+
+- The `CloudWatchMeterRegistryFactory` factory method `CloudWatchAsyncClient cloudWatchAsyncClient(CloudWatchAsyncClientBuilder)` deprecated previously has been removed.
+`CloudWatchClientBuilder asyncClient()` is used instead.
+
+- The bean constructor `io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor(MeterRegistry meterRegistry)` deprecated previously has been removed.
+`CountedInterceptor(MeterRegistry, ConversionService)` is used instead.
+
+- The Singleton constructor `io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor(MeterRegistry)` deprecated previously has been removed.
+`TimedInterceptor(MeterRegistry, ConversionService)` is used instead.
+

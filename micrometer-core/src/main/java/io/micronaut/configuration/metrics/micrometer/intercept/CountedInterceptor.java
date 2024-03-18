@@ -28,7 +28,6 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.StringUtils;
-import jakarta.inject.Inject;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -55,18 +54,8 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**
      * @param meterRegistry The meter registry
-     * @deprecated Pass conversion service in new constructor
-     */
-    @Deprecated
-    public CountedInterceptor(MeterRegistry meterRegistry) {
-        this(meterRegistry, ConversionService.SHARED);
-    }
-
-    /**
-     * @param meterRegistry The meter registry
      * @param conversionService The conversion service
      */
-    @Inject
     public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;

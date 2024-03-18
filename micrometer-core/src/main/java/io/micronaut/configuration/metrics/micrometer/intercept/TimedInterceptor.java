@@ -31,7 +31,6 @@ import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.CollectionUtils;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
@@ -83,18 +82,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**
      * @param meterRegistry The meter registry
-     * @deprecated Pass conversion service in new constructor
-     */
-    @Deprecated
-    protected TimedInterceptor(MeterRegistry meterRegistry) {
-        this(meterRegistry, ConversionService.SHARED);
-    }
-
-    /**
-     * @param meterRegistry The meter registry
      * @param conversionService The conversion service
      */
-    @Inject
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;

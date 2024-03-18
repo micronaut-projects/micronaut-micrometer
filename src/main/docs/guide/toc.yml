@@ -28,4 +28,5 @@ metricsAndReporters:
   metricsAndReportersWavefront: Wavefront Registry
 observation: Observation
 metricsGuides: Guides
+breaks: Breaking Changes
 repository: Repository
