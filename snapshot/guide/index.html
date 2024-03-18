@@ -60,7 +60,9 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#metricsGuides"><strong>8</strong><span>Guides</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#breaks"><strong>9</strong><span>Breaking Changes</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>10</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -149,7 +151,9 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-metricsGuides"><a href="#metricsGuides"><strong>8</strong><span>Guides</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-breaks"><a href="#breaks"><strong>9</strong><span>Breaking Changes</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>10</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -159,7 +163,7 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 5.4.1-SNAPSHOT </p>
+        <p><strong>Version:</strong> 6.0.0-SNAPSHOT </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -4589,7 +4593,47 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 <p><a href="https://guides.micronaut.io/latest/tag-metrics.html" class="bare">https://guides.micronaut.io/latest/tag-metrics.html</a></p>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
+<h1 id="breaks"><a class="anchor" href="#breaks"></a>9 Breaking Changes</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/breaks.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>This section documents breaking changes between Micronaut Micrometer versions:</p>
+</div>
+<div class="sect2">
+<h3 id="_micronaut_micrometer_6_0_0">Micronaut Micrometer 6.0.0</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The factory default constructor for <code>io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory</code> deprecated previously has been removed.
+<code>CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)</code> is used instead.</p>
+</li>
+<li>
+<p>The <code>CloudWatchMeterRegistryFactory</code> factory method <code>CloudWatchAsyncClientBuilder cloudWatchAsyncClientBuilder()</code> deprecated previously has been removed.
+<code>CloudWatchClientBuilder createSyncBuilder()</code> is used instead.</p>
+</li>
+<li>
+<p>The <code>CloudWatchMeterRegistryFactory</code> factory method <code>CloudWatchAsyncClient cloudWatchAsyncClient(CloudWatchAsyncClientBuilder)</code> deprecated previously has been removed.
+<code>CloudWatchClientBuilder asyncClient()</code> is used instead.</p>
+</li>
+<li>
+<p>The bean constructor <code>io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor(MeterRegistry meterRegistry)</code> deprecated previously has been removed.
+<code>CountedInterceptor(MeterRegistry, ConversionService)</code> is used instead.</p>
+</li>
+<li>
+<p>The Singleton constructor <code>io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor(MeterRegistry)</code> deprecated previously has been removed.
+<code>TimedInterceptor(MeterRegistry, ConversionService)</code> is used instead.</p>
+</li>
+</ul>
+</div>
+</div>
+
+<h1 id="repository"><a class="anchor" href="#repository"></a>10 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/master/src/main/docs/guide/repository.adoc"'>
