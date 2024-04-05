@@ -68,6 +68,7 @@ micrometer-registry-influx = { module = 'io.micrometer:micrometer-registry-influ
 micrometer-registry-jmx = { module = 'io.micrometer:micrometer-registry-jmx', version.ref = 'managed-micrometer' }
 micrometer-registry-kairos = { module = 'io.micrometer:micrometer-registry-kairos', version.ref = 'managed-micrometer' }
 micrometer-registry-new-relic = { module = 'io.micrometer:micrometer-registry-new-relic', version.ref = 'managed-micrometer' }
+micrometer-registry-otlp = { module = 'io.micrometer:micrometer-registry-otlp', version.ref = 'managed-micrometer' }
 micrometer-registry-prometheus = { module = 'io.micrometer:micrometer-registry-prometheus', version.ref = 'managed-micrometer' }
 micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-signalfx', version.ref = 'managed-micrometer' }
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }
