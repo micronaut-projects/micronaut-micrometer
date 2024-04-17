@@ -55,6 +55,8 @@ class HttpMetricsSpec extends Specification {
         clientTimer.count() == 1
         serverSnapshot.percentileValues().length == serverPercentilesCount
         clientSnapshot.percentileValues().length == clientPercentilesCount
+        serverTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value.percentileHistogram == serverHistogram
+        clientTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value.percentileHistogram == clientHistogram
 
         when: "A request is sent to the root route"
 
@@ -135,9 +137,13 @@ class HttpMetricsSpec extends Specification {
         embeddedServer.close()
 
         where:
-        cfg                                                   | setting     | serverPercentilesCount | clientPercentilesCount
-        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99" | 0                      | 2
-        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0
+        cfg                                                   | setting     | serverPercentilesCount | clientPercentilesCount| serverHistogram | clientHistogram
+        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99" | 0                      | 2                     | null            | false
+        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0                     | false           | null
+        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "true"      | 0                      | 0                     | true            | null
+        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "false"     | 0                      | 0                     | false           | null
+        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "true"      | 0                      | 0                     | null            | true
+        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "false"     | 0                      | 0                     | null            | false
     }
 
     void "test client / server metrics ignored uris for client errors"() {
@@ -303,7 +309,10 @@ class HttpMetricsSpec extends Specification {
         String root() { "root" }
 
         @Get('/test-http-metrics')
-        String index() { "ok" }
+        String index() {
+          Thread.sleep(1000)
+          "ok"
+        }
 
         @Get("/test-http-metrics/{id}")
         String template(String id) { "ok " + id }
