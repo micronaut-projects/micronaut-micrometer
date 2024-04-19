@@ -138,8 +138,8 @@ class HttpMetricsSpec extends Specification {
 
         where:
         cfg                                                   | setting     | serverPercentilesCount | clientPercentilesCount| serverHistogram | clientHistogram
-        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99" | 0                      | 2                     | null            | false
-        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0                     | false           | null
+        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99" | 0                      | 2                     | null            | null
+        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0                     | null            | null
         MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "true"      | 0                      | 0                     | true            | null
         MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "false"     | 0                      | 0                     | false           | null
         MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "true"      | 0                      | 0                     | null            | true

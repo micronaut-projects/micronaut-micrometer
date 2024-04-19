@@ -26,6 +26,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.ArrayUtils;
 import jakarta.inject.Singleton;
 
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS;
+import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 import static io.micronaut.core.util.StringUtils.FALSE;
 
@@ -37,46 +39,43 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Factory
 @RequiresMetrics
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
-public class HttpPercentilesMeterFilterFactory {
+public class HttpMeterFilterFactory {
 
     /**
      * Configure new MeterFilter for http.server.requests metrics.
      *
      * @param percentiles The percentiles
-     * @param histogram   If a histogram should be published
      * @return A MeterFilter
      */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server.percentiles")
-    MeterFilter addServerPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.percentiles}") Double[] percentiles, @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.histogram:false}") Boolean histogram) {
-        return getMeterFilter(percentiles, histogram, WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS);
+    MeterFilter addServerPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.percentiles}") Double[] percentiles) {
+        return getMeterFilter(percentiles, METRIC_HTTP_SERVER_REQUESTS);
     }
 
     /**
      * Configure new MeterFilter for http.client.requests metrics.
      *
      * @param percentiles The percentiles
-     * @param histogram   If a histogram should be published
      * @return A MeterFilter
      */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.percentiles")
-    MeterFilter addClientPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.percentiles}") Double[] percentiles, @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.histogram:false}") Boolean histogram) {
-        return getMeterFilter(percentiles, histogram, WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS);
+    MeterFilter addClientPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.percentiles}") Double[] percentiles) {
+        return getMeterFilter(percentiles, METRIC_HTTP_CLIENT_REQUESTS);
     }
 
-    private MeterFilter getMeterFilter(Double[] percentiles, Boolean histogram, String metricNamePrefix) {
+    private MeterFilter getMeterFilter(Double[] percentiles, String metricNamePrefix) {
         return new MeterFilter() {
             @Override
             public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
                 if (id.getName().startsWith(metricNamePrefix)) {
                     return DistributionStatisticConfig.builder()
-                        .percentiles((double[]) ArrayUtils.toPrimitiveArray(percentiles))
-                        .percentilesHistogram(histogram)
-                        .build()
-                        .merge(config);
+                            .percentiles((double[]) ArrayUtils.toPrimitiveArray(percentiles))
+                            .build()
+                            .merge(config);
                 }
                 return config;
             }
