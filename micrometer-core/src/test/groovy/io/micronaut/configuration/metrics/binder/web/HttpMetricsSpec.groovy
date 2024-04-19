@@ -309,10 +309,7 @@ class HttpMetricsSpec extends Specification {
         String root() { "root" }
 
         @Get('/test-http-metrics')
-        String index() {
-          Thread.sleep(1000)
-          "ok"
-        }
+        String index() { "ok" }
 
         @Get("/test-http-metrics/{id}")
         String template(String id) { "ok " + id }
