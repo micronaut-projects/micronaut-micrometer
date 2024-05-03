@@ -49,6 +49,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.micronaut.core.annotation.AnnotationMetadata.VALUE_MEMBER;
 
@@ -82,7 +84,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
-    private final TagsBasedOnMethodInvocationContext tagsBasedOnMethodInvocationContext;
+    private final List<TagsBasedOnMethodInvocationContext> tagsBasedOnMethodInvocationContext;
 
     /**
      * @param meterRegistry The meter registry
@@ -101,7 +103,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
-        this.tagsBasedOnMethodInvocationContext = new DefaultTagsBasedOnMethodInvocationContext();
+        this.tagsBasedOnMethodInvocationContext = Collections.emptyList();
     }
 
     /**
@@ -110,7 +112,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param tagsBasedOnMethodInvocationContext Additional tag builder
      */
     @Inject
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, TagsBasedOnMethodInvocationContext tagsBasedOnMethodInvocationContext) {
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<TagsBasedOnMethodInvocationContext> tagsBasedOnMethodInvocationContext) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.tagsBasedOnMethodInvocationContext = tagsBasedOnMethodInvocationContext;
@@ -218,7 +220,13 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             final Timer timer = Timer.builder(metricName)
                     .description(description)
                     .tags(tags)
-                    .tags(tagsBasedOnMethodInvocationContext.buildTags(context))
+                    .tags(
+                        tagsBasedOnMethodInvocationContext
+                            .stream()
+                            .flatMap(b -> Stream.of(b.buildTags(context)))
+                            .flatMap(List::stream)
+                            .toList()
+                    )
                     .tags(EXCEPTION_TAG, exceptionClass)
                     .publishPercentileHistogram(histogram)
                     .publishPercentiles(percentiles)
