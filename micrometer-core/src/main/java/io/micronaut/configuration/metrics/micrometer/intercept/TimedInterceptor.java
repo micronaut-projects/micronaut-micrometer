@@ -24,7 +24,6 @@ import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
-import io.micronaut.configuration.metrics.aggregator.DefaultTagsBasedOnMethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.TagsBasedOnMethodInvocationContext;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
@@ -47,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -92,18 +92,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      */
     @Deprecated
     protected TimedInterceptor(MeterRegistry meterRegistry) {
-        this(meterRegistry, ConversionService.SHARED);
-    }
-
-    /**
-     * @param meterRegistry The meter registry
-     * @param conversionService The conversion service
-     */
-    @Inject
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
-        this.meterRegistry = meterRegistry;
-        this.conversionService = conversionService;
-        this.tagsBasedOnMethodInvocationContext = Collections.emptyList();
+        this(meterRegistry, ConversionService.SHARED, Collections.emptyList());
     }
 
     /**
@@ -115,7 +104,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<TagsBasedOnMethodInvocationContext> tagsBasedOnMethodInvocationContext) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
-        this.tagsBasedOnMethodInvocationContext = tagsBasedOnMethodInvocationContext;
+        this.tagsBasedOnMethodInvocationContext = Objects.requireNonNullElse(tagsBasedOnMethodInvocationContext, Collections.emptyList());
     }
 
     @Override

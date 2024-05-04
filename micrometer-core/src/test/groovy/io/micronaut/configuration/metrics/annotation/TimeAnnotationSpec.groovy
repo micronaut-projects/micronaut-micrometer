@@ -1,6 +1,7 @@
 package io.micronaut.configuration.metrics.annotation
 
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tag
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
@@ -79,4 +80,23 @@ class TimeAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+  def "additional tags from builders are added"(){
+    given:
+    ApplicationContext ctx = ApplicationContext.run()
+    TimedTarget tt = ctx.getBean(TimedTarget)
+    MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+    when:
+    Integer result = tt.max(4, 10)
+    def timer = registry.get("timed.test.max.blocking").tags("method", "max", "parameters", "a b").timer()
+
+    then:
+    result == 10
+    timer.count() == 1
+    timer.totalTime(MILLISECONDS) > 0
+
+    cleanup:
+    ctx.close()
+  }
 }
