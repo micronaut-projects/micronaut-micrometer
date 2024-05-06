@@ -19,6 +19,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.annotation.TimedSet;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static io.micronaut.core.annotation.AnnotationMetadata.VALUE_MEMBER;
 
@@ -223,7 +225,17 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
-                            .flatMap(b -> b.buildTags(context).stream())
+                            .flatMap(b ->
+                                {
+                                    List<Tag> builtTags = b.buildTags(context);
+                                    if (builtTags != null) {
+                                        return builtTags.stream();
+                                    } else {
+                                        LOGGER.error("MethodTagger {} returned null list of tags and will not include additional tags on metric {}", b.getClass(), metricName);
+                                        return Stream.empty();
+                                    }
+                                }
+                            )
                             .toList()
                     )
                     .tags(EXCEPTION_TAG, exceptionClass)
