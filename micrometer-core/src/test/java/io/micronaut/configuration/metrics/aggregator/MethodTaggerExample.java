@@ -7,7 +7,7 @@ import jakarta.inject.Singleton;
 import java.util.List;
 
 @Singleton
-public class TagsBasedOnMethodInvocationContextExample implements TagsBasedOnMethodInvocationContext{
+public class MethodTaggerExample implements MethodTagger {
 
     @Override
     public List<Tag> buildTags(MethodInvocationContext<Object, Object> context) {

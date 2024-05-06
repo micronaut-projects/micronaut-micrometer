@@ -24,7 +24,7 @@ import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
-import io.micronaut.configuration.metrics.aggregator.TagsBasedOnMethodInvocationContext;
+import io.micronaut.configuration.metrics.aggregator.MethodTagger;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
@@ -49,8 +49,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.micronaut.core.annotation.AnnotationMetadata.VALUE_MEMBER;
 
@@ -84,7 +82,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
-    private final List<TagsBasedOnMethodInvocationContext> tagsBasedOnMethodInvocationContext;
+    private final List<MethodTagger> methodTaggers;
 
     /**
      * @param meterRegistry The meter registry
@@ -98,13 +96,25 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     /**
      * @param meterRegistry The meter registry
      * @param conversionService The conversion service
-     * @param tagsBasedOnMethodInvocationContext Additional tag builder
+     * @deprecated Pass list of MethodTaggers in new constructor
      */
-    @Inject
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<TagsBasedOnMethodInvocationContext> tagsBasedOnMethodInvocationContext) {
+    @Deprecated
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
-        this.tagsBasedOnMethodInvocationContext = Objects.requireNonNullElse(tagsBasedOnMethodInvocationContext, Collections.emptyList());
+        this.methodTaggers = Collections.emptyList();
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
+     */
+    @Inject
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<MethodTagger> methodTaggers) {
+        this.meterRegistry = meterRegistry;
+        this.conversionService = conversionService;
+        this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
     }
 
     @Override
@@ -210,10 +220,10 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     .description(description)
                     .tags(tags)
                     .tags(
-                        tagsBasedOnMethodInvocationContext
+                        methodTaggers.isEmpty() ? Collections.emptyList() :
+                            methodTaggers
                             .stream()
-                            .flatMap(b -> Stream.of(b.buildTags(context)))
-                            .flatMap(List::stream)
+                            .flatMap(b -> b.buildTags(context).stream())
                             .toList()
                     )
                     .tags(EXCEPTION_TAG, exceptionClass)

@@ -81,22 +81,22 @@ class TimeAnnotationSpec extends Specification {
         ctx.close()
     }
 
-  def "additional tags from builders are added"(){
-    given:
-    ApplicationContext ctx = ApplicationContext.run()
-    TimedTarget tt = ctx.getBean(TimedTarget)
-    MeterRegistry registry = ctx.getBean(MeterRegistry)
+    void "additional tags from builders are added"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        TimedTarget tt = ctx.getBean(TimedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
 
-    when:
-    Integer result = tt.max(4, 10)
-    def timer = registry.get("timed.test.max.blocking").tags("method", "max", "parameters", "a b").timer()
+        when:
+        Integer result = tt.max(4, 10)
+        def timer = registry.get("timed.test.max.blocking").tags("method", "max", "parameters", "a b").timer()
 
-    then:
-    result == 10
-    timer.count() == 1
-    timer.totalTime(MILLISECONDS) > 0
+        then:
+        result == 10
+        timer.count() == 1
+        timer.totalTime(MILLISECONDS) > 0
 
-    cleanup:
-    ctx.close()
-  }
+        cleanup:
+        ctx.close()
+    }
 }
