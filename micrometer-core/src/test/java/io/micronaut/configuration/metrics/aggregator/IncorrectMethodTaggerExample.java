@@ -7,7 +7,7 @@ import jakarta.inject.Singleton;
 import java.util.List;
 
 @Singleton
-public class IncorrectMethodTaggerExample implements MethodTagger {
+public class IncorrectMethodTaggerExample extends AbstractMethodTagger {
 
     /**
      * Intentional improper usage for testing it does not stop publishing of metric with other valid tags

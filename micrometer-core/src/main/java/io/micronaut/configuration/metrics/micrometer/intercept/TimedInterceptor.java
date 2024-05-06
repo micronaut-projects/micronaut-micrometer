@@ -19,13 +19,12 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.annotation.TimedSet;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
-import io.micronaut.configuration.metrics.aggregator.MethodTagger;
+import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
@@ -50,7 +49,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 import static io.micronaut.core.annotation.AnnotationMetadata.VALUE_MEMBER;
 
@@ -84,7 +82,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
-    private final List<MethodTagger> methodTaggers;
+    private final List<AbstractMethodTagger> methodTaggers;
 
     /**
      * @param meterRegistry The meter registry
@@ -98,13 +96,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     /**
      * @param meterRegistry The meter registry
      * @param conversionService The conversion service
-     * @deprecated Pass list of MethodTaggers in new constructor
+     * @deprecated Pass list of AbstractMethodTaggers in new constructor
      */
     @Deprecated
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
-        this.meterRegistry = meterRegistry;
-        this.conversionService = conversionService;
-        this.methodTaggers = Collections.emptyList();
+        this(meterRegistry, conversionService, Collections.emptyList());
     }
 
     /**
@@ -113,7 +109,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param methodTaggers Additional tag builders
      */
     @Inject
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<MethodTagger> methodTaggers) {
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
@@ -225,17 +221,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
-                            .flatMap(b ->
-                                {
-                                    List<Tag> builtTags = b.buildTags(context);
-                                    if (builtTags != null) {
-                                        return builtTags.stream();
-                                    } else {
-                                        LOGGER.error("MethodTagger {} returned null list of tags and will not include additional tags on metric {}", b.getClass(), metricName);
-                                        return Stream.empty();
-                                    }
-                                }
-                            )
+                            .flatMap(b -> b.getTags(context).stream())
                             .toList()
                     )
                     .tags(EXCEPTION_TAG, exceptionClass)

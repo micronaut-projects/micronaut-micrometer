@@ -81,7 +81,7 @@ class TimeAnnotationSpec extends Specification {
         ctx.close()
     }
 
-    void "additional tags from builders are added"() {
+    void "additional tags from taggers are added"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()
         TimedTarget tt = ctx.getBean(TimedTarget)
