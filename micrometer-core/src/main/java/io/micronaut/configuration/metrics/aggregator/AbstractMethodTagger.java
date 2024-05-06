@@ -49,7 +49,7 @@ public abstract class AbstractMethodTagger {
         if (tags != null) {
             return tags;
         } else {
-            LOGGER.error("MethodTagger {} returned null list of tags and will not include additional tags on metric", implClass);
+            LOGGER.error("{} returned null list of tags and will not include additional tags on metric", implClass);
             return Collections.emptyList();
         }
     }

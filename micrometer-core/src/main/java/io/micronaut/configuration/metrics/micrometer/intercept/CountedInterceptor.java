@@ -69,7 +69,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     /**
      * @param meterRegistry The meter registry
      * @param conversionService The conversion service
-     * @deprecated Pass list of MethodTagger in new constructor
+     * @deprecated Pass list of AbstractMethodTagger in new constructor
      */
     @Deprecated
     public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
@@ -106,20 +106,20 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                         if (context.getReturnType().isSingleResult()) {
                             Mono<?> single = Mono.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                             reactiveResult = single
-                                .doOnError(throwable -> doCount(metadata, metricName, context, throwable))
-                                .doOnSuccess(o -> doCount(metadata, metricName, context, null));
+                                .doOnError(throwable -> doCount(metadata, metricName, throwable, context))
+                                .doOnSuccess(o -> doCount(metadata, metricName, null, context));
                         } else {
                             Flux<?> flowable = Flux.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                             reactiveResult = flowable
-                                .doOnError(throwable -> doCount(metadata, metricName, context, throwable))
-                                .doOnComplete(() -> doCount(metadata, metricName, context, null));
+                                .doOnError(throwable -> doCount(metadata, metricName, throwable, context))
+                                .doOnComplete(() -> doCount(metadata, metricName, null, context));
                         }
                         return Publishers.convertPublisher(conversionService, reactiveResult, context.getReturnType().getType());
                     }
                     case COMPLETION_STAGE -> {
                         CompletionStage<?> completionStage = interceptedMethod.interceptResultAsCompletionStage();
                         CompletionStage<?> completionStageResult = completionStage
-                            .whenComplete((o, throwable) -> doCount(metadata, metricName, context, throwable));
+                            .whenComplete((o, throwable) -> doCount(metadata, metricName, throwable, context));
                         return interceptedMethod.handleResult(completionStageResult);
                     }
                     case SYNCHRONOUS -> {
@@ -128,7 +128,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                             return result;
                         } finally {
                             if (metadata.isFalse(Counted.class, "recordFailuresOnly")) {
-                                doCount(metadata, metricName, context, null);
+                                doCount(metadata, metricName, null, context);
                             }
                         }
                     }
@@ -140,14 +140,14 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                 try {
                     return interceptedMethod.handleException(e);
                 } finally {
-                    doCount(metadata, metricName, context, e);
+                    doCount(metadata, metricName, e, context);
                 }
             }
         }
         return context.proceed();
     }
 
-    private void doCount(AnnotationMetadata metadata, String metricName, MethodInvocationContext<Object, Object> context,  @Nullable Throwable e) {
+    private void doCount(AnnotationMetadata metadata, String metricName, @Nullable Throwable e, MethodInvocationContext<Object, Object> context) {
         Counter.builder(metricName)
                 .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .tags(
