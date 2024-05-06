@@ -31,8 +31,6 @@ import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -55,8 +53,6 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
 
     public static final String DEFAULT_METRIC_NAME = "method.counted";
     public static final String RESULT_TAG = "result";
-    private static final Logger LOGGER = LoggerFactory.getLogger(CountedInterceptor.class);
-
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
     private final List<AbstractMethodTagger> methodTaggers;
