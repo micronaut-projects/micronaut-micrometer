@@ -14,7 +14,7 @@ managed-new-relic-registry = '0.10.0'
 reflections = '0.10.2'
 
 jcache = "1.1.1"
-hdr-histogram = '2.1.12'
+hdr-histogram = '2.2.1'
 
 micronaut-aws = "4.5.0"
 micronaut-cache = "4.2.2"
