@@ -28,7 +28,6 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
-import io.netty.util.concurrent.ThreadPerTaskExecutor;
 import jakarta.inject.Singleton;
 
 import java.util.Collections;

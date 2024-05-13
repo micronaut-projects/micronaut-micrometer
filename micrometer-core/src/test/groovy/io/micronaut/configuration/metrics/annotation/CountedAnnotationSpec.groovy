@@ -67,4 +67,23 @@ class CountedAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+    void "additional tags from taggers are added"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        CountedTarget tt = ctx.getBean(CountedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        int result = tt.max(4, 10)
+        def timer = registry.get("counted.test.max.blocking").tags("method", "max", "parameters", "a b").counter()
+
+        then:
+        result == 10
+        timer.count() == 1
+
+
+        cleanup:
+        ctx.close()
+    }
 }
