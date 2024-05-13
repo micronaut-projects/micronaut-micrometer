@@ -1,3 +1,12 @@
 You can use the Micrometer `@Timed` and `@Counted` annotations on any bean method by adding the `micronaut-micrometer-annotation` dependency to your annotation processor classpath:
 
 dependency:micronaut-micrometer-annotation[groupId="io.micronaut.micrometer", scope="annotationProcessor"]
+
+
+In order to support adding additional tags programmatically similar to Micrometer's `TimedAspect` / `CountedAspect` ability using a `ProceedingJoinPoint`, create beans of type `AbstractMethodTagger`
+
+.MetricsTagger example
+[source,java]
+----
+include::{testsmetricscore}/MethodNameTagger.java[]
+----

@@ -24,6 +24,7 @@ import io.micronaut.aop.InterceptedMethod;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -79,14 +81,17 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
+    private final List<AbstractMethodTagger> methodTaggers;
 
     /**
      * @param meterRegistry The meter registry
      * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
      */
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
+    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
+        this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
     }
 
     @Override
@@ -114,14 +119,14 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                             if (context.getReturnType().isSingleResult()) {
                                 Mono<?> single = Mono.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                                 result = single.doOnSubscribe(d -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
-                                    .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get()))
-                                    .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get()));
+                                    .doOnError(throwable -> finalizeSamples(timedAnnotations, throwable.getClass().getSimpleName(), reactiveInvokeSample.get(), context))
+                                    .doOnSuccess(o -> finalizeSamples(timedAnnotations, "none", reactiveInvokeSample.get(), context));
                             } else {
                                 AtomicReference<String> exceptionClassHolder = new AtomicReference<>("none");
                                 Flux<?> flowable = Flux.from(Publishers.convertPublisher(conversionService, interceptResult, Publisher.class));
                                 result = flowable.doOnRequest(n -> reactiveInvokeSample.set(initSamples(timedAnnotations)))
                                     .doOnError(throwable -> exceptionClassHolder.set(throwable.getClass().getSimpleName()))
-                                    .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get()));
+                                    .doOnComplete(() -> finalizeSamples(timedAnnotations, exceptionClassHolder.get(), reactiveInvokeSample.get(), context));
                             }
                             return Publishers.convertPublisher(conversionService, result, context.getReturnType().getType());
                         }
@@ -132,7 +137,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                                 .whenComplete((o, throwable) ->
                                     finalizeSamples(
                                         timedAnnotations, throwable == null ? "none" : throwable.getClass().getSimpleName(),
-                                        completionStageInvokeSamples
+                                        completionStageInvokeSamples,
+                                        context
                                     )
                                 );
                             return interceptedMethod.handleResult(completionStageResult);
@@ -149,7 +155,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     exceptionClass = e.getClass().getSimpleName();
                     return interceptedMethod.handleException(e);
                 } finally {
-                    finalizeSamples(timedAnnotations, exceptionClass, syncInvokeSamples != null ? syncInvokeSamples : Collections.emptyList());
+                    finalizeSamples(timedAnnotations, exceptionClass, syncInvokeSamples != null ? syncInvokeSamples : Collections.emptyList(), context);
                 }
             }
         }
@@ -167,19 +173,21 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     private void finalizeSamples(List<AnnotationValue<Timed>> timedAnnotations,
                                  String exceptionClass,
-                                 List<Timer.Sample> syncInvokeSamples) {
+                                 List<Timer.Sample> syncInvokeSamples,
+                                 MethodInvocationContext<Object, Object> context) {
         if (CollectionUtils.isNotEmpty(syncInvokeSamples) && timedAnnotations.size() == syncInvokeSamples.size()) {
             final Iterator<AnnotationValue<Timed>> i = timedAnnotations.iterator();
             for (Timer.Sample syncInvokeSample : syncInvokeSamples) {
                 final AnnotationValue<Timed> timedAnn = i.next();
                 final String metricName = timedAnn.stringValue().orElse(DEFAULT_METRIC_NAME);
-                stopTimed(metricName, syncInvokeSample, exceptionClass, timedAnn);
+                stopTimed(metricName, syncInvokeSample, exceptionClass, timedAnn, context);
             }
         }
     }
 
     private void stopTimed(String metricName, Timer.Sample sample,
-                           String exceptionClass, AnnotationValue<Timed> metadata) {
+                           String exceptionClass, AnnotationValue<Timed> metadata,
+                           MethodInvocationContext<Object, Object> context) {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
@@ -188,6 +196,13 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             final Timer timer = Timer.builder(metricName)
                     .description(description)
                     .tags(tags)
+                    .tags(
+                        methodTaggers.isEmpty() ? Collections.emptyList() :
+                            methodTaggers
+                            .stream()
+                            .flatMap(b -> b.getTags(context).stream())
+                            .toList()
+                    )
                     .tags(EXCEPTION_TAG, exceptionClass)
                     .publishPercentileHistogram(histogram)
                     .publishPercentiles(percentiles)
