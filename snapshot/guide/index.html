@@ -1330,6 +1330,31 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div></p>
 </div>
+<div class="paragraph">
+<p>In order to support adding additional tags programmatically similar to Micrometer&#8217;s <code>TimedAspect</code> / <code>CountedAspect</code> ability using a <code>ProceedingJoinPoint</code>, create beans of type <code>AbstractMethodTagger</code></p>
+</div>
+<div class="listingblock">
+<div class="title">MetricsTagger example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.Tag;
+import io.micronaut.aop.MethodInvocationContext;
+import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import jakarta.inject.Singleton;
+
+import java.util.Collections;
+import java.util.List;
+
+@Singleton
+public class MethodNameTagger extends AbstractMethodTagger {
+    @Override
+    public List&lt;Tag&gt; buildTags(MethodInvocationContext&lt;Object, Object&gt; context) {
+        return Collections.singletonList(Tag.of("method", context.getMethodName()));
+    }
+}</code></pre>
+</div>
+</div>
 
 <h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
 

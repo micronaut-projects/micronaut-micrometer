@@ -143,7 +143,16 @@ implements io.micronaut.aop.MethodInterceptor&lt;<a href="https://docs.oracle.co
 <div class="col-first odd-row-color"><code>protected </code></div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry,io.micronaut.core.convert.ConversionService)" class="member-name-link">TimedInterceptor</a><wbr>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
  io.micronaut.core.convert.ConversionService&nbsp;conversionService)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Pass list of AbstractMethodTaggers in new constructor</div>
+</div>
+</div>
+<div class="col-first even-row-color"><code>protected </code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry,io.micronaut.core.convert.ConversionService,java.util.List)" class="member-name-link">TimedInterceptor</a><wbr>(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
+ io.micronaut.core.convert.ConversionService&nbsp;conversionService,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../aggregator/AbstractMethodTagger.html" title="class in io.micronaut.configuration.metrics.aggregator">AbstractMethodTagger</a>&gt;&nbsp;methodTaggers)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -243,13 +252,31 @@ implements io.micronaut.aop.MethodInterceptor&lt;<a href="https://docs.oracle.co
 <li>
 <section class="detail" id="&lt;init&gt;(io.micrometer.core.instrument.MeterRegistry,io.micronaut.core.convert.ConversionService)">
 <h3>TimedInterceptor</h3>
-<div class="member-signature"><span class="annotations">@Inject
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
 </span><span class="modifiers">protected</span>&nbsp;<span class="element-name">TimedInterceptor</span><wbr><span class="parameters">(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
  io.micronaut.core.convert.ConversionService&nbsp;conversionService)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">Pass list of AbstractMethodTaggers in new constructor</div>
+</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>meterRegistry</code> - The meter registry</dd>
 <dd><code>conversionService</code> - The conversion service</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(io.micrometer.core.instrument.MeterRegistry,io.micronaut.core.convert.ConversionService,java.util.List)">
+<h3>TimedInterceptor</h3>
+<div class="member-signature"><span class="annotations">@Inject
+</span><span class="modifiers">protected</span>&nbsp;<span class="element-name">TimedInterceptor</span><wbr><span class="parameters">(io.micrometer.core.instrument.MeterRegistry&nbsp;meterRegistry,
+ io.micronaut.core.convert.ConversionService&nbsp;conversionService,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../aggregator/AbstractMethodTagger.html" title="class in io.micronaut.configuration.metrics.aggregator">AbstractMethodTagger</a>&gt;&nbsp;methodTaggers)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>meterRegistry</code> - The meter registry</dd>
+<dd><code>conversionService</code> - The conversion service</dd>
+<dd><code>methodTaggers</code> - Additional tag builders</dd>
 </dl>
 </section>
 </li>
