@@ -25,7 +25,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Holds metadata about metric options
+ * Holds metadata about metric options to apply
  *
  * @author Haiden Rothwell
  * @since 5.6.0
@@ -34,7 +34,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({METHOD})
 public @interface MetricOptions {
-    // TODO if empty or null should this do nothing? no filtering happening unless something defined? but then
-    //  what if you really truly don't want anything applied?
+    /**
+     * TODO if empty or null should this do nothing? no filtering happening unless something defined? but then
+     *  what if you really truly don't want anything applied? Null is not an option for default, some secondary annotation value?
+     * @return array of {@link io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger} to apply to metrics for method
+     */
     Class<? extends AbstractMethodTagger>[] taggers() default {};
 }
