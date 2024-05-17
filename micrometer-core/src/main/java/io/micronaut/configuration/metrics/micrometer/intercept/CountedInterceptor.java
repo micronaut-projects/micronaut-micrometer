@@ -23,6 +23,7 @@ import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
@@ -34,6 +35,7 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -148,13 +150,15 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     }
 
     private void doCount(AnnotationMetadata metadata, String metricName, @Nullable Throwable e, MethodInvocationContext<Object, Object> context) {
+        List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, "taggers"));
         Counter.builder(metricName)
                 .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .tags(
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
                             .stream()
-                            .flatMap(b -> b.getTags(context).stream())
+                            .filter(t -> taggers.isEmpty() || taggers.contains(t.getClass()))
+                            .flatMap(t -> t.getTags(context).stream())
                             .toList()
                 )
                 .description(metadata.stringValue(Counted.class, "description").orElse(null))

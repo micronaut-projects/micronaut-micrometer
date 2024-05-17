@@ -1,11 +1,14 @@
 package io.micronaut.configuration.metrics.annotation
 
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
 import java.util.function.Consumer
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class CountedAnnotationSpec extends Specification {
 
@@ -86,4 +89,28 @@ class CountedAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+  void "taggers are filtered if filter present"(){
+    given:
+    ApplicationContext ctx = ApplicationContext.run()
+    CountedTarget tt = ctx.getBean(CountedTarget)
+    MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+    when:
+    Integer result = tt.maxWithOptions(4, 10)
+    registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions", "parameters", "a b").counter()
+
+    then:
+    thrown(MeterNotFoundException)
+
+    when:
+    def timer = registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions").counter()
+
+    then:
+    result == 10
+    timer.count() == 1
+
+    cleanup:
+    ctx.close()
+  }
 }
