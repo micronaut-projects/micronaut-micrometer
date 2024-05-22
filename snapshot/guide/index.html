@@ -135,15 +135,17 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersOracleCloud"><a href="#metricsAndReportersOracleCloud"><strong>6.16</strong><span>Oracle Cloud Monitoring Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>6.17</strong><span>Prometheus Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersOtlp"><a href="#metricsAndReportersOtlp"><strong>6.17</strong><span>OTLP Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.18</strong><span>SignalFx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>6.18</strong><span>Prometheus Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.19</strong><span>Stackdriver Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.19</strong><span>SignalFx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.20</strong><span>StatsD Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.20</strong><span>Stackdriver Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.21</strong><span>Wavefront Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.21</strong><span>StatsD Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.22</strong><span>Wavefront Registry</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-observation"><a href="#observation"><strong>7</strong><span>Observation</span></a></div>
         
@@ -3654,7 +3656,142 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 </table>
 </div>
 
-<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.17 Prometheus Registry</h2>
+<h2 id="metricsAndReportersOtlp"><a class="anchor" href="#metricsAndReportersOtlp"></a>6.17 OTLP Registry</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOtlp.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the OTLP reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-otlp</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-otlp")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-otlp&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.otlp</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-otlp/src/main/java/io/micrometer/registry/otlp/OtlpConfig.java">OtlpConfig</a> for more options.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">url</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Address where metrics will be published. Default: <code><a href="http://localhost:4318/v1/metrics" class="bare">http://localhost:4318/v1/metrics</a></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example OTLP Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+micronaut.metrics.export.otlp.enabled=true
+micronaut.metrics.export.otlp.url=http://otel-collector:4318/v1/metrics</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+    export:
+      otlp:
+        enabled: true
+        url: http://otel-collector:4318/v1/metrics</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.otlp]
+        enabled=true
+        url="http://otel-collector:4318/v1/metrics"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+    export {
+      otlp {
+        enabled = true
+        url = "http://otel-collector:4318/v1/metrics"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        otlp {
+          enabled = true
+          url = "http://otel-collector:4318/v1/metrics"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "otlp": {
+          "enabled": true,
+          "url": "http://otel-collector:4318/v1/metrics"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.18 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
@@ -3873,7 +4010,7 @@ micronaut {
 </div>
 </div>
 
-<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.18 SignalFx Registry</h2>
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.19 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
@@ -4022,7 +4159,7 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.19 Stackdriver Registry</h2>
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.20 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
@@ -4171,7 +4308,7 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.20 StatsD Registry</h2>
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.21 StatsD Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
@@ -4336,7 +4473,7 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.21 Wavefront Registry</h2>
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.22 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.6.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
