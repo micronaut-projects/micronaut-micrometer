@@ -1,0 +1,14 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-registry'
+}
+
+dependencies {
+    api libs.micrometer.registry.otlp
+}
+
+// disable binary compatibility for new module
+micronautBuild {
+    binaryCompatibility {
+        enabled.set(false)
+    }
+}
