@@ -17,7 +17,7 @@ public class CountedTarget {
     }
 
     @Counted("counted.test.maxWithOptions.blocking")
-    @MetricOptions(taggers = {MethodTaggerExample.class})
+    @MetricOptions(taggers = {MethodTaggerExample.class}, filterTaggers = true)
     Integer maxWithOptions(int a, int b) {
         return Math.max(a, b);
     }

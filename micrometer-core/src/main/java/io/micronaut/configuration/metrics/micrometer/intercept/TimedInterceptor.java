@@ -214,7 +214,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
-            List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(context.getAnnotationMetadata().classValues(MetricOptions.class, "taggers"));
+            final AnnotationMetadata annotationMetadata = context.getAnnotationMetadata();
+            final List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(annotationMetadata.classValues(MetricOptions.class, "taggers"));
+            final boolean filter = annotationMetadata.booleanValue(MetricOptions.class, "filterTaggers").orElse(false);
             final double[] percentiles = metadata.doubleValues("percentiles");
             final boolean histogram = metadata.isTrue("histogram");
             final Timer timer = Timer.builder(metricName)
@@ -224,7 +226,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
-                                .filter(t -> taggers.isEmpty() || taggers.contains(t.getClass()))
+                                .filter(t -> !filter || taggers.contains(t.getClass()))
                                 .flatMap(b -> b.getTags(context).stream())
                             .toList()
                     )

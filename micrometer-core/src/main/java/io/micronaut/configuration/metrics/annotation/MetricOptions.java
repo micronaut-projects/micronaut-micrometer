@@ -40,4 +40,9 @@ public @interface MetricOptions {
      * @return array of {@link io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger} to apply to metrics for method
      */
     Class<? extends AbstractMethodTagger>[] taggers() default {};
+
+    /**
+     * @return whether to filter taggers using {@link #taggers()} array
+     */
+    boolean filterTaggers() default false;
 }

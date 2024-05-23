@@ -151,13 +151,14 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
 
     private void doCount(AnnotationMetadata metadata, String metricName, @Nullable Throwable e, MethodInvocationContext<Object, Object> context) {
         List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, "taggers"));
+        boolean filter = metadata.booleanValue(MetricOptions.class, "filterTaggers").orElse(false);
         Counter.builder(metricName)
                 .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .tags(
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
                             .stream()
-                            .filter(t -> taggers.isEmpty() || taggers.contains(t.getClass()))
+                            .filter(t -> !filter || taggers.contains(t.getClass()))
                             .flatMap(t -> t.getTags(context).stream())
                             .toList()
                 )
