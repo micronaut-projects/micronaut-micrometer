@@ -19,14 +19,15 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -46,66 +47,46 @@ public class HttpMeterFilterFactory {
     /**
      * Configure new MeterFilter for http.server.requests metrics.
      *
-     * @param percentiles The percentiles
-     * @param histogram If a histogram should be published
-     * @param min       the minimum time (in s) value expected.
-     * @param max       the maximum time (in s) value expected.
-     * @param slos      the user-defined service levels objectives (in s) to create.
+     * @param serverMeterConfig The HttpMeter configuration
      * @return A MeterFilter
      */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server")
-    MeterFilter addServerPercentileMeterFilter(
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.percentiles:}") Double[] percentiles,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.histogram:false}") Boolean histogram,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.min:-1}") Double min,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.max:-1}") Double max,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.slos:}") Double[] slos
-    ) {
-        return getMeterFilter(percentiles, histogram, min, max, slos, WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS);
+    MeterFilter addServerPercentileMeterFilter(HttpServerMeterConfig serverMeterConfig) {
+        return getMeterFilter(serverMeterConfig, WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS);
     }
 
     /**
      * Configure new MeterFilter for http.client.requests metrics.
      *
-     * @param percentiles The percentiles
-     * @param histogram If a histogram should be published
-     * @param min       the minimum time (in s) value expected.
-     * @param max       the maximum time (in s) value expected.
-     * @param slos      the user-defined service levels objectives (in s) to create.
+     * @param clientMeterConfig The HttpMeter configuration
      * @return A MeterFilter
      */
     @Bean
     @Singleton
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client")
-    MeterFilter addClientPercentileMeterFilter(
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.percentiles:}") Double[] percentiles,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.histogram:false}") Boolean histogram,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.min:-1}") Double min,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.max:-1}") Double max,
-        @Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.slos:}") Double[] slos
-    ) {
-        return getMeterFilter(percentiles, histogram, min, max, slos, WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS);
+    MeterFilter addClientPercentileMeterFilter(HttpClientMeterConfig clientMeterConfig) {
+        return getMeterFilter(clientMeterConfig, WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS);
     }
 
-    private MeterFilter getMeterFilter(Double[] percentiles, Boolean histogram, Double minMs, Double maxMs, Double[] slos, String metricNamePrefix) {
+    private MeterFilter getMeterFilter(HttpMeterConfig meterConfig, String metricNamePrefix) {
         return new MeterFilter() {
             @Override
             public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
                 if (id.getName().startsWith(metricNamePrefix)) {
                     var builder = DistributionStatisticConfig.builder()
                         .percentiles()
-                        .percentiles(Arrays.stream(percentiles).filter(Objects::nonNull).mapToDouble(Double::doubleValue).toArray())
-                        .serviceLevelObjectives(Arrays.stream(slos).filter(Objects::nonNull).mapToDouble(d -> d * SECONDS_TO_NANOS).toArray())
-                        .percentilesHistogram(histogram);
+                        .percentiles(Arrays.stream(meterConfig.getPercentiles()).mapToDouble(Double::doubleValue).toArray())
+                        .serviceLevelObjectives(Arrays.stream(meterConfig.getSlos()).mapToDouble(d -> d * SECONDS_TO_NANOS).toArray())
+                        .percentilesHistogram(meterConfig.getHistogram());
 
-                    if (minMs != -1) {
-                        builder.minimumExpectedValue(minMs * SECONDS_TO_NANOS);
+                    if (meterConfig.getMin() != null) {
+                        builder.minimumExpectedValue(meterConfig.getMin() * SECONDS_TO_NANOS);
                     }
 
-                    if (maxMs != -1) {
-                        builder.maximumExpectedValue(maxMs * SECONDS_TO_NANOS);
+                    if (meterConfig.getMax() != null) {
+                        builder.maximumExpectedValue(meterConfig.getMax() * SECONDS_TO_NANOS);
                     }
 
                     return builder.build().merge(config);
