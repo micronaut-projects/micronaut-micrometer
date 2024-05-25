@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web.config;
 
 /**
  * Http meter configuration.
+ * @since 5.6.0
  */
 public abstract class HttpMeterConfig {
 

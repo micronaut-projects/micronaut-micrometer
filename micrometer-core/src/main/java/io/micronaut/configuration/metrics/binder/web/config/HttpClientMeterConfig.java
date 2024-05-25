@@ -21,6 +21,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 /**
  * Http client meter configuration.
+ * @since 5.6.0
  */
 @ConfigurationProperties(MICRONAUT_METRICS_BINDERS + ".web.client")
 public class HttpClientMeterConfig extends HttpMeterConfig { }
