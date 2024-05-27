@@ -19,15 +19,16 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
-import io.micronaut.core.util.ArrayUtils;
 import jakarta.inject.Singleton;
 
-import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS;
-import static io.micronaut.configuration.metrics.binder.web.WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS;
+import java.util.Arrays;
+
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 import static io.micronaut.core.util.StringUtils.FALSE;
 
@@ -41,41 +42,54 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
 public class HttpMeterFilterFactory {
 
+    public static final double SECONDS_TO_NANOS = 1_000_000_000d;
+
     /**
      * Configure new MeterFilter for http.server.requests metrics.
      *
-     * @param percentiles The percentiles
+     * @param serverMeterConfig The HttpMeter configuration
      * @return A MeterFilter
      */
     @Bean
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server.percentiles")
-    MeterFilter addServerPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.server.percentiles}") Double[] percentiles) {
-        return getMeterFilter(percentiles, METRIC_HTTP_SERVER_REQUESTS);
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server")
+    MeterFilter addServerPercentileMeterFilter(HttpServerMeterConfig serverMeterConfig) {
+        return getMeterFilter(serverMeterConfig, WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS);
     }
 
     /**
      * Configure new MeterFilter for http.client.requests metrics.
      *
-     * @param percentiles The percentiles
+     * @param clientMeterConfig The HttpMeter configuration
      * @return A MeterFilter
      */
     @Bean
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.percentiles")
-    MeterFilter addClientPercentileMeterFilter(@Value("${" + MICRONAUT_METRICS_BINDERS + ".web.client.percentiles}") Double[] percentiles) {
-        return getMeterFilter(percentiles, METRIC_HTTP_CLIENT_REQUESTS);
+    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client")
+    MeterFilter addClientPercentileMeterFilter(HttpClientMeterConfig clientMeterConfig) {
+        return getMeterFilter(clientMeterConfig, WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS);
     }
 
-    private MeterFilter getMeterFilter(Double[] percentiles, String metricNamePrefix) {
+    private MeterFilter getMeterFilter(HttpMeterConfig meterConfig, String metricNamePrefix) {
         return new MeterFilter() {
             @Override
             public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
                 if (id.getName().startsWith(metricNamePrefix)) {
-                    return DistributionStatisticConfig.builder()
-                            .percentiles((double[]) ArrayUtils.toPrimitiveArray(percentiles))
-                            .build()
-                            .merge(config);
+                    var builder = DistributionStatisticConfig.builder()
+                        .percentiles()
+                        .percentiles(Arrays.stream(meterConfig.getPercentiles()).mapToDouble(Double::doubleValue).toArray())
+                        .serviceLevelObjectives(Arrays.stream(meterConfig.getSlos()).mapToDouble(d -> d * SECONDS_TO_NANOS).toArray())
+                        .percentilesHistogram(meterConfig.getHistogram());
+
+                    if (meterConfig.getMin() != null) {
+                        builder.minimumExpectedValue(meterConfig.getMin() * SECONDS_TO_NANOS);
+                    }
+
+                    if (meterConfig.getMax() != null) {
+                        builder.maximumExpectedValue(meterConfig.getMax() * SECONDS_TO_NANOS);
+                    }
+
+                    return builder.build().merge(config);
                 }
                 return config;
             }

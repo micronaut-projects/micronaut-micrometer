@@ -88,9 +88,12 @@ By default, client URIs are captured when an error is handled.
 This can cause trouble in some monitoring tools due to a large amount of distinct URIs captured.
 This URI capturing can be disabled by setting `micronaut.metrics.binders.web.client-errors-uris.enabled` to `false`.
 
-.Enabling Percentiles
+.Customizing
 
-Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.
+The web metrics can be configured to enable percentiles, histogram, service level objectives and the expected min and max duration of the requests.
+All configurations can be added to HTTP server and client metrics. All time configurations are specified in seconds.
+
+A complete example:
 
 [configuration]
 ----
@@ -100,8 +103,16 @@ micronaut:
       web:
         server:
           percentiles: "0.95,0.99"
+          histogram: true
+          slos: "0.1,0.4,0.5,2"
+          min: 0.1
+          max: 60
         client:
           percentiles: "0.95,0.99"
+          histogram: true
+          slos: "0.1,0.4,0.5,2"
+          min: 0.1
+          max: 60
 ----
 
 .Metrics provided

@@ -4,6 +4,7 @@ import groovy.transform.InheritConstructors
 import io.micrometer.common.lang.NonNull
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.context.ApplicationContext
@@ -49,14 +50,27 @@ class HttpMetricsSpec extends Specification {
         Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics').timer()
         HistogramSnapshot serverSnapshot = serverTimer.takeSnapshot()
         HistogramSnapshot clientSnapshot = clientTimer.takeSnapshot()
+        DistributionStatisticConfig serverDistributionConfig = serverTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value as DistributionStatisticConfig
+        DistributionStatisticConfig clientDistributionConfig = clientTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value as DistributionStatisticConfig
 
         then:
         serverTimer.count() == 1
         clientTimer.count() == 1
+
         serverSnapshot.percentileValues().length == serverPercentilesCount
         clientSnapshot.percentileValues().length == clientPercentilesCount
-        serverTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value.percentileHistogram == serverHistogram
-        clientTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value.percentileHistogram == clientHistogram
+
+        serverDistributionConfig.percentileHistogram == serverHistogram
+        clientDistributionConfig.percentileHistogram == clientHistogram
+
+        serverDistributionConfig.getServiceLevelObjectiveBoundaries()?.length == serverSlosCount
+        clientDistributionConfig.getServiceLevelObjectiveBoundaries()?.length == clientSlosCount
+
+        serverDistributionConfig.minimumExpectedValueAsDouble == serverMin
+        serverDistributionConfig.maximumExpectedValueAsDouble == serverMax
+
+        clientDistributionConfig.minimumExpectedValueAsDouble == clientMin
+        clientDistributionConfig.maximumExpectedValueAsDouble == clientMax
 
         when: "A request is sent to the root route"
 
@@ -137,13 +151,21 @@ class HttpMetricsSpec extends Specification {
         embeddedServer.close()
 
         where:
-        cfg                                                   | setting     | serverPercentilesCount | clientPercentilesCount| serverHistogram | clientHistogram
-        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99" | 0                      | 2                     | null            | null
-        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99" | 2                      | 0                     | null            | null
-        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "true"      | 0                      | 0                     | true            | null
-        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "false"     | 0                      | 0                     | false           | null
-        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "true"      | 0                      | 0                     | null            | true
-        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "false"     | 0                      | 0                     | null            | false
+        cfg                                                   | setting       | serverPercentilesCount | clientPercentilesCount | serverSlosCount | clientSlosCount | serverHistogram | clientHistogram | serverMin | serverMax | clientMin | clientMax
+        // Server
+        MICRONAUT_METRICS_BINDERS + ".web.server.percentiles" | "0.95,0.99"   | 2                      | 0                      | 0               | null            | false           | null            | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "true"        | 0                      | 0                      | 0               | null            | true            | null            | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.server.histogram"   | "false"       | 0                      | 0                      | 0               | null            | false           | null            | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.server.min"         | 0.1           | 0                      | 0                      | 0               | null            | false           | null            | 1.0E8     | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.server.max"         | 60            | 0                      | 0                      | 0               | null            | false           | null            | 1000000d  | 6.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.server.slos"        | "0.1,0.2,0.5" | 0                      | 0                      | 3               | null            | false           | null            | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        // Client
+        MICRONAUT_METRICS_BINDERS + ".web.client.percentiles" | "0.95,0.99"   | 0                      | 2                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "true"        | 0                      | 0                      | null            | 0               | null            | true            | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.client.histogram"   | "false"       | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.client.min"         | 0.1           | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1.0E8     | 3.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.client.max"         | 60            | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 6.0E10
+        MICRONAUT_METRICS_BINDERS + ".web.client.slos"        | "0.1,0.2,0.5" | 0                      | 0                      | null            | 3               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
     }
 
     void "test client / server metrics ignored uris for client errors"() {
