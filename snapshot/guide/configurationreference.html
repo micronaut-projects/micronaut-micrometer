@@ -51,9 +51,53 @@
             </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_core_config_properties">Micronaut Micrometer Core Config Properties</h3>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpClientMeterConfig.html">HttpClientMeterConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client.percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client.min</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client.max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client.slos</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties" href="#io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html">ExportConfigurationProperties</a></caption>
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html">ExportConfigurationProperties</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -80,12 +124,56 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpServerMeterConfig.html">HttpServerMeterConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.min</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.slos</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
 </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_observation_config_properties">Micronaut Micrometer Observation Config Properties</h3>
 <a id="io.micronaut.micrometer.observation.ObservationProperties" href="#io.micronaut.micrometer.observation.ObservationProperties">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/ObservationProperties.html">ObservationProperties</a></caption>
+<caption class="title">Table 4. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/ObservationProperties.html">ObservationProperties</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -112,7 +200,7 @@
 <h3 id="_micronaut_micrometer_observation_http_config_properties">Micronaut Micrometer Observation Http Config Properties</h3>
 <a id="io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration" href="#io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/http/ObservationHttpExclusionsConfiguration.html">ObservationHttpExclusionsConfiguration</a></caption>
+<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/http/ObservationHttpExclusionsConfiguration.html">ObservationHttpExclusionsConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">

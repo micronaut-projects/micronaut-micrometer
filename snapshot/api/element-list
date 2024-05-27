@@ -9,6 +9,7 @@ io.micronaut.configuration.metrics.binder.r2dbc
 io.micronaut.configuration.metrics.binder.retry
 io.micronaut.configuration.metrics.binder.system
 io.micronaut.configuration.metrics.binder.web
+io.micronaut.configuration.metrics.binder.web.config
 io.micronaut.configuration.metrics.common.tags
 io.micronaut.configuration.metrics.management.endpoint
 io.micronaut.configuration.metrics.micrometer

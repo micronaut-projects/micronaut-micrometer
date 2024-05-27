@@ -771,15 +771,27 @@ This can cause trouble in some monitoring tools due to a large amount of distinc
 This URI capturing can be disabled by setting <code>micronaut.metrics.binders.web.client-errors-uris.enabled</code> to <code>false</code>.</p>
 </div>
 <div class="paragraph">
-<div class="title">Enabling Percentiles</div>
-<p>Percentile configurations can be added to HTTP server and client metrics. Percentiles can be provided via a CSV as shown below.</p>
+<div class="title">Customizing</div>
+<p>The web metrics can be configured to enable percentiles, histogram, service level objectives and the expected min and max duration of the requests.
+All configurations can be added to HTTP server and client metrics. All time configurations are specified in seconds.</p>
+</div>
+<div class="paragraph">
+<p>A complete example:</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.binders.web.server.percentiles=0.95,0.99
-micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
+micronaut.metrics.binders.web.server.histogram=true
+micronaut.metrics.binders.web.server.slos=0.1,0.4,0.5,2
+micronaut.metrics.binders.web.server.min=0.1
+micronaut.metrics.binders.web.server.max=60
+micronaut.metrics.binders.web.client.percentiles=0.95,0.99
+micronaut.metrics.binders.web.client.histogram=true
+micronaut.metrics.binders.web.client.slos=0.1,0.4,0.5,2
+micronaut.metrics.binders.web.client.min=0.1
+micronaut.metrics.binders.web.client.max=60</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -790,8 +802,16 @@ micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
       web:
         server:
           percentiles: "0.95,0.99"
+          histogram: true
+          slos: "0.1,0.4,0.5,2"
+          min: 0.1
+          max: 60
         client:
-          percentiles: "0.95,0.99"</code></pre>
+          percentiles: "0.95,0.99"
+          histogram: true
+          slos: "0.1,0.4,0.5,2"
+          min: 0.1
+          max: 60</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -802,8 +822,16 @@ micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
       [micronaut.metrics.binders.web]
         [micronaut.metrics.binders.web.server]
           percentiles="0.95,0.99"
+          histogram=true
+          slos="0.1,0.4,0.5,2"
+          min=0.1
+          max=60
         [micronaut.metrics.binders.web.client]
-          percentiles="0.95,0.99"</code></pre>
+          percentiles="0.95,0.99"
+          histogram=true
+          slos="0.1,0.4,0.5,2"
+          min=0.1
+          max=60</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -814,9 +842,17 @@ micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
       web {
         server {
           percentiles = "0.95,0.99"
+          histogram = true
+          slos = "0.1,0.4,0.5,2"
+          min = 0.1
+          max = 60
         }
         client {
           percentiles = "0.95,0.99"
+          histogram = true
+          slos = "0.1,0.4,0.5,2"
+          min = 0.1
+          max = 60
         }
       }
     }
@@ -833,9 +869,17 @@ micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
         web {
           server {
             percentiles = "0.95,0.99"
+            histogram = true
+            slos = "0.1,0.4,0.5,2"
+            min = 0.1
+            max = 60
           }
           client {
             percentiles = "0.95,0.99"
+            histogram = true
+            slos = "0.1,0.4,0.5,2"
+            min = 0.1
+            max = 60
           }
         }
       }
@@ -852,10 +896,18 @@ micronaut.metrics.binders.web.client.percentiles=0.95,0.99</code></pre>
       "binders": {
         "web": {
           "server": {
-            "percentiles": "0.95,0.99"
+            "percentiles": "0.95,0.99",
+            "histogram": true,
+            "slos": "0.1,0.4,0.5,2",
+            "min": 0.1,
+            "max": 60
           },
           "client": {
-            "percentiles": "0.95,0.99"
+            "percentiles": "0.95,0.99",
+            "histogram": true,
+            "slos": "0.1,0.4,0.5,2",
+            "min": 0.1,
+            "max": 60
           }
         }
       }
