@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.annotation;
 
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import io.micronaut.core.annotation.Experimental;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -31,13 +32,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @since 5.6.0
  */
 @Documented
+@Experimental
 @Retention(RUNTIME)
 @Target({METHOD})
 public @interface MetricOptions {
     /**
-     * TODO if empty or null should this do nothing? no filtering happening unless something defined? but then
-     *  what if you really truly don't want anything applied? Null is not an option for default, some secondary annotation value?
-     * @return array of {@link io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger} to apply to metrics for method
+     * @return array of {@link io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger} to apply to metrics for method.
+     * Only utilized for filtering if {@link #filterTaggers()} is true
      */
     Class<? extends AbstractMethodTagger>[] taggers() default {};
 
