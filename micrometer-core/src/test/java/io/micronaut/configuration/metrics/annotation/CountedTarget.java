@@ -1,6 +1,7 @@
 package io.micronaut.configuration.metrics.annotation;
 
 import io.micrometer.core.annotation.Counted;
+import io.micronaut.configuration.metrics.aggregator.MethodTaggerExample;
 import jakarta.inject.Singleton;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,6 +13,12 @@ public class CountedTarget {
 
     @Counted("counted.test.max.blocking")
     Integer max(int a, int b) {
+        return Math.max(a, b);
+    }
+
+    @Counted("counted.test.maxWithOptions.blocking")
+    @MetricOptions(taggers = {MethodTaggerExample.class}, filterTaggers = true)
+    Integer maxWithOptions(int a, int b) {
         return Math.max(a, b);
     }
 

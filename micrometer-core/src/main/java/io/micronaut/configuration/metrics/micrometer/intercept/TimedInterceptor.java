@@ -25,6 +25,7 @@ import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
@@ -43,6 +44,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -212,6 +214,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
+            final AnnotationMetadata annotationMetadata = context.getAnnotationMetadata();
+            final List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(annotationMetadata.classValues(MetricOptions.class, "taggers"));
+            final boolean filter = annotationMetadata.booleanValue(MetricOptions.class, "filterTaggers").orElse(false);
             final double[] percentiles = metadata.doubleValues("percentiles");
             final boolean histogram = metadata.isTrue("histogram");
             final Timer timer = Timer.builder(metricName)
@@ -221,7 +226,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
-                            .flatMap(b -> b.getTags(context).stream())
+                                .filter(t -> !filter || taggers.contains(t.getClass()))
+                                .flatMap(b -> b.getTags(context).stream())
                             .toList()
                     )
                     .tags(EXCEPTION_TAG, exceptionClass)
