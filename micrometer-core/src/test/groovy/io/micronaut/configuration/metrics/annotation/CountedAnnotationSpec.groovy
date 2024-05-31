@@ -15,56 +15,56 @@ class CountedAnnotationSpec extends Specification {
     void "test counted annotation usage"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()
-        CountedTarget tt = ctx.getBean(CountedTarget)
+        CountedTarget ct = ctx.getBean(CountedTarget)
         MeterRegistry registry = ctx.getBean(MeterRegistry)
 
         when:
-        int result = tt.max(4, 10)
-        def timer = registry.get("counted.test.max.blocking").counter()
+        int result = ct.max(4, 10)
+        def counter = registry.get("counted.test.max.blocking").counter()
 
         then:
         result == 10
-        timer.count() == 1
+        counter.count() == 1
 
         when:
-        tt.max(4, 10)
+        ct.max(4, 10)
         registry.get("counted.test.max.blocking").counter()
 
         then:
-        timer.count() == 2
+        counter.count() == 2
 
         when:
-        result = tt.maxFuture(4, 10).get()
+        result = ct.maxFuture(4, 10).get()
         PollingConditions conditions = new PollingConditions()
 
         then:
         conditions.eventually {
-            def t = registry.get("counted.test.max.future").counter()
+            def c = registry.get("counted.test.max.future").counter()
             result == 10
-            t.count() == 1
+            c.count() == 1
         }
-        timer.count() == 2
+        counter.count() == 2
 
         when:
-        tt.maxSingle(4, 10).subscribe( { o -> result = o} as Consumer)
+        ct.maxSingle(4, 10).subscribe( { o -> result = o} as Consumer)
 
         then:
         conditions.eventually {
-            def rxTimer = registry.get("counted.test.max.single").counter()
+            def rxCounter = registry.get("counted.test.max.single").counter()
 
             result == 10
-            rxTimer.count() == 1
+            rxCounter.count() == 1
         }
 
         when:
-        tt.maxFlow(4, 10).collectList().subscribe( { o -> result = o[0]} as Consumer)
+        ct.maxFlow(4, 10).collectList().subscribe( { o -> result = o[0]} as Consumer)
 
         then:
         conditions.eventually {
-            def rxTimer = registry.get("counted.test.max.flowable").counter()
+            def rxCounter = registry.get("counted.test.max.flowable").counter()
 
             result == 10
-            rxTimer.count() == 1
+            rxCounter.count() == 1
         }
 
         cleanup:
@@ -74,43 +74,61 @@ class CountedAnnotationSpec extends Specification {
     void "additional tags from taggers are added"() {
         given:
         ApplicationContext ctx = ApplicationContext.run()
-        CountedTarget tt = ctx.getBean(CountedTarget)
+        CountedTarget ct = ctx.getBean(CountedTarget)
         MeterRegistry registry = ctx.getBean(MeterRegistry)
 
         when:
-        int result = tt.max(4, 10)
-        def timer = registry.get("counted.test.max.blocking").tags("method", "max", "parameters", "a b").counter()
+        int result = ct.max(4, 10)
+        def counter = registry.get("counted.test.max.blocking").tags("method", "max", "parameters", "a b").counter()
 
         then:
         result == 10
-        timer.count() == 1
+        counter.count() == 1
 
 
         cleanup:
         ctx.close()
     }
 
-  void "taggers are filtered if filter present"(){
-    given:
-    ApplicationContext ctx = ApplicationContext.run()
-    CountedTarget tt = ctx.getBean(CountedTarget)
-    MeterRegistry registry = ctx.getBean(MeterRegistry)
+    void "extraTags takes priority if same tag key"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        CountedTarget ct = ctx.getBean(CountedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
 
-    when:
-    Integer result = tt.maxWithOptions(4, 10)
-    registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions", "parameters", "a b").counter()
+        when:
+        Integer result = ct.maxWithExtraTags(4, 10)
+        def counter = registry.get("counted.test.maxWithExtraTags.blocking").tags("method", "CountedTarget.maxWithExtraTags", "parameters", "a b").counter()
 
-    then:
-    thrown(MeterNotFoundException)
+        then:
+        result == 10
+        counter.count() == 1
 
-    when:
-    def timer = registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions").counter()
+        cleanup:
+        ctx.close()
+    }
 
-    then:
-    result == 10
-    timer.count() == 1
+    void "taggers are filtered if filter present"(){
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        CountedTarget ct = ctx.getBean(CountedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
 
-    cleanup:
-    ctx.close()
-  }
+        when:
+        Integer result = ct.maxWithOptions(4, 10)
+        registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions", "parameters", "a b").counter()
+
+        then:
+        thrown(MeterNotFoundException)
+
+        when:
+        def counter = registry.get("counted.test.maxWithOptions.blocking").tags("method", "maxWithOptions").counter()
+
+        then:
+        result == 10
+        counter.count() == 1
+
+        cleanup:
+        ctx.close()
+    }
 }

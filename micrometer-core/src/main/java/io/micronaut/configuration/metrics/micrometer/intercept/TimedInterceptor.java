@@ -221,7 +221,6 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             final boolean histogram = metadata.isTrue("histogram");
             final Timer timer = Timer.builder(metricName)
                     .description(description)
-                    .tags(tags)
                     .tags(
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
@@ -230,6 +229,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                                 .flatMap(b -> b.getTags(context).stream())
                             .toList()
                     )
+                    .tags(tags)
                     .tags(EXCEPTION_TAG, exceptionClass)
                     .publishPercentileHistogram(histogram)
                     .publishPercentiles(percentiles)
