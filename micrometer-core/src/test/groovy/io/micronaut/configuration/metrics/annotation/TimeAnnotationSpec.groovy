@@ -101,28 +101,47 @@ class TimeAnnotationSpec extends Specification {
         ctx.close()
     }
 
+    void "extraTags takes priority if same tag key"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        TimedTarget tt = ctx.getBean(TimedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        Integer result = tt.maxWithExtraTags(4, 10)
+        def timer = registry.get("timed.test.maxWithExtraTags.blocking").tags("method", "TimedTarget.maxWithExtraTags", "parameters", "a b").timer()
+
+        then:
+        result == 10
+        timer.count() == 1
+        timer.totalTime(MILLISECONDS) > 0
+
+        cleanup:
+        ctx.close()
+    }
+
     void "taggers are filtered if filter present"(){
-      given:
-      ApplicationContext ctx = ApplicationContext.run()
-      TimedTarget tt = ctx.getBean(TimedTarget)
-      MeterRegistry registry = ctx.getBean(MeterRegistry)
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        TimedTarget tt = ctx.getBean(TimedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
 
-      when:
-      Integer result = tt.maxWithOptions(4, 10)
-      registry.get("timed.test.maxWithOptions.blocking").tags("method", "maxWithOptions", "parameters", "a b").timer()
+        when:
+        Integer result = tt.maxWithOptions(4, 10)
+        registry.get("timed.test.maxWithOptions.blocking").tags("method", "maxWithOptions", "parameters", "a b").timer()
 
-      then:
-      thrown(MeterNotFoundException)
+        then:
+        thrown(MeterNotFoundException)
 
-      when:
-      def timer = registry.get("timed.test.maxWithOptions.blocking").tags("method", "maxWithOptions").timer()
+        when:
+        def timer = registry.get("timed.test.maxWithOptions.blocking").tags("method", "maxWithOptions").timer()
 
-      then:
-      result == 10
-      timer.count() == 1
-      timer.totalTime(MILLISECONDS) > 0
+        then:
+        result == 10
+        timer.count() == 1
+        timer.totalTime(MILLISECONDS) > 0
 
-      cleanup:
-      ctx.close()
+        cleanup:
+        ctx.close()
     }
 }

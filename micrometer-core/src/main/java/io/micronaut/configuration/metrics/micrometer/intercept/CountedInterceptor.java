@@ -153,7 +153,6 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, "taggers"));
         boolean filter = metadata.booleanValue(MetricOptions.class, "filterTaggers").orElse(false);
         Counter.builder(metricName)
-                .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .tags(
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
@@ -162,6 +161,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                             .flatMap(t -> t.getTags(context).stream())
                             .toList()
                 )
+                .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .description(metadata.stringValue(Counted.class, "description").orElse(null))
                 .tag(EXCEPTION_TAG, e != null ? e.getClass().getSimpleName() : "none")
                 .tag(RESULT_TAG, e != null ? "failure" : "success")

@@ -16,6 +16,11 @@ public class CountedTarget {
         return Math.max(a, b);
     }
 
+    @Counted(value = "counted.test.maxWithExtraTags.blocking", extraTags = {"method", "CountedTarget.maxWithExtraTags"})
+    Integer maxWithExtraTags(int a, int b) {
+        return Math.max(a, b);
+    }
+
     @Counted("counted.test.maxWithOptions.blocking")
     @MetricOptions(taggers = {MethodTaggerExample.class}, filterTaggers = true)
     Integer maxWithOptions(int a, int b) {
