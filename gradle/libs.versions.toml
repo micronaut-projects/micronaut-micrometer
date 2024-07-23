@@ -16,7 +16,7 @@ reflections = '0.10.2'
 jcache = "1.1.1"
 hdr-histogram = '2.2.2'
 
-micronaut-aws = "4.5.0"
+micronaut-aws = "4.6.0"
 micronaut-cache = "4.3.0"
 micronaut-grpc = "4.4.1"
 micronaut-logging = "1.2.2"
