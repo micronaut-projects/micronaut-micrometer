@@ -28,6 +28,7 @@ import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.http.uri.UriMatchTemplate;
 import io.micronaut.web.router.UriRouteInfo;
 import io.micronaut.web.router.UriRouteMatch;
+import jakarta.inject.Provider;
 import org.reactivestreams.Publisher;
 import java.util.Optional;
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -50,16 +51,16 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
 
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
-    private final MeterRegistry meterRegistry;
+    private final Provider<MeterRegistry> meterRegistryProvider;
 
     @Value("${" + WebMetricsPublisher.CLIENT_ERROR_URIS_ENABLED + ":true}")
     private boolean reportClientErrorURIs;
 
     /**
-     * @param meterRegistry the meter registry
+     * @param meterRegistryProvider the meter registry provider
      */
-    public ServerRequestMeterRegistryFilter(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
+    public ServerRequestMeterRegistryFilter(Provider<MeterRegistry> meterRegistryProvider) {
+        this.meterRegistryProvider = meterRegistryProvider;
     }
 
     private String resolvePath(HttpRequest<?> request) {
@@ -83,7 +84,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
         }
         return new WebMetricsPublisher<>(
             responsePublisher,
-            meterRegistry,
+            meterRegistryProvider.get(),
             path,
             start,
             request.getMethod().toString(),
