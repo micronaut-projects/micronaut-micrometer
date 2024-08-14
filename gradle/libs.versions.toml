@@ -18,8 +18,8 @@ hdr-histogram = '2.2.2'
 
 micronaut-aws = "4.6.0"
 micronaut-cache = "4.3.0"
-micronaut-logging = "1.2.2"
 micronaut-grpc = "4.6.0"
+micronaut-logging = "1.3.0"
 micronaut-r2dbc = "5.5.0"
 micronaut-rxjava2 = "2.4.0"
 micronaut-reactor = '3.4.1'
