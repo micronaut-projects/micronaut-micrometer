@@ -132,7 +132,7 @@ class CountedAnnotationSpec extends Specification {
         ctx.close()
     }
 
-    void "filters are applied in order"(){
+    void "taggers are applied in order"(){
         given:
         ApplicationContext ctx = ApplicationContext.run()
         CountedTarget cc = ctx.getBean(CountedTarget)
