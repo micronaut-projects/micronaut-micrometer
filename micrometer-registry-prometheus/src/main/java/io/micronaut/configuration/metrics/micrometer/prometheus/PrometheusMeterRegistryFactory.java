@@ -15,7 +15,7 @@
  */
 package io.micronaut.configuration.metrics.micrometer.prometheus;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
