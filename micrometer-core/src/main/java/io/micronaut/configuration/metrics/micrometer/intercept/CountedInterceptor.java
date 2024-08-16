@@ -157,6 +157,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
                             .stream()
+                            .sorted()
                             .filter(t -> !filter || taggers.contains(t.getClass()))
                             .flatMap(t -> t.getTags(context).stream())
                             .toList()

@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.core.annotation.Indexed;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.order.Ordered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,8 @@ import java.util.List;
  * @since 5.5.0
  */
 @Indexed(AbstractMethodTagger.class)
-public abstract class AbstractMethodTagger {
+public abstract class AbstractMethodTagger implements Ordered, Comparable<AbstractMethodTagger> {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMethodTagger.class);
 
     private final Class<? extends AbstractMethodTagger> implClass = this.getClass();
@@ -52,5 +54,10 @@ public abstract class AbstractMethodTagger {
             LOGGER.error("{} returned null list of tags and will not include additional tags on metric", implClass);
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public int compareTo(AbstractMethodTagger o) {
+        return Integer.compare(this.getOrder(), o.getOrder());
     }
 }

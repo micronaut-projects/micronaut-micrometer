@@ -144,4 +144,29 @@ class TimeAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+    void "filters are applied in order"(){
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        TimedTarget tt = ctx.getBean(TimedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        Integer result = tt.max(4, 10)
+        registry.get("timed.test.max.blocking").tags("ordered", "1", "parameters", "a b").timer()
+
+        then:
+        thrown(MeterNotFoundException)
+
+        when:
+        def timer = registry.get("timed.test.max.blocking").tags("ordered", "2", "parameters", "a b").timer()
+
+        then:
+        result == 10
+        timer.count() == 1
+        timer.totalTime(MILLISECONDS) > 0
+
+        cleanup:
+        ctx.close()
+    }
 }

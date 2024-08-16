@@ -225,6 +225,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
+                                .sorted()
                                 .filter(t -> !filter || taggers.contains(t.getClass()))
                                 .flatMap(b -> b.getTags(context).stream())
                             .toList()
