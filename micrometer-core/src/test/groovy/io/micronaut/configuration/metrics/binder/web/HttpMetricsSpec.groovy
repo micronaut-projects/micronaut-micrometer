@@ -343,7 +343,7 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/throwable")
         HttpResponse throwable() {
-            throw new RuntimeException("error")
+            throw new CustomRuntimeException("error")
         }
 
         @Get("/test-http-metrics/exception-handling")
@@ -355,6 +355,10 @@ class HttpMetricsSpec extends Specification {
         HttpResponse<?> myExceptionHandler() {
             return HttpResponse.badRequest()
         }
+    }
+
+    static class CustomRuntimeException extends RuntimeException {
+
     }
 
     @ServerWebSocket("/ws/{username}")
