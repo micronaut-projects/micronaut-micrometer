@@ -33,7 +33,7 @@ import java.util.List;
  * @since 5.5.0
  */
 @Indexed(AbstractMethodTagger.class)
-public abstract class AbstractMethodTagger implements Ordered, Comparable<AbstractMethodTagger> {
+public abstract class AbstractMethodTagger implements Ordered {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMethodTagger.class);
 
@@ -54,10 +54,5 @@ public abstract class AbstractMethodTagger implements Ordered, Comparable<Abstra
             LOGGER.error("{} returned null list of tags and will not include additional tags on metric", implClass);
             return Collections.emptyList();
         }
-    }
-
-    @Override
-    public int compareTo(AbstractMethodTagger o) {
-        return Integer.compare(this.getOrder(), o.getOrder());
     }
 }
