@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.core.annotation.Indexed;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.order.Ordered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,8 @@ import java.util.List;
  * @since 5.5.0
  */
 @Indexed(AbstractMethodTagger.class)
-public abstract class AbstractMethodTagger {
+public abstract class AbstractMethodTagger implements Ordered {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMethodTagger.class);
 
     private final Class<? extends AbstractMethodTagger> implClass = this.getClass();

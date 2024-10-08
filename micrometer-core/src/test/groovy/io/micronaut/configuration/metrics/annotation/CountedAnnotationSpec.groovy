@@ -131,4 +131,28 @@ class CountedAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+    void "taggers are applied in order"(){
+        given:
+        ApplicationContext ctx = ApplicationContext.run()
+        CountedTarget cc = ctx.getBean(CountedTarget)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        Integer result = cc.max(4, 10)
+        registry.get("counted.test.max.blocking").tags("ordered", "1", "parameters", "a b").timer()
+
+        then:
+        thrown(MeterNotFoundException)
+
+        when:
+        def counter = registry.get("counted.test.max.blocking").tags("ordered", "2", "parameters", "a b").counter()
+
+        then:
+        result == 10
+        counter.count() == 1
+
+        cleanup:
+        ctx.close()
+    }
 }
