@@ -4,5 +4,7 @@ plugins {
 
 dependencies {
     api libs.micrometer.registry.prometheus
+    implementation libs.managed.protobuf.java
+    implementation libs.managed.protobuf.java.util
     testImplementation(mnSerde.micronaut.serde.jackson)
 }
