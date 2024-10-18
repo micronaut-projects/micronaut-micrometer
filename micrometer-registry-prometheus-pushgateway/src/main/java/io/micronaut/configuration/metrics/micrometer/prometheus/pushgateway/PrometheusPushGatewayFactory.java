@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.pushgateway;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.prometheus.metrics.exporter.pushgateway.PushGateway;
 import jakarta.inject.Singleton;
@@ -28,7 +29,8 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * Creates a Prometheus {@link PushGateway}.
  */
 @Factory
-public class PrometheusPushGatewayFactory {
+@Internal
+class PrometheusPushGatewayFactory {
 
     public static final String PROMETHEUS_PUSHGATEWAY_CONFIG = MICRONAUT_METRICS_EXPORT + ".prometheus.pushgateway";
     public static final String PROMETHEUS_PUSHGATEWAY_ENABLED = PROMETHEUS_PUSHGATEWAY_CONFIG + ".enabled";
