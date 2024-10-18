@@ -23,6 +23,7 @@ metricsAndReporters:
   metricsAndReportersOracleCloud: Oracle Cloud Monitoring Registry
   metricsAndReportersOtlp: OTLP Registry
   metricsAndReportersPrometheus: Prometheus Registry
+  metricsAndReportersPrometheusPushGateway: Prometheus PushGateway
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
