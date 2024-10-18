@@ -1,0 +1,16 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-registry'
+}
+
+dependencies {
+    api libs.micrometer.registry.prometheus
+    api projects.micronautMicrometerRegistryPrometheus
+    api libs.managed.prometheus.metrics.exporter.pushgateway
+    testImplementation(mnSerde.micronaut.serde.jackson)
+}
+
+micronautBuild {
+    binaryCompatibility {
+        enabledAfter '5.9.0' // adjust as needed
+    }
+}
