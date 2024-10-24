@@ -29,6 +29,7 @@ import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import org.reactivestreams.Publisher;
@@ -157,6 +158,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
                             .stream()
+                            .sorted(OrderUtil.ORDERED_COMPARATOR)
                             .filter(t -> !filter || taggers.contains(t.getClass()))
                             .flatMap(t -> t.getTags(context).stream())
                             .toList()

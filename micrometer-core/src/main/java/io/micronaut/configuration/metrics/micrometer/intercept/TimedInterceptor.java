@@ -32,6 +32,7 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -225,6 +226,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
+                                .sorted(OrderUtil.ORDERED_COMPARATOR)
                                 .filter(t -> !filter || taggers.contains(t.getClass()))
                                 .flatMap(b -> b.getTags(context).stream())
                             .toList()
