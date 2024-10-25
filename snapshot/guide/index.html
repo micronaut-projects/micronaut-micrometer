@@ -139,13 +139,15 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheus"><a href="#metricsAndReportersPrometheus"><strong>6.18</strong><span>Prometheus Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.19</strong><span>SignalFx Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersPrometheusPushGateway"><a href="#metricsAndReportersPrometheusPushGateway"><strong>6.19</strong><span>Prometheus PushGateway</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.20</strong><span>Stackdriver Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersSignalFx"><a href="#metricsAndReportersSignalFx"><strong>6.20</strong><span>SignalFx Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.21</strong><span>StatsD Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStackdriver"><a href="#metricsAndReportersStackdriver"><strong>6.21</strong><span>Stackdriver Registry</span></a></div>
         
-        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.22</strong><span>Wavefront Registry</span></a></div>
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersStatsD"><a href="#metricsAndReportersStatsD"><strong>6.22</strong><span>StatsD Registry</span></a></div>
+        
+        <div class="toc-item" style="margin-left:10px" id="toc-item-metricsAndReportersWavefront"><a href="#metricsAndReportersWavefront"><strong>6.23</strong><span>Wavefront Registry</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-observation"><a href="#observation"><strong>7</strong><span>Observation</span></a></div>
         
@@ -4062,7 +4064,224 @@ micronaut {
 </div>
 </div>
 
-<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.19 SignalFx Registry</h2>
+<h2 id="metricsAndReportersPrometheusPushGateway"><a class="anchor" href="#metricsAndReportersPrometheusPushGateway"></a>6.19 Prometheus PushGateway</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheusPushGateway.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>You can include the Prometheus Pushgateway reporter via <code>io.micronaut.micrometer:micronaut-micrometer-registry-prometheus-pushgateway</code></p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus-pushgateway")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-prometheus-pushgateway&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>You can configure this reporter using <code>micronaut.metrics.export.prometheus.pushgateway</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Description</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable the reporter, for example per-environment or for local development. Default: <code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">interval</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">How frequently to push metrics data. Default: <code>PT1M</code> (1 min). See <code>java.time.Duration#parse(CharSequence)</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">address</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Address of the Pushgateway in format host:port. Default is <code>localhost:9091</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">format</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is <code>Format.PROMETHEUS_PROTOBUF</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">scheme</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify if metrics should be pushed using HTTP or HTTPS. Default is HTTP.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">job</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The job label to be used when pushing metrics.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">basic-auth-username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username for basic auth</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">basic-auth-password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password for basic auth</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">grouping-keys</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Grouping keys to be used when pushing/deleting metrics.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="openblock">
+<div class="title">Example Prometheus Pushgateway Config</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">endpoints.prometheus.sensitive=false
+micronaut.metrics.enabled=true
+micronaut.metrics.export.prometheus.enabled=true
+micronaut.metrics.export.prometheus.step=PT1M
+micronaut.metrics.export.prometheus.descriptions=true
+micronaut.metrics.export.prometheus.pushgateway.enabled=true
+micronaut.metrics.export.prometheus.pushgateway.address=localhost:9091
+micronaut.metrics.export.prometheus.pushgateway.interval=PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true
+        pushgateway:
+          enabled: true
+          address: localhost:9091
+          interval: PT1M</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.prometheus]
+        enabled=true
+        step="PT1M"
+        descriptions=true
+        [micronaut.metrics.export.prometheus.pushgateway]
+          enabled=true
+          address="localhost:9091"
+          interval="PT1M"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">endpoints {
+  prometheus {
+    sensitive = false
+  }
+}
+micronaut {
+  metrics {
+    enabled = true
+    export {
+      prometheus {
+        enabled = true
+        step = "PT1M"
+        descriptions = true
+        pushgateway {
+          enabled = true
+          address = "localhost:9091"
+          interval = "PT1M"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  endpoints {
+    prometheus {
+      sensitive = false
+    }
+  }
+  micronaut {
+    metrics {
+      enabled = true
+      export {
+        prometheus {
+          enabled = true
+          step = "PT1M"
+          descriptions = true
+          pushgateway {
+            enabled = true
+            address = "localhost:9091"
+            interval = "PT1M"
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "endpoints": {
+    "prometheus": {
+      "sensitive": false
+    }
+  },
+  "micronaut": {
+    "metrics": {
+      "enabled": true,
+      "export": {
+        "prometheus": {
+          "enabled": true,
+          "step": "PT1M",
+          "descriptions": true,
+          "pushgateway": {
+            "enabled": true,
+            "address": "localhost:9091",
+            "interval": "PT1M"
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+
+<h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.20 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
@@ -4211,7 +4430,7 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.20 Stackdriver Registry</h2>
+<h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.21 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
@@ -4360,7 +4579,7 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.21 StatsD Registry</h2>
+<h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.22 StatsD Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
@@ -4525,7 +4744,7 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 </div>
 </div>
 
-<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.22 Wavefront Registry</h2>
+<h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.23 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
