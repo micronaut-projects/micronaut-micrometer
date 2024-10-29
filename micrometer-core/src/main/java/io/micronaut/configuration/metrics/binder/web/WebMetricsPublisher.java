@@ -32,9 +32,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-import static io.micronaut.http.HttpStatus.NOT_FOUND;
-import static io.micronaut.http.HttpStatus.OK;
-import static io.micronaut.http.HttpStatus.UNAUTHORIZED;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
@@ -235,12 +232,7 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
         if (httpResponse == null) {
             return Tag.of(STATUS, "500");
         }
-
-        HttpStatus status = httpResponse.status();
-        if (status == null) {
-            status = OK;
-        }
-        return Tag.of(STATUS, String.valueOf(status.getCode()));
+        return Tag.of(STATUS, String.valueOf(httpResponse.code()));
     }
 
     /**
@@ -252,17 +244,17 @@ public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
      */
     private static Tag uri(HttpResponse<?> httpResponse, String path, boolean reportClientErrorURIs) {
         if (httpResponse != null) {
-            HttpStatus status = httpResponse.getStatus();
-            if (status != null && status.getCode() >= 300 && status.getCode() < 400) {
+            int code = httpResponse.code();
+            if (code >= 300 && code < 400) {
                 return URI_REDIRECTION;
             }
-            if (!reportClientErrorURIs && status != null && status.getCode() >= 400 && status.getCode() < 500) {
-                if (status.equals(UNAUTHORIZED)) {
+            if (!reportClientErrorURIs && code >= 400 && code < 500) {
+                if (code == HttpStatus.UNAUTHORIZED.getCode()) {
                     return URI_UNAUTHORIZED;
                 }
                 return URI_BAD_REQUEST;
             }
-            if (status != null && status.equals(NOT_FOUND)) {
+            if (code == HttpStatus.NOT_FOUND.getCode()) {
                 return URI_NOT_FOUND;
             }
         }
