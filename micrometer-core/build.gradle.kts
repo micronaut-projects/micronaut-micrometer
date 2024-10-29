@@ -45,4 +45,8 @@ dependencies {
     testImplementation(mnR2dbc.r2dbc.pool)
     testImplementation(libs.reflections)
     testRuntimeOnly(mn.micronaut.http.server.netty)
+
+    testImplementation(mnTest.micronaut.test.junit5)
+    testRuntimeOnly(mnTest.junit.jupiter.engine)
+    testRuntimeOnly(mnLogging.logback.classic)
 }
