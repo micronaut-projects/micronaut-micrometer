@@ -26,7 +26,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Holds metadata about metric options to apply
+ * Holds metadata about metric options to apply.
  *
  * @author Haiden Rothwell
  * @since 5.6.0
