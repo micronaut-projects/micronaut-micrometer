@@ -21,7 +21,19 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 /**
  * Http server meter configuration.
+ *
  * @since 5.6.0
  */
-@ConfigurationProperties(MICRONAUT_METRICS_BINDERS + ".web.server")
-public class HttpServerMeterConfig extends HttpMeterConfig { }
+@ConfigurationProperties(HttpServerMeterConfig.PATH)
+public class HttpServerMeterConfig extends HttpMeterConfig {
+
+    /**
+     * To config path.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final String PATH = MICRONAUT_METRICS_BINDERS + ".web.server";
+    /**
+     * The metric.
+     */
+    public static final String REQUESTS_METRIC = "http.server.requests";
+}

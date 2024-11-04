@@ -41,7 +41,9 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  * @author Christian Oestreich
  * @author graemerocher
  * @since 1.0
+ * @deprecated No longer needed
  */
+@Deprecated(since = "5.9", forRemoval = true)
 @SuppressWarnings("PublisherImplementation")
 public class WebMetricsPublisher<T extends HttpResponse<?>> extends Flux<T> {
 

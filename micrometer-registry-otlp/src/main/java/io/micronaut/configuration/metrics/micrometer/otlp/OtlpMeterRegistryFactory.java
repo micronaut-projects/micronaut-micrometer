@@ -28,7 +28,6 @@ import java.util.Properties;
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
-import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Creates an OTLP meter registry.

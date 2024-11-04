@@ -7,6 +7,8 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
+import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
+import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpResponse
@@ -46,8 +48,8 @@ class HttpMetricsSpec extends Specification {
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
 
-        Timer serverTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics').timer()
-        Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics').timer()
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
+        Timer clientTimer = registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
         HistogramSnapshot serverSnapshot = serverTimer.takeSnapshot()
         HistogramSnapshot clientSnapshot = clientTimer.takeSnapshot()
         DistributionStatisticConfig serverDistributionConfig = serverTimer.getMetaPropertyValues().find { it.name.equals('distributionStatisticConfig') }.value as DistributionStatisticConfig
@@ -76,20 +78,20 @@ class HttpMetricsSpec extends Specification {
 
         then:
         client.root() == 'root'
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', 'root').timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', 'root').timer()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', 'root').timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', 'root').timer().count() == 1
 
         when: "A request is sent with a uri template"
         String result = client.template("foo")
 
         then:
         result == 'ok foo'
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/{id}').timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('serviceId', 'embedded-server').timer()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/{id}').timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/{id}').timer().count() == 1
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('serviceId', 'embedded-server').timer().count() == 1
 
         when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/foo').timer()
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/foo').timer()
 
         then:
         thrown(MeterNotFoundException)
@@ -99,39 +101,24 @@ class HttpMetricsSpec extends Specification {
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "409").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "409").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
 
         when: "A request is made that throws an exception"
         client.throwable()
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "500").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "500").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
 
         when: "A request is made that throws an exception that is handled"
         client.exceptionHandling()
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
 
         when: "A request is made that does not match a route"
         HttpResponse response = client.notFound()
@@ -139,13 +126,8 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
         response.status() == NOT_FOUND
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "404").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "404").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
 
         cleanup:
         embeddedServer.close()
@@ -182,15 +164,15 @@ class HttpMetricsSpec extends Specification {
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
 
-        Timer serverTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics').timer()
-        Timer clientTimer = registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags('uri', '/test-http-metrics').timer()
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
+        Timer clientTimer = registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
 
         then:
         serverTimer.count() == 1
         clientTimer.count() == 1
 
         when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/test-http-metrics/foo').timer()
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/foo').timer()
 
         then:
         thrown(MeterNotFoundException)
@@ -200,39 +182,24 @@ class HttpMetricsSpec extends Specification {
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "409",).timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "409").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "409",).timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
 
         when: "A request is made that throws an exception"
         client.throwable()
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "500").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "500").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
 
         when: "A request is made that throws an exception that is handled"
         client.exceptionHandling()
 
         then:
         thrown(HttpClientResponseException)
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "400", "uri", "BAD_REQUEST").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "BAD_REQUEST").timer().count() == 1
 
         when: "A request is made that does not match a route"
         HttpResponse response = client.notFound()
@@ -240,13 +207,8 @@ class HttpMetricsSpec extends Specification {
         then:
         noExceptionThrown()
         response.status() == NOT_FOUND
-
-        when:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS).tags("status", "404").timer()
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags("status", "404").timer()
-
-        then:
-        noExceptionThrown()
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
 
         cleanup:
         embeddedServer.close()
@@ -257,8 +219,8 @@ class HttpMetricsSpec extends Specification {
         ApplicationContext context = ApplicationContext.run([(cfg): setting])
 
         then:
-        context.findBean(ClientRequestMetricRegistryFilter).isPresent() == setting
-        context.findBean(ServerRequestMeterRegistryFilter).isPresent() == setting
+        context.findBean(ClientMetricsFilter).isPresent() == setting
+        context.findBean(ServerMetricsFilter).isPresent() == setting
 
         cleanup:
         context.close()
@@ -278,7 +240,7 @@ class HttpMetricsSpec extends Specification {
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
 
         then:
-        registry.get(WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS).tags('uri', '/ws/{username}').timer()
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
     }
 
     @ClientWebSocket
@@ -343,7 +305,7 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/throwable")
         HttpResponse throwable() {
-            throw new CustomRuntimeException("error")
+            throw new CustomRuntimeException()
         }
 
         @Get("/test-http-metrics/exception-handling")

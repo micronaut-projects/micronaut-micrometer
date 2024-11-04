@@ -39,8 +39,14 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Factory
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(property = HttpMeterFilterFactory.ENABLED, notEquals = FALSE)
 public class HttpMeterFilterFactory {
+
+    /**
+     * To enable/disable web metrics.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
 
     public static final double SECONDS_TO_NANOS = 1_000_000_000d;
 
@@ -52,9 +58,9 @@ public class HttpMeterFilterFactory {
      */
     @Bean
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.server")
+    @Requires(property = HttpServerMeterConfig.PATH)
     MeterFilter addServerPercentileMeterFilter(HttpServerMeterConfig serverMeterConfig) {
-        return getMeterFilter(serverMeterConfig, WebMetricsPublisher.METRIC_HTTP_SERVER_REQUESTS);
+        return getMeterFilter(serverMeterConfig, HttpServerMeterConfig.REQUESTS_METRIC);
     }
 
     /**
@@ -65,9 +71,9 @@ public class HttpMeterFilterFactory {
      */
     @Bean
     @Singleton
-    @Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client")
+    @Requires(property = HttpClientMeterConfig.PATH)
     MeterFilter addClientPercentileMeterFilter(HttpClientMeterConfig clientMeterConfig) {
-        return getMeterFilter(clientMeterConfig, WebMetricsPublisher.METRIC_HTTP_CLIENT_REQUESTS);
+        return getMeterFilter(clientMeterConfig, HttpClientMeterConfig.REQUESTS_METRIC);
     }
 
     private MeterFilter getMeterFilter(HttpMeterConfig meterConfig, String metricNamePrefix) {

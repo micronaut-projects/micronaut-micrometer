@@ -16,18 +16,25 @@
 package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
-import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.filter.HttpServerFilter;
-import io.micronaut.http.filter.ServerFilterChain;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.annotation.RequestFilter;
+import io.micronaut.http.annotation.ResponseFilter;
+import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.http.uri.UriMatchTemplate;
 import io.micronaut.web.router.UriRouteInfo;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
-import org.reactivestreams.Publisher;
+
 import java.util.Optional;
+
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Registers the timers and meters for each request.
@@ -35,15 +42,17 @@ import java.util.Optional;
  * <p>The default is to intercept all paths /**, but using the
  * property micronaut.metrics.http.path, this can be changed.</p>
  *
- * @author Christian Oestreich
- * @author graemerocher
- * @since 1.0
- * @deprecated Internal use only, replaced by a new implementation
+ * @author Denis Stepanov
+ * @since 5.7
  */
-@Deprecated(forRemoval = true, since = "5.9")
-public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
+@ServerFilter("${micronaut.metrics.http.path:/**}")
+@RequiresMetrics
+@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(condition = WebMetricsServerCondition.class)
+@Internal
+final class ServerMetricsFilter {
 
-    private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
+    private static final String START_ATTRIBUTE = ServerMetricsFilter.class.getName() + ".START_ATTRIBUTE";
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final Provider<MeterRegistry> meterRegistryProvider;
 
@@ -53,7 +62,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     /**
      * @param meterRegistryProvider the meter registry provider
      */
-    public ServerRequestMeterRegistryFilter(Provider<MeterRegistry> meterRegistryProvider) {
+    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
     }
 
@@ -63,27 +72,25 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             .map(UriRouteInfo::getUriMatchTemplate)
             .map(UriMatchTemplate::toPathString);
         return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
-                        .orElse(UNMATCHED_URI));
+            .orElse(UNMATCHED_URI));
     }
 
-    @Override
-    public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-        long start = System.nanoTime();
-        Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
-        String path = resolvePath(request);
-        Optional<Boolean> attribute = request.getAttribute(ATTRIBUTE_KEY, Boolean.class);
-        boolean reportErrors = attribute.isPresent();
-        if (attribute.isEmpty()) {
-            request.setAttribute(ATTRIBUTE_KEY, true);
-        }
-        return new WebMetricsPublisher<>(
-            responsePublisher,
+    @RequestFilter
+    void onRequest(HttpRequest<?> request) {
+        request.setAttribute(START_ATTRIBUTE, System.nanoTime());
+    }
+
+    @ResponseFilter
+    void onResponse(HttpRequest<?> request, HttpResponse<?> response) {
+        WebMetricsHelper httpResponseWebMetricsPublisher = new WebMetricsHelper(
             meterRegistryProvider.get(),
-            path,
-            start,
+            resolvePath(request),
+            request.getAttribute(START_ATTRIBUTE, Long.class).orElseGet(System::nanoTime),
             request.getMethod().toString(),
-            reportErrors,
+            HttpServerMeterConfig.REQUESTS_METRIC,
+            null,
             reportClientErrorURIs
         );
+        httpResponseWebMetricsPublisher.onResponse(response);
     }
 }
