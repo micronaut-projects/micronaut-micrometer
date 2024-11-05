@@ -17,8 +17,6 @@ package io.micronaut.configuration.metrics.binder.web.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-
 /**
  * Http server meter configuration.
  *
@@ -30,8 +28,8 @@ public class HttpServerMeterConfig extends HttpMeterConfig {
     /**
      * To config path.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static final String PATH = MICRONAUT_METRICS_BINDERS + ".web.server";
+    public static final String PATH = HttpConfig.PATH + ".server";
+
     /**
      * The metric.
      */

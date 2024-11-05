@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpConfig;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
@@ -32,7 +33,7 @@ import jakarta.inject.Provider;
 
 import java.util.Optional;
 
-import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.core.util.StringUtils.TRUE;
 import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
@@ -43,7 +44,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
  */
 @ClientFilter("${micronaut.metrics.http.client.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(bean = HttpConfig.class, beanProperty = "enabled", value = TRUE)
 @Requires(condition = WebMetricsClientCondition.class)
 @Internal
 final class ClientMetricsFilter {

@@ -16,23 +16,40 @@
 package io.micronaut.configuration.metrics.binder.web.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.bind.annotation.Bindable;
+
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
- * Http client meter configuration.
+ * The http config.
  *
- * @since 5.6.0
+ * @author Denis Stepanov
+ * @since 5.9
  */
-@ConfigurationProperties(HttpClientMeterConfig.PATH)
-public class HttpClientMeterConfig extends HttpMeterConfig {
+@ConfigurationProperties(HttpConfig.PATH)
+public final class HttpConfig {
 
     /**
      * To config path.
      */
-    public static final String PATH = HttpConfig.PATH + ".client";
+    public static final String PATH = MICRONAUT_METRICS_BINDERS + ".web";
+
+    private boolean enabled = true;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     /**
-     * The metric.
+     * The errors config.
+     *
+     * @param enabled Is enabled
      */
-    public static final String REQUESTS_METRIC = "http.client.requests";
-
+    @ConfigurationProperties("client-errors-uris")
+    public record ClientErrorsUrisConfig(@Bindable(defaultValue = "true") boolean enabled) {
+    }
 }

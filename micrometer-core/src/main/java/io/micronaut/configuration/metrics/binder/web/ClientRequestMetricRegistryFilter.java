@@ -36,6 +36,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
  * @since 1.0
  * @deprecated Internal use only, replaced by a new implementation
  */
+@Deprecated(forRemoval = true, since = "5.9")
 public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
 
     private final Provider<MeterRegistry> meterRegistryProvider;
@@ -57,7 +58,7 @@ public class ClientRequestMetricRegistryFilter implements HttpClientFilter {
                 meterRegistryProvider.get(),
                 resolvePath(request),
                 start,
-                request.getMethod().toString(),
+                request.getMethodName(),
                 false,
                 resolveServiceID(request),
                 true,

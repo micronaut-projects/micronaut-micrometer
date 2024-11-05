@@ -17,9 +17,9 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.binder.web.config.HttpConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
@@ -27,14 +27,12 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
-import io.micronaut.http.uri.UriMatchTemplate;
-import io.micronaut.web.router.UriRouteInfo;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
 
 import java.util.Optional;
 
-import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.core.util.StringUtils.TRUE;
 
 /**
  * Registers the timers and meters for each request.
@@ -47,7 +45,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @ServerFilter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(property = WebMetricsPublisher.ENABLED, notEquals = FALSE)
+@Requires(bean = HttpConfig.class, beanProperty = "enabled", value = TRUE)
 @Requires(condition = WebMetricsServerCondition.class)
 @Internal
 final class ServerMetricsFilter {
@@ -56,21 +54,20 @@ final class ServerMetricsFilter {
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final Provider<MeterRegistry> meterRegistryProvider;
 
-    @Value("${" + WebMetricsPublisher.CLIENT_ERROR_URIS_ENABLED + ":true}")
-    private boolean reportClientErrorURIs;
+    private final boolean reportClientErrorURIs;
 
     /**
-     * @param meterRegistryProvider the meter registry provider
+     * @param meterRegistryProvider  the meter registry provider
+     * @param clientErrorsUrisConfig the client errors
      */
-    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider) {
+    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
     }
 
     private String resolvePath(HttpRequest<?> request) {
         Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO, UriRouteMatch.class)
-            .map(UriRouteMatch::getRouteInfo)
-            .map(UriRouteInfo::getUriMatchTemplate)
-            .map(UriMatchTemplate::toPathString);
+            .map(match -> match.getRouteInfo().getUriMatchTemplate().toPathString());
         return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
             .orElse(UNMATCHED_URI));
     }

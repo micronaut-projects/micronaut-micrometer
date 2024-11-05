@@ -81,7 +81,7 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
             meterRegistryProvider.get(),
             path,
             start,
-            request.getMethod().toString(),
+            request.getMethodName(),
             reportErrors,
             reportClientErrorURIs
         );

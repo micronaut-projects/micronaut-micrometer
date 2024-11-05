@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpMeterConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Bean;
@@ -30,7 +31,7 @@ import jakarta.inject.Singleton;
 import java.util.Arrays;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
-import static io.micronaut.core.util.StringUtils.FALSE;
+import static io.micronaut.core.util.StringUtils.TRUE;
 
 /**
  * Optional filter for adding percentile to HTTP metrics.
@@ -39,13 +40,15 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Factory
 @RequiresMetrics
-@Requires(property = HttpMeterFilterFactory.ENABLED, notEquals = FALSE)
+@Requires(bean = HttpConfig.class, beanProperty = "enabled", value = TRUE)
 public class HttpMeterFilterFactory {
 
     /**
      * To enable/disable web metrics.
+     * @deprecated Not needed
      */
     @SuppressWarnings("WeakerAccess")
+    @Deprecated(forRemoval = true, since = "5.9")
     public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
 
     public static final double SECONDS_TO_NANOS = 1_000_000_000d;
