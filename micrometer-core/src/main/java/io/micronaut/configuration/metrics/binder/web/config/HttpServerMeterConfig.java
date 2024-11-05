@@ -28,7 +28,7 @@ public class HttpServerMeterConfig extends HttpMeterConfig {
     /**
      * To config path.
      */
-    public static final String PATH = HttpConfig.PATH + ".server";
+    public static final String PATH = HttpMetricsConfig.PATH + ".server";
 
     /**
      * The metric.

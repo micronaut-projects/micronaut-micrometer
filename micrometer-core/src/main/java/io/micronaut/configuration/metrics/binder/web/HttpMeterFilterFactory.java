@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
-import io.micronaut.configuration.metrics.binder.web.config.HttpConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpMeterConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Bean;
@@ -40,7 +40,7 @@ import static io.micronaut.core.util.StringUtils.TRUE;
  */
 @Factory
 @RequiresMetrics
-@Requires(bean = HttpConfig.class, beanProperty = "enabled", value = TRUE)
+@Requires(bean = HttpMetricsConfig.class, beanProperty = "enabled", value = TRUE)
 public class HttpMeterFilterFactory {
 
     /**

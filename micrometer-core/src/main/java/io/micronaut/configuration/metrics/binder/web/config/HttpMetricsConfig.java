@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.web.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.bind.annotation.Bindable;
+import io.micronaut.core.util.Toggleable;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
@@ -26,8 +27,8 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author Denis Stepanov
  * @since 5.9
  */
-@ConfigurationProperties(HttpConfig.PATH)
-public final class HttpConfig {
+@ConfigurationProperties(HttpMetricsConfig.PATH)
+public final class HttpMetricsConfig implements Toggleable {
 
     /**
      * To config path.
@@ -36,10 +37,16 @@ public final class HttpConfig {
 
     private boolean enabled = true;
 
+    /**
+     * @return true if enabled
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * @param enabled true to enable
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
@@ -50,6 +57,6 @@ public final class HttpConfig {
      * @param enabled Is enabled
      */
     @ConfigurationProperties("client-errors-uris")
-    public record ClientErrorsUrisConfig(@Bindable(defaultValue = "true") boolean enabled) {
+    public record ClientErrorsUrisConfig(@Bindable(defaultValue = "true") boolean enabled) implements Toggleable {
     }
 }

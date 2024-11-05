@@ -17,7 +17,7 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.configuration.metrics.binder.web.config.HttpConfig;
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
@@ -45,7 +45,7 @@ import static io.micronaut.core.util.StringUtils.TRUE;
  */
 @ServerFilter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(bean = HttpConfig.class, beanProperty = "enabled", value = TRUE)
+@Requires(bean = HttpMetricsConfig.class, beanProperty = "enabled", value = TRUE)
 @Requires(condition = WebMetricsServerCondition.class)
 @Internal
 final class ServerMetricsFilter {
@@ -60,7 +60,7 @@ final class ServerMetricsFilter {
      * @param meterRegistryProvider  the meter registry provider
      * @param clientErrorsUrisConfig the client errors
      */
-    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
+    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
         this.meterRegistryProvider = meterRegistryProvider;
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
     }
