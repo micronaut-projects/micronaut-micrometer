@@ -21,6 +21,7 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.util.SupplierUtil;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
@@ -31,6 +32,7 @@ import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static io.micronaut.core.util.StringUtils.TRUE;
 
@@ -52,7 +54,7 @@ final class ServerMetricsFilter {
 
     private static final String START_ATTRIBUTE = ServerMetricsFilter.class.getName() + ".START_ATTRIBUTE";
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    private final Supplier<MeterRegistry> meterRegistryProvider;
 
     private final boolean reportClientErrorURIs;
 
@@ -61,7 +63,7 @@ final class ServerMetricsFilter {
      * @param clientErrorsUrisConfig the client errors
      */
     public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
-        this.meterRegistryProvider = meterRegistryProvider;
+        this.meterRegistryProvider = SupplierUtil.memoized(meterRegistryProvider::get);
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
     }
 

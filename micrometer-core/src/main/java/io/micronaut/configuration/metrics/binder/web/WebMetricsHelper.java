@@ -18,6 +18,7 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
@@ -28,6 +29,7 @@ import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.web.router.ErrorRouteInfo;
 import io.micronaut.web.router.RouteMatch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -105,10 +107,19 @@ final class WebMetricsHelper {
                                      Throwable throwable,
                                      String serviceId,
                                      boolean reportClientErrorURIs) {
-        return Stream
-            .of(method(httpMethod), status(httpResponse, throwable), uri(httpResponse, requestPath, reportClientErrorURIs), exception(throwable), serviceId(serviceId))
-            .filter(Objects::nonNull)
-            .toList();
+        List<@NonNull Tag> tags = new ArrayList<>(5);
+        Tag t1 = method(httpMethod);
+        if (t1 != null) {
+            tags.add(t1);
+        }
+        tags.add(status(httpResponse, throwable));
+        tags.add(uri(httpResponse, requestPath, reportClientErrorURIs));
+        tags.add(exception(throwable));
+        Tag t5 = serviceId(serviceId);
+        if (t5 != null) {
+            tags.add(t5);
+        }
+        return tags;
     }
 
     /**
@@ -117,7 +128,8 @@ final class WebMetricsHelper {
      * @param httpMethod The name of the HTTP method.
      * @return Tag of method
      */
-    private static Tag method(String httpMethod) {
+    @Nullable
+    private static Tag method(@Nullable String httpMethod) {
         return httpMethod == null ? null : Tag.of(METHOD, httpMethod);
     }
 
@@ -144,6 +156,7 @@ final class WebMetricsHelper {
      * @param path         the path of the request
      * @return Tag of URI
      */
+    @NonNull
     private static Tag uri(HttpResponse<?> httpResponse, String path, boolean reportClientErrorURIs) {
         if (httpResponse != null) {
             int code = httpResponse.code();
@@ -182,7 +195,8 @@ final class WebMetricsHelper {
      * @param serviceId The serviceId used in the call.
      * @return Tag of serviceId
      */
-    private static Tag serviceId(String serviceId) {
+    @Nullable
+    private static Tag serviceId(@Nullable String serviceId) {
         return serviceId == null ? null : Tag.of(SERVICE_ID, serviceId);
     }
 
@@ -192,14 +206,45 @@ final class WebMetricsHelper {
      * @param path the URI of the request
      * @return sanitized string
      */
-    private static String sanitizePath(String path) {
-        if (!StringUtils.isEmpty(path)) {
-            path = path
-                .replaceAll("//+", "/")
-                .replaceAll("/$", "");
+    @NonNull
+    static String sanitizePath(@Nullable String path) {
+        if (path == null) {
+            return UNKNOWN;
         }
 
-        return path != null ? (path.isEmpty() ? "root" : path) : UNKNOWN;
+        StringBuilder builder = null;
+        // remove duplicate slashes
+        for (int i = 0; i < path.length() - 1; i++) {
+            if (path.charAt(i) == '/' && path.charAt(i + 1) == '/') {
+                // need to do at least one substitution
+                builder = new StringBuilder(path);
+                builder.deleteCharAt(i + 1);
+                for (; i < builder.length() - 1; i++) {
+                    if (builder.charAt(i) == '/' && builder.charAt(i + 1) == '/') {
+                        builder.deleteCharAt(i + 1);
+                        i--;
+                    }
+                }
+                break;
+            }
+        }
+        if (builder != null) {
+            // remove trailing slash
+            if (!builder.isEmpty() && builder.charAt(builder.length() - 1) == '/') {
+                builder.setLength(builder.length() - 1);
+            }
+            path = builder.toString();
+        } else {
+            if (path.endsWith("/")) {
+                // remove trailing slash
+                path = path.substring(0, path.length() - 1);
+            }
+        }
+
+        if (path.isEmpty()) {
+            return "root";
+        }
+        return path;
     }
 
     /**
