@@ -253,8 +253,9 @@ final class WebMetricsHelper {
      * @param httpResponse the HTTP response
      */
     public void onResponse(HttpResponse<?> httpResponse) {
-        Throwable throwable = httpResponse.getAttribute(HttpAttributes.EXCEPTION, Throwable.class).orElse(null);
-        if (throwable != null) {
+        // Avoid using the conversion service for exceptions
+        Object exception = httpResponse.getAttribute(HttpAttributes.EXCEPTION).orElse(null);
+        if (exception instanceof Throwable throwable) {
             RouteMatch<?> routeMatch = httpResponse.getAttribute(HttpAttributes.ROUTE_MATCH, RouteMatch.class).orElse(null);
             if (routeMatch != null && routeMatch.getRouteInfo() instanceof ErrorRouteInfo<?, ?>) {
                 // Avoid publishing an error on error route
