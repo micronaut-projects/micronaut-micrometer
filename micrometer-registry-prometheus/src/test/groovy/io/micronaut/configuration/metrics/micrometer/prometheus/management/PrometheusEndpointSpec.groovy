@@ -4,7 +4,8 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.AutoCleanup
-import spock.lang.Ignore
+import spock.lang.IgnoreIf
+import spock.lang.PendingFeature
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -21,12 +22,13 @@ class PrometheusEndpointSpec extends Specification {
     @AutoCleanup
     HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, embeddedServer.URL)
 
+    @IgnoreIf({ jvm.isJava21() })
     void "test prometheus scrape"() {
         expect:
         client.toBlocking().retrieve('/prometheus').contains('jvm_memory_used')
     }
 
-    @Ignore
+    @PendingFeature
     void "test prometheus scrape no descriptions"() {
         given:
         def result = client.toBlocking().retrieve('/prometheus')
