@@ -20,7 +20,6 @@ import io.micrometer.core.instrument.Tag;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
@@ -31,8 +30,6 @@ import io.micronaut.web.router.RouteMatch;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
