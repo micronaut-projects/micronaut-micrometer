@@ -10,6 +10,7 @@ import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
@@ -38,7 +39,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test client / server metrics with #cfg #setting"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting])
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting, 'spec.name': getClass().getSimpleName()])
         def context = embeddedServer.applicationContext
         TestClient client = context.getBean(TestClient)
 
@@ -154,6 +155,7 @@ class HttpMetricsSpec extends Specification {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
                 'micronaut.metrics.binders.web.client-errors-uris.enabled': false,
+                'spec.name': getClass().getSimpleName()
         ])
         def context = embeddedServer.getApplicationContext()
         TestClient client = context.getBean(TestClient)
@@ -216,7 +218,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test getting the beans #cfg #setting"() {
         when:
-        ApplicationContext context = ApplicationContext.run([(cfg): setting])
+        ApplicationContext context = ApplicationContext.run([(cfg): setting, 'spec.name': getClass().getSimpleName()])
 
         then:
         context.findBean(ClientMetricsFilter).isPresent() == setting
@@ -235,7 +237,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test websocket"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(MICRONAUT_METRICS_ENABLED): true])
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(MICRONAUT_METRICS_ENABLED): true, 'spec.name': getClass().getSimpleName()])
         MeterRegistry registry = embeddedServer.getApplicationContext().getBean(MeterRegistry)
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
 
@@ -243,6 +245,7 @@ class HttpMetricsSpec extends Specification {
         registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @ClientWebSocket
     static abstract class TestWebSocketClient implements AutoCloseable {
         abstract void send(@NonNull @NotBlank String message);
@@ -263,6 +266,7 @@ class HttpMetricsSpec extends Specification {
         return Flux.from(client).blockFirst()
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @Client('/')
     static interface TestClient {
         @Get
@@ -287,6 +291,7 @@ class HttpMetricsSpec extends Specification {
         HttpResponse notFound()
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @Controller('/')
     static class TestController {
         @Get
@@ -323,6 +328,7 @@ class HttpMetricsSpec extends Specification {
 
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @ServerWebSocket("/ws/{username}")
     static class TestWSController {
 
