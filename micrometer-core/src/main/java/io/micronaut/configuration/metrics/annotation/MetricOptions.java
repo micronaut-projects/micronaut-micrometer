@@ -36,6 +36,22 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({METHOD})
 public @interface MetricOptions {
+
+    /**
+     * Constant value to relate to annotation's tagger values.
+     */
+    String MEMBER_TAGGERS = "taggers";
+
+    /**
+     * Constant value to relate to annotation's filterTaggers value.
+     */
+    String MEMBER_FILTER_TAGGERS = "filterTaggers";
+
+    /**
+     * Constant value to relate to annotation's condition value.
+     */
+    String MEMBER_CONDITION = "condition";
+
     /**
      * @return array of {@link io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger} to apply to metrics for method.
      * Only utilized for filtering if {@link #filterTaggers()} is true
@@ -46,4 +62,15 @@ public @interface MetricOptions {
      * @return whether to filter taggers using {@link #taggers()} array
      */
     boolean filterTaggers() default false;
+
+    /**
+     * Evaluated expression that can be used to indicate whether the metric should be processed.
+     * Will be evaluated each time the method is called, and if the condition evaluates to false the metric will not be published.
+     * Evaluated using {@link io.micronaut.configuration.metrics.util.MetricOptionsUtil}
+     *
+     * @see <a href="https://docs.micronaut.io/latest/guide/#evaluatedExpressions">Evaluated Expressions</a>.
+     * @return The condition
+     * @since 5.10.0
+     */
+    String condition() default "";
 }

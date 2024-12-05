@@ -25,6 +25,7 @@ import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
@@ -95,7 +96,9 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     public Object intercept(MethodInvocationContext<Object, Object> context) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final String metricName = metadata.stringValue(Counted.class).orElse(DEFAULT_METRIC_NAME);
-        if (StringUtils.isNotEmpty(metricName)) {
+        final boolean conditionMet = MetricOptionsUtil.evaluateCondition(context);
+
+        if (StringUtils.isNotEmpty(metricName) && conditionMet) {
             InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
             try {
                 InterceptedMethod.ResultType resultType = interceptedMethod.resultType();
@@ -151,8 +154,8 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     }
 
     private void doCount(AnnotationMetadata metadata, String metricName, @Nullable Throwable e, MethodInvocationContext<Object, Object> context) {
-        List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, "taggers"));
-        boolean filter = metadata.booleanValue(MetricOptions.class, "filterTaggers").orElse(false);
+        List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, MetricOptions.MEMBER_TAGGERS));
+        boolean filter = metadata.booleanValue(MetricOptions.class, MetricOptions.MEMBER_FILTER_TAGGERS).orElse(false);
         Counter.builder(metricName)
                 .tags(
                     methodTaggers.isEmpty() ? Collections.emptyList() :

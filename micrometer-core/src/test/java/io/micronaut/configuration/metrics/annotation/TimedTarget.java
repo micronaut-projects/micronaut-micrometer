@@ -28,6 +28,10 @@ class TimedTarget {
         return Math.max(a, b);
     }
 
+    @Timed("timed.test.maxWithCondition.blocking")
+    @MetricOptions(condition = "#{ env['test.properties.enabled'] }")
+    Integer maxWithCondition(int a, int b) { return Math.max(a,b); }
+
     @Timed("timed.test.repeated1")
     @Timed("timed.test.repeated2")
     Integer repeated(int a, int b) {

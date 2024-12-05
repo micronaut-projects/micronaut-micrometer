@@ -27,6 +27,10 @@ public class CountedTarget {
         return Math.max(a, b);
     }
 
+    @Counted("counted.test.maxWithCondition.blocking")
+    @MetricOptions(condition = "#{ env['test.properties.enabled'] }")
+    Integer maxWithCondition(int a, int b) { return Math.max(a,b); }
+
     @Counted("counted.test.max.blocking")
     Integer error(int a, int b) {
         throw new NumberFormatException("cannot");

@@ -10,3 +10,19 @@ In order to support adding additional tags programmatically similar to Micromete
 ----
 include::{testsmetricscore}/MethodNameTagger.java[]
 ----
+
+You can filter these taggers by utilizing the `MetricOptions` annotation
+
+.MetricOptions filtering taggers example
+[source,java]
+----
+include::{testmetricscore}/MetricOptionsFilterTaggersExample.java[]
+----
+
+The `MetricOptions` annotation also provides a means of only processing / publishing a metric based on an `EvaluatedExpression`
+
+.MetricOptions condition example
+[source,java]
+----
+include::{testmetricscore}/MetricOptionsConditionExample.java[]
+----

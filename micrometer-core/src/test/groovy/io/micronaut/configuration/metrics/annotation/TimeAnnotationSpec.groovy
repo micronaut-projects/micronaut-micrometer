@@ -169,4 +169,40 @@ class TimeAnnotationSpec extends Specification {
         cleanup:
         ctx.close()
     }
+
+  void "metric is generated when condition evaluates to true"(){
+    given:
+    ApplicationContext ctx = ApplicationContext.run(["test.properties.enabled": true])
+    TimedTarget tt = ctx.getBean(TimedTarget)
+    MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+    when:
+    Integer result = tt.maxWithCondition(4, 10)
+    def timer = registry.get("timed.test.maxWithCondition.blocking").tags("ordered", "2", "parameters", "a b").timer()
+
+    then:
+    result == 10
+    timer.count() == 1
+    timer.totalTime(MILLISECONDS) > 0
+
+    cleanup:
+    ctx.close()
+  }
+
+  void "metric is not generated when condition evaluates to false"(){
+    given:
+    ApplicationContext ctx = ApplicationContext.run(["test.properties.enabled": false])
+    TimedTarget tt = ctx.getBean(TimedTarget)
+    MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+    when:
+    Integer result = tt.maxWithCondition(4, 10)
+    registry.get("timed.test.maxWithCondition.blocking").tags("ordered", "2", "parameters", "a b").timer()
+
+    then:
+    thrown(MeterNotFoundException)
+
+    cleanup:
+    ctx.close()
+  }
 }
