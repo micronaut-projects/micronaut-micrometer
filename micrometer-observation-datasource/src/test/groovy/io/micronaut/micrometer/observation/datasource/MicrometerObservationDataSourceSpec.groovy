@@ -13,6 +13,7 @@ import io.micronaut.context.annotation.Requires
 import io.micronaut.core.annotation.Internal
 import io.micronaut.data.connection.jdbc.advice.DelegatingDataSource
 import jakarta.inject.Singleton
+import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler
 import spock.lang.Specification
 import spock.mock.MockingApi
 
@@ -32,7 +33,10 @@ class MicrometerObservationDataSourceSpec extends Specification {
                 'datasources.default.url': 'jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE',
                 'datasources.default.username': 'sa',
                 'datasources.default.driver-class-name': 'org.h2.Driver',
-                'micrometer.observation.datasource.enabled': 'true'
+                'micrometer.observation.datasource.enabled': 'true',
+                'micrometer.observation.datasource.trace-query': 'true',
+                'micrometer.observation.datasource.trace-result-set': 'true',
+               // 'micronaut.metrics.binders.jdbc.enabled': 'false'
         ])
         def dataSource = context.getBean(DataSource)
         def connection = DelegatingDataSource.unwrapDataSource(dataSource).getConnection()
@@ -46,8 +50,12 @@ class MicrometerObservationDataSourceSpec extends Specification {
         context.getBeansOfType(DataSource).size() == 1
         context.getBeansOfType(Tracer).size() == 1
         context.getBeansOfType(ObservationDataSourceConfig).size() == 1
-        def registry = (TestObservationRegistry) context.getBean(ObservationRegistry)
+        def registry = context.getBean(ObservationRegistry)
         registry
+        if (registry instanceof TestObservationRegistry) {
+            def testRegistry = (TestObservationRegistry) registry
+            // TODO: Validate metrics
+        }
         productName == 'Soccer Ball'
 
         cleanup:
@@ -61,8 +69,12 @@ class MicrometerObservationDataSourceSpec extends Specification {
 
         @Singleton
         @Primary
-        ObservationRegistry observationRegistry() {
-            return TestObservationRegistry.create()
+        ObservationRegistry observationRegistry(List<DataSourceBaseObservationHandler> handlers) {
+            ObservationRegistry observationRegistry = TestObservationRegistry.create()
+            for (DataSourceBaseObservationHandler handler : handlers) {
+                observationRegistry.observationConfig().observationHandler(handler)
+            }
+            return observationRegistry;
         }
 
         @Singleton

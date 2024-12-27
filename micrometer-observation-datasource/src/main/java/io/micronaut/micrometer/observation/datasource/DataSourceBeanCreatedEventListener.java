@@ -16,7 +16,6 @@
 package io.micronaut.micrometer.observation.datasource;
 
 import io.micrometer.observation.ObservationRegistry;
-import io.micronaut.context.BeanContext;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
@@ -25,11 +24,9 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
-import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler;
 import net.ttddyy.observation.tracing.DataSourceObservationListener;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 
 /**
  * A Micronaut event listener that wraps DataSources with an observation proxy when created.
@@ -71,12 +68,6 @@ final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListen
         DataSource dataSource = event.getBean();
         if (!observationDataSourceConfig.isEnabled()) {
             return dataSource;
-        }
-        BeanContext beanContext = event.getSource();
-
-        Collection<DataSourceBaseObservationHandler> dataSourceBaseObservationHandlers = beanContext.getBeansOfType(DataSourceBaseObservationHandler.class);
-        for (DataSourceBaseObservationHandler handler : dataSourceBaseObservationHandlers) {
-            observationRegistry.observationConfig().observationHandler(handler);
         }
         DataSourceObservationListener listener = new DataSourceObservationListener(observationRegistry);
         return ProxyDataSourceBuilder.create(dataSource).listener(listener).methodListener(listener).build();
