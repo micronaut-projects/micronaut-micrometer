@@ -1,0 +1,78 @@
+package io.micronaut.micrometer.observation.datasource
+
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import io.micrometer.observation.ObservationRegistry
+import io.micrometer.observation.tck.TestObservationRegistry
+import io.micrometer.observation.tck.TestObservationRegistryAssert
+import io.micrometer.tracing.Tracer
+import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Primary
+import io.micronaut.context.annotation.Requires
+import io.micronaut.core.annotation.Internal
+import io.micronaut.data.connection.jdbc.advice.DelegatingDataSource
+import jakarta.inject.Singleton
+import spock.lang.Specification
+import spock.mock.MockingApi
+
+import javax.sql.DataSource
+import java.sql.Connection
+import java.sql.ResultSet
+
+class MicrometerObservationDataSourceSpec extends Specification {
+
+    void 'test metrics and tracer'() {
+        when:
+        def context = ApplicationContext.run([
+                'micronaut.application.name': 'ds-observation',
+                'spec.name': 'datasource-observation',
+                'datasources.default.dialect': 'H2',
+                'datasources.default.schema-generate': 'CREATE_DROP',
+                'datasources.default.url': 'jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE',
+                'datasources.default.username': 'sa',
+                'datasources.default.driver-class-name': 'org.h2.Driver',
+                'micrometer.observation.datasource.enabled': 'true'
+        ])
+        def dataSource = context.getBean(DataSource)
+        def connection = DelegatingDataSource.unwrapDataSource(dataSource).getConnection()
+        connection.prepareStatement("INSERT INTO mn_product (name) VALUES ('Soccer Ball')").execute()
+        ResultSet resultSet = connection.prepareStatement("SELECT * FROM mn_product").executeQuery()
+        resultSet.next()
+        def productName = resultSet.getString("name")
+
+        then:
+        context.getBeansOfType(DataSourceBeanCreatedEventListener).size() == 1
+        context.getBeansOfType(DataSource).size() == 1
+        context.getBeansOfType(Tracer).size() == 1
+        context.getBeansOfType(ObservationDataSourceConfig).size() == 1
+        def registry = (TestObservationRegistry) context.getBean(ObservationRegistry)
+        registry
+        productName == 'Soccer Ball'
+
+        cleanup:
+        context.close()
+    }
+
+    @Factory
+    @Requires(property = "spec.name", value = "datasource-observation")
+    @Internal
+    static class DefaultFactory {
+
+        @Singleton
+        @Primary
+        ObservationRegistry observationRegistry() {
+            return TestObservationRegistry.create()
+        }
+
+        @Singleton
+        Tracer tracer() {
+            return Tracer.NOOP
+        }
+
+        @Singleton
+        MeterRegistry meterRegistry() {
+            return new SimpleMeterRegistry()
+        }
+    }
+}
