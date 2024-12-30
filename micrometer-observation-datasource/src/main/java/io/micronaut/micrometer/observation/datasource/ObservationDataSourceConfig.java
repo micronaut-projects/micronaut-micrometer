@@ -15,10 +15,13 @@
  */
 package io.micronaut.micrometer.observation.datasource;
 
+import io.micrometer.observation.ObservationRegistry;
+import io.micronaut.context.annotation.ConfigurationBuilder;
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.core.util.Toggleable;
+import net.ttddyy.observation.tracing.DataSourceObservationListener;
 
 /**
  * Configuration properties for the observation data source.
@@ -34,10 +37,14 @@ import io.micronaut.core.util.Toggleable;
 public class ObservationDataSourceConfig implements Toggleable {
 
     static final String PREFIX = "micrometer.observation.datasource";
+    @ConfigurationBuilder(value = "listener", prefixes = "set")
+    final DataSourceObservationListener listener;
+
     private boolean enabled;
-    private boolean traceConnection;
-    private boolean traceQuery;
-    private boolean traceResultSet;
+
+    ObservationDataSourceConfig(ObservationRegistry observationRegistry) {
+        listener = new DataSourceObservationListener(observationRegistry);
+    }
 
     @Override
     public boolean isEnabled() {
@@ -54,56 +61,13 @@ public class ObservationDataSourceConfig implements Toggleable {
     }
 
     /**
-     * Returns whether connection tracing is enabled.
+     * Returns the {@link DataSourceObservationListener} instance associated with this configuration.
      *
-     * @return true if connection tracing is enabled, false otherwise
-     */
-    public boolean isTraceConnection() {
-        return traceConnection;
-    }
-
-    /**
-     * Enables or disables connection tracing.
+     * This listener is used to observe and record events related to the data source.
      *
-     * @param traceConnection true to enable connection tracing, false otherwise
+     * @return the data source observation listener
      */
-    public void setTraceConnection(boolean traceConnection) {
-        this.traceConnection = traceConnection;
-    }
-
-    /**
-     * Returns whether query tracing is enabled.
-     *
-     * @return true if query tracing is enabled, false otherwise
-     */
-    public boolean isTraceQuery() {
-        return traceQuery;
-    }
-
-    /**
-     * Enables or disables query tracing.
-     *
-     * @param traceQuery true to enable query tracing, false otherwise
-     */
-    public void setTraceQuery(boolean traceQuery) {
-        this.traceQuery = traceQuery;
-    }
-
-    /**
-     * Returns whether result set tracing is enabled.
-     *
-     * @return true if result set tracing is enabled, false otherwise
-     */
-    public boolean isTraceResultSet() {
-        return traceResultSet;
-    }
-
-    /**
-     * Enables or disables result set tracing.
-     *
-     * @param traceResultSet true to enable result set tracing, false otherwise
-     */
-    public void setTraceResultSet(boolean traceResultSet) {
-        this.traceResultSet = traceResultSet;
+    public DataSourceObservationListener getListener() {
+        return listener;
     }
 }

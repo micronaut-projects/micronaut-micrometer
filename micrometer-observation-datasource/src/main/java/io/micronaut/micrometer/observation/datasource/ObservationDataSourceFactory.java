@@ -40,19 +40,16 @@ import net.ttddyy.observation.tracing.ResultSetTracingObservationHandler;
 public final class ObservationDataSourceFactory {
 
     @Singleton
-    @Requires(bean = ObservationDataSourceConfig.class, beanProperty = "traceQuery", value = "true")
     QueryTracingObservationHandler queryTracingObservationHandler(Tracer tracer) {
         return new QueryTracingObservationHandler(tracer);
     }
 
     @Singleton
-    @Requires(bean = ObservationDataSourceConfig.class, beanProperty = "traceConnection", value = "true")
     ConnectionTracingObservationHandler connectionTracingObservationHandler(Tracer tracer) {
         return new ConnectionTracingObservationHandler(tracer);
     }
 
     @Singleton
-    @Requires(bean = ObservationDataSourceConfig.class, beanProperty = "traceResultSet", value = "true")
     ResultSetTracingObservationHandler resultSetTracingObservationHandler(Tracer tracer) {
         return new ResultSetTracingObservationHandler(tracer);
     }

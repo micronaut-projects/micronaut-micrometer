@@ -13,6 +13,7 @@ import io.micronaut.context.annotation.Requires
 import io.micronaut.core.annotation.Internal
 import io.micronaut.data.connection.jdbc.advice.DelegatingDataSource
 import jakarta.inject.Singleton
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder
 import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler
 import spock.lang.Specification
 import spock.mock.MockingApi
@@ -34,8 +35,8 @@ class MicrometerObservationDataSourceSpec extends Specification {
                 'datasources.default.username': 'sa',
                 'datasources.default.driver-class-name': 'org.h2.Driver',
                 'micrometer.observation.datasource.enabled': 'true',
-                'micrometer.observation.datasource.trace-query': 'true',
-                'micrometer.observation.datasource.trace-result-set': 'true',
+                'micrometer.observation.datasource.listener.supported-types': ['QUERY', 'RESULT_SET', 'CONNECTION'],
+                'micrometer.observation.datasource.listener.include-parameter-values': 'true',
                // 'micronaut.metrics.binders.jdbc.enabled': 'false'
         ])
         def dataSource = context.getBean(DataSource)
@@ -54,7 +55,10 @@ class MicrometerObservationDataSourceSpec extends Specification {
         registry
         if (registry instanceof TestObservationRegistry) {
             def testRegistry = (TestObservationRegistry) registry
-            // TODO: Validate metrics
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(7)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.query")
+            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.connection")
+            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.result-set")
         }
         productName == 'Soccer Ball'
 
@@ -85,6 +89,16 @@ class MicrometerObservationDataSourceSpec extends Specification {
         @Singleton
         MeterRegistry meterRegistry() {
             return new SimpleMeterRegistry()
+        }
+
+        @Singleton
+        ProxyDataSourceBuilder builder() {
+            return new ProxyDataSourceBuilder()
+                    .proxyGeneratedKeys()
+                    .proxyResultSet()
+                    .asJson()
+                    .autoRetrieveGeneratedKeys(true)
+                    .countQuery()
         }
     }
 }

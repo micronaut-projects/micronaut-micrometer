@@ -6,8 +6,8 @@ dependencies {
     annotationProcessor mn.micronaut.graal
 
     api projects.micronautMicrometerObservation
+    api libs.managed.datasource.micrometer
     implementation libs.managed.micrometer.observation
-    implementation libs.managed.datasource.micrometer
 
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation

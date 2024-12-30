@@ -21,12 +21,14 @@ import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import net.ttddyy.observation.tracing.DataSourceObservationListener;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 
 /**
  * A Micronaut event listener that wraps DataSources with an observation proxy when created.
@@ -44,17 +46,20 @@ import javax.sql.DataSource;
 final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListener<DataSource>, Ordered {
 
     private final ObservationDataSourceConfig observationDataSourceConfig;
-    private final ObservationRegistry observationRegistry;
+    @Nullable
+    private final ProxyDataSourceBuilder builder;
 
     /**
      * Constructs a new instance of the event listener.
      *
-     * @param observationDataSourceConfig the observation data source configuration
+     * @param observationDataSourceConfig The observation data source configuration
+     * @param builder The nullable {@link ProxyDataSourceBuilder} which users can generate and inject.
+     *                If not provided then new instance will be created with default value.
      */
     DataSourceBeanCreatedEventListener(ObservationDataSourceConfig observationDataSourceConfig,
-                                       ObservationRegistry observationRegistry) {
+                                       @Nullable ProxyDataSourceBuilder builder) {
         this.observationDataSourceConfig = observationDataSourceConfig;
-        this.observationRegistry = observationRegistry;
+        this.builder = builder;
     }
 
     /**
@@ -69,8 +74,11 @@ final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListen
         if (!observationDataSourceConfig.isEnabled()) {
             return dataSource;
         }
-        DataSourceObservationListener listener = new DataSourceObservationListener(observationRegistry);
-        return ProxyDataSourceBuilder.create(dataSource).listener(listener).methodListener(listener).build();
+        String name = event.getBeanIdentifier().getName();
+        DataSourceObservationListener listener = observationDataSourceConfig.getListener();
+        ProxyDataSourceBuilder finalBuilder;
+        finalBuilder = Objects.requireNonNullElseGet(builder, ProxyDataSourceBuilder::new);
+        return finalBuilder.name(name).dataSource(dataSource).listener(listener).methodListener(listener).build();
     }
 
     @Override
