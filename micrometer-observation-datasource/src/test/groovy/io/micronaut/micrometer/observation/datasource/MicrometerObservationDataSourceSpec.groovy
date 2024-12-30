@@ -16,11 +16,8 @@ import jakarta.inject.Singleton
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder
 import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler
 import spock.lang.Specification
-import spock.mock.MockingApi
 
 import javax.sql.DataSource
-import java.sql.Connection
-import java.sql.ResultSet
 
 class MicrometerObservationDataSourceSpec extends Specification {
 
@@ -41,12 +38,12 @@ class MicrometerObservationDataSourceSpec extends Specification {
         ])
         def dataSource = context.getBean(DataSource)
         def connection = DelegatingDataSource.unwrapDataSource(dataSource).getConnection()
-        def stmt = connection.prepareStatement("INSERT INTO mn_product (name) VALUES ?")
+        def stmt = connection.prepareStatement('INSERT INTO mn_product (name) VALUES ?')
         stmt.setString(1, 'Soccer Ball')
         stmt.execute()
-        def resultSet = connection.prepareStatement("SELECT * FROM mn_product").executeQuery()
+        def resultSet = connection.prepareStatement('SELECT * FROM mn_product').executeQuery()
         resultSet.next()
-        def productName = resultSet.getString("name")
+        def productName = resultSet.getString('name')
 
         then:
         context.getBeansOfType(DataSourceBeanCreatedEventListener).size() == 1
@@ -58,9 +55,26 @@ class MicrometerObservationDataSourceSpec extends Specification {
         if (registry instanceof TestObservationRegistry) {
             def testRegistry = (TestObservationRegistry) registry
             TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(7)
-            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.query")
-            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.connection")
-            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.result-set")
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.connection', 2)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.query', 4)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
+                it.hasNameEqualTo('jdbc.query')
+                        .hasContextualNameEqualTo('query')
+                        .hasHighCardinalityKeyValue('jdbc.query[0]', 'DROP TABLE `mn_product`')
+                        .hasError()
+            }
+            TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
+                it.hasNameEqualTo('jdbc.query')
+                        .hasHighCardinalityKeyValue('jdbc.query[0]', 'INSERT INTO mn_product (name) VALUES ?')
+                        .hasHighCardinalityKeyValue('jdbc.params[0]', '(Soccer Ball)')
+                        .hasContextualNameEqualTo('query')
+                        .doesNotHaveError()
+            }
+            TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo('jdbc.result-set')
+                .that()
+                .hasContextualNameEqualTo('result-set')
+                .doesNotHaveError()
+                .hasHighCardinalityKeyValueWithKey('jdbc.row-count')
         }
         productName == 'Soccer Ball'
 
@@ -69,7 +83,7 @@ class MicrometerObservationDataSourceSpec extends Specification {
     }
 
     @Factory
-    @Requires(property = "spec.name", value = "datasource-observation")
+    @Requires(property = 'spec.name', value = 'datasource-observation')
     @Internal
     static class DefaultFactory {
 
