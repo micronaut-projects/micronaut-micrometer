@@ -41,8 +41,10 @@ class MicrometerObservationDataSourceSpec extends Specification {
         ])
         def dataSource = context.getBean(DataSource)
         def connection = DelegatingDataSource.unwrapDataSource(dataSource).getConnection()
-        connection.prepareStatement("INSERT INTO mn_product (name) VALUES ('Soccer Ball')").execute()
-        ResultSet resultSet = connection.prepareStatement("SELECT * FROM mn_product").executeQuery()
+        def stmt = connection.prepareStatement("INSERT INTO mn_product (name) VALUES ?")
+        stmt.setString(1, 'Soccer Ball')
+        stmt.execute()
+        def resultSet = connection.prepareStatement("SELECT * FROM mn_product").executeQuery()
         resultSet.next()
         def productName = resultSet.getString("name")
 
