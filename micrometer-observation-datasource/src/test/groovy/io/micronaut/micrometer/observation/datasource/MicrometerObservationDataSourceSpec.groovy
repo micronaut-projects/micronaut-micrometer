@@ -123,7 +123,7 @@ class MicrometerObservationDataSourceSpec extends Specification {
                 it.hasNameEqualTo('jdbc.query')
                         .hasContextualNameEqualTo('query')
                         .hasHighCardinalityKeyValue('jdbc.query[0]', 'DROP TABLE `mn_product`')
-                        .hasError()
+                        .doesNotHaveError()
             }
             TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
                 it.hasNameEqualTo('jdbc.query')
