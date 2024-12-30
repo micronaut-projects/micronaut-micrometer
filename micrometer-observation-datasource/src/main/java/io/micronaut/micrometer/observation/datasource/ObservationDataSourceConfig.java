@@ -37,6 +37,7 @@ import net.ttddyy.observation.tracing.DataSourceObservationListener;
 public class ObservationDataSourceConfig implements Toggleable {
 
     static final String PREFIX = "micrometer.observation.datasource";
+    
     @ConfigurationBuilder(value = "listener", prefixes = "set")
     final DataSourceObservationListener listener;
 

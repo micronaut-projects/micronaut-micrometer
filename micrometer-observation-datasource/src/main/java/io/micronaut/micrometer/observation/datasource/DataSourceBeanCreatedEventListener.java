@@ -76,13 +76,14 @@ final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListen
         }
         String name = event.getBeanIdentifier().getName();
         DataSourceObservationListener listener = observationDataSourceConfig.getListener();
-        ProxyDataSourceBuilder finalBuilder;
-        finalBuilder = Objects.requireNonNullElseGet(builder, ProxyDataSourceBuilder::new);
+        ProxyDataSourceBuilder finalBuilder = Objects.requireNonNullElseGet(builder, ProxyDataSourceBuilder::new);
         return finalBuilder.name(name).dataSource(dataSource).listener(listener).methodListener(listener).build();
     }
 
     @Override
     public int getOrder() {
+        // There is another listener in micronaut-tracing with HIGHEST_PRECEDENCE order
+        // so this is just to avoid beans with the same order
         return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 }
