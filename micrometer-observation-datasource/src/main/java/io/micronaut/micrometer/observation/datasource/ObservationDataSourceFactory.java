@@ -16,12 +16,14 @@
 package io.micronaut.micrometer.observation.datasource;
 
 import io.micrometer.tracing.Tracer;
+import io.micronaut.configuration.jdbc.hikari.DatasourceConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import jakarta.inject.Singleton;
 import net.ttddyy.observation.tracing.ConnectionTracingObservationHandler;
 import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler;
+import net.ttddyy.observation.tracing.HikariJdbcObservationFilter;
 import net.ttddyy.observation.tracing.QueryTracingObservationHandler;
 import net.ttddyy.observation.tracing.ResultSetTracingObservationHandler;
 
@@ -52,5 +54,11 @@ public final class ObservationDataSourceFactory {
     @Singleton
     ResultSetTracingObservationHandler resultSetTracingObservationHandler(Tracer tracer) {
         return new ResultSetTracingObservationHandler(tracer);
+    }
+
+    @Singleton
+    @Requires(classes = DatasourceConfiguration.class)
+    HikariJdbcObservationFilter hikariJdbcObservationFilter() {
+        return new HikariJdbcObservationFilter();
     }
 }

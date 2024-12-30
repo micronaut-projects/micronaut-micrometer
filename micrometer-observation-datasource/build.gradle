@@ -9,6 +9,8 @@ dependencies {
     api libs.managed.datasource.micrometer
     implementation libs.managed.micrometer.observation
 
+    compileOnly(mnSql.micronaut.jdbc.hikari)
+
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation
     testAnnotationProcessor mnData.micronaut.data.processor
