@@ -13,6 +13,9 @@ if (sonatypePluginConfigured) {
     ossIndexAudit {
         username = ossIndexUsername
         password = ossIndexPassword
+        excludeCoordinates = [
+                "org.threeten:threetenbp:1.6.9", // no version patched https://ossindex.sonatype.org/component/pkg:maven/org.threeten/threetenbp
+        ]
     }
 }
 
