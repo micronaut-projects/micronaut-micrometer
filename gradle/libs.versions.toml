@@ -27,6 +27,7 @@ micronaut-reactor = '3.6.0'
 micronaut-serde = "2.12.0"
 micronaut-sql = "5.8.3"
 micronaut-validation = "4.8.0"
+sonatype-scan = "3.0.0"
 
 [libraries]
 # Core
@@ -83,3 +84,4 @@ reflections = { module = 'org.reflections:reflections', version.ref = 'reflectio
 
 jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
+sonatype-scan = { module = "org.sonatype.gradle.plugins:scan-gradle-plugin", version.ref = "sonatype-scan" }
