@@ -48,9 +48,10 @@ class MicrometerObservationDataSourceSpec extends Specification {
         registry
         if (registry instanceof TestObservationRegistry) {
             def testRegistry = (TestObservationRegistry) registry
-            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(8)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(9)
             TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.connection', 3)
             TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.query', 4)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.result-set', 2)
             TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
                 it.hasNameEqualTo('jdbc.query')
                         .hasContextualNameEqualTo('query')
@@ -169,7 +170,7 @@ class MicrometerObservationDataSourceSpec extends Specification {
         @Singleton
         ProxyDataSourceBuilder builder() {
             return new ProxyDataSourceBuilder()
-                   // .proxyGeneratedKeys()
+                    .proxyGeneratedKeys()
                     .proxyResultSet()
                     .asJson()
         }
