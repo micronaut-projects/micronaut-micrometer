@@ -96,6 +96,7 @@ class MicrometerObservationDataSourceSpec extends Specification {
         productRepository.save(new Product(null, 'Watch'))
         def product = productRepository.findByName('Watch').orElse(null)
         def productId = product.id()
+        def count = productRepository.count()
 
         then:
         context.getBeansOfType(DataSourceBeanCreatedEventListener).size() == 1
@@ -103,13 +104,14 @@ class MicrometerObservationDataSourceSpec extends Specification {
         context.getBeansOfType(Tracer).size() == 1
         context.getBeansOfType(ObservationDataSourceConfig).size() == 1
         product.id() == productId
+        count == 1
         def registry = context.getBean(ObservationRegistry)
         registry
         if (registry instanceof TestObservationRegistry) {
             def testRegistry = (TestObservationRegistry) registry
-            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(7)
-            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.connection', 3)
-            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.query', 4)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsEqualTo(9)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.connection', 4)
+            TestObservationRegistryAssert.assertThat(testRegistry).hasNumberOfObservationsWithNameEqualTo('jdbc.query', 5)
             TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
                 it.hasNameEqualTo('jdbc.query')
                         .hasContextualNameEqualTo('query')
@@ -119,6 +121,12 @@ class MicrometerObservationDataSourceSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
                 it.hasNameEqualTo('jdbc.query')
                         .hasHighCardinalityKeyValue('jdbc.query[0]', 'INSERT INTO `mn_product` (`name`) VALUES (?)')
+                        .hasContextualNameEqualTo('query')
+                        .doesNotHaveError()
+            }
+            TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation { it ->
+                it.hasNameEqualTo('jdbc.query')
+                        .hasHighCardinalityKeyValue('jdbc.query[0]', 'SELECT COUNT(*) FROM `mn_product` product_')
                         .hasContextualNameEqualTo('query')
                         .doesNotHaveError()
             }
