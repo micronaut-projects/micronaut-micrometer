@@ -21,6 +21,7 @@ import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.core.util.Toggleable;
+import jakarta.inject.Provider;
 import net.ttddyy.observation.tracing.DataSourceObservationListener;
 
 /**
@@ -46,8 +47,8 @@ public class ObservationDataSourceConfig implements Toggleable {
     private boolean proxyResultSet = true;
     private boolean proxyGeneratedKeys = true;
 
-    ObservationDataSourceConfig(ObservationRegistry observationRegistry) {
-        listener = new DataSourceObservationListener(observationRegistry);
+    ObservationDataSourceConfig(Provider<ObservationRegistry> observationRegistry) {
+        listener = new DataSourceObservationListener(() -> observationRegistry.get());
     }
 
     @Override

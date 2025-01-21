@@ -1,0 +1,17 @@
+== Micrometer DataSource Observation
+
+The Micronaut Micrometer Observation DataSource enables instrumenting `DataSource` for gathering traces and metrics around data source calls: connections, queries and result sets. To get started, add the following dependency to your project:
+
+dependency:micronaut-micrometer-observation-datasource[groupId="io.micronaut.micrometer", scope="implementation"]
+
+This module uses the https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[`Datasource Micrometer`].
+
+To enable datasource observation, use this configuration:
+
+[configuration]
+----
+micrometer:
+  observation:
+    datasource:
+      enabled: true
+----

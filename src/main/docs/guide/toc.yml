@@ -28,6 +28,8 @@ metricsAndReporters:
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
   metricsAndReportersWavefront: Wavefront Registry
-observation: Observation
+observation:
+  title: Observation
+  datasourceObservation: Datasource Observation
 metricsGuides: Guides
 repository: Repository
