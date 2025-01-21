@@ -33,15 +33,18 @@ import net.ttddyy.observation.tracing.DataSourceObservationListener;
  * @since 5.11
  */
 @Requires(property = ObservationDataSourceConfig.PREFIX + ".enabled", value = StringUtils.TRUE)
+@Requires(beans = {ObservationRegistry.class})
 @ConfigurationProperties(ObservationDataSourceConfig.PREFIX)
 public class ObservationDataSourceConfig implements Toggleable {
 
     static final String PREFIX = "micrometer.observation.datasource";
-    
+
     @ConfigurationBuilder(value = "listener", prefixes = "set")
     final DataSourceObservationListener listener;
 
     private boolean enabled;
+    private boolean proxyResultSet = true;
+    private boolean proxyGeneratedKeys = true;
 
     ObservationDataSourceConfig(ObservationRegistry observationRegistry) {
         listener = new DataSourceObservationListener(observationRegistry);
@@ -59,6 +62,56 @@ public class ObservationDataSourceConfig implements Toggleable {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * Indicates whether result sets should be proxied for observation purposes.
+     *
+     * When enabled, the observation data source will create proxies around result sets
+     * to track and record relevant events.
+     *
+     * @return true if result sets are being proxied, false otherwise
+     */
+    public boolean isProxyResultSet() {
+        return proxyResultSet;
+    }
+
+    /**
+     * Enables or disables proxying of result sets for observation purposes.
+     *
+     * When enabled, the observation data source will create proxies around result sets
+     * to track and record relevant events. Disabling this feature can improve performance
+     * but may limit the accuracy of observations.
+     *
+     * @param proxyResultSet true to enable proxying of result sets, false to disable
+     */
+    public void setProxyResultSet(boolean proxyResultSet) {
+        this.proxyResultSet = proxyResultSet;
+    }
+
+    /**
+     * Indicates whether generated keys should be proxied for observation purposes.
+     *
+     * When enabled, the observation data source will create proxies around generated keys
+     * to track and record relevant events.
+     *
+     * @return true if generated keys are being proxied, false otherwise
+     */
+    public boolean isProxyGeneratedKeys() {
+        return proxyGeneratedKeys;
+    }
+
+    /**
+     * Enables or disables proxying of generated keys for observation purposes.
+     *
+     * When enabled, the observation data source will create proxies around generated keys
+     * to track and record relevant events. Disabling this feature can improve performance
+     * but may limit the accuracy of observations.
+     *
+     * @param proxyGeneratedKeys true to enable proxying of generated keys, false to disable
+     */
+    public void setProxyGeneratedKeys(boolean proxyGeneratedKeys) {
+        this.proxyGeneratedKeys = proxyGeneratedKeys;
     }
 
     /**

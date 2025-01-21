@@ -5,10 +5,9 @@ plugins {
 dependencies {
     annotationProcessor mn.micronaut.graal
 
-    api projects.micronautMicrometerObservation
     api libs.managed.datasource.micrometer
     implementation libs.managed.micrometer.observation
-
+    implementation mnData.micronaut.data.connection.jdbc
     compileOnly(mnSql.micronaut.jdbc.hikari)
 
     testAnnotationProcessor mn.micronaut.inject.java
@@ -19,7 +18,6 @@ dependencies {
     testImplementation mnData.micronaut.data.jdbc
     testImplementation mnSql.micronaut.jdbc.tomcat
     testImplementation libs.managed.micrometer.tracing
-    testImplementation libs.managed.micrometer.observation.test
 
     testRuntimeOnly mnSql.h2
 }

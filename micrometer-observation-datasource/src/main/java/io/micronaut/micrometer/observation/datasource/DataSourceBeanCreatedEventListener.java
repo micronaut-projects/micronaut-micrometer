@@ -21,14 +21,12 @@ import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import net.ttddyy.observation.tracing.DataSourceObservationListener;
 
 import javax.sql.DataSource;
-import java.util.Objects;
 
 /**
  * A Micronaut event listener that wraps DataSources with an observation proxy when created.
@@ -46,20 +44,14 @@ import java.util.Objects;
 final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListener<DataSource>, Ordered {
 
     private final ObservationDataSourceConfig observationDataSourceConfig;
-    @Nullable
-    private final ProxyDataSourceBuilder builder;
 
     /**
      * Constructs a new instance of the event listener.
      *
      * @param observationDataSourceConfig The observation data source configuration
-     * @param builder The nullable {@link ProxyDataSourceBuilder} which users can generate and inject.
-     *                If not provided then new instance will be created with default value.
      */
-    DataSourceBeanCreatedEventListener(ObservationDataSourceConfig observationDataSourceConfig,
-                                       @Nullable ProxyDataSourceBuilder builder) {
+    DataSourceBeanCreatedEventListener(ObservationDataSourceConfig observationDataSourceConfig) {
         this.observationDataSourceConfig = observationDataSourceConfig;
-        this.builder = builder;
     }
 
     /**
@@ -76,8 +68,14 @@ final class DataSourceBeanCreatedEventListener implements BeanCreatedEventListen
         }
         String name = event.getBeanIdentifier().getName();
         DataSourceObservationListener listener = observationDataSourceConfig.getListener();
-        ProxyDataSourceBuilder finalBuilder = Objects.requireNonNullElseGet(builder, ProxyDataSourceBuilder::new);
-        return finalBuilder.name(name).dataSource(dataSource).listener(listener).methodListener(listener).build();
+        ProxyDataSourceBuilder proxyDataSourceBuilder = new ProxyDataSourceBuilder();
+        if (observationDataSourceConfig.isProxyResultSet()) {
+            proxyDataSourceBuilder = proxyDataSourceBuilder.proxyResultSet();
+        }
+        if (observationDataSourceConfig.isProxyGeneratedKeys()) {
+            proxyDataSourceBuilder = proxyDataSourceBuilder.proxyGeneratedKeys();
+        }
+        return proxyDataSourceBuilder.name(name).dataSource(dataSource).listener(listener).methodListener(listener).build();
     }
 
     @Override

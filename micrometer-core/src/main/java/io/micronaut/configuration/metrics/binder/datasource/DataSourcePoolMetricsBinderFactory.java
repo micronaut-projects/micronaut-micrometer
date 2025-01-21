@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 
 import java.util.Collections;
@@ -38,8 +37,6 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Factory
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".jdbc.enabled", notEquals = FALSE)
-// TODO: Having this binder enabled and datasource observation throws circular dependency error
-@Requires(property = "micrometer.observation.datasource.enabled", notEquals = StringUtils.TRUE)
 public class DataSourcePoolMetricsBinderFactory {
 
     /**

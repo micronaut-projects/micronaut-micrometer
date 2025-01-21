@@ -25,7 +25,6 @@ class MicrometerObservationDataSourceSpec extends Specification {
         def context = ApplicationContext.run([
                 'micronaut.application.name'                                         : 'ds-observation',
                 'spec.name'                                                          : 'datasource-observation',
-                'custom.builder'                                                     : 'true',
                 'datasources.default.dialect'                                        : 'H2',
                 'datasources.default.schema-generate'                                : 'CREATE_DROP',
                 'datasources.default.url'                                            : 'jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE',
@@ -82,7 +81,6 @@ class MicrometerObservationDataSourceSpec extends Specification {
         def context = ApplicationContext.run([
                 'micronaut.application.name'                                         : 'ds-observation',
                 'spec.name'                                                          : 'datasource-observation',
-                'custom.builder'                                                     : 'false',
                 'datasources.default.dialect'                                        : 'H2',
                 'datasources.default.schema-generate'                                : 'CREATE_DROP',
                 'datasources.default.url'                                            : 'jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE',
@@ -160,19 +158,6 @@ class MicrometerObservationDataSourceSpec extends Specification {
         @Singleton
         MeterRegistry meterRegistry() {
             return new SimpleMeterRegistry()
-        }
-    }
-
-    @Factory
-    @Requires(property = 'custom.builder', value = 'true')
-    @Internal
-    static class BuilderFactory {
-        @Singleton
-        ProxyDataSourceBuilder builder() {
-            return new ProxyDataSourceBuilder()
-                    .proxyGeneratedKeys()
-                    .proxyResultSet()
-                    .asJson()
         }
     }
 
