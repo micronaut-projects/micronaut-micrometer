@@ -16,7 +16,6 @@
 package io.micronaut.micrometer.observation.datasource;
 
 import io.micronaut.context.annotation.Primary;
-import io.micronaut.data.connection.jdbc.advice.DelegatingDataSource;
 import io.micronaut.jdbc.DataSourceResolver;
 import jakarta.inject.Singleton;
 import net.ttddyy.dsproxy.support.ProxyDataSource;
@@ -32,7 +31,7 @@ import java.util.List;
  * source wrapped by the proxy.
  *
  * @author radovanradic
- * @since 5.1.0
+ * @since 5.10
  */
 @Singleton
 @Primary
@@ -50,9 +49,7 @@ public class ProxyDataSourceResolver implements DataSourceResolver {
         for (DataSourceResolver dataSourceResolver : dataSourceResolvers) {
             dataSource = dataSourceResolver.resolve(dataSource);
         }
-        // If there was no resolver, make sure to unwrap DelegatingDataSource
-        dataSource = DelegatingDataSource.unwrapDataSource(dataSource);
-        // And finally ProxyDataSource
+        // Unwrap ProxyDataSource if needed
         if (dataSource instanceof ProxyDataSource proxyDataSource) {
             dataSource = proxyDataSource.getDataSource();
         }

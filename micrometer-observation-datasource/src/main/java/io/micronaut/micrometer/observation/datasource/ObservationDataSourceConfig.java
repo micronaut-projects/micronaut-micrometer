@@ -31,7 +31,7 @@ import net.ttddyy.observation.tracing.DataSourceObservationListener;
  * including enabling/disabling it and tracing connections, queries, and result sets.
  *
  * @author radovanradic
- * @since 5.11
+ * @since 5.10
  */
 @Requires(property = ObservationDataSourceConfig.PREFIX + ".enabled", value = StringUtils.TRUE)
 @Requires(beans = {ObservationRegistry.class})
