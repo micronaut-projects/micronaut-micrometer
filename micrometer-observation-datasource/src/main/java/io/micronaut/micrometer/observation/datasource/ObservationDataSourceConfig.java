@@ -48,7 +48,7 @@ public class ObservationDataSourceConfig implements Toggleable {
     private boolean proxyGeneratedKeys = true;
 
     ObservationDataSourceConfig(Provider<ObservationRegistry> observationRegistry) {
-        listener = new DataSourceObservationListener(() -> observationRegistry.get());
+        listener = new DataSourceObservationListener(observationRegistry::get);
     }
 
     @Override
