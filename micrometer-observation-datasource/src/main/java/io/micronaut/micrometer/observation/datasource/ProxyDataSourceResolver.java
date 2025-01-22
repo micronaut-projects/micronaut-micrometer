@@ -35,7 +35,7 @@ import java.util.List;
  */
 @Singleton
 @Primary
-public class ProxyDataSourceResolver implements DataSourceResolver {
+final class ProxyDataSourceResolver implements DataSourceResolver {
 
     private final List<DataSourceResolver> dataSourceResolvers;
 

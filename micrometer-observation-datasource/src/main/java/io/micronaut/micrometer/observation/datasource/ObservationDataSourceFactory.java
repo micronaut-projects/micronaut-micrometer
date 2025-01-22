@@ -20,6 +20,7 @@ import io.micronaut.configuration.jdbc.hikari.DatasourceConfiguration;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 import net.ttddyy.observation.tracing.ConnectionTracingObservationHandler;
 import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler;
@@ -34,12 +35,15 @@ import net.ttddyy.observation.tracing.ResultSetTracingObservationHandler;
  *
  * @see ObservationDataSourceConfig
  * @see DataSourceBaseObservationHandler
+ *
+ * @author radovanradic
+ * @since 5.10
  */
 @Factory
 @Requires(bean = Tracer.class)
-@Requires(bean = ObservationDataSourceConfig.class, beanProperty = "enabled", value = "true")
+@Requires(bean = ObservationDataSourceConfig.class, beanProperty = "enabled", value = StringUtils.TRUE)
 @Internal
-public final class ObservationDataSourceFactory {
+final class ObservationDataSourceFactory {
 
     @Singleton
     QueryTracingObservationHandler queryTracingObservationHandler(Tracer tracer) {
