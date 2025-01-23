@@ -1,0 +1,37 @@
+plugins {
+    id("io.micronaut.application")
+}
+
+version = "0.1"
+group = "example"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(projects.micronautMicrometerObservationDatasource)
+    testImplementation(mnSerde.micronaut.serde.jackson)
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+    testAnnotationProcessor mnData.micronaut.data.processor
+    testImplementation libs.managed.micrometer.observation.test
+    testImplementation projects.micronautMicrometerCore
+    testImplementation mnData.micronaut.data.jdbc
+    testImplementation mnSql.micronaut.jdbc.tomcat
+    testImplementation libs.managed.micrometer.tracing
+
+    testRuntimeOnly mnSql.h2
+    testRuntimeOnly mnLogging.logback.classic
+}
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    version.set(libs.versions.micronaut.platform)
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+    }
+}

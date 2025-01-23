@@ -1,0 +1,26 @@
+== Micrometer DataSource Observation
+
+The Micronaut Micrometer Observation DataSource enables instrumenting `DataSource` for gathering traces and metrics around data source calls: connections, queries and result sets. To get started, add the following dependency to your project:
+
+dependency:micronaut-micrometer-observation-datasource[groupId="io.micronaut.micrometer", scope="implementation"]
+
+This module uses the https://github.com/jdbc-observations/datasource-micrometer[`Datasource Micrometer`] library.
+
+To enable datasource observation, use this configuration:
+
+[configuration]
+----
+micrometer:
+  observation:
+    datasource:
+      enabled: true
+----
+
+When datasource observation is enabled, Micronaut will by default enable tracing for connections, queries and result sets.
+In order to declare what will be traced, configuration property `micrometer.observation.datasource.listener.supported-types` can be set to the
+list (comma separated) consisting of: `CONNECTION`, `QUERY`, `RESULT_SET`.
+To trace query parameter values, this property `micrometer.observation.datasource.listener.include-parameter-values` needs to be set to true.
+
+`jdbc.datasource.driver` and `jdbc.datasource.pool` tags are available when the target datasource is a `HikariDataSource`.
+
+To see more available properties, please see `Configuration Reference` section related to the Micrometer DataSource Observation section.

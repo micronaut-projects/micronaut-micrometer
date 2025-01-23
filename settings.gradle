@@ -15,6 +15,7 @@ include 'micrometer-annotation'
 include 'micrometer-bom'
 include 'micrometer-core'
 include 'micrometer-observation'
+include 'micrometer-observation-datasource'
 include 'micrometer-observation-http'
 include 'micrometer-registry-appoptics'
 include 'micrometer-registry-atlas'
@@ -39,6 +40,7 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'micrometer-registry-wavefront'
 include 'test-suite:micronaut-serialization'
+include 'test-suite:test-observation-datasource'
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 
@@ -52,6 +54,7 @@ micronautBuild {
     importMicronautCatalog("micronaut-rxjava2")
     importMicronautCatalog("micronaut-serde")
     importMicronautCatalog("micronaut-sql")
+    importMicronautCatalog("micronaut-data")
     importMicronautCatalog("micronaut-validation")
     importMicronautCatalog("micronaut-reactor")
 }

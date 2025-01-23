@@ -1,0 +1,28 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    api libs.managed.datasource.micrometer
+    implementation libs.managed.micrometer.observation
+    compileOnly(mnSql.micronaut.jdbc.hikari)
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+    testAnnotationProcessor mnData.micronaut.data.processor
+    testImplementation libs.managed.micrometer.observation.test
+    testImplementation projects.micronautMicrometerCore
+    testImplementation mnData.micronaut.data.jdbc
+    testImplementation mnSql.micronaut.jdbc.tomcat
+    testImplementation libs.managed.micrometer.tracing
+
+    testRuntimeOnly mnSql.h2
+}
+
+micronautBuild {
+    binaryCompatibility {
+        enabledAfter('5.10.0')
+    }
+}

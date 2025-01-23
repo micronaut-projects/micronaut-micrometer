@@ -12,6 +12,7 @@ managed-micrometer = '1.13.6'
 managed-micrometer-tracing = '1.4.1'
 managed-new-relic-registry = '0.10.0'
 managed-prometheus-metrics-exporter-pushgateway = '1.3.5'
+managed-datasource-micrometer = '1.0.6'
 reflections = '0.10.2'
 
 jcache = "1.1.1"
@@ -26,6 +27,7 @@ micronaut-rxjava2 = "2.6.0"
 micronaut-reactor = '3.6.0'
 micronaut-serde = "2.13.0"
 micronaut-sql = "6.0.2"
+micronaut-data = "4.10.5"
 micronaut-validation = "4.8.0"
 sonatype-scan = "3.0.0"
 
@@ -43,6 +45,7 @@ micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", ver
 micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
 micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
 micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
+micronaut-data = { module = "io.micronaut.data:micronaut-data-bom", version.ref = "micronaut-data" }
 groovy-json = { module = "org.apache.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
@@ -57,6 +60,8 @@ managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.re
 managed-micrometer-tracing = { module = 'io.micrometer:micrometer-tracing', version.ref = 'managed-micrometer-tracing' }
 managed-micrometer-observation = { module = 'io.micrometer:micrometer-observation', version.ref = 'managed-micrometer' }
 managed-micrometer-observation-test = { module = 'io.micrometer:micrometer-observation-test', version.ref = 'managed-micrometer' }
+
+managed-datasource-micrometer = { module = 'net.ttddyy.observation:datasource-micrometer', version.ref = 'managed-datasource-micrometer' }
 
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
