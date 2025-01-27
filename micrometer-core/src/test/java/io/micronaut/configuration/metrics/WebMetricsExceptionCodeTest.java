@@ -15,7 +15,6 @@ import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
-import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
@@ -50,9 +49,9 @@ class WebMetricsExceptionCodeTest {
         }
     }
 
-    static class GatewayTimeoutException extends HttpStatusException {
+    static class GatewayTimeoutException extends RuntimeException {
         public GatewayTimeoutException(String message) {
-            super(HttpStatus.GATEWAY_TIMEOUT, message);
+            super(message);
         }
     }
 
