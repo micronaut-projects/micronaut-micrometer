@@ -71,7 +71,7 @@ final class ClientMetricsFilter {
 
     @ResponseFilter
     void doException(HttpRequest<?> request, Throwable throwable) {
-        createHelper(request).error(throwable);
+        createHelper(request).error(null, throwable);
     }
 
     private WebMetricsHelper createHelper(HttpRequest<?> request) {
