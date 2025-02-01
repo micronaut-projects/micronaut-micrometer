@@ -27,7 +27,7 @@ micronaut-rxjava2 = "2.6.0"
 micronaut-reactor = '3.6.0'
 micronaut-serde = "2.13.1"
 micronaut-sql = "6.0.2"
-micronaut-data = "4.10.5"
+micronaut-data = "4.11.1"
 micronaut-validation = "4.8.1"
 sonatype-scan = "3.0.0"
 
