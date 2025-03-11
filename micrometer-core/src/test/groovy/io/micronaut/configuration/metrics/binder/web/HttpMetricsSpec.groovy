@@ -10,6 +10,7 @@ import io.micrometer.core.instrument.search.MeterNotFoundException
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
@@ -38,7 +39,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test client / server metrics with #cfg #setting"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting])
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting, "spec.name": "HttpMetricsSpec"])
         def context = embeddedServer.applicationContext
         TestClient client = context.getBean(TestClient)
 
@@ -154,6 +155,7 @@ class HttpMetricsSpec extends Specification {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
                 'micronaut.metrics.binders.web.client-errors-uris.enabled': false,
+                "spec.name": "HttpMetricsSpec"
         ])
         def context = embeddedServer.getApplicationContext()
         TestClient client = context.getBean(TestClient)
@@ -235,14 +237,22 @@ class HttpMetricsSpec extends Specification {
 
     void "test websocket"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(MICRONAUT_METRICS_ENABLED): true])
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                (MICRONAUT_METRICS_ENABLED): true,
+                "spec.name": "HttpMetricsSpec",
+        ])
         MeterRegistry registry = embeddedServer.getApplicationContext().getBean(MeterRegistry)
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
+        RequiredSearch requiredSearch = registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
 
         then:
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
+        requiredSearch.tags('uri', '/ws/{username}').timer()
+
+        cleanup:
+        embeddedServer.close()
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @ClientWebSocket
     static abstract class TestWebSocketClient implements AutoCloseable {
         abstract void send(@NonNull @NotBlank String message);
@@ -251,8 +261,7 @@ class HttpMetricsSpec extends Specification {
         void onMessage(String message) {}
     }
 
-
-    private TestWebSocketClient createWebSocketClient(ApplicationContext context, int port, String username) {
+    private static TestWebSocketClient createWebSocketClient(ApplicationContext context, int port, String username) {
         WebSocketClient webSocketClient = context.getBean(WebSocketClient.class)
         URI uri = UriBuilder.of("ws://localhost")
                 .port(port)
@@ -263,6 +272,7 @@ class HttpMetricsSpec extends Specification {
         return Flux.from(client).blockFirst()
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @Client('/')
     static interface TestClient {
         @Get
@@ -287,7 +297,8 @@ class HttpMetricsSpec extends Specification {
         HttpResponse notFound()
     }
 
-    @Controller('/')
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    @Controller
     static class TestController {
         @Get
         String root() { "root" }
@@ -323,10 +334,15 @@ class HttpMetricsSpec extends Specification {
 
     }
 
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @ServerWebSocket("/ws/{username}")
     static class TestWSController {
 
         private final WebSocketBroadcaster broadcaster
+
+        TestWSController(WebSocketBroadcaster broadcaster) {
+            this.broadcaster = broadcaster
+        }
 
         @OnOpen
         Publisher<String> onOpen(String username, WebSocketSession session) {
