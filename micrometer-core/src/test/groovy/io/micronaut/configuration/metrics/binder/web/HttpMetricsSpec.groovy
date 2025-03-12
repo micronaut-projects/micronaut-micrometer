@@ -245,10 +245,9 @@ class HttpMetricsSpec extends Specification {
         ])
         MeterRegistry registry = embeddedServer.getApplicationContext().getBean(MeterRegistry)
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
-        RequiredSearch requiredSearch = registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
-
+        
         then:
-        requiredSearch.tags('uri', '/ws/{username}').timer()
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
 
         cleanup:
         embeddedServer.close()
