@@ -19,20 +19,14 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.netty.channel.EpollAvailabilityCondition;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
-import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
-import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
@@ -58,7 +52,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(classes = Epoll.class, condition = EpollAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
-final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFactory {
+final class InstrumentedEpollEventLoopGroupFactory extends EpollEventLoopGroupFactory {
 
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
@@ -98,21 +92,5 @@ final class InstrumentedEpollEventLoopGroupFactory implements EventLoopGroupFact
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory);
-    }
-
-    @Override
-    public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
-        return EpollServerSocketChannel.class;
-    }
-
-    @NonNull
-    @Override
-    public Class<? extends SocketChannel> clientSocketChannelClass(@Nullable EventLoopGroupConfiguration configuration) {
-        return EpollSocketChannel.class;
-    }
-
-    @Override
-    public boolean isNative() {
-        return true;
     }
 }
