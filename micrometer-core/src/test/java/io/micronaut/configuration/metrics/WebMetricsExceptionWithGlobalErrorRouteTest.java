@@ -30,7 +30,7 @@ import java.util.List;
 class WebMetricsExceptionWithGlobalErrorRouteTest {
 
     @Test
-    void testWebMetricsCustomStatusCode(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
+    void testWebMetricsSuccessGlobalErrorRoute(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
         Assertions.assertEquals(e.code(), HttpStatus.BAD_REQUEST.getCode());
