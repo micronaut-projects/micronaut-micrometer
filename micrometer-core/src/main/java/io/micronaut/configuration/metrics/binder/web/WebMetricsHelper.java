@@ -271,7 +271,7 @@ final class WebMetricsHelper {
      * @param httpResponse the HTTP response
      */
     public void success(HttpResponse<?> httpResponse, @Nullable Throwable throwable) {
-        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, httpResponse.getStatus().getCode() >= 400 ? throwable : null, serviceID, reportClientErrorURIs);
+        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, httpResponse.code() >= 400 ? throwable : null, serviceID, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
             .record(System.nanoTime() - start, NANOSECONDS);
     }

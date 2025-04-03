@@ -34,8 +34,8 @@ class WebMetricsExceptionWithGlobalErrorRouteTest {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
         Assertions.assertEquals(e.code(), HttpStatus.BAD_REQUEST.getCode());
-        Assertions.assertEquals("GATEWAY TIMEOUT", e.getMessage());
-        long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "400"), Tag.of("exception", "GatewayTimeoutException"))).count();
+        Assertions.assertEquals("BAD REQUEST FROM HANDLER", e.getMessage());
+        long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "400"), Tag.of("exception", "IllegalArgumentException"))).count();
         Assertions.assertEquals(1, count);
     }
 
@@ -45,13 +45,7 @@ class WebMetricsExceptionWithGlobalErrorRouteTest {
 
         @Get("/test")
         String test() {
-            throw new GatewayTimeoutException("GATEWAY TIMEOUT");
-        }
-    }
-
-    static class GatewayTimeoutException extends RuntimeException {
-        public GatewayTimeoutException(String message) {
-            super(message);
+            throw new IllegalArgumentException("BAD REQUEST");
         }
     }
 
@@ -59,9 +53,9 @@ class WebMetricsExceptionWithGlobalErrorRouteTest {
     @Requires(property = "spec.name", value = "WebMetricsExceptionWithGlobalErrorRouteTest")
     static class ErrorHandler {
 
-        @Error(exception = GatewayTimeoutException.class, global = true)
+        @Error(exception = IllegalArgumentException.class, global = true)
         public HttpResponse<JsonError> unsupportedOperationExceptions(HttpRequest<?> request) {
-            JsonError error = new JsonError("GATEWAY TIMEOUT")
+            JsonError error = new JsonError("BAD REQUEST FROM HANDLER")
                 .link(Link.SELF, Link.of(request.getUri()));
             return HttpResponse.<JsonError> badRequest().body(error);
         }
