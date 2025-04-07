@@ -33,7 +33,7 @@ class WebMetricsExceptionWithGlobalErrorRouteTest {
     void testWebMetricsSuccessGlobalErrorRoute(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
-        Assertions.assertEquals(e.code(), HttpStatus.BAD_REQUEST.getCode());
+        Assertions.assertEquals(e.getResponse().code(), HttpStatus.BAD_REQUEST.getCode());
         Assertions.assertEquals("BAD REQUEST FROM HANDLER", e.getMessage());
         long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "400"), Tag.of("exception", "IllegalArgumentException"))).count();
         Assertions.assertEquals(1, count);
