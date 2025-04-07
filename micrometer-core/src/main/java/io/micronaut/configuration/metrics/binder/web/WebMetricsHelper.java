@@ -257,12 +257,12 @@ final class WebMetricsHelper {
             if (routeMatch != null && routeMatch.getRouteInfo() instanceof ErrorRouteInfo<?, ?>) {
                 // Avoid publishing an error on error route
                 // Should this be configurable?
-                success(httpResponse);
+                success(httpResponse, throwable);
             } else {
                 error(throwable);
             }
         } else {
-            success(httpResponse);
+            success(httpResponse, null);
         }
     }
 
@@ -271,8 +271,8 @@ final class WebMetricsHelper {
      *
      * @param httpResponse the HTTP response
      */
-    public void success(HttpResponse<?> httpResponse) {
-        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, serviceID, reportClientErrorURIs);
+    public void success(HttpResponse<?> httpResponse, @Nullable Throwable throwable) {
+        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, httpResponse.code() >= 400 ? throwable : null, serviceID, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
             .record(System.nanoTime() - start, NANOSECONDS);
     }
