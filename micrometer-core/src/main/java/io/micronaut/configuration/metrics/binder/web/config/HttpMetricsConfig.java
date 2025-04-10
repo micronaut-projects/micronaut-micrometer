@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.web.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Context;
 import io.micronaut.core.bind.annotation.Bindable;
 import io.micronaut.core.util.Toggleable;
 
@@ -27,6 +28,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
  * @author Denis Stepanov
  * @since 5.9
  */
+@Context
 @ConfigurationProperties(HttpMetricsConfig.PATH)
 public final class HttpMetricsConfig implements Toggleable {
 
@@ -34,6 +36,8 @@ public final class HttpMetricsConfig implements Toggleable {
      * To config path.
      */
     public static final String PATH = MICRONAUT_METRICS_BINDERS + ".web";
+
+    public static final String ENABLED = MICRONAUT_METRICS_BINDERS + ".web.enabled";
 
     private boolean enabled = true;
 
