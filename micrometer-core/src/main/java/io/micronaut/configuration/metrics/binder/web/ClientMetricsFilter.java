@@ -33,7 +33,7 @@ import jakarta.inject.Provider;
 
 import java.util.Optional;
 
-import static io.micronaut.core.util.StringUtils.TRUE;
+import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
 
 /**
@@ -44,7 +44,7 @@ import static io.micronaut.http.HttpAttributes.URI_TEMPLATE;
  */
 @ClientFilter("${micronaut.metrics.http.client.path:/**}")
 @RequiresMetrics
-@Requires(bean = HttpMetricsConfig.class, beanProperty = "enabled", value = TRUE)
+@Requires(property = HttpMetricsConfig.ENABLED, notEquals = FALSE)
 @Requires(condition = WebMetricsClientCondition.class)
 @Internal
 final class ClientMetricsFilter {
