@@ -259,7 +259,7 @@ final class WebMetricsHelper {
                 // Should this be configurable?
                 success(httpResponse, throwable);
             } else {
-                error(throwable);
+                error(httpResponse, throwable);
             }
         } else {
             success(httpResponse, null);
@@ -280,14 +280,14 @@ final class WebMetricsHelper {
     /**
      * Registers the error timer for a web request when an exception occurs.
      *
-     * @param throwable exception that occurred
+     * @param httpResponse existing response object.
+     * @param throwable    exception that occurred
      */
-    public void error(Throwable throwable) {
-        HttpResponse<?> response = null;
-        if (throwable instanceof HttpResponseProvider httpResponseProvider) {
-            response = httpResponseProvider.getResponse();
+    public void error(HttpResponse<?> httpResponse, Throwable throwable) {
+        if (httpResponse == null && throwable instanceof HttpResponseProvider httpResponseProvider) {
+            httpResponse = httpResponseProvider.getResponse();
         }
-        List<Tag> tags = getTags(response, httpMethod, requestPath, throwable, serviceID, reportClientErrorURIs);
+        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, throwable, serviceID, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
             .record(System.nanoTime() - start, NANOSECONDS);
     }
