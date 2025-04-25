@@ -151,6 +151,8 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-observation"><a href="#observation"><strong>7</strong><span>Observation</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-datasourceObservation"><a href="#datasourceObservation"><strong>7.1</strong><span>Datasource Observation</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-metricsGuides"><a href="#metricsGuides"><strong>8</strong><span>Guides</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
@@ -163,13 +165,13 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 5.9.5-SNAPSHOT </p>
+        <p><strong>Version:</strong> 5.11.0-SNAPSHOT </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/introduction.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/introduction.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -182,7 +184,7 @@
 <h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/releaseHistory.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/releaseHistory.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -198,7 +200,7 @@
 <h1 id="metricsEndpoint"><a class="anchor" href="#metricsEndpoint"></a>3 Metrics Endpoint</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsEndpoint.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsEndpoint.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -473,7 +475,7 @@ endpoints.metrics.sensitive=Boolean</code></pre>
 <h1 id="metricsConcepts"><a class="anchor" href="#metricsConcepts"></a>4 Metrics Concepts</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsConcepts.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsConcepts.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1358,7 +1360,7 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 <h1 id="metricsAnnotations"><a class="anchor" href="#metricsAnnotations"></a>5 Metrics Annotations</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAnnotations.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAnnotations.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1411,11 +1413,63 @@ public class MethodNameTagger extends AbstractMethodTagger {
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>You can filter these taggers by utilizing the <code>MetricOptions</code> annotation</p>
+</div>
+<div class="listingblock">
+<div class="title">MetricOptions filtering taggers example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.annotation.Timed;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
+import jakarta.inject.Singleton;
+
+@Singleton
+public class MetricOptionsFilterTaggersExample {
+
+    @MetricOptions(
+        filterTaggers = true, // Specify that not all taggers should be applied
+        taggers = {MethodNameTagger.class} // Specific taggers to apply
+    )
+    @Timed(value = "do_something")
+    public void doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>MetricOptions</code> annotation also provides a means of only processing / publishing a metric based on an <code>EvaluatedExpression</code></p>
+</div>
+<div class="listingblock">
+<div class="title">MetricOptions condition example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.annotation.Timed;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
+import jakarta.inject.Singleton;
+
+@Singleton
+public class MetricOptionsConditionExample {
+
+    @MetricOptions(
+        // If condition is set, the metric will only be processed and published when it evaluates to true
+        condition = " #{ env['property'] == true }"
+    )
+    @Timed(value = "do_something")
+    public void doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
 
 <h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1433,7 +1487,7 @@ public class MethodNameTagger extends AbstractMethodTagger {
 <h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>6.1 AppOptics Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1588,7 +1642,7 @@ micronaut.metrics.export.appoptics.step=PT1M</code></pre>
 <h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>6.2 Atlas Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1733,7 +1787,7 @@ micronaut.metrics.export.atlas.step=PT1M</code></pre>
 <h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>6.3 Azure Monitor Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1878,7 +1932,7 @@ micronaut.metrics.export.azuremonitor.step=PT1M</code></pre>
 <h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>6.4 CloudWatch Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2035,7 +2089,7 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 <h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>6.5 Datadog Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2184,7 +2238,7 @@ micronaut.metrics.export.datadog.step=PT1M</code></pre>
 <h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>6.6 Dynatrace Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2375,7 +2429,7 @@ micronaut {
 <h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elasticsearch Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2510,7 +2564,7 @@ micronaut.metrics.export.elastic.step=PT1M</code></pre>
 <h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>6.8 Ganglia Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2655,7 +2709,7 @@ micronaut.metrics.export.ganglia.step=PT1M</code></pre>
 <h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>6.9 Graphite Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2810,7 +2864,7 @@ micronaut.metrics.export.graphite.port=2004</code></pre>
 <h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>6.10 Humio Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2945,7 +2999,7 @@ micronaut.metrics.export.humio.step=PT1M</code></pre>
 <h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>6.11 Influx Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3084,7 +3138,7 @@ micronaut.metrics.export.influx.step=PT1M</code></pre>
 <h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 JMX Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3219,7 +3273,7 @@ micronaut.metrics.export.jmx.step=PT1M</code></pre>
 <h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>6.13 Kairos Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3368,7 +3422,7 @@ micronaut.metrics.export.kairos.step=PT1M</code></pre>
 <h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>6.14 New Relic Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3527,7 +3581,7 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 <h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>6.15 New Relic Telemetry Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3685,7 +3739,7 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 <h2 id="metricsAndReportersOracleCloud"><a class="anchor" href="#metricsAndReportersOracleCloud"></a>6.16 Oracle Cloud Monitoring Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOracleCloud.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOracleCloud.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3713,7 +3767,7 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 <h2 id="metricsAndReportersOtlp"><a class="anchor" href="#metricsAndReportersOtlp"></a>6.17 OTLP Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOtlp.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOtlp.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3848,7 +3902,7 @@ micronaut.metrics.export.otlp.url=http://otel-collector:4318/v1/metrics</code></
 <h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.18 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4067,7 +4121,7 @@ micronaut {
 <h2 id="metricsAndReportersPrometheusPushGateway"><a class="anchor" href="#metricsAndReportersPrometheusPushGateway"></a>6.19 Prometheus PushGateway</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheusPushGateway.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheusPushGateway.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4284,7 +4338,7 @@ micronaut {
 <h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.20 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4433,7 +4487,7 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
 <h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.21 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4582,7 +4636,7 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
 <h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.22 StatsD Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4747,7 +4801,7 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 <h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.23 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4906,7 +4960,7 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 <h1 id="observation"><a class="anchor" href="#observation"></a>7 Observation</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/observation.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/observation.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5006,10 +5060,124 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 </div>
 </div>
 
+<h2 id="datasourceObservation"><a class="anchor" href="#datasourceObservation"></a>7.1 Datasource Observation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/datasourceObservation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_micrometer_datasource_observation">Micrometer DataSource Observation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Micronaut Micrometer Observation DataSource enables instrumenting <code>DataSource</code> for gathering traces and metrics around data source calls: connections, queries and result sets. To get started, add the following dependency to your project:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-datasource")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-observation-datasource&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>This module uses the <a href="https://github.com/jdbc-observations/datasource-micrometer"><code>Datasource Micrometer</code></a> library.</p>
+</div>
+<div class="paragraph">
+<p>To enable datasource observation, use this configuration:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micrometer.observation.datasource.enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micrometer:
+  observation:
+    datasource:
+      enabled: true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micrometer]
+  [micrometer.observation]
+    [micrometer.observation.datasource]
+      enabled=true</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micrometer {
+  observation {
+    datasource {
+      enabled = true
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micrometer {
+    observation {
+      datasource {
+        enabled = true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micrometer": {
+    "observation": {
+      "datasource": {
+        "enabled": true
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>When datasource observation is enabled, Micronaut will by default enable tracing for connections, queries and result sets.
+In order to declare what will be traced, configuration property <code>micrometer.observation.datasource.listener.supported-types</code> can be set to the
+list (comma separated) consisting of: <code>CONNECTION</code>, <code>QUERY</code>, <code>RESULT_SET</code>.
+To trace query parameter values, this property <code>micrometer.observation.datasource.listener.include-parameter-values</code> needs to be set to true.</p>
+</div>
+<div class="paragraph">
+<p><code>jdbc.datasource.driver</code> and <code>jdbc.datasource.pool</code> tags are available when the target datasource is a <code>HikariDataSource</code>.</p>
+</div>
+<div class="paragraph">
+<p>To see more available properties, please see <code>Configuration Reference</code> section related to the Micrometer DataSource Observation section.</p>
+</div>
+</div>
+</div>
+
 <h1 id="metricsGuides"><a class="anchor" href="#metricsGuides"></a>8 Guides</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/metricsGuides.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/metricsGuides.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5025,7 +5193,7 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 <h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.9.x/src/main/docs/guide/repository.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/5.11.x/src/main/docs/guide/repository.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
