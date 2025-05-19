@@ -33,7 +33,7 @@ class WebMetricsExceptionCodeTest {
     void testWebMetricsCustomStatusCode(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
-        Assertions.assertEquals(e.code(), HttpStatus.GATEWAY_TIMEOUT.getCode());
+        Assertions.assertEquals(HttpStatus.GATEWAY_TIMEOUT, e.getStatus());
         Assertions.assertEquals("Client '/': Gateway Timeout", e.getMessage());
         long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "504"), Tag.of("exception", "GatewayTimeoutException"))).count();
         Assertions.assertEquals(1, count);
