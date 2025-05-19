@@ -46,7 +46,7 @@
         <div class="docs-content">
             <div class="project">
                 <h1>Configuration Reference</h1>
-                <p><strong>Version:</strong>5.10.2-SNAPSHOT</p>
+                <p><strong>Version:</strong>5.11.0-SNAPSHOT</p>
                 <p></p>
             </div>
 <div class="sect2">
@@ -80,9 +80,9 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig">&#128279;</a>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.ClientErrorsUrisConfig.html">HttpMetricsConfig$ClientErrorsUrisConfig</a></caption>
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpServerMeterConfig.html">HttpServerMeterConfig</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -97,40 +97,36 @@
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client-errors-uris.enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is enabled</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
 </tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig">&#128279;</a>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.html">HttpMetricsConfig</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
 <tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
 </tr>
-</thead>
-<tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.min</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.slos</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
 </tr>
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpClientMeterConfig.html">HttpClientMeterConfig</a></caption>
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpClientMeterConfig.html">HttpClientMeterConfig</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -172,9 +168,9 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig">&#128279;</a>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpServerMeterConfig.html">HttpServerMeterConfig</a></caption>
+<caption class="title">Table 4. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.html">HttpMetricsConfig</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -189,29 +185,33 @@
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.percentiles</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.ClientErrorsUrisConfig.html">HttpMetricsConfig$ClientErrorsUrisConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.histogram</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.min</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.max</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.slos</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client-errors-uris.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is enabled</p></td>
 </tr>
 </tbody>
 </table>
@@ -428,6 +428,11 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.registry</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">io.prometheus.metrics.model.registry.PrometheusRegistry</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.prometheus-timestamps-in-ms</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
