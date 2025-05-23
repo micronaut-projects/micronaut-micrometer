@@ -55,4 +55,9 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
     public Class<MeterRegistry> getType() {
         return MeterRegistry.class;
     }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PRECEDENCE;
+    }
 }
