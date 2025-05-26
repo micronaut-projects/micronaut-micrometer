@@ -5,7 +5,7 @@ plugins {
 dependencies {
     api libs.micrometer.registry.prometheus
     api projects.micronautMicrometerRegistryPrometheus
-    implementation libs.prometheus.metrics.exporter.pushgateway
+    implementation libs.managed.prometheus.metrics.exporter.pushgateway
     implementation libs.prometheus.metrics.config
     implementation libs.prometheus.metrics.core
     implementation libs.prometheus.metrics.exposition.formats

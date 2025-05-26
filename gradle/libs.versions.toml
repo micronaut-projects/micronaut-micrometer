@@ -11,7 +11,7 @@ managed-metrics-core = '4.2.30'
 managed-micrometer = '1.13.6'
 managed-micrometer-tracing = '1.4.1'
 managed-new-relic-registry = '0.10.0'
-prometheus-pushgateway = '1.3.6'
+managed-prometheus-metrics-exporter-pushgateway = '1.3.6'
 managed-datasource-micrometer = '1.0.6'
 reflections = '0.10.2'
 
@@ -52,11 +52,11 @@ boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'mana
 grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 
-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'prometheus-pushgateway' }
-prometheus-metrics-config = { module = 'io.prometheus:prometheus-metrics-config', version.ref = 'prometheus-pushgateway' }
-prometheus-metrics-core = { module = 'io.prometheus:prometheus-metrics-core', version.ref = 'prometheus-pushgateway' }
-prometheus-metrics-exposition-formats = { module = 'io.prometheus:prometheus-metrics-exposition-formats', version.ref = 'prometheus-pushgateway' }
-prometheus-metrics-tracer-common = { module = 'io.prometheus:prometheus-metrics-tracer-common', version.ref = 'prometheus-pushgateway' }
+managed-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-config = { module = 'io.prometheus:prometheus-metrics-config', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-core = { module = 'io.prometheus:prometheus-metrics-core', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-exposition-formats = { module = 'io.prometheus:prometheus-metrics-exposition-formats', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-tracer-common = { module = 'io.prometheus:prometheus-metrics-tracer-common', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
