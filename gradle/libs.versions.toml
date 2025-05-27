@@ -53,6 +53,10 @@ grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 
 managed-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-config = { module = 'io.prometheus:prometheus-metrics-config', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-core = { module = 'io.prometheus:prometheus-metrics-core', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-exposition-formats = { module = 'io.prometheus:prometheus-metrics-exposition-formats', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
+prometheus-metrics-tracer-common = { module = 'io.prometheus:prometheus-metrics-tracer-common', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
