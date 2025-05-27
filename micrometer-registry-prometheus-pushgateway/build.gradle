@@ -5,11 +5,11 @@ plugins {
 dependencies {
     api libs.micrometer.registry.prometheus
     api projects.micronautMicrometerRegistryPrometheus
-    implementation libs.managed.prometheus.metrics.exporter.pushgateway
-    implementation libs.prometheus.metrics.config
-    implementation libs.prometheus.metrics.core
-    implementation libs.prometheus.metrics.exposition.formats
-    implementation libs.prometheus.metrics.tracer.common
+    api libs.managed.prometheus.metrics.exporter.pushgateway
+    api libs.prometheus.metrics.config
+    api libs.prometheus.metrics.core
+    api libs.prometheus.metrics.exposition.formats
+    api libs.prometheus.metrics.tracer.common
     testImplementation(mnSerde.micronaut.serde.jackson)
 }
 
