@@ -33,6 +33,7 @@ import jakarta.inject.Singleton;
 import reactor.core.publisher.Flux;
 
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Implements observation logic for {@link Observed} annotation using the Micrometer Observation API.
@@ -74,17 +75,28 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
             .lowCardinalityKeyValues(KeyValues.of(lowCardinalityKeyValues));
 
         observation.start();
+        AtomicBoolean stopped = new AtomicBoolean(false);
 
         try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty().propagate()) {
             switch (interceptedMethod.resultType()) {
                 case PUBLISHER -> {
                     return observation.scoped(() -> interceptedMethod.handleResult(
                         Flux.from(interceptedMethod.interceptResultAsPublisher())
-                            .doOnNext(value -> observation.stop())
-                            .doOnComplete(observation::stop)
+                            .doOnNext(value -> {
+                                if (stopped.compareAndSet(false, true)) {
+                                    observation.stop();
+                                }
+                            })
                             .doOnError(t -> {
                                 observation.error(t);
-                                observation.stop();
+                                if (stopped.compareAndSet(false, true)) {
+                                    observation.stop();
+                                }
+                            })
+                            .doOnComplete(() -> {
+                                if (stopped.compareAndSet(false, true)) {
+                                    observation.stop();
+                                }
                             })
                     ));
                 }

@@ -41,7 +41,7 @@ class ObservationAnnotationSpec extends Specification {
 
         when:
         tt.maxFuture(4, 10).get()
-        PollingConditions conditions = new PollingConditions()
+        PollingConditions conditions = new PollingConditions(timeout: 3, delay: 0.1)
 
         then:
         conditions.eventually {
