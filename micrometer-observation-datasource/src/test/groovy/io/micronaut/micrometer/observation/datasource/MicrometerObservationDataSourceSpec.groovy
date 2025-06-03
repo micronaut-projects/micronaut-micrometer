@@ -69,6 +69,10 @@ class MicrometerObservationDataSourceSpec extends Specification {
                     .hasContextualNameEqualTo('generated-keys')
                     .doesNotHaveError()
                     .hasHighCardinalityKeyValueWithKey('jdbc.row-count')
+
+            TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation(observationContextAssert -> observationContextAssert.hasContextualNameEqualTo("result-set")
+                    .hasHighCardinalityKeyValue("jdbc.row-count", "1")
+                    .doesNotHaveError())
         }
         productName == 'Soccer Ball'
 
