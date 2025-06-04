@@ -12,17 +12,13 @@ dependencies {
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation
     testAnnotationProcessor mnData.micronaut.data.processor
-    testImplementation libs.managed.micrometer.observation.test
+    testImplementation(libs.managed.micrometer.observation.test) {
+        exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
+    }
     testImplementation projects.micronautMicrometerCore
     testImplementation mnData.micronaut.data.jdbc
     testImplementation mnSql.micronaut.jdbc.tomcat
     testImplementation libs.managed.micrometer.tracing
 
     testRuntimeOnly mnSql.h2
-}
-
-micronautBuild {
-    binaryCompatibility {
-        enabledAfter('5.10.0')
-    }
 }
