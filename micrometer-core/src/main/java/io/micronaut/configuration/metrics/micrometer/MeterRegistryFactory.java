@@ -112,6 +112,6 @@ public class MeterRegistryFactory implements ApplicationEventListener<ShutdownEv
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
+        return -100;
     }
 }
