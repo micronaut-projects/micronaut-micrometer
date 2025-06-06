@@ -23,10 +23,12 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.CompositeMeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.event.ApplicationEventListener;
+import io.micronaut.context.event.ShutdownEvent;
 import io.micronaut.core.annotation.TypeHint;
+import io.micronaut.core.order.Ordered;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Singleton;
 
@@ -41,13 +43,14 @@ import java.util.List;
  */
 @Factory
 @TypeHint(io.micrometer.core.instrument.MeterRegistry.class)
-public class MeterRegistryFactory {
+public class MeterRegistryFactory implements ApplicationEventListener<ShutdownEvent>, Ordered {
 
     public static final String MICRONAUT_METRICS = "micronaut.metrics.";
     public static final String MICRONAUT_METRICS_BINDERS = MICRONAUT_METRICS + "binders";
     public static final String MICRONAUT_METRICS_COMMON_TAGS = MICRONAUT_METRICS + "tags";
     public static final String MICRONAUT_METRICS_ENABLED = MICRONAUT_METRICS + "enabled";
     public static final String MICRONAUT_METRICS_EXPORT = MICRONAUT_METRICS + "export";
+    private MeterRegistry registry;
 
     /**
      * Create a CompositeMeterRegistry bean if metrics are enabled, true by default.
@@ -58,7 +61,6 @@ public class MeterRegistryFactory {
      */
     @Primary
     @Singleton
-    @Bean(preDestroy = "close")
     CompositeMeterRegistry compositeMeterRegistry(List<MeterRegistry> registries,
                                                   List<MeterRegistryConfigurer<MeterRegistry>> configurers) {
         if (CollectionUtils.isEmpty(registries)) {
@@ -80,7 +82,7 @@ public class MeterRegistryFactory {
                 }
             }
         }
-
+        registry = compositeMeterRegistry;
         return compositeMeterRegistry;
     }
 
@@ -99,5 +101,17 @@ public class MeterRegistryFactory {
     MeterRegistryConfigurer<CompositeMeterRegistry> meterRegistryConfigurer(Collection<MeterBinder> binders,
                                                     Collection<MeterFilter> filters) {
         return new CompositeMeterRegistryConfigurer(binders, filters);
+    }
+
+    @Override
+    public void onApplicationEvent(ShutdownEvent event) {
+        if (registry != null && !registry.isClosed()) {
+            registry.close();
+        }
+    }
+
+    @Override
+    public int getOrder() {
+        return -100;
     }
 }
