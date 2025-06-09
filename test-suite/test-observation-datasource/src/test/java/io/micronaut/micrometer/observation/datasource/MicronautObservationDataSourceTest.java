@@ -58,9 +58,14 @@ class MicronautObservationDataSourceTest {
                     .doesNotHaveError());
             TestObservationRegistryAssert.assertThat(testRegistry).hasObservationWithNameEqualTo("jdbc.result-set")
                 .that()
-                .hasContextualNameEqualTo("result-set")
-                .doesNotHaveError()
-                .hasHighCardinalityKeyValueWithKey("jdbc.row-count");
+                .hasContextualNameEqualTo("generated-keys")
+                .hasHighCardinalityKeyValue("jdbc.generated-keys", "1")
+                .hasHighCardinalityKeyValue("jdbc.row-count", "1")
+                .doesNotHaveError();
+
+            TestObservationRegistryAssert.assertThat(testRegistry).hasAnObservation(observationContextAssert -> observationContextAssert.hasContextualNameEqualTo("result-set")
+                .hasHighCardinalityKeyValue("jdbc.row-count", "1")
+                .doesNotHaveError());
         }
     }
 
