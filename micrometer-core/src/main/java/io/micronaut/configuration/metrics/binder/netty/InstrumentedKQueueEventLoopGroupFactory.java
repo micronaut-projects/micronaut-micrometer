@@ -19,9 +19,7 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.KQueueAvailabilityCondition;
 import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory;
@@ -29,10 +27,6 @@ import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.kqueue.KQueue;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
-import io.netty.channel.kqueue.KQueueServerSocketChannel;
-import io.netty.channel.kqueue.KQueueSocketChannel;
-import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
@@ -58,7 +52,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(classes = KQueue.class, condition = KQueueAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
-final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFactory {
+final class InstrumentedKQueueEventLoopGroupFactory extends KQueueEventLoopGroupFactory {
 
     private final InstrumentedEventLoopTaskQueueFactory instrumentedEventLoopTaskQueueFactory;
 
@@ -99,22 +93,6 @@ final class InstrumentedKQueueEventLoopGroupFactory implements EventLoopGroupFac
                 DefaultSelectStrategyFactory.INSTANCE,
                 RejectedExecutionHandlers.reject(),
                 instrumentedEventLoopTaskQueueFactory), ioRatio);
-    }
-
-    @Override
-    public boolean isNative() {
-        return true;
-    }
-
-    @Override
-    public Class<? extends ServerSocketChannel> serverSocketChannelClass() {
-        return KQueueServerSocketChannel.class;
-    }
-
-    @NonNull
-    @Override
-    public Class<? extends SocketChannel> clientSocketChannelClass(@Nullable EventLoopGroupConfiguration configuration) {
-        return KQueueSocketChannel.class;
     }
 
     private static KQueueEventLoopGroup withIoRatio(KQueueEventLoopGroup group, @Nullable Integer ioRatio) {
