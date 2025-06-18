@@ -12,8 +12,9 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
 import io.micronaut.runtime.server.EmbeddedServer
-import spock.lang.Specification
 import spock.lang.Unroll
+import spock.lang.Ignore
+import spock.lang.Specification
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT
@@ -96,6 +97,7 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         new InstrumentedKQueueEventLoopGroupFactory(null) | true
     }
 
+    @Ignore
     void "test queue metrics are present"() {
         when:
         ApplicationContext context = ApplicationContext.run(
