@@ -28,7 +28,7 @@ micronaut-reactor = "3.8.0"
 micronaut-serde = "2.15.0"
 micronaut-sql = "6.2.0"
 micronaut-data = "4.12.2"
-micronaut-validation = "4.9.0"
+micronaut-validation = "4.10.0"
 sonatype-scan = "3.1.1"
 
 [libraries]
