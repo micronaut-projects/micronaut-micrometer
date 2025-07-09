@@ -7,7 +7,7 @@ You can configure this reporter using `micronaut.metrics.export.azuremonitor`. T
 |=======
 |*Name* |*Description*
 |enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
-|instrumentationKey | Azure Monitor instrumentation key. Required.
+|connectionString | Azure Monitor connection string. Required.
 |step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
 |=======
 
@@ -20,6 +20,6 @@ micronaut:
     export:
       azuremonitor:
         enabled: true
-        instrumentationKey: ${AZUREMONITOR_INSTRUMENTATION_KEY}
+        connectionString: ${AZUREMONITOR_CONNECTION_STRING}
         step: PT1M
 ----
