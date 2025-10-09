@@ -51,130 +51,9 @@
             </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_core_config_properties">Micronaut Micrometer Core Config Properties</h3>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig">&#128279;</a>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.html">HttpMetricsConfig</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties" href="#io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties">&#128279;</a>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html">ExportConfigurationProperties</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Properties</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.tags</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Properties</p></td>
-<td class="tableblock halign-left valign-top"></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig">&#128279;</a>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpServerMeterConfig.html">HttpServerMeterConfig</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.percentiles</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.histogram</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.min</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.max</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.slos</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
-<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig">&#128279;</a>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.ClientErrorsUrisConfig.html">HttpMetricsConfig$ClientErrorsUrisConfig</a></caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Property</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client-errors-uris.enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Is enabled</p></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
 <a id="io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpClientMeterConfig.html">HttpClientMeterConfig</a></caption>
+<caption class="title">Table 1. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpClientMeterConfig.html">HttpClientMeterConfig</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -216,6 +95,127 @@
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.html">HttpMetricsConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true if enabled</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig$ClientErrorsUrisConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpMetricsConfig.ClientErrorsUrisConfig.html">HttpMetricsConfig$ClientErrorsUrisConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.client-errors-uris.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Is enabled</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties" href="#io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html">ExportConfigurationProperties</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Properties</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The export properties</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.tags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Properties</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The common tags properties</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig" href="#io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/binder/web/config/HttpServerMeterConfig.html">HttpServerMeterConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.percentiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.histogram</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: false.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.min</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (0.001).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default: Micrometer default value (30).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.binders.web.server.slos</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default is empty.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
 </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_observation_config_properties">Micronaut Micrometer Observation Config Properties</h3>
@@ -246,9 +246,9 @@
 </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_observation_datasource_config_properties">Micronaut Micrometer Observation Datasource Config Properties</h3>
-<a id="io.micronaut.micrometer.observation.datasource.ObservationDataSourceConfig" href="#io.micronaut.micrometer.observation.datasource.ObservationDataSourceConfig">&#128279;</a>
+<a id="net.ttddyy.observation.tracing.DataSourceObservationListener" href="#net.ttddyy.observation.tracing.DataSourceObservationListener">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/datasource/ObservationDataSourceConfig.html">ObservationDataSourceConfig</a></caption>
+<caption class="title">Table 7. Configuration Properties for <a href="../api/io/micronaut/net/ttddyy/observation/tracing/DataSourceObservationListener.html">DataSourceObservationListener</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -262,25 +262,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether the observation data source is enabled or disabled.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.proxy-result-set</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates whether result sets should be proxied for observation purposes.</p>
-<p class="tableblock"> When enabled, the observation data source will create proxies around result sets
- to track and record relevant events.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.proxy-generated-keys</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Indicates whether generated keys should be proxied for observation purposes.</p>
-<p class="tableblock"> When enabled, the observation data source will create proxies around generated keys
- to track and record relevant events.</p></td>
-</tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.listener.connection-attributes-manager</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">net.ttddyy.observation.tracing.ConnectionAttributesManager</p></td>
@@ -321,6 +302,51 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Set</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.listener.include-result-set-operations</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+<a id="io.micronaut.micrometer.observation.datasource.ObservationDataSourceConfig" href="#io.micronaut.micrometer.observation.datasource.ObservationDataSourceConfig">&#128279;</a>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/datasource/ObservationDataSourceConfig.html">ObservationDataSourceConfig</a></caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.enabled</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets whether the observation data source is enabled or disabled.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.proxy-result-set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables or disables proxying of result sets for observation purposes.</p>
+<p class="tableblock"> When enabled, the observation data source will create proxies around result sets
+ to track and record relevant events. Disabling this feature can improve performance
+ but may limit the accuracy of observations.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.datasource.proxy-generated-keys</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enables or disables proxying of generated keys for observation purposes.</p>
+<p class="tableblock"> When enabled, the observation data source will create proxies around generated keys
+ to track and record relevant events. Disabling this feature can improve performance
+ but may limit the accuracy of observations.</p></td>
+</tr>
 </tbody>
 </table>
 <div style="page-break-after: always;"></div>
@@ -329,7 +355,7 @@
 <h3 id="_micronaut_micrometer_observation_http_config_properties">Micronaut Micrometer Observation Http Config Properties</h3>
 <a id="io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration" href="#io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/http/ObservationHttpExclusionsConfiguration.html">ObservationHttpExclusionsConfiguration</a></caption>
+<caption class="title">Table 9. Configuration Properties for <a href="../api/io/micronaut/micrometer/observation/http/ObservationHttpExclusionsConfiguration.html">ObservationHttpExclusionsConfiguration</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -346,7 +372,7 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micrometer.observation.http.exclusions</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.List</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sets the URI patterns to be excluded from observation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -354,9 +380,9 @@
 </div>
 <div class="sect2">
 <h3 id="_micronaut_micrometer_registry_prometheus_pushgateway_config_properties">Micronaut Micrometer Registry Prometheus Pushgateway Config Properties</h3>
-<a id="io.micronaut.configuration.metrics.micrometer.prometheus.pushgateway.PrometheusPushGatewayConfig" href="#io.micronaut.configuration.metrics.micrometer.prometheus.pushgateway.PrometheusPushGatewayConfig">&#128279;</a>
+<a id="io.prometheus.metrics.exporter.pushgateway.PushGateway$Builder" href="#io.prometheus.metrics.exporter.pushgateway.PushGateway$Builder">&#128279;</a>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Configuration Properties for <a href="../api/io/micronaut/configuration/metrics/micrometer/prometheus/pushgateway/PrometheusPushGatewayConfig.html">PrometheusPushGatewayConfig</a></caption>
+<caption class="title">Table 10. Configuration Properties for <a href="../api/io/micronaut/io/prometheus/metrics/exporter/pushgateway/PushGateway.Builder.html">PushGateway$Builder</a></caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -373,32 +399,32 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.grouping-keys</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Map</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map of the grouping keys.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.basic-auth-username</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">username for basic auth.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.basic-auth-password</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.lang.String</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">password for the basic auth.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.interval</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">interval of {@link PrometheusPushGatewayScheduler#pushData()}.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.initial-delay</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">java.time.Duration</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">initialDelay of {@link PrometheusPushGatewayScheduler#pushData()}.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.enabled</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">is PushGateway feature enabled.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.format</code></p></td>
@@ -433,6 +459,11 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.registry</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">io.prometheus.metrics.model.registry.PrometheusRegistry</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>micronaut.metrics.export.prometheus.pushgateway.escaping-scheme</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">io.prometheus.metrics.config.EscapingScheme</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
