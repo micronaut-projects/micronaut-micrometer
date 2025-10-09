@@ -20,6 +20,7 @@ dependencies {
     testImplementation mnData.micronaut.data.jdbc
     testImplementation mnSql.micronaut.jdbc.tomcat
     testImplementation libs.managed.micrometer.tracing
+    testImplementation mnTest.junit.platform.suite
 
     testRuntimeOnly mnSql.h2
     testRuntimeOnly mnLogging.logback.classic
