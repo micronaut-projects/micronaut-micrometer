@@ -1,5 +1,6 @@
 package io.micronaut.configuration.metrics.micrometer;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
@@ -34,6 +35,10 @@ class ReactorSchedulersMicrometerTest {
 
     @Inject
     SimpleMeterRegistry simpleMeterRegistry;
+
+    // needed for JDK 21
+    @Inject
+    MeterRegistry meterRegistry;
 
     @Test
     void enablingReactorSchedulersMetricsExposesSchedulerMetrics() throws InterruptedException {
