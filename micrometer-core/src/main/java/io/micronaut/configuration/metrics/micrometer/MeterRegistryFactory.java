@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.micrometer;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -80,7 +81,7 @@ public class MeterRegistryFactory {
                 }
             }
         }
-
+        Metrics.addRegistry(compositeMeterRegistry);
         return compositeMeterRegistry;
     }
 
