@@ -11,8 +11,6 @@ import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
@@ -32,8 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @MicronautTest
 @EnabledOnJre(JRE.JAVA_17)
 class ReactorSchedulersMicrometerTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorSchedulersMicrometerTest.class);
 
     static {
         Schedulers.resetFactory();
@@ -69,7 +65,6 @@ class ReactorSchedulersMicrometerTest {
             Set<String> names = simpleMeterRegistry.getMeters().stream()
                 .map(m -> m.getId().getName())
                 .collect(Collectors.toSet());
-            LOGGER.info(names.toString());
             if (names.contains("executor.scheduled.once")) {
                 observed = true;
                 assertEquals("demo", result);
@@ -92,7 +87,6 @@ class ReactorSchedulersMicrometerTest {
         @Singleton
         @Context
         SimpleMeterRegistry simpleMeterRegistry() {
-            LOGGER.info("simpleMeterRegistry created");
             return new SimpleMeterRegistry();
         }
     }
