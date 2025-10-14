@@ -1,7 +1,6 @@
 package io.micronaut.configuration.metrics.micrometer;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
@@ -10,6 +9,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Property(name = MICRONAUT_METRICS_ENABLED, value = "true")
 @Property(name = "spec.name", value = "ReactorSchedulersMicrometerTest")
 @MicronautTest
+@EnabledOnJre(JRE.JAVA_17)
 class ReactorSchedulersMicrometerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReactorSchedulersMicrometerTest.class);
