@@ -4,15 +4,9 @@
 plugins {
     id 'io.micronaut.build.internal.micrometer-base'
     id 'io.micronaut.build.internal.module'
-    id("org.sonatype.gradle.plugins.scan")
 }
-String ossIndexUsername = System.getenv("OSS_INDEX_USERNAME") ?: project.properties["ossIndexUsername"]
-String ossIndexPassword = System.getenv("OSS_INDEX_PASSWORD") ?: project.properties["ossIndexPassword"]
-boolean sonatypePluginConfigured = ossIndexUsername != null && ossIndexPassword != null
-if (sonatypePluginConfigured) {
-    ossIndexAudit {
-        username = ossIndexUsername
-        password = ossIndexPassword
+
+ossIndexAudit {
         excludeVulnerabilityIds = [
                 'CVE-2024-23082', // disputed / false position. See https://www.threeten.org/threetenbp/security.html
                 'CVE-2024-23081' // disputed / false position. See https://www.threeten.org/threetenbp/security.html
@@ -20,7 +14,6 @@ if (sonatypePluginConfigured) {
         excludeCoordinates = [
                 "org.threeten:threetenbp:1.7.2", // no version patched https://ossindex.sonatype.org/component/pkg:maven/org.threeten/threetenbp
         ]
-    }
 }
 
 dependencies {
