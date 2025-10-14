@@ -49,4 +49,5 @@ dependencies {
     testImplementation(mnTest.micronaut.test.junit5)
     testRuntimeOnly(mnTest.junit.jupiter.engine)
     testRuntimeOnly(mnLogging.logback.classic)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
