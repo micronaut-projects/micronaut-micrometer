@@ -21,12 +21,16 @@ metricsAndReporters:
   metricsAndReportersNewRelic: New Relic Registry
   metricsAndReportersNewRelicTelemetry: New Relic Telemetry Registry
   metricsAndReportersOracleCloud: Oracle Cloud Monitoring Registry
+  metricsAndReportersOtlp: OTLP Registry
   metricsAndReportersPrometheus: Prometheus Registry
+  metricsAndReportersPrometheusPushGateway: Prometheus PushGateway
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
   metricsAndReportersWavefront: Wavefront Registry
-observation: Observation
+observation:
+  title: Observation
+  datasourceObservation: Datasource Observation
 metricsGuides: Guides
 breaks: Breaking Changes
 repository: Repository

@@ -5,9 +5,9 @@ plugins {
 micronautBom {
     suppressions {
         dependencies.addAll([
-                // bomCheck fails because io.micrometer:docs is in the bom, but isn't a published artifact.
-                // See: https://github.com/micrometer-metrics/micrometer/issues/4606
-                "io.micrometer:docs:${libs.versions.managed.micrometer.asProvider().get()}",
+                // bomCheck fails because io.micrometer:concurrency-tests is in the bom, but isn't a published artifact.
+                // See: https://github.com/micrometer-metrics/micrometer/issues/5395
+                "io.micrometer:concurrency-tests:${libs.versions.managed.micrometer.asProvider().get()}",
         ])
     }
 }

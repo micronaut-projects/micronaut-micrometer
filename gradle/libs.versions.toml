@@ -1,31 +1,34 @@
 [versions]
-micronaut-platform = "4.4.2"
-micronaut = "4.4.9"
-micronaut-docs = "2.0.0"
-micronaut-test = "4.2.0"
-micronaut-gradle-plugin = "4.3.8"
-groovy = "4.0.15"
+micronaut-platform = "4.9.4"
+micronaut = "4.10.4"
+micronaut-docs = "3.0.0"
+micronaut-gradle-plugin = "4.5.5"
+micronaut-test = "4.9.0"
+groovy = "4.0.26"
 spock = "2.3-groovy-4.0"
 
-managed-metrics-core = '4.2.25'
-managed-micrometer = '1.12.6'
-managed-micrometer-tracing = '1.2.5'
+managed-metrics-core = '4.2.37'
+managed-micrometer = '1.15.4'
+managed-micrometer-tracing = '1.5.4'
 managed-new-relic-registry = '0.10.0'
+managed-prometheus-metrics-exporter-pushgateway = '1.4.1'
+managed-datasource-micrometer = '1.2.0'
 reflections = '0.10.2'
 
 jcache = "1.1.1"
-hdr-histogram = '2.2.1'
+hdr-histogram = '2.2.2'
 
-micronaut-aws = "4.5.0"
-micronaut-cache = "4.3.0"
-micronaut-grpc = "4.4.1"
-micronaut-logging = "1.2.2"
-micronaut-r2dbc = "5.4.0"
-micronaut-rxjava2 = "2.3.0"
-micronaut-reactor = '3.3.0'
-micronaut-serde = "2.9.0"
-micronaut-sql = "5.6.0"
-micronaut-validation = "4.5.0"
+micronaut-aws = "4.11.0"
+micronaut-cache = "5.3.0"
+micronaut-grpc = "4.12.0"
+micronaut-logging = "1.7.1"
+micronaut-r2dbc = "6.1.0"
+micronaut-rxjava2 = "2.8.0"
+micronaut-reactor = "3.9.0"
+micronaut-serde = "2.15.5"
+micronaut-sql = "6.3.0"
+micronaut-data = "4.13.7"
+micronaut-validation = "4.11.0"
 
 [libraries]
 # Core
@@ -41,11 +44,14 @@ micronaut-rxjava2 = { module = "io.micronaut.rxjava2:micronaut-rxjava2-bom", ver
 micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
 micronaut-serde = { module = "io.micronaut.serde:micronaut-serde-bom", version.ref = "micronaut-serde" }
 micronaut-sql = { module = "io.micronaut.sql:micronaut-sql-bom", version.ref = "micronaut-sql" }
+micronaut-data = { module = "io.micronaut.data:micronaut-data-bom", version.ref = "micronaut-data" }
 groovy-json = { module = "org.apache.groovy:groovy-json" }
 
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
+
+managed-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
 
 managed-metrics-core = { module = 'io.dropwizard.metrics:metrics-core', version.ref = 'managed-metrics-core' }
 managed-micrometer-registry-new-relic-telemetry = { module = 'com.newrelic.telemetry:micrometer-registry-new-relic', version.ref = 'managed-new-relic-registry' }
@@ -53,6 +59,8 @@ managed-micrometer-core = { module = 'io.micrometer:micrometer-core', version.re
 managed-micrometer-tracing = { module = 'io.micrometer:micrometer-tracing', version.ref = 'managed-micrometer-tracing' }
 managed-micrometer-observation = { module = 'io.micrometer:micrometer-observation', version.ref = 'managed-micrometer' }
 managed-micrometer-observation-test = { module = 'io.micrometer:micrometer-observation-test', version.ref = 'managed-micrometer' }
+
+managed-datasource-micrometer = { module = 'net.ttddyy.observation:datasource-micrometer', version.ref = 'managed-datasource-micrometer' }
 
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
@@ -68,6 +76,7 @@ micrometer-registry-influx = { module = 'io.micrometer:micrometer-registry-influ
 micrometer-registry-jmx = { module = 'io.micrometer:micrometer-registry-jmx', version.ref = 'managed-micrometer' }
 micrometer-registry-kairos = { module = 'io.micrometer:micrometer-registry-kairos', version.ref = 'managed-micrometer' }
 micrometer-registry-new-relic = { module = 'io.micrometer:micrometer-registry-new-relic', version.ref = 'managed-micrometer' }
+micrometer-registry-otlp = { module = 'io.micrometer:micrometer-registry-otlp', version.ref = 'managed-micrometer' }
 micrometer-registry-prometheus = { module = 'io.micrometer:micrometer-registry-prometheus', version.ref = 'managed-micrometer' }
 micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-signalfx', version.ref = 'managed-micrometer' }
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }

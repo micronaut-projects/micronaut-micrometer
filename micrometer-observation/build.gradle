@@ -16,15 +16,11 @@ dependencies {
     testAnnotationProcessor projects.micronautMicrometerAnnotation
     testImplementation mnReactor.micronaut.reactor
     testImplementation mnSerde.micronaut.serde.jackson
-    testImplementation libs.managed.micrometer.observation.test
-    testImplementation(libs.managed.micrometer.tracing)
-}
-
-micronautBuild {
-    binaryCompatibility {
-        def dash = version.indexOf('-')
-        def v = dash > 0 ? version.substring(0, dash) : version
-        def (major, minor, patch) = v.split('[.]').collect { it.toInteger() }
-        enabled = major > 5 || (major == 5 && minor > 1) || (major == 5 && minor == 1 && patch > 0)
+    testImplementation(libs.managed.micrometer.observation.test) {
+        exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
     }
+    testImplementation libs.managed.micrometer.tracing
+    testImplementation mnTest.micronaut.test.junit5
+    testRuntimeOnly    mnTest.junit.jupiter.engine
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

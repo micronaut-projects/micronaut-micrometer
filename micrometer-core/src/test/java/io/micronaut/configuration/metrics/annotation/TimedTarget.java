@@ -1,6 +1,8 @@
 package io.micronaut.configuration.metrics.annotation;
 
+import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
+import io.micronaut.configuration.metrics.aggregator.MethodTaggerExample;
 import jakarta.inject.Singleton;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +16,21 @@ class TimedTarget {
     Integer max(int a, int b) {
         return Math.max(a, b);
     }
+
+    @Timed(value = "timed.test.maxWithExtraTags.blocking", extraTags = {"method", "TimedTarget.maxWithExtraTags"})
+    Integer maxWithExtraTags(int a, int b) {
+        return Math.max(a, b);
+    }
+
+    @Timed("timed.test.maxWithOptions.blocking")
+    @MetricOptions(taggers = {MethodTaggerExample.class}, filterTaggers = true)
+    Integer maxWithOptions(int a, int b) {
+        return Math.max(a, b);
+    }
+
+    @Timed("timed.test.maxWithCondition.blocking")
+    @MetricOptions(condition = "#{ env['test.properties.enabled'] }")
+    Integer maxWithCondition(int a, int b) { return Math.max(a,b); }
 
     @Timed("timed.test.repeated1")
     @Timed("timed.test.repeated2")

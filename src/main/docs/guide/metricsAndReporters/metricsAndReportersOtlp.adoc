@@ -1,0 +1,23 @@
+You can include the OTLP reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-otlp`
+
+dependency:micronaut-micrometer-registry-otlp[groupId="io.micronaut.micrometer"]
+
+You can configure this reporter using `micronaut.metrics.export.otlp`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-otlp/src/main/java/io/micrometer/registry/otlp/OtlpConfig.java[OtlpConfig] for more options.
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|url     |Address where metrics will be published. Default: `http://localhost:4318/v1/metrics`
+|=======
+
+.Example OTLP Config
+[configuration]
+----
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      otlp:
+        enabled: true
+        url: http://otel-collector:4318/v1/metrics
+----

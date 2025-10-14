@@ -2,7 +2,7 @@ package io.micronaut.configuration.metrics.micrometer.prometheus
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.lang.Unroll

@@ -20,7 +20,7 @@ import io.micronaut.context.condition.ConditionContext;
 import io.micronaut.core.reflect.ClassUtils;
 
 /**
- * A custom {@link Condition} that defines if {@link ClientRequestMetricRegistryFilter} should be created.
+ * A custom {@link Condition} that defines if {@link ClientMetricsFilter} should be created.
  */
 public class WebMetricsClientCondition implements Condition {
     @Override

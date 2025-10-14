@@ -116,15 +116,14 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
                 return KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.URI, route);
             }
             if (context.getResponse() != null) {
-                HttpStatus status = context.getResponse().getStatus();
-                if (status != null) {
-                    if (299 < status.getCode() && status.getCode() < 400) {
-                        return URI_REDIRECTION;
-                    }
-                    if (status == HttpStatus.NOT_FOUND) {
-                        return URI_NOT_FOUND;
-                    }
+                int code = context.getResponse().code();
+                if (299 < code && code < 400) {
+                    return URI_REDIRECTION;
                 }
+                if (code == HttpStatus.NOT_FOUND.getCode()) {
+                    return URI_NOT_FOUND;
+                }
+
             }
             return URI_UNKNOWN;
     }

@@ -23,16 +23,20 @@ import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.StringUtils;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -66,7 +70,9 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     public Object intercept(MethodInvocationContext<Object, Object> context) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final String metricName = metadata.stringValue(Counted.class).orElse(DEFAULT_METRIC_NAME);
-        if (StringUtils.isNotEmpty(metricName)) {
+        final boolean conditionMet = MetricOptionsUtil.evaluateCondition(context);
+
+        if (StringUtils.isNotEmpty(metricName) && conditionMet) {
             InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
             try {
                 InterceptedMethod.ResultType resultType = interceptedMethod.resultType();
@@ -122,15 +128,19 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     }
 
     private void doCount(AnnotationMetadata metadata, String metricName, @Nullable Throwable e, MethodInvocationContext<Object, Object> context) {
+        List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(metadata.classValues(MetricOptions.class, MetricOptions.MEMBER_TAGGERS));
+        boolean filter = metadata.booleanValue(MetricOptions.class, MetricOptions.MEMBER_FILTER_TAGGERS).orElse(false);
         Counter.builder(metricName)
-                .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .tags(
                     methodTaggers.isEmpty() ? Collections.emptyList() :
                         methodTaggers
                             .stream()
-                            .flatMap(b -> b.getTags(context).stream())
+                            .sorted(OrderUtil.ORDERED_COMPARATOR)
+                            .filter(t -> !filter || taggers.contains(t.getClass()))
+                            .flatMap(t -> t.getTags(context).stream())
                             .toList()
                 )
+                .tags(metadata.stringValues(Counted.class, "extraTags"))
                 .description(metadata.stringValue(Counted.class, "description").orElse(null))
                 .tag(EXCEPTION_TAG, e != null ? e.getClass().getSimpleName() : "none")
                 .tag(RESULT_TAG, e != null ? "failure" : "success")

@@ -25,12 +25,15 @@ import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
+import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Singleton;
 import org.HdrHistogram.ConcurrentHistogram;
@@ -42,6 +45,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -99,10 +103,12 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     public Object intercept(MethodInvocationContext<Object, Object> context) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final AnnotationValue<TimedSet> timedSet = metadata.getAnnotation(TimedSet.class);
-        if (timedSet != null) {
-            final List<AnnotationValue<Timed>> timedAnnotations = timedSet.getAnnotations(VALUE_MEMBER, Timed.class);
-            if (!timedAnnotations.isEmpty()) {
+        final boolean conditionMet = MetricOptionsUtil.evaluateCondition(context);
 
+        if (timedSet != null && conditionMet) {
+            final List<AnnotationValue<Timed>> timedAnnotations = timedSet.getAnnotations(VALUE_MEMBER, Timed.class);
+
+            if (!timedAnnotations.isEmpty()) {
                 String exceptionClass = "none";
                 List<Timer.Sample> syncInvokeSamples = null;
                 InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
@@ -191,18 +197,23 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             final String description = metadata.stringValue("description").orElse(null);
             final String[] tags = metadata.stringValues("extraTags");
+            final AnnotationMetadata annotationMetadata = context.getAnnotationMetadata();
+            final List<Class<? extends AbstractMethodTagger>> taggers = Arrays.asList(annotationMetadata.classValues(MetricOptions.class, MetricOptions.MEMBER_TAGGERS));
+            final boolean filter = annotationMetadata.booleanValue(MetricOptions.class, MetricOptions.MEMBER_FILTER_TAGGERS).orElse(false);
             final double[] percentiles = metadata.doubleValues("percentiles");
             final boolean histogram = metadata.isTrue("histogram");
             final Timer timer = Timer.builder(metricName)
                     .description(description)
-                    .tags(tags)
                     .tags(
                         methodTaggers.isEmpty() ? Collections.emptyList() :
                             methodTaggers
                             .stream()
-                            .flatMap(b -> b.getTags(context).stream())
+                                .sorted(OrderUtil.ORDERED_COMPARATOR)
+                                .filter(t -> !filter || taggers.contains(t.getClass()))
+                                .flatMap(b -> b.getTags(context).stream())
                             .toList()
                     )
+                    .tags(tags)
                     .tags(EXCEPTION_TAG, exceptionClass)
                     .publishPercentileHistogram(histogram)
                     .publishPercentiles(percentiles)

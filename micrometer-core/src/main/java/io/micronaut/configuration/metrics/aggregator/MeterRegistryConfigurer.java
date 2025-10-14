@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.aggregator;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micronaut.core.order.Ordered;
 
 /**
  * Configures meter registries. This is done on bean added event so composite
@@ -25,7 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * @param <T> an instance of a meter registry that will be configured
  * @since 1.0
  */
-public interface MeterRegistryConfigurer<T extends MeterRegistry> {
+public interface MeterRegistryConfigurer<T extends MeterRegistry> extends Ordered {
 
     /**
      * Configures a meter registry with binders, filters, etc.

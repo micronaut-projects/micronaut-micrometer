@@ -23,7 +23,7 @@ class ObservationHandlerGroupingSpec extends Specification {
 
         then:
         List<ObservationHandler> handlers = registry.observationConfig().getProperties()["observationHandlers"]
-        handlers.size() == 2
+        handlers.size() == 3
         handlers.find(x-> x == observationHandler)
         !handlers.find(x -> x.getClass() == ObservationHandler.FirstMatchingCompositeObservationHandler.class)
     }
@@ -39,7 +39,7 @@ class ObservationHandlerGroupingSpec extends Specification {
 
         then:
         List<ObservationHandler> handlers = registry.observationConfig().getProperties()["observationHandlers"]
-        handlers.size() == 2
+        handlers.size() == 3
         handlers.find(x -> x.getClass() == ObservationHandler.FirstMatchingCompositeObservationHandler.class)
     }
 
@@ -54,7 +54,7 @@ class ObservationHandlerGroupingSpec extends Specification {
 
         then:
         List<ObservationHandler> handlers = registry.observationConfig().getProperties()["observationHandlers"]
-        handlers.size() == 3
+        handlers.size() == 4
         handlers.find(x -> x.getClass() == ObservationHandler.FirstMatchingCompositeObservationHandler.class)
         handlers.find(x-> x == observationHandler)
     }

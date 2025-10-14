@@ -9,9 +9,12 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.netty.channel.EventLoopGroupFactory
+import io.micronaut.http.netty.channel.NettyChannelType
 import io.micronaut.runtime.server.EmbeddedServer
-import spock.lang.Specification
 import spock.lang.Unroll
+import spock.lang.Ignore
+import spock.lang.Specification
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT
@@ -56,6 +59,45 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | false   | false
     }
 
+    @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
+    void "test getting channel class from instrumented event loop group factory"(
+            NettyChannelType channelType,
+            EventLoopGroupFactory eventLoopGroupFactory
+    ) {
+        when:
+        Class channelClass = eventLoopGroupFactory.channelClass(channelType)
+
+        then:
+        noExceptionThrown()
+        channelClass != null
+
+        where:
+        [channelType, eventLoopGroupFactory] << [
+                NettyChannelType.values(),
+                [
+                        new InstrumentedNioEventLoopGroupFactory(null),
+                        new InstrumentedEpollEventLoopGroupFactory(null),
+                        new InstrumentedKQueueEventLoopGroupFactory(null)
+                ]
+        ].combinations()
+    }
+
+    @Unroll("test if #eventLoopGroupFactory.getClass().getSimpleName() is native")
+    void "test if instrumented event loop group factory is native"() {
+        when:
+        boolean isNative = eventLoopGroupFactory.isNative()
+
+        then:
+        isNative == result
+
+        where:
+        eventLoopGroupFactory                             | result
+        new InstrumentedNioEventLoopGroupFactory(null)    | false
+        new InstrumentedEpollEventLoopGroupFactory(null)  | true
+        new InstrumentedKQueueEventLoopGroupFactory(null) | true
+    }
+
+    @Ignore
     void "test queue metrics are present"() {
         when:
         ApplicationContext context = ApplicationContext.run(

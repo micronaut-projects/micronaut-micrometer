@@ -1,0 +1,39 @@
+You can include the Prometheus Pushgateway reporter via `io.micronaut.micrometer:micronaut-micrometer-registry-prometheus-pushgateway`
+
+dependency:micronaut-micrometer-registry-prometheus-pushgateway[groupId="io.micronaut.micrometer"]
+
+You can configure this reporter using `micronaut.metrics.export.prometheus.pushgateway`.
+
+|=======
+|*Name* |*Description*
+|enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
+|interval |How frequently to push metrics data. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
+|address | Address of the Pushgateway in format host:port. Default is `localhost:9091`
+|format | Default is `Format.PROMETHEUS_PROTOBUF`.
+|scheme | Specify if metrics should be pushed using HTTP or HTTPS. Default is HTTP.
+|job | The job label to be used when pushing metrics.
+|basic-auth-username | Username for basic auth
+|basic-auth-password | Password for basic auth
+|grouping-keys | Grouping keys to be used when pushing/deleting metrics.
+|=======
+
+.Example Prometheus Pushgateway Config
+[configuration]
+----
+endpoints:
+  prometheus:
+    sensitive: false
+micronaut:
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
+        descriptions: true
+        pushgateway:
+          enabled: true
+          address: localhost:9091
+          interval: PT1M
+----
+

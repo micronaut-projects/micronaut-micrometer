@@ -1,0 +1,8 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-registry'
+}
+
+dependencies {
+    api libs.micrometer.registry.otlp
+    implementation(mnGrpc.protobuf.java) // apply com.google.protobuf:protobuf-java directly because the version brought transitively contains a vulnerable version.
+}
