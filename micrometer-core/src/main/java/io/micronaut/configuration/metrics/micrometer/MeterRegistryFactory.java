@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.micrometer;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -26,8 +27,10 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.event.ShutdownEvent;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Singleton;
 
 import java.util.Collection;
@@ -48,6 +51,7 @@ public class MeterRegistryFactory {
     public static final String MICRONAUT_METRICS_COMMON_TAGS = MICRONAUT_METRICS + "tags";
     public static final String MICRONAUT_METRICS_ENABLED = MICRONAUT_METRICS + "enabled";
     public static final String MICRONAUT_METRICS_EXPORT = MICRONAUT_METRICS + "export";
+    private MeterRegistry meterRegistry;
 
     /**
      * Create a CompositeMeterRegistry bean if metrics are enabled, true by default.
@@ -80,7 +84,8 @@ public class MeterRegistryFactory {
                 }
             }
         }
-
+        meterRegistry = compositeMeterRegistry;
+        Metrics.addRegistry(meterRegistry);
         return compositeMeterRegistry;
     }
 
@@ -100,4 +105,13 @@ public class MeterRegistryFactory {
                                                     Collection<MeterFilter> filters) {
         return new CompositeMeterRegistryConfigurer(binders, filters);
     }
+
+    /**
+     * Removes the registry from the global {@link Metrics}.
+     */
+    @EventListener
+    void onShutdown(ShutdownEvent shutdown) {
+        Metrics.removeRegistry(meterRegistry);
+    }
+
 }
