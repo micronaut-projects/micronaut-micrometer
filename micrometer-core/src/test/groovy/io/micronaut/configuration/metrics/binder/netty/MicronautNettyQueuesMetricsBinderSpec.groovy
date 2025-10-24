@@ -9,11 +9,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
-import io.micronaut.http.netty.channel.EventLoopGroupFactory
-import io.micronaut.http.netty.channel.NettyChannelType
 import io.micronaut.runtime.server.EmbeddedServer
-import spock.lang.Unroll
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
@@ -22,132 +18,39 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECU
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME
-import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class MicronautNettyQueuesMetricsBinderSpec extends Specification {
 
-    private static List<Class> eventLoopGroupFactoryInstrumentedClasses = [
-            InstrumentedNioEventLoopGroupFactory,
-            InstrumentedEpollEventLoopGroupFactory,
-            InstrumentedKQueueEventLoopGroupFactory
-    ]
-
-    @Unroll
-    void "test getting the beans #cfg #setting"() {
-        when:
-        ApplicationContext context = ApplicationContext.run([(cfg): setting])
-
-        then:
-        eventLoopGroupFactoryInstrumentedClasses
-                .collect { context.findBean(it).isPresent() }
-                .any() == result
-
-        cleanup:
-        context.close()
-
-        where:
-        cfg                                                 | setting | result
-        MICRONAUT_METRICS_ENABLED                           | true    | false
-        MICRONAUT_METRICS_ENABLED                           | false   | false
-        MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | true    | true
-        MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | false   | false
-    }
-
-    @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
-    void "test getting channel class from instrumented event loop group factory"(
-            NettyChannelType channelType,
-            EventLoopGroupFactory eventLoopGroupFactory
-    ) {
-        when:
-        Class channelClass = eventLoopGroupFactory.channelClass(channelType)
-
-        then:
-        noExceptionThrown()
-        channelClass != null
-
-        where:
-        [channelType, eventLoopGroupFactory] << [
-                NettyChannelType.values(),
-                [
-                        new InstrumentedNioEventLoopGroupFactory(null),
-                        new InstrumentedEpollEventLoopGroupFactory(null),
-                        new InstrumentedKQueueEventLoopGroupFactory(null)
-                ]
-        ].combinations()
-    }
-
-    @Unroll("test if #eventLoopGroupFactory.getClass().getSimpleName() is native")
-    void "test if instrumented event loop group factory is native"() {
-        when:
-        boolean isNative = eventLoopGroupFactory.isNative()
-
-        then:
-        isNative == result
-
-        where:
-        eventLoopGroupFactory                             | result
-        new InstrumentedNioEventLoopGroupFactory(null)    | false
-        new InstrumentedEpollEventLoopGroupFactory(null)  | true
-        new InstrumentedKQueueEventLoopGroupFactory(null) | true
-    }
-
-    @Ignore
     void "test queue metrics are present"() {
-        when:
+        given:
         ApplicationContext context = ApplicationContext.run(
                 [MICRONAUT_METRICS_ENABLED                            : true,
                  (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
         )
         context.getBean(EmbeddedServer).start()
 
-        then:
-        eventLoopGroupFactoryInstrumentedClasses
-                .collect { context.findBean(it).isPresent() }
-                .any()
-
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
         RequiredSearch search = registry.get(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-        search.tags(Tags.of(GROUP, PARENT))
+        search.tags(Tags.of(GROUP, "default"))
         Timer globalParentWaitTimer = search.timer()
 
         search = registry.get(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-        search.tags(Tags.of(GROUP, PARENT))
+        search.tags(Tags.of(GROUP, "default"))
         Timer globalParentExecutionTime = search.timer()
 
         search = registry.get(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-        search.tags(Tags.of(GROUP, PARENT))
+        search.tags(Tags.of(GROUP, "default"))
         Counter globalParentTaskCounter = search.counter()
-
-        search = registry.get(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-        search.tags(Tags.of(GROUP, WORKER))
-        Timer globalWorkerWaitTimer = search.timer()
-
-        search = registry.get(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-        search.tags(Tags.of(GROUP, WORKER))
-        Timer globalWorkerExecutionTimer = search.timer()
-
-        search = registry.get(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-        search.tags(Tags.of(GROUP, WORKER))
-        Counter globalWorkerTaskCounter = search.counter()
 
         then:
         globalParentWaitTimer
         globalParentExecutionTime
         globalParentTaskCounter
-
-        globalWorkerWaitTimer
-        globalWorkerWaitTimer.count() == 0
-        globalWorkerExecutionTimer
-        globalWorkerExecutionTimer.count() == 0
-        globalWorkerTaskCounter
-        globalWorkerTaskCounter.count() == 0
 
         when:
         DummyClient client = context.getBean(DummyClient)
@@ -161,10 +64,7 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         client.test() == 'root'
         globalParentWaitTimer.count() > 0
         globalParentExecutionTime.count() > 0
-        globalWorkerWaitTimer.count() > 0
-        globalWorkerExecutionTimer.count() > 0
         globalParentTaskCounter.count() > 0
-        globalWorkerTaskCounter.count() > 0
 
         cleanup:
         context.close()

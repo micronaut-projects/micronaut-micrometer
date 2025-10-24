@@ -70,11 +70,12 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped.getClass().getName().startsWith("io.netty")) {
+        if (isEventLoop(unwrapped)) {
             return unwrapped;
         }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
-        if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR)) {
+        if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR) ||
+            unwrapped.getClass().getName().equals("io.micronaut.scheduling.executor.FastThreadPerTaskExecutor")) {
             return executorService;
         }
 
@@ -124,5 +125,16 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
+    }
+
+    private static boolean isEventLoop(Object o) {
+        Class<?> c = o.getClass();
+        while (c != null) {
+            if (c.getName().startsWith("io.netty.")) {
+                return true;
+            }
+            c = c.getSuperclass();
+        }
+        return false;
     }
 }
