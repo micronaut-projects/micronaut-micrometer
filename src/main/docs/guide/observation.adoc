@@ -29,3 +29,17 @@ You can configure the behavior of this module by modifying the following propert
 
 - To disable HTTP server instrumentation, set the `micrometer.observation.http.server.enabled` property to `false` (the default value is `true`).
 - To disable HTTP client instrumentation, set the `micrometer.observation.http.client.enabled` property to `false` (the default value is `true`).
+
+==== HTTP server metrics filter selection and fallback
+
+When the Observation HTTP module is present on the classpath, the HTTP server is instrumented by the Observation-based filter by default, and the Micrometer-based server metrics filter (ServerMetricsFilter) is not created. When the module is absent, the Micrometer-based server metrics filter is created to ensure HTTP metrics are still recorded.
+
+ServerMetricsFilter instruments Micrometer metrics via MeterRegistry, whereas ObservationServerFilter uses ObservationRegistry and can emit metrics and traces depending on configuration.
+
+- Observation module present (default):
+  - `micrometer.observation.http.server.enabled` absent or `true` → ObservationServerFilter active; Micrometer-based ServerMetricsFilter not created.
+  - `micrometer.observation.http.server.enabled=false` → Observation disabled; Micrometer-based ServerMetricsFilter created (subject to general metrics enablement).
+- Observation module absent:
+  - Any value of `micrometer.observation.http.server.enabled` → Micrometer-based ServerMetricsFilter created.
+
+This behavior prevents a “no metrics” situation if the observation feature is enabled in configuration but the Observation HTTP module is not on the classpath. The observation property only affects behavior when the Observation HTTP module is available.
