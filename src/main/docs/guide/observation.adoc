@@ -43,3 +43,17 @@ ServerMetricsFilter instruments Micrometer metrics via MeterRegistry, whereas Ob
   - Any value of `micrometer.observation.http.server.enabled` → Micrometer-based ServerMetricsFilter created.
 
 This behavior prevents a “no metrics” situation if the observation feature is enabled in configuration but the Observation HTTP module is not on the classpath. The observation property only affects behavior when the Observation HTTP module is available.
+
+==== HTTP client metrics filter selection and fallback
+
+When the Observation HTTP module is present on the classpath, the HTTP client is instrumented by the Observation-based filter by default, and the Micrometer-based client metrics filter (ClientMetricsFilter) is not created. When the module is absent, the Micrometer-based client metrics filter is created to ensure HTTP client metrics are still recorded.
+
+ClientMetricsFilter instruments Micrometer metrics via MeterRegistry, whereas ObservationClientFilter uses ObservationRegistry and can emit metrics and traces depending on configuration.
+
+- Observation module present (default):
+  - `micrometer.observation.http.client.enabled` absent or `true` → ObservationClientFilter active; Micrometer-based ClientMetricsFilter not created.
+  - `micrometer.observation.http.client.enabled=false` → Observation disabled; Micrometer-based ClientMetricsFilter created (subject to general metrics enablement).
+- Observation module absent:
+  - Any value of `micrometer.observation.http.client.enabled` → Micrometer-based ClientMetricsFilter created.
+
+This mirrors the server-side selection and avoids a “no metrics” situation when the Observation HTTP module is missing.

@@ -71,12 +71,29 @@ class FilterCreationSpec extends Specification{
         context.getBeansOfType(ServerMetricsFilter).size() == 0
     }
 
-    void 'check condition both filters enabled'() {
+    void 'check condition both server filters enabled'() {
         when:
         def context = io.micronaut.context.ApplicationContext.builder(
                 'micronaut.application.name': 'test-app',
                 'micronaut.metrics.binders.web.enabled': 'true',
                 'micrometer.observation.http.server.enabled': 'true'
+        ).start()
+
+        then:
+        context.getBeansOfType(MeterRegistry).size() == 1
+        context.getBeansOfType(ObservationRegistry).size() == 1
+        context.getBeansOfType(ObservationClientFilter).size() == 1
+        context.getBeansOfType(ObservationServerFilter).size() == 1
+        context.getBeansOfType(ClientMetricsFilter).size() == 0
+        context.getBeansOfType(ServerMetricsFilter).size() == 0
+    }
+
+    void 'check condition both client filters enabled'() {
+        when:
+        def context = io.micronaut.context.ApplicationContext.builder(
+                'micronaut.application.name': 'test-app',
+                'micronaut.metrics.binders.web.enabled': 'true',
+                'micrometer.observation.http.client.enabled': 'true'
         ).start()
 
         then:
