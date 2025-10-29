@@ -10,6 +10,8 @@ dependencies {
 
     implementation mn.reactor
     implementation mn.micronaut.core.reactive
+    implementation mn.micronaut.context
+
     compileOnly(libs.managed.micrometer.tracing)
 
     testAnnotationProcessor mn.micronaut.inject.java

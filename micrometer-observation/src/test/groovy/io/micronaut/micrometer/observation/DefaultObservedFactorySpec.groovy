@@ -4,11 +4,13 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.observation.ObservationFilter
 import io.micrometer.observation.ObservationHandler
 import io.micrometer.observation.ObservationRegistry
+import io.micrometer.observation.Observations
 import io.micrometer.tracing.Tracer
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler
 import io.micrometer.tracing.propagation.Propagator
+import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 
 class DefaultObservedFactorySpec extends Specification {
@@ -20,7 +22,7 @@ class DefaultObservedFactorySpec extends Specification {
 
     void 'test no metrics and no trace'() {
         when:
-        def context = io.micronaut.context.ApplicationContext.builder(
+        def context = ApplicationContext.builder(
                 'micronaut.application.name': 'test-app',
         ).start()
 
@@ -35,9 +37,31 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(ObservationRegistry).size() == 1
     }
 
+    void 'observations global registry is set on startup and reset on shutdown'() {
+        given:
+        Observations.resetRegistry()
+        def initialConfig = Observations.getGlobalRegistry().observationConfig()
+
+        when:
+        def context = ApplicationContext.builder(
+                'micronaut.application.name': 'test-app',
+        ).start()
+
+        then:
+        def registryBean = context.getBean(ObservationRegistry)
+        Observations.getGlobalRegistry().observationConfig().is(registryBean.observationConfig())
+
+        when:
+        context.close()
+
+        then:
+        Observations.getGlobalRegistry().observationConfig().is(initialConfig)
+    }
+
+
     void 'test metrics and no trace'() {
         when:
-        def context = io.micronaut.context.ApplicationContext.builder(
+        def context = ApplicationContext.builder(
                 'micronaut.application.name': 'test-app',
         ).start()
         context.registerSingleton(meterRegistryMocked)
@@ -56,7 +80,7 @@ class DefaultObservedFactorySpec extends Specification {
 
     void 'test trace and no metrics'() {
         when:
-        def context = io.micronaut.context.ApplicationContext.builder(
+        def context = ApplicationContext.builder(
                 'micronaut.application.name': 'test-app',
         ).start()
         context.registerSingleton(tracerMocked)
@@ -95,7 +119,7 @@ class DefaultObservedFactorySpec extends Specification {
 
     void 'test metrics and trace with propagator'() {
         when:
-        def context = io.micronaut.context.ApplicationContext.builder(
+        def context = ApplicationContext.builder(
                 'micronaut.application.name': 'test-app',
         ).start()
         context.registerSingleton(meterRegistryMocked)
