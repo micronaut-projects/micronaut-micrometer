@@ -8,8 +8,3 @@ dependencies {
     testImplementation mn.micronaut.inject.java.test
     testImplementation mn.micronaut.inject.groovy.test
 }
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
