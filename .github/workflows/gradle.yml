@@ -52,7 +52,7 @@ jobs:
           fetch-depth: 0
 
       - name: "🔧 Setup GraalVM CE"
-        uses: graalvm/setup-graalvm@v1.4.1
+        uses: graalvm/setup-graalvm@v1.4.2
         with:
           distribution: 'graalvm'
           java-version: ${{ matrix.java }}
@@ -119,3 +119,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           BRANCH: gh-pages
           FOLDER: build/docs
+
+      - name: "❓ Optional cleanup step"
+        run: |
+          [ -f ./cleanup.sh ] && ./cleanup.sh || [ ! -f ./cleanup.sh ]
