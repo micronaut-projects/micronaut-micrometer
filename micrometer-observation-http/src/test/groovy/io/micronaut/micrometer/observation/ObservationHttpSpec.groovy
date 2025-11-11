@@ -377,7 +377,7 @@ class ObservationHttpSpec extends Specification {
         @Inject
         ObservationRegistry observationRegistry
 
-        @ExecuteOn("io")
+        @ExecuteOn(IO)
         @Post("/enter")
         @Observed(name = "enter")
         Mono<String> enter(@Header("X-TrackingId") String tracingId, @Body SomeBody body) {
@@ -389,7 +389,7 @@ class ObservationHttpSpec extends Specification {
             )
         }
 
-        @ExecuteOn("io")
+        @ExecuteOn(IO)
         @Get("/test")
         @Observed
         Mono<String> test(@Header("X-TrackingId") String tracingId) {
@@ -407,7 +407,7 @@ class ObservationHttpSpec extends Specification {
 
         }
 
-        @ExecuteOn("io")
+        @ExecuteOn(IO)
         @Get("/test2")
         Mono<String> test2(@Header("X-TrackingId") String tracingId) {
             LOG.debug("test2")
