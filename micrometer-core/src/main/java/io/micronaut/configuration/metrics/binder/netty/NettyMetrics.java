@@ -73,8 +73,6 @@ final class NettyMetrics {
     static final String TIME = "time";
 
     static final String GROUP = "group";
-    static final String PARENT = "parent";
-    static final String WORKER = "worker";
 
     static final String READ = "read";
     static final String WRITTEN = "written";
