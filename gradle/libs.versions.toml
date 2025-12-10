@@ -27,7 +27,7 @@ micronaut-rxjava2 = "2.8.0"
 micronaut-reactor = "3.9.1"
 micronaut-serde = "2.15.5"
 micronaut-sql = "6.3.2"
-micronaut-data = "4.13.7"
+micronaut-data = "4.14.1"
 micronaut-validation = "4.11.0"
 
 [libraries]
