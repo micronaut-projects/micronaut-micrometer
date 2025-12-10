@@ -20,7 +20,7 @@ import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Property;
-import io.micronaut.core.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import jakarta.inject.Singleton;
 
 import java.util.List;

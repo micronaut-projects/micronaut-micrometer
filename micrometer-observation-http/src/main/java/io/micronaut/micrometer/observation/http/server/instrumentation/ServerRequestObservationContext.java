@@ -17,7 +17,7 @@ package io.micronaut.micrometer.observation.http.server.instrumentation;
 
 import io.micrometer.observation.transport.RequestReplyReceiverContext;
 import io.micronaut.core.annotation.Internal;
-import io.micronaut.core.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 
