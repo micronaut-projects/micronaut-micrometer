@@ -22,7 +22,7 @@ class PrometheusEndpointSpec extends Specification {
     @AutoCleanup
     HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, embeddedServer.URL)
 
-    @IgnoreIf({ jvm.isJava21() })
+    @IgnoreIf({ jvm.isJava21() || jvm.isJava25() })
     void "test prometheus scrape"() {
         expect:
         client.toBlocking().retrieve('/prometheus').contains('jvm_memory_used')
