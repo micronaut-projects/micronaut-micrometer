@@ -13,7 +13,6 @@ ossIndexAudit {
         ]
         excludeCoordinates = [
                 "org.threeten:threetenbp:1.7.2", // no version patched https://ossindex.sonatype.org/component/pkg:maven/org.threeten/threetenbp
-                "io.netty:netty-codec-http:4.2.7.Final"
         ]
 }
 
