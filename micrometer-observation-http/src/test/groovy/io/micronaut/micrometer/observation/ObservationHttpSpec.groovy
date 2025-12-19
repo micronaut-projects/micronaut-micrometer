@@ -26,6 +26,7 @@ import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.rxjava2.http.client.RxHttpClient
+import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
 import io.reactivex.Single
 import jakarta.inject.Inject
@@ -42,7 +43,6 @@ import spock.util.concurrent.PollingConditions
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 
-import static io.micronaut.scheduling.TaskExecutors.IO
 
 @Slf4j("LOG")
 class ObservationHttpSpec extends Specification {
@@ -377,7 +377,7 @@ class ObservationHttpSpec extends Specification {
         @Inject
         ObservationRegistry observationRegistry
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Post("/enter")
         @Observed(name = "enter")
         Mono<String> enter(@Header("X-TrackingId") String tracingId, @Body SomeBody body) {
@@ -389,7 +389,7 @@ class ObservationHttpSpec extends Specification {
             )
         }
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Get("/test")
         @Observed
         Mono<String> test(@Header("X-TrackingId") String tracingId) {
@@ -407,7 +407,7 @@ class ObservationHttpSpec extends Specification {
 
         }
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Get("/test2")
         Mono<String> test2(@Header("X-TrackingId") String tracingId) {
             LOG.debug("test2")
