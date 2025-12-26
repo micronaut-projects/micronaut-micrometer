@@ -1,15 +1,24 @@
 package io.micronaut.configuration.metrics.micrometer.prometheus.management
 
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import spock.lang.AutoCleanup
-import spock.lang.IgnoreIf
 import spock.lang.PendingFeature
 import spock.lang.Shared
 import spock.lang.Specification
 
 class PrometheusEndpointSpec extends Specification {
+
+    def setup() {
+        def registry = embeddedServer.applicationContext.getBean(MeterRegistry)
+
+        new JvmMemoryMetrics().bindTo(registry)
+        new ProcessorMetrics().bindTo(registry)
+    }
 
     @Shared
     @AutoCleanup
@@ -22,7 +31,6 @@ class PrometheusEndpointSpec extends Specification {
     @AutoCleanup
     HttpClient client = embeddedServer.applicationContext.createBean(HttpClient, embeddedServer.URL)
 
-    @IgnoreIf({ jvm.isJava21() || jvm.isJava25() })
     void "test prometheus scrape"() {
         expect:
         client.toBlocking().retrieve('/prometheus').contains('jvm_memory_used')
