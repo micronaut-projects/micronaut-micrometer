@@ -26,7 +26,7 @@ micronaut-r2dbc = "6.2.0"
 micronaut-rxjava2 = "2.9.0"
 micronaut-reactor = "3.9.1"
 micronaut-serde = "2.16.2"
-micronaut-sql = "6.3.2"
+micronaut-sql = "7.0.0"
 micronaut-data = "4.14.1"
 micronaut-validation = "4.12.0"
 
