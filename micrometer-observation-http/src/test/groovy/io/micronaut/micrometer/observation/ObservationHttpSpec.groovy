@@ -25,10 +25,10 @@ import io.micronaut.http.context.ServerRequestContext
 import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import io.micronaut.rxjava2.http.client.RxHttpClient
+import io.micronaut.rxjava3.http.client.Rx3HttpClient
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
@@ -173,10 +173,10 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
-    void 'test observation rxjava2'() {
+    void 'test observation rxjava3'() {
 
         when:
-        HttpResponse<String> response = reactorHttpClient.toBlocking().exchange('/rxjava2/test', String)
+        HttpResponse<String> response = reactorHttpClient.toBlocking().exchange('/rxjava3/test', String)
 
         then:
         conditions.eventually {
@@ -562,18 +562,18 @@ class ObservationHttpSpec extends Specification {
         void excludeTest() {}
     }
 
-    @Controller('/rxjava2')
-    static class RxJava2 {
+    @Controller('/rxjava3')
+    static class RxJava {
 
         @Inject
         @Client("/")
-        RxHttpClient rxHttpClient
+        Rx3HttpClient rxHttpClient
 
         @Get("/test")
         Single<String> test() {
             return Single.fromPublisher(
                     rxHttpClient.retrieve(HttpRequest
-                            .GET("/rxjava2/test2"), String)
+                            .GET("/rxjava3/test2"), String)
             )
         }
 
