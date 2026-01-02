@@ -1,5 +1,5 @@
 plugins {
-    id("io.micronaut.minimal.application")
+    id("io.micronaut.application")
 }
 
 version = "0.1"
@@ -26,6 +26,7 @@ dependencies {
     testRuntimeOnly mnLogging.logback.classic
 }
 
+graalvmNative.toolchainDetection = false
 micronaut {
     version.set(libs.versions.micronaut.platform)
     runtime("netty")
