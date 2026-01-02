@@ -37,7 +37,7 @@ dependencies {
     testImplementation(mnSql.micronaut.jdbc)
     testImplementation(mn.micronaut.management)
     testImplementation(mn.micronaut.http.validation)
-    testImplementation(mnRxjava2.micronaut.rxjava2)
+    testImplementation(mnRxjava3.micronaut.rxjava3)
     testImplementation(mnSerde.micronaut.serde.jackson)
     testImplementation(mn.netty.buffer)
     testImplementation(mn.netty.transport.native.epoll)

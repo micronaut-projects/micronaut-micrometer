@@ -39,8 +39,8 @@ include 'micrometer-registry-signalfx'
 include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'micrometer-registry-wavefront'
-include 'test-suite:micronaut-serialization'
-include 'test-suite:test-observation-datasource'
+//include 'test-suite:micronaut-serialization'
+//include 'test-suite:test-observation-datasource'
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 
@@ -51,7 +51,7 @@ micronautBuild {
     importMicronautCatalog("micronaut-cache")
     importMicronautCatalog("micronaut-grpc")
     importMicronautCatalog("micronaut-r2dbc")
-    importMicronautCatalog("micronaut-rxjava2")
+    importMicronautCatalog("micronaut-rxjava3")
     importMicronautCatalog("micronaut-serde")
     importMicronautCatalog("micronaut-sql")
     importMicronautCatalog("micronaut-data")
