@@ -1,5 +1,5 @@
 plugins {
-    id("io.micronaut.application")
+    id("io.micronaut.minimal.application")
 }
 
 version = "0.1"
@@ -21,8 +21,6 @@ dependencies {
     testImplementation(mnTest.junit.platform.suite)
     testImplementation(mn.micronaut.http.client)
 }
-
-graalvmNative.toolchainDetection = false
 
 tasks.nativeTest.enabled = false
 micronaut {
