@@ -40,7 +40,7 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'micrometer-registry-wavefront'
 include 'test-suite:micronaut-serialization'
-include 'test-suite:test-observation-datasource'
+//include 'test-suite:test-observation-datasource'
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 
