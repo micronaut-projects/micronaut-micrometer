@@ -331,8 +331,8 @@ class ObservationHttpSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
                 it.hasContextualNameEqualTo("http get /propagate/nestedReactive/{name}")
                 it.hasNameEqualTo("http.server.requests")
-                it.hasLowCardinalityKeyValue("foo", "bar")
-                it.hasLowCardinalityKeyValue("foo2", "bar2")
+                it.hasHighCardinalityKeyValue("foo", "bar")
+                it.hasHighCardinalityKeyValue("foo2", "bar2")
             }
         }
 
@@ -354,8 +354,8 @@ class ObservationHttpSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
                 it.hasContextualNameEqualTo("http get /propagate/nestedReactive2/{name}")
                 it.hasNameEqualTo("http.server.requests")
-                it.hasLowCardinalityKeyValue("foo", "bar")
-                it.hasLowCardinalityKeyValue("foo3", "bar3")
+                it.hasHighCardinalityKeyValue("foo", "bar")
+                it.hasHighCardinalityKeyValue("foo3", "bar3")
             }
         }
 
@@ -455,13 +455,13 @@ class ObservationHttpSpec extends Specification {
         Publisher<String> nestedReactive(String name) {
 
             def current = observationRegistry.getCurrentObservation()
-            current.lowCardinalityKeyValue('foo', 'bar')
+            current.highCardinalityKeyValue('foo', 'bar')
             return Flux.deferContextual { contextView ->
                 Flux.from(propagateClient.continuedRx(name))
                         .flatMap({ String res ->
                             // Here thread switch can occur,
                             // that means the thread might be different and Span.current() wouldn't work
-                            current.lowCardinalityKeyValue('foo2', 'bar2')
+                            current.highCardinalityKeyValue('foo2', 'bar2')
                             // NOTE: the span needs to be not closed for this attribute setting to work
                             return Mono.just(name)
                         })
@@ -472,7 +472,7 @@ class ObservationHttpSpec extends Specification {
         @SingleResult
         Publisher<String> nestedReactive2(String name) {
             def current = observationRegistry.getCurrentObservation()
-            current.lowCardinalityKeyValue('foo', 'bar')
+            current.highCardinalityKeyValue('foo', 'bar')
             return Flux.deferContextual { contextView ->
                 {
                         Flux.from(propagateClient.continuedRx(name))
@@ -481,7 +481,7 @@ class ObservationHttpSpec extends Specification {
                                     // that means the thread might be different and Span.current() wouldn't work
                                     // We need can retrieve the current span from the Reactor context
                                     def currentInnerSpan = ObservedReactorPropagation.currentObservation(contextView)
-                                    currentInnerSpan.lowCardinalityKeyValue('foo3', 'bar3')
+                                    currentInnerSpan.highCardinalityKeyValue('foo3', 'bar3')
                                     return Mono.just(name)
                                 }).contextWrite(contextView)
                     }
