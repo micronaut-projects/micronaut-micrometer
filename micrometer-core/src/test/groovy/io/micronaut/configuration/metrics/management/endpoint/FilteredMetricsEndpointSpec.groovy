@@ -18,7 +18,7 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import jakarta.inject.Singleton
 import jakarta.validation.constraints.NotBlank
 import reactor.core.publisher.Mono
@@ -55,7 +55,7 @@ class FilteredMetricsEndpointSpec extends Specification {
 
         expect:
         client.toBlocking().exchange(HttpRequest.GET('/filtered/hello/fred'), String).body() == "Hello Fred"
-        client.toBlocking().exchange(HttpRequest.GET('/filtered/rxjava2/fred'), String).body() == "Hello Fred"
+        client.toBlocking().exchange(HttpRequest.GET('/filtered/rxjava3/fred'), String).body() == "Hello Fred"
     }
 
     void "test the filter beans are available"() {
@@ -122,7 +122,7 @@ class FilteredMetricsEndpointSpec extends Specification {
 
         @Timed
         @Counted
-        @Get("/filtered/rxjava2/{name}")
+        @Get("/filtered/rxjava3/{name}")
         Single<String> rxjava(@NotBlank String name) {
             return Single.just('Hello ' + name.capitalize())
         }

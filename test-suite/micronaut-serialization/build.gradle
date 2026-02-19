@@ -23,7 +23,6 @@ dependencies {
 }
 
 graalvmNative.toolchainDetection = false
-
 micronaut {
     version.set(libs.versions.micronaut.platform)
     runtime("netty")
