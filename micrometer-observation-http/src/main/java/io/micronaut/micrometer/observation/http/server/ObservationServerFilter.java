@@ -26,6 +26,7 @@ import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
+import org.reactivestreams.Publisher;
 import io.micronaut.micrometer.observation.ObservationPropagationContext;
 import io.micronaut.micrometer.observation.http.AbstractObservationFilter;
 import io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration;
@@ -79,6 +80,11 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
         request.getAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, Observation.class).ifPresent(observation -> {
             response.getAttribute(EXCEPTION, Throwable.class).ifPresent(observation::error);
             ((ServerRequestObservationContext) observation.getContext()).setResponse(response);
+            Object body = response.body();
+            if (body instanceof Publisher<?> publisher) {
+                response.body(new StreamingObservationBodyPublisher<>(publisher, observation));
+                return;
+            }
             observation.stop();
         });
     }

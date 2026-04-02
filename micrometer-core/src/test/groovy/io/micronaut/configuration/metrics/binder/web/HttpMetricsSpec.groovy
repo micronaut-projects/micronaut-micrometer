@@ -32,6 +32,7 @@ import io.micronaut.http.annotation.Filter
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.RequestFilter
 import io.micronaut.http.annotation.ServerFilter
+import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -50,6 +51,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.slf4j.MDC
 import reactor.core.publisher.Flux
+
+import java.time.Duration
 import spock.lang.Specification
 
 import jakarta.inject.Provider
@@ -175,6 +178,32 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".web.client.min"         | 0.1           | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1.0E8     | 3.0E10
         MICRONAUT_METRICS_BINDERS + ".web.client.max"         | 60            | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 6.0E10
         MICRONAUT_METRICS_BINDERS + ".web.client.slos"        | "0.1,0.2,0.5" | 0                      | 0                      | null            | 3               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+    }
+
+
+    void "test server metrics track streaming response duration until completion"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        HttpClient rawClient = context.createBean(HttpClient, embeddedServer.URL)
+        long start = System.nanoTime()
+
+        then:
+        rawClient.toBlocking().retrieve('/test-http-metrics/streaming') == 'chunk-1\nchunk-2\nchunk-3\n'
+
+        when:
+        long elapsedNanos = System.nanoTime() - start
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/streaming').timer()
+
+        then:
+        serverTimer.count() == 1
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) >= Duration.ofMillis(250).toNanos()
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) <= elapsedNanos
+
+        cleanup:
+        rawClient.close()
+        embeddedServer.close()
     }
 
     void "test client / server metrics ignored uris for client errors"() {
@@ -457,6 +486,8 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/forbidden")
         HttpResponse forbidden()
+        @Get(value = "/test-http-metrics/streaming", processes = MediaType.TEXT_PLAIN)
+        String streaming()
 
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
@@ -512,6 +543,11 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/forbidden")
         String forbidden() { "forbidden" }
+
+        @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
+        Publisher<String> streaming() {
+            return Flux.range(1, 3).delayElements(Duration.ofMillis(100)).map(i -> 'chunk-' + i + '\n')
+        }
 
         @Error(exception = MyException)
         HttpResponse<?> myExceptionHandler() {
