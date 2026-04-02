@@ -39,6 +39,7 @@ import spock.lang.AutoCleanup
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 
@@ -317,6 +318,31 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
+
+    void 'test server observation stays open until streaming response completes'() {
+        when:
+        String response = reactorHttpClient.toBlocking().retrieve('/streaming/body', String)
+
+        then:
+        response == 'stream-1\nstream-2\nstream-3\n'
+
+        and:
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasContextualNameEqualTo('http get /streaming/body')
+                .hasLowCardinalityKeyValue('uri', '/streaming/body')
+                .hasLowCardinalityKeyValue('streaming', 'done')
+                .hasBeenStarted()
+                .hasBeenStopped()
+        }
+        testObservationRegistry.getCurrentObservation() == null
+
+        cleanup:
+        testObservationRegistry.clear()
+    }
+
     void 'test continue nested HTTP observation - reactive'() {
 
         when:
@@ -495,6 +521,24 @@ class ObservationHttpSpec extends Specification {
         @Get('/hello/{name}')
         @SingleResult
         Publisher<String> continuedRx(String name)
+    }
+
+
+    @Controller('/streaming')
+    static class StreamingController {
+
+        @Inject
+        ObservationRegistry observationRegistry
+
+        @Get(value = '/body', produces = 'text/plain')
+        Publisher<String> body() {
+            return Flux.range(1, 3)
+                .delayElements(Duration.ofMillis(50))
+                .map { i ->
+                    observationRegistry.currentObservation.lowCardinalityKeyValue('streaming', i == 3 ? 'done' : 'progress')
+                    return "stream-${i}\n"
+                }
+        }
     }
 
     @Controller('/error')

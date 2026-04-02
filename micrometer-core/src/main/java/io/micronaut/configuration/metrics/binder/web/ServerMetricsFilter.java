@@ -25,6 +25,7 @@ import io.micronaut.core.util.SupplierUtil;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
+import org.reactivestreams.Publisher;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
@@ -81,7 +82,7 @@ final class ServerMetricsFilter {
 
     @ResponseFilter
     void onResponse(HttpRequest<?> request, HttpResponse<?> response) {
-        WebMetricsHelper httpResponseWebMetricsPublisher = new WebMetricsHelper(
+        WebMetricsHelper webMetricsHelper = new WebMetricsHelper(
             meterRegistryProvider.get(),
             resolvePath(request),
             request.getAttribute(START_ATTRIBUTE, Long.class).orElseGet(System::nanoTime),
@@ -90,6 +91,11 @@ final class ServerMetricsFilter {
             null,
             reportClientErrorURIs
         );
-        httpResponseWebMetricsPublisher.onResponse(response);
+        Object body = response.body();
+        if (response instanceof io.micronaut.http.MutableHttpResponse<?> mutableHttpResponse && body instanceof Publisher<?> publisher) {
+            mutableHttpResponse.body(new StreamingWebMetricsBodyPublisher<>(publisher, response, webMetricsHelper));
+            return;
+        }
+        webMetricsHelper.onResponse(response);
     }
 }
