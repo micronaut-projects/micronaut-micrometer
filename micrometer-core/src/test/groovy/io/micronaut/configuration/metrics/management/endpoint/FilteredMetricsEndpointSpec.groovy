@@ -43,7 +43,8 @@ class FilteredMetricsEndpointSpec extends Specification {
     EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
             (SPEC_NAME_PROPERTY)         : getClass().simpleName,
             'endpoints.metrics.sensitive': false,
-            (MICRONAUT_METRICS_ENABLED)  : true
+            (MICRONAUT_METRICS_ENABLED)  : true,
+            'micronaut.propagation'      : 'thread-local'
     ])
 
     @Shared

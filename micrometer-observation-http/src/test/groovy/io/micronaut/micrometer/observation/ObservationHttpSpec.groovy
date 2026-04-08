@@ -70,7 +70,7 @@ class ObservationHttpSpec extends Specification {
             'micronaut.application.name': 'test-app',
             'micrometer.observation.http.exclusions[0]': '.*exclude.*',
             'spec.name': 'ObservationHttpSpec',
-            'micrometer.observations.common-key-value.common_key': 'common_value'
+            'micrometer.observations.common-key-value.common_key': 'common_value', 'micronaut.propagation' : 'thread-local'
         ).start()
 
         embeddedServer = context.getBean(EmbeddedServer).start()

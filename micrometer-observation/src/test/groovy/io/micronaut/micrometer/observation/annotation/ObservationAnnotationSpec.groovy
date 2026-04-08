@@ -13,13 +13,13 @@ import jakarta.inject.Singleton
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
-
 class ObservationAnnotationSpec extends Specification {
 
     void "test observation annotation usage"() {
         given:
         ApplicationContext ctx = ApplicationContext.run(ApplicationContext, [
-                'spec.name': 'ObservationAnnotationSpec'
+                'spec.name': 'ObservationAnnotationSpec',
+                'micronaut.propagation': 'thread-local'
         ])
         ObservedTarget tt = ctx.getBean(ObservedTarget)
         TestObservationRegistry registry = ctx.getBean(ObservationRegistry) as TestObservationRegistry
