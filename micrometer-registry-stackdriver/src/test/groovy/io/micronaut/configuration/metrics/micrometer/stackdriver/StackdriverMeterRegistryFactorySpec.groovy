@@ -16,6 +16,7 @@ import static io.micronaut.configuration.metrics.micrometer.stackdriver.Stackdri
 class StackdriverMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_WAVEFRONT_PROJECTID = "stackdriverProjectId"
+    private static final String GOOGLE_CLOUD_PROJECT_PROPERTY = "GOOGLE_CLOUD_PROJECT"
 
     void "verify StackdriverMeterRegistry is created by default when this configuration used"() {
         when:
@@ -112,6 +113,34 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
 
         cleanup:
         context.stop()
+    }
+
+    void "verify projectId can be inferred from Google Cloud defaults"() {
+        given:
+        String originalProjectId = System.getProperty(GOOGLE_CLOUD_PROJECT_PROPERTY)
+        System.setProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, "inferred-stackdriver-project-id")
+
+        when:
+        ApplicationContext context = ApplicationContext.run([
+                (STACKDRIVER_ENABLED): true,
+        ])
+        Optional<StackdriverMeterRegistry> stackdriverMeterRegistry = context.findBean(StackdriverMeterRegistry)
+
+        then:
+        stackdriverMeterRegistry.isPresent()
+        stackdriverMeterRegistry.get().config.projectId() == "inferred-stackdriver-project-id"
+
+        cleanup:
+        context?.stop()
+        restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalProjectId)
+    }
+
+    private static void restoreSystemProperty(String propertyName, String propertyValue) {
+        if (propertyValue == null) {
+            System.clearProperty(propertyName)
+        } else {
+            System.setProperty(propertyName, propertyValue)
+        }
     }
 
 }
