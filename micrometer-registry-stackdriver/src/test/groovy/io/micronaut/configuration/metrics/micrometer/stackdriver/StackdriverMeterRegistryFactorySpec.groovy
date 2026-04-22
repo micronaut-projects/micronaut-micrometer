@@ -7,6 +7,8 @@ import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.Duration
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
@@ -135,12 +137,111 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalProjectId)
     }
 
+    void "verify app engine projectId strips the application prefix"() {
+        given:
+        String originalProjectId = System.getProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID)
+        System.setProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID, "appengine:app-engine-project-id")
+
+        expect:
+        new StackdriverMeterRegistryFactory().getAppEngineProjectId() == "app-engine-project-id"
+
+        cleanup:
+        restoreSystemProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID, originalProjectId)
+    }
+
+    void "verify projectId can be inferred from service account credentials"() {
+        given:
+        Path credentialsFile = Files.createTempFile("stackdriver-credentials", ".json")
+        Files.writeString(credentialsFile, '{"type":"service_account","project_id":"service-account-project-id"}')
+        String originalCredentialsPath = System.getProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS)
+        System.setProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, credentialsFile.toString())
+
+        expect:
+        new StackdriverMeterRegistryFactory().getServiceAccountProjectId() == "service-account-project-id"
+
+        cleanup:
+        restoreSystemProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, originalCredentialsPath)
+        Files.deleteIfExists(credentialsFile)
+    }
+
+    void "verify projectId can be inferred from the active gcloud configuration"() {
+        given:
+        Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-config")
+        Files.writeString(configDirectory.resolve("active_config"), "named-config\n")
+        Path configurationDirectory = Files.createDirectories(configDirectory.resolve("configurations"))
+        Files.writeString(configurationDirectory.resolve("config_named-config"), "[core]\nproject = active-gcloud-project-id\n")
+
+        expect:
+        stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "active-gcloud-project-id"
+
+        cleanup:
+        deleteDirectory(configDirectory)
+    }
+
+    void "verify legacy gcloud properties fallback is used when the active config is absent"() {
+        given:
+        Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-legacy-config")
+        Files.writeString(configDirectory.resolve("properties"), "project = legacy-gcloud-project-id\n")
+
+        expect:
+        stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "legacy-gcloud-project-id"
+
+        cleanup:
+        deleteDirectory(configDirectory)
+    }
+
+    void "verify metadata projectId is used when gcloud configuration is unavailable"() {
+        given:
+        Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-empty-config")
+
+        expect:
+        stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "metadata-project-id"
+
+        cleanup:
+        deleteDirectory(configDirectory)
+    }
+
+    @Unroll
+    void "verify gcloud project line parsing for '#line'"() {
+        expect:
+        new StackdriverMeterRegistryFactory().getProjectIdFromConfigLine(line) == projectId
+
+        where:
+        line                     | projectId
+        "project = sample"       | "sample"
+        "project=sample"         | "sample"
+        "project =   "           | null
+        "account = sample"       | null
+        "project sample"         | null
+    }
+
     private static void restoreSystemProperty(String propertyName, String propertyValue) {
         if (propertyValue == null) {
             System.clearProperty(propertyName)
         } else {
             System.setProperty(propertyName, propertyValue)
         }
+    }
+
+    private static StackdriverMeterRegistryFactory stackdriverFactory(Path configDirectory, String metadataProjectId) {
+        return new StackdriverMeterRegistryFactory() {
+            @Override
+            Path getGoogleCloudConfigDirectory() {
+                return configDirectory
+            }
+
+            @Override
+            String getMetadataProjectId() {
+                return metadataProjectId
+            }
+        }
+    }
+
+    private static void deleteDirectory(Path directory) {
+        if (directory == null || !Files.exists(directory)) {
+            return
+        }
+        directory.toFile().deleteDir()
     }
 
 }
