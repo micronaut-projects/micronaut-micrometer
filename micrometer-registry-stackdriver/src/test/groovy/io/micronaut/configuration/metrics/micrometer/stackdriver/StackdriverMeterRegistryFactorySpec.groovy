@@ -224,17 +224,7 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
     }
 
     private static StackdriverMeterRegistryFactory stackdriverFactory(Path configDirectory, String metadataProjectId) {
-        return new StackdriverMeterRegistryFactory() {
-            @Override
-            Path getGoogleCloudConfigDirectory() {
-                return configDirectory
-            }
-
-            @Override
-            String getMetadataProjectId() {
-                return metadataProjectId
-            }
-        }
+        return new StackdriverMeterRegistryFactory(configDirectory, metadataProjectId)
     }
 
     private static void deleteDirectory(Path directory) {
