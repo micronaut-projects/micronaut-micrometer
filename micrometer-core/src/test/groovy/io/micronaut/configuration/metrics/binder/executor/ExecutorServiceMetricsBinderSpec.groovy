@@ -126,7 +126,7 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         @Named("test")
         @Requires(sdk = Requires.Sdk.MICRONAUT, version = "2.0.0")
         EventLoopGroup eventLoopGroup() {
-            return new DefaultEventLoop()
+            return new DefaultEventLoop() { }
         }
     }
 

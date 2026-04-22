@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.netty;
 
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
@@ -47,8 +48,9 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Singleton
 @Internal
-@Replaces(bean = KQueueEventLoopGroupFactory.class, named = EventLoopGroupFactory.NATIVE)
-@Named(EventLoopGroupFactory.NATIVE)
+@Named(KQueueEventLoopGroupFactory.NAME)
+@BootstrapContextCompatible
+@Replaces(bean = KQueueEventLoopGroupFactory.class)
 @Requires(classes = KQueue.class, condition = KQueueAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)

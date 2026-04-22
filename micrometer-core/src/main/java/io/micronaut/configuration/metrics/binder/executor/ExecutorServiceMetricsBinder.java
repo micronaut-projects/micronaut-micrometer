@@ -28,6 +28,7 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
+import io.netty.channel.EventLoopGroup;
 import jakarta.inject.Singleton;
 
 import java.util.Collections;
@@ -70,7 +71,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped.getClass().getName().startsWith("io.netty")) {
+        if (unwrapped instanceof EventLoopGroup) {
             return unwrapped;
         }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
