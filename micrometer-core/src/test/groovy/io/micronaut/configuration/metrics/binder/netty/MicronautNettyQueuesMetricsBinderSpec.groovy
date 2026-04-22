@@ -1,21 +1,27 @@
 package io.micronaut.configuration.metrics.binder.netty
 
 import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micronaut.context.ApplicationContext
+import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
 import io.micronaut.runtime.server.EmbeddedServer
+import io.netty.channel.EventLoopGroup
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.util.concurrent.PollingConditions
 
 import java.net.ServerSocket
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT
@@ -147,6 +153,50 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         globalClientTaskCounter.count() > 0
 
         cleanup:
+        context.close()
+    }
+
+    void "test executor metrics are present for configured client event loop group"() {
+        given:
+        int port = nextAvailablePort()
+        Map<String, Object> config = [
+                (MICRONAUT_METRICS_ENABLED)                        : true,
+                'micronaut.server.port'                           : port,
+                'spec.name'                                       : getClass().getSimpleName()
+        ]
+        config["micronaut.http.services.${CLIENT_ID}.url".toString()] = "http://localhost:${port}".toString()
+        config["micronaut.http.services.${CLIENT_ID}.event-loop-group".toString()] = CLIENT_GROUP
+        config["micronaut.netty.event-loops.${CLIENT_GROUP}.num-threads".toString()] = 1
+        ApplicationContext context = ApplicationContext.run(config)
+        context.getBean(EmbeddedServer).start()
+        EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName(CLIENT_GROUP))
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        CountDownLatch firstTaskStarted = new CountDownLatch(1)
+        CountDownLatch releaseFirstTask = new CountDownLatch(1)
+
+        when:
+        eventLoopGroup.execute {
+            firstTaskStarted.countDown()
+            releaseFirstTask.await(10, TimeUnit.SECONDS)
+        }
+        assert firstTaskStarted.await(10, TimeUnit.SECONDS)
+        eventLoopGroup.execute { }
+
+        Gauge queuedTasks = registry.get("executor.queued")
+                .tag("name", CLIENT_GROUP)
+                .gauge()
+        Gauge poolSize = registry.get("executor.pool.size")
+                .tag("name", CLIENT_GROUP)
+                .gauge()
+
+        then:
+        new PollingConditions(timeout: 3, delay: 0.1).eventually {
+            queuedTasks.value() > 0
+            poolSize.value() > 0
+        }
+
+        cleanup:
+        releaseFirstTask.countDown()
         context.close()
     }
 

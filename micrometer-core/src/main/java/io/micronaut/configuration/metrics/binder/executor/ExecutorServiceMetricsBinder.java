@@ -15,6 +15,7 @@
  */
 package io.micronaut.configuration.metrics.binder.executor;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
@@ -29,6 +30,8 @@ import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
 import io.netty.channel.EventLoopGroup;
+import io.netty.util.concurrent.EventExecutor;
+import io.netty.util.concurrent.SingleThreadEventExecutor;
 import jakarta.inject.Singleton;
 
 import java.util.Collections;
@@ -70,10 +73,6 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         while (unwrapped instanceof InstrumentedExecutorService) {
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
-        // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped instanceof EventLoopGroup) {
-            return unwrapped;
-        }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
         if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR)) {
             return executorService;
@@ -83,6 +82,12 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         BeanIdentifier beanIdentifier = event.getBeanIdentifier();
 
         List<Tag> tags = Collections.emptyList(); // allow tags?
+
+        // EventLoopGroups need to stay unwrapped so the bean remains assignable as EventLoopGroup.
+        if (unwrapped instanceof EventLoopGroup) {
+            bindEventLoopGroupMetrics(meterRegistry, (EventLoopGroup) unwrapped, beanIdentifier.getName(), tags);
+            return executorService;
+        }
 
         // bind the service metrics
         new ExecutorServiceMetrics(unwrapped, beanIdentifier.getName(), tags).bindTo(meterRegistry);
@@ -125,5 +130,39 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
+    }
+
+    private static void bindEventLoopGroupMetrics(MeterRegistry meterRegistry,
+                                                  EventLoopGroup eventLoopGroup,
+                                                  String name,
+                                                  List<Tag> tags) {
+        Iterable<Tag> meterTags = Tags.concat(tags, "name", name);
+        Gauge.builder("executor.queued", eventLoopGroup, ExecutorServiceMetricsBinder::pendingTasks)
+                .tags(meterTags)
+                .description("The approximate number of tasks that are queued for execution.")
+                .register(meterRegistry);
+        Gauge.builder("executor.pool.size", eventLoopGroup, ExecutorServiceMetricsBinder::poolSize)
+                .tags(meterTags)
+                .description("The current number of threads in the pool.")
+                .baseUnit("threads")
+                .register(meterRegistry);
+    }
+
+    private static double pendingTasks(EventLoopGroup eventLoopGroup) {
+        int pendingTasks = 0;
+        for (EventExecutor eventExecutor : eventLoopGroup) {
+            if (eventExecutor instanceof SingleThreadEventExecutor) {
+                pendingTasks += ((SingleThreadEventExecutor) eventExecutor).pendingTasks();
+            }
+        }
+        return pendingTasks;
+    }
+
+    private static double poolSize(EventLoopGroup eventLoopGroup) {
+        int poolSize = 0;
+        for (EventExecutor ignored : eventLoopGroup) {
+            poolSize++;
+        }
+        return poolSize;
     }
 }
