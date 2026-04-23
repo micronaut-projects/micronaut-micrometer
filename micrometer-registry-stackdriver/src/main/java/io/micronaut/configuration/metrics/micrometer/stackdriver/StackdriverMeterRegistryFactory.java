@@ -166,16 +166,13 @@ public class StackdriverMeterRegistryFactory {
             if (escaped) {
                 projectId.append(current);
                 escaped = false;
-                continue;
-            }
-            if (current == '\\') {
+            } else if (current == '\\') {
                 escaped = true;
-                continue;
-            }
-            if (current == '"') {
+            } else if (current == '"') {
                 return projectId.toString();
+            } else {
+                projectId.append(current);
             }
-            projectId.append(current);
         }
         return null;
     }
@@ -218,17 +215,14 @@ public class StackdriverMeterRegistryFactory {
             String section = null;
             for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
                 String trimmed = line.trim();
-                if (trimmed.isEmpty() || trimmed.startsWith(";")) {
-                    continue;
-                }
-                if (trimmed.startsWith("[") && trimmed.endsWith("]") && trimmed.length() > 2) {
-                    section = trimmed.substring(1, trimmed.length() - 1);
-                    continue;
-                }
-                if (section == null || "core".equals(section)) {
-                    String projectId = getProjectIdFromConfigLine(trimmed);
-                    if (projectId != null) {
-                        return projectId;
+                if (!trimmed.isEmpty() && !trimmed.startsWith(";")) {
+                    if (trimmed.startsWith("[") && trimmed.endsWith("]") && trimmed.length() > 2) {
+                        section = trimmed.substring(1, trimmed.length() - 1);
+                    } else if (section == null || "core".equals(section)) {
+                        String projectId = getProjectIdFromConfigLine(trimmed);
+                        if (projectId != null) {
+                            return projectId;
+                        }
                     }
                 }
             }

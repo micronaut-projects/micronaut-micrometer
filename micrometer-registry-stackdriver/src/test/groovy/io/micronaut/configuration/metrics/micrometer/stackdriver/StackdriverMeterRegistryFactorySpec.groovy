@@ -137,10 +137,45 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalProjectId)
     }
 
+    void "verify projectId falls back to GCLOUD_PROJECT when GOOGLE_CLOUD_PROJECT is absent"() {
+        given:
+        String originalGoogleCloudProject = System.getProperty(GOOGLE_CLOUD_PROJECT_PROPERTY)
+        String originalGcloudProject = System.getProperty(StackdriverMeterRegistryFactory.GCLOUD_PROJECT)
+        System.clearProperty(GOOGLE_CLOUD_PROJECT_PROPERTY)
+        System.setProperty(StackdriverMeterRegistryFactory.GCLOUD_PROJECT, "legacy-gcloud-project-id")
+
+        when:
+        ApplicationContext context = ApplicationContext.run([
+                (STACKDRIVER_ENABLED): true,
+        ])
+        Optional<StackdriverMeterRegistry> stackdriverMeterRegistry = context.findBean(StackdriverMeterRegistry)
+
+        then:
+        stackdriverMeterRegistry.isPresent()
+        stackdriverMeterRegistry.get().config.projectId() == "legacy-gcloud-project-id"
+
+        cleanup:
+        context?.stop()
+        restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalGoogleCloudProject)
+        restoreSystemProperty(StackdriverMeterRegistryFactory.GCLOUD_PROJECT, originalGcloudProject)
+    }
+
     void "verify app engine projectId strips the application prefix"() {
         given:
         String originalProjectId = System.getProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID)
         System.setProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID, "appengine:app-engine-project-id")
+
+        expect:
+        new StackdriverMeterRegistryFactory().getAppEngineProjectId() == "app-engine-project-id"
+
+        cleanup:
+        restoreSystemProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID, originalProjectId)
+    }
+
+    void "verify app engine projectId keeps the configured id when there is no prefix"() {
+        given:
+        String originalProjectId = System.getProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID)
+        System.setProperty(StackdriverMeterRegistryFactory.APP_ENGINE_APPLICATION_ID, "app-engine-project-id")
 
         expect:
         new StackdriverMeterRegistryFactory().getAppEngineProjectId() == "app-engine-project-id"
@@ -164,6 +199,34 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         Files.deleteIfExists(credentialsFile)
     }
 
+    void "verify missing service account credentials are ignored"() {
+        given:
+        Path missingCredentialsFile = Path.of(System.getProperty("java.io.tmpdir"), "missing-stackdriver-credentials.json")
+        String originalCredentialsPath = System.getProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS)
+        System.setProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, missingCredentialsFile.toString())
+
+        expect:
+        new StackdriverMeterRegistryFactory().getServiceAccountProjectId() == null
+
+        cleanup:
+        restoreSystemProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, originalCredentialsPath)
+    }
+
+    void "verify credentials without a project id are ignored"() {
+        given:
+        Path credentialsFile = Files.createTempFile("stackdriver-credentials-without-project", ".json")
+        Files.writeString(credentialsFile, '{"type":"service_account"}')
+        String originalCredentialsPath = System.getProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS)
+        System.setProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, credentialsFile.toString())
+
+        expect:
+        new StackdriverMeterRegistryFactory().getServiceAccountProjectId() == null
+
+        cleanup:
+        restoreSystemProperty(StackdriverMeterRegistryFactory.GOOGLE_APPLICATION_CREDENTIALS, originalCredentialsPath)
+        Files.deleteIfExists(credentialsFile)
+    }
+
     void "verify projectId can be inferred from the active gcloud configuration"() {
         given:
         Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-config")
@@ -178,6 +241,20 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         deleteDirectory(configDirectory)
     }
 
+    void "verify blank active gcloud config falls back to the default configuration"() {
+        given:
+        Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-default-config")
+        Files.writeString(configDirectory.resolve("active_config"), "\n")
+        Path configurationDirectory = Files.createDirectories(configDirectory.resolve("configurations"))
+        Files.writeString(configurationDirectory.resolve("config_default"), "[core]\nproject = default-gcloud-project-id\n")
+
+        expect:
+        stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "default-gcloud-project-id"
+
+        cleanup:
+        deleteDirectory(configDirectory)
+    }
+
     void "verify legacy gcloud properties fallback is used when the active config is absent"() {
         given:
         Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-legacy-config")
@@ -185,6 +262,20 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
 
         expect:
         stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "legacy-gcloud-project-id"
+
+        cleanup:
+        deleteDirectory(configDirectory)
+    }
+
+    void "verify gcloud configuration ignores comments and non-core sections"() {
+        given:
+        Path configDirectory = Files.createTempDirectory("stackdriver-gcloud-multi-section-config")
+        Files.writeString(configDirectory.resolve("active_config"), "named-config\n")
+        Path configurationDirectory = Files.createDirectories(configDirectory.resolve("configurations"))
+        Files.writeString(configurationDirectory.resolve("config_named-config"), "; comment\n\n[auth]\nproject = ignored-project-id\n[core]\naccount = test-account\nproject = core-project-id\n")
+
+        expect:
+        stackdriverFactory(configDirectory, "metadata-project-id").getGoogleCloudProjectId() == "core-project-id"
 
         cleanup:
         deleteDirectory(configDirectory)
