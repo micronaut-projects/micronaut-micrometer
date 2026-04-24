@@ -20,10 +20,10 @@ import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.annotation.Order;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.http.netty.channel.EpollAvailabilityCondition;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -50,6 +50,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Internal
 @Named(EpollEventLoopGroupFactory.NAME)
 @BootstrapContextCompatible
+@Order(100)
 @Replaces(bean = EpollEventLoopGroupFactory.class)
 @Requires(classes = Epoll.class, condition = EpollAvailabilityCondition.class)
 @RequiresMetrics

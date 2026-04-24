@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import org.jspecify.annotations.Nullable;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.KQueueAvailabilityCondition;
 import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
