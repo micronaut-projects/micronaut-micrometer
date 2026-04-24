@@ -40,12 +40,17 @@ class WebMetricsExceptionCodeTest {
     }
 
     @Test
-    void testWebMetricsHandledBadRequestStatus(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
+    void testWebMetricsBadRequestStatusCode(@Client("/") HttpClient httpClient, MeterRegistry meterRegistry) {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () -> client.exchange("/metrics/bad-request"));
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         Assertions.assertEquals("Client '/': Bad Request", e.getMessage());
-        long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/bad-request"), Tag.of("status", "400"), Tag.of("exception", "GenericException"))).count();
+        long count = meterRegistry.timer("http.server.requests", List.of(
+            Tag.of("method", "GET"),
+            Tag.of("uri", "/metrics/bad-request"),
+            Tag.of("status", "400"),
+            Tag.of("exception", "BadRequestException")
+        )).count();
         Assertions.assertEquals(1, count);
     }
 
@@ -60,7 +65,7 @@ class WebMetricsExceptionCodeTest {
 
         @Get("/bad-request")
         String badRequest() {
-            throw new GenericException("BAD REQUEST");
+            throw new BadRequestException("BAD REQUEST");
         }
     }
 
@@ -70,8 +75,8 @@ class WebMetricsExceptionCodeTest {
         }
     }
 
-    static class GenericException extends RuntimeException {
-        public GenericException(String message) {
+    static class BadRequestException extends RuntimeException {
+        public BadRequestException(String message) {
             super(message);
         }
     }
@@ -91,11 +96,11 @@ class WebMetricsExceptionCodeTest {
     @Produces
     @Singleton
     @Requires(property = "spec.name", value = "WebMetricsStatusCodeTest")
-    static class GenericExceptionHandler implements ExceptionHandler<GenericException, HttpResponse<?>> {
+    static class BadRequestExceptionHandler implements ExceptionHandler<BadRequestException, HttpResponse<?>> {
 
         @Override
-        public HttpResponse<?> handle(HttpRequest request, GenericException exception) {
-            return HttpResponse.badRequest()
+        public HttpResponse<?> handle(HttpRequest request, BadRequestException exception) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
         }
     }
