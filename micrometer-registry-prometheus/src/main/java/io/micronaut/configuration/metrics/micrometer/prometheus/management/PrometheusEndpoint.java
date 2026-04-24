@@ -84,29 +84,48 @@ public class PrometheusEndpoint {
      */
     @Read(produces = "text/plain; version=0.0.4")
     public InputStream scrapeStream() {
-        PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
-        PipedOutputStream outputStream;
-        try {
-            outputStream = new PipedOutputStream(inputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
+        ProducerAwareInputStream inputStream = ProducerAwareInputStream.create();
+        inputStream.start(scrapeExecutor, prometheusMeterRegistry);
+        return inputStream;
+    }
+
+    private static final class ProducerAwareInputStream extends FilterInputStream {
+        private final PipedOutputStream outputStream;
+        private Future<?> writeFuture;
+
+        ProducerAwareInputStream(InputStream inputStream, PipedOutputStream outputStream) {
+            super(inputStream);
+            this.outputStream = outputStream;
         }
-        Future<?> writeFuture = scrapeExecutor.submit(() -> {
+
+        static ProducerAwareInputStream create() {
+            try {
+                PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
+                return new ProducerAwareInputStream(inputStream, new PipedOutputStream(inputStream));
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
+            }
+        }
+
+        void start(ExecutorService scrapeExecutor, PrometheusMeterRegistry prometheusMeterRegistry) {
+            try {
+                writeFuture = scrapeExecutor.submit(() -> writeScrape(prometheusMeterRegistry));
+            } catch (RuntimeException e) {
+                try {
+                    close();
+                } catch (IOException closeException) {
+                    e.addSuppressed(closeException);
+                }
+                throw e;
+            }
+        }
+
+        private void writeScrape(PrometheusMeterRegistry prometheusMeterRegistry) {
             try (PipedOutputStream stream = outputStream) {
                 prometheusMeterRegistry.scrape(stream);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-        });
-        return new ProducerAwareInputStream(inputStream, writeFuture);
-    }
-
-    private static final class ProducerAwareInputStream extends FilterInputStream {
-        private final Future<?> writeFuture;
-
-        private ProducerAwareInputStream(InputStream inputStream, Future<?> writeFuture) {
-            super(inputStream);
-            this.writeFuture = writeFuture;
         }
 
         @Override
@@ -125,10 +144,26 @@ public class PrometheusEndpoint {
 
         @Override
         public void close() throws IOException {
+            IOException closeException = null;
             try {
                 super.close();
-            } finally {
+            } catch (IOException e) {
+                closeException = e;
+            }
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                if (closeException == null) {
+                    closeException = e;
+                } else {
+                    closeException.addSuppressed(e);
+                }
+            }
+            if (writeFuture != null) {
                 writeFuture.cancel(true);
+            }
+            if (closeException != null) {
+                throw closeException;
             }
         }
 

@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 class PrometheusEndpointSpec extends Specification {
@@ -69,7 +70,7 @@ class PrometheusEndpointSpec extends Specification {
     void "test prometheus scrape retains direct string access"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+        def endpoint = new PrometheusEndpoint(registry)
 
         when:
         String result = endpoint.scrape()
@@ -100,6 +101,28 @@ class PrometheusEndpointSpec extends Specification {
         0 * registry.scrape()
     }
 
+    void "test prometheus scrape stream supports single byte reads"() {
+        given:
+        def registry = Mock(PrometheusMeterRegistry)
+        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+
+        when:
+        def bytes = []
+        endpoint.scrapeStream().withCloseable { inputStream ->
+            int nextByte
+            while ((nextByte = inputStream.read()) != -1) {
+                bytes << nextByte
+            }
+        }
+
+        then:
+        new String((byte[]) bytes, StandardCharsets.UTF_8) == 'abc'
+        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+            outputStream.write('abc'.getBytes(StandardCharsets.UTF_8))
+        }
+        0 * registry.scrape()
+    }
+
     void "test prometheus scrape stream cancels producer when consumer closes early"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
@@ -124,6 +147,44 @@ class PrometheusEndpointSpec extends Specification {
             }
         }
         0 * registry.scrape()
+    }
+
+    void "test prometheus scrape stream wraps non io producer failure"() {
+        given:
+        def registry = Mock(PrometheusMeterRegistry)
+        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+        def failure = new IllegalStateException('boom')
+
+        when:
+        endpoint.scrapeStream().withCloseable { inputStream ->
+            inputStream.getText(StandardCharsets.UTF_8.name())
+        }
+
+        then:
+        def exception = thrown(IOException)
+        exception.message == 'Failed to stream Prometheus scrape'
+        exception.cause.is(failure)
+        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+            throw failure
+        }
+        0 * registry.scrape()
+    }
+
+    void "test prometheus scrape stream propagates scheduling failures"() {
+        given:
+        def registry = Mock(PrometheusMeterRegistry)
+        def executor = Mock(ExecutorService)
+        def endpoint = new PrometheusEndpoint(registry, executor)
+        def failure = new RejectedExecutionException('boom')
+
+        when:
+        endpoint.scrapeStream()
+
+        then:
+        def exception = thrown(RejectedExecutionException)
+        exception.is(failure)
+        1 * executor.submit(_ as Runnable) >> { throw failure }
+        0 * registry._
     }
 
     @PendingFeature
