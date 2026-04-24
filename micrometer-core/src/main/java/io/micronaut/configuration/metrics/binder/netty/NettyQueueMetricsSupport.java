@@ -55,13 +55,7 @@ final class NettyQueueMetricsSupport {
     private final AtomicInteger workerCounter = new AtomicInteger(-1);
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
-    private volatile MeterRegistry meterRegistry;
-    private volatile Counter parentTaskCounter;
-    private volatile Counter workerTaskCounter;
-    private volatile Timer globalParentWaitTimeTimer;
-    private volatile Timer globalParentExecutionTimer;
-    private volatile Timer globalWorkerWaitTimeTimer;
-    private volatile Timer globalWorkerExecutionTimer;
+    private volatile MeterReferences meterReferences;
 
     NettyQueueMetricsSupport(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
@@ -75,55 +69,68 @@ final class NettyQueueMetricsSupport {
     }
 
     Queue<Runnable> wrapTaskQueue(String kind, Queue<Runnable> queue) {
-        initializeMeters();
+        MeterReferences currentMeterReferences = initializeMeters();
         boolean parent = PARENT.equals(kind);
         return new MonitoredQueue(
                 parent ? parentCounter.incrementAndGet() : workerCounter.incrementAndGet(),
-                meterRegistry,
+                currentMeterReferences.meterRegistry,
                 Tag.of(GROUP, kind),
-                parent ? parentTaskCounter : workerTaskCounter,
-                parent ? globalParentWaitTimeTimer : globalWorkerWaitTimeTimer,
-                parent ? globalParentExecutionTimer : globalWorkerExecutionTimer,
+                parent ? currentMeterReferences.parentTaskCounter : currentMeterReferences.workerTaskCounter,
+                parent ? currentMeterReferences.globalParentWaitTimeTimer : currentMeterReferences.globalWorkerWaitTimeTimer,
+                parent ? currentMeterReferences.globalParentExecutionTimer : currentMeterReferences.globalWorkerExecutionTimer,
                 queue
         );
     }
 
-    private void initializeMeters() {
-        if (meterRegistry != null) {
-            return;
+    private MeterReferences initializeMeters() {
+        MeterReferences currentMeterReferences = meterReferences;
+        if (currentMeterReferences != null) {
+            return currentMeterReferences;
         }
         synchronized (this) {
-            if (meterRegistry != null) {
-                return;
+            if (meterReferences != null) {
+                return meterReferences;
             }
             MeterRegistry registry = meterRegistryProvider.get();
-            globalParentWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
+            meterReferences = new MeterReferences(
+                    registry,
+                    Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                            .tag(GROUP, PARENT)
+                            .register(registry),
+                    Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                            .tag(GROUP, WORKER)
+                            .register(registry),
+                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
                     .description("Global wait time spent in the parent Queues.")
                     .tag(GROUP, PARENT)
                     .publishPercentileHistogram()
-                    .register(registry);
-            globalParentExecutionTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
+                    .register(registry),
+                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
                     .description("Global parent runnable execution time.")
                     .tag(GROUP, PARENT)
                     .publishPercentileHistogram()
-                    .register(registry);
-            globalWorkerWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
+                    .register(registry),
+                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
                     .description("Global wait time spent in the worker Queues.")
                     .tag(GROUP, WORKER)
                     .publishPercentileHistogram()
-                    .register(registry);
-            globalWorkerExecutionTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
+                    .register(registry),
+                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
                     .description("Global worker runnable execution time.")
                     .tag(GROUP, WORKER)
                     .publishPercentileHistogram()
-                    .register(registry);
-            parentTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                    .tag(GROUP, PARENT)
-                    .register(registry);
-            workerTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                    .tag(GROUP, WORKER)
-                    .register(registry);
-            meterRegistry = registry;
+                    .register(registry)
+            );
+            return meterReferences;
         }
+    }
+
+    private record MeterReferences(MeterRegistry meterRegistry,
+                                   Counter parentTaskCounter,
+                                   Counter workerTaskCounter,
+                                   Timer globalParentWaitTimeTimer,
+                                   Timer globalParentExecutionTimer,
+                                   Timer globalWorkerWaitTimeTimer,
+                                   Timer globalWorkerExecutionTimer) {
     }
 }
