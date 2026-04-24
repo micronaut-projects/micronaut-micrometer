@@ -1,5 +1,6 @@
 package io.micronaut.configuration.metrics.binder.r2dbc
 
+import io.micronaut.context.ApplicationContext
 import io.r2dbc.pool.ConnectionPool
 import io.r2dbc.pool.PoolMetrics
 import io.r2dbc.spi.Connection
@@ -7,6 +8,9 @@ import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryMetadata
 import org.reactivestreams.Publisher
 import spock.lang.Specification
+
+import java.net.URL
+import java.net.URLClassLoader
 
 class R2dbcPoolMetricsBinderFactorySpec extends Specification {
 
@@ -49,6 +53,30 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
         meterBinder.@poolMetrics == null
     }
 
+    void "test starting context without r2dbc pool on classpath"() {
+        given:
+        def originalClassLoader = Thread.currentThread().contextClassLoader
+        def classLoader = new FilteringClassLoader(originalClassLoader)
+        ApplicationContext context = ApplicationContext.builder()
+            .classLoader(classLoader)
+            .build()
+
+        Thread.currentThread().contextClassLoader = classLoader
+
+        when:
+        context.registerSingleton(ConnectionFactory, new StubFactory())
+        context.start()
+
+        then:
+        noExceptionThrown()
+        !context.containsBean(R2dbcPoolMetricsBinderFactory)
+        !context.containsBean(R2dbcPoolMetricsBinder)
+
+        cleanup:
+        context?.close()
+        Thread.currentThread().contextClassLoader = originalClassLoader
+    }
+
     class StubFactory implements ConnectionFactory {
         Publisher<? extends Connection> create() { null }
         ConnectionFactoryMetadata getMetadata() { null }
@@ -61,5 +89,42 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
         int pendingAcquireSize() { 0 }
         int getMaxAllocatedSize() { 0 }
         int getMaxPendingAcquireSize() { 0 }
+    }
+
+    private static final class FilteringClassLoader extends URLClassLoader {
+
+        private static final String BINDER_PACKAGE = "io.micronaut.configuration.metrics.binder.r2dbc."
+
+        FilteringClassLoader(ClassLoader parent) {
+            super(classpathUrls(), parent)
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            if (name.startsWith("io.r2dbc.pool.")) {
+                throw new ClassNotFoundException(name)
+            }
+            Class<?> loadedClass = findLoadedClass(name)
+            if (loadedClass == null && name.startsWith(BINDER_PACKAGE)) {
+                try {
+                    loadedClass = findClass(name)
+                } catch (ClassNotFoundException ignored) {
+                    loadedClass = super.loadClass(name, false)
+                }
+            } else if (loadedClass == null) {
+                loadedClass = super.loadClass(name, false)
+            }
+            if (resolve) {
+                resolveClass(loadedClass)
+            }
+            return loadedClass
+        }
+
+        private static URL[] classpathUrls() {
+            System.getProperty("java.class.path")
+                .split(File.pathSeparator)
+                .findAll { !it.contains("r2dbc-pool") }
+                .collect { new File(it).toURI().toURL() } as URL[]
+        }
     }
 }
