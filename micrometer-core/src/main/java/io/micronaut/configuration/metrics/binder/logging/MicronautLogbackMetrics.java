@@ -111,6 +111,7 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
 
         private static final String METER_NAME = "logback.events";
         private static final String METER_DESCRIPTION = "Number of log events that were enabled by the effective log level";
+        private static final String LEVEL_TAG = "level";
 
         private final LongAdder errorCount = new LongAdder();
         private final LongAdder warnCount = new LongAdder();
@@ -121,35 +122,35 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
         MetricsTurboFilter(MeterRegistry registry, Iterable<Tag> tags) {
             FunctionCounter.builder(METER_NAME, errorCount, LongAdder::doubleValue)
                 .tags(tags)
-                .tags("level", "error")
+                .tags(LEVEL_TAG, "error")
                 .description(METER_DESCRIPTION)
                 .baseUnit(BaseUnits.EVENTS)
                 .register(registry);
 
             FunctionCounter.builder(METER_NAME, warnCount, LongAdder::doubleValue)
                 .tags(tags)
-                .tags("level", "warn")
+                .tags(LEVEL_TAG, "warn")
                 .description(METER_DESCRIPTION)
                 .baseUnit(BaseUnits.EVENTS)
                 .register(registry);
 
             FunctionCounter.builder(METER_NAME, infoCount, LongAdder::doubleValue)
                 .tags(tags)
-                .tags("level", "info")
+                .tags(LEVEL_TAG, "info")
                 .description(METER_DESCRIPTION)
                 .baseUnit(BaseUnits.EVENTS)
                 .register(registry);
 
             FunctionCounter.builder(METER_NAME, debugCount, LongAdder::doubleValue)
                 .tags(tags)
-                .tags("level", "debug")
+                .tags(LEVEL_TAG, "debug")
                 .description(METER_DESCRIPTION)
                 .baseUnit(BaseUnits.EVENTS)
                 .register(registry);
 
             FunctionCounter.builder(METER_NAME, traceCount, LongAdder::doubleValue)
                 .tags(tags)
-                .tags("level", "trace")
+                .tags(LEVEL_TAG, "trace")
                 .description(METER_DESCRIPTION)
                 .baseUnit(BaseUnits.EVENTS)
                 .register(registry);

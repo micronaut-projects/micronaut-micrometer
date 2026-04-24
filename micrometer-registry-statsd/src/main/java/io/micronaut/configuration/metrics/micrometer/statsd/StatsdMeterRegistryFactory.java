@@ -57,7 +57,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
         ALL_DECLARED_FIELDS
     }
 )
-public class StatsdMeterRegistryFactory {
+public final class StatsdMeterRegistryFactory {
 
     public static final String STATSD_CONFIG = MICRONAUT_METRICS_EXPORT + ".statsd";
     public static final String STATSD_ENABLED = STATSD_CONFIG + ".enabled";
