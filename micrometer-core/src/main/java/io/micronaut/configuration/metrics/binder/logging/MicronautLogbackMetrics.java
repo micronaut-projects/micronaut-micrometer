@@ -43,6 +43,7 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
     private final Iterable<Tag> tags;
     private final LoggerContext loggerContext;
     private final Map<MeterRegistry, MetricsTurboFilter> metricsTurboFilters = new HashMap<>();
+    private final LoggerContextListener resetListener;
 
     MicronautLogbackMetrics() {
         this(emptyList());
@@ -57,7 +58,7 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
         this.tags = tags;
         this.loggerContext = loggerContext;
 
-        loggerContext.addListener(new LoggerContextListener() {
+        this.resetListener = new LoggerContextListener() {
             @Override
             public boolean isResetResistant() {
                 return true;
@@ -86,7 +87,8 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
             public void onLevelChange(Logger logger, Level level) {
                 // no-op
             }
-        });
+        };
+        loggerContext.addListener(resetListener);
     }
 
     @Override
@@ -104,7 +106,9 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
             for (MetricsTurboFilter metricsTurboFilter : metricsTurboFilters.values()) {
                 loggerContext.getTurboFilterList().remove(metricsTurboFilter);
             }
+            metricsTurboFilters.clear();
         }
+        loggerContext.removeListener(resetListener);
     }
 
     static final class MetricsTurboFilter extends TurboFilter {

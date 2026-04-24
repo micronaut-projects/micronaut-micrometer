@@ -79,6 +79,35 @@ class LogbackMeterRegistryBinderFactorySpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".logback.enabled" | false
     }
 
+    void "logback metrics close removes filters and reset listener"() {
+        given:
+        def loggerContext = LoggerFactory.getILoggerFactory()
+        loggerContext.reset()
+        def binder = new MicronautLogbackMetrics([], loggerContext)
+        def registry = new SimpleMeterRegistry()
+
+        when:
+        binder.bindTo(registry)
+
+        then:
+        binder.@metricsTurboFilters.size() == 1
+        loggerContext.getTurboFilterList().size() == 1
+        loggerContext.getCopyOfListenerList().contains(binder.@resetListener)
+
+        when:
+        binder.close()
+        loggerContext.reset()
+
+        then:
+        binder.@metricsTurboFilters.isEmpty()
+        loggerContext.getTurboFilterList().isEmpty()
+        !loggerContext.getCopyOfListenerList().contains(binder.@resetListener)
+
+        cleanup:
+        registry.close()
+        loggerContext.stop()
+    }
+
     private static final class AsyncLoggingCounterRegistry extends SimpleMeterRegistry {
         private final AtomicBoolean asyncLogged = new AtomicBoolean()
         private final CountDownLatch asyncLogLatch = new CountDownLatch(1)

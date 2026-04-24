@@ -82,32 +82,36 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
         if (line == null || line.isEmpty()) {
             return;
         }
+        String payloadToSend = null;
         synchronized (lock) {
             if (!buffered) {
-                send(line);
-                return;
+                payloadToSend = line;
+            } else {
+                int additionalLength = line.length();
+                if (!buffer.isEmpty()) {
+                    additionalLength += 1;
+                }
+                if (buffer.length() + additionalLength > maxPacketLength && !buffer.isEmpty()) {
+                    payloadToSend = clearBuffer();
+                }
+                if (!buffer.isEmpty()) {
+                    buffer.append('\n');
+                }
+                buffer.append(line);
             }
-            int additionalLength = line.length();
-            if (!buffer.isEmpty()) {
-                additionalLength += 1;
-            }
-            if (buffer.length() + additionalLength > maxPacketLength && !buffer.isEmpty()) {
-                send(buffer.toString());
-                buffer = new StringBuilder(Math.max(128, maxPacketLength));
-            }
-            if (!buffer.isEmpty()) {
-                buffer.append('\n');
-            }
-            buffer.append(line);
+        }
+        if (payloadToSend != null) {
+            send(payloadToSend);
         }
     }
 
     private void flushSafely() {
+        String payloadToSend;
         synchronized (lock) {
-            if (!buffer.isEmpty()) {
-                send(buffer.toString());
-                buffer = new StringBuilder(Math.max(128, maxPacketLength));
-            }
+            payloadToSend = clearBuffer();
+        }
+        if (payloadToSend != null) {
+            send(payloadToSend);
         }
     }
 
@@ -122,12 +126,22 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
     @Override
     public void close() {
         scheduler.shutdownNow();
+        String payloadToSend;
         synchronized (lock) {
-            if (!buffer.isEmpty()) {
-                send(buffer.toString());
-                buffer = new StringBuilder(Math.max(128, maxPacketLength));
-            }
+            payloadToSend = clearBuffer();
         }
+        if (payloadToSend != null) {
+            send(payloadToSend);
+        }
+    }
+
+    private String clearBuffer() {
+        if (buffer.isEmpty()) {
+            return null;
+        }
+        String payload = buffer.toString();
+        buffer = new StringBuilder(Math.max(128, maxPacketLength));
+        return payload;
     }
 
     private static final class StatsdThreadFactory implements ThreadFactory {

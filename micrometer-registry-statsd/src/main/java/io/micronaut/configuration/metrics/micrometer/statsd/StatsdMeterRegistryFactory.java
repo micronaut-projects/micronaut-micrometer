@@ -88,6 +88,8 @@ public final class StatsdMeterRegistryFactory {
 
     @Singleton
     @Bean(preDestroy = "close")
+    @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = FALSE)
+    @Requires(beans = CompositeMeterRegistry.class)
     @Requires(condition = NativeImageStatsdCondition.class)
     NativeImageUdpStatsdLineSink nativeImageUdpStatsdLineSink(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();

@@ -5,6 +5,12 @@ import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
+
 class NativeImageUdpStatsdLineSinkSpec extends Specification {
 
     private static final String IMAGE_CODE_PROPERTY = NativeImageStatsdCondition.NATIVE_IMAGE_CODE_PROPERTY
@@ -59,6 +65,51 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
         sink?.close()
     }
 
+    void "verify native image line sink does not hold lock while sending"() {
+        given:
+        CountDownLatch firstSendStarted = new CountDownLatch(1)
+        CountDownLatch allowFirstSendToFinish = new CountDownLatch(1)
+        CountDownLatch secondSendStarted = new CountDownLatch(1)
+        AtomicInteger sendCount = new AtomicInteger()
+        Thread first = null
+        Thread second = null
+        NativeImageUdpStatsdLineSink sink = new NativeImageUdpStatsdLineSink(config(
+            host: "127.0.0.1",
+            port: "8125",
+            buffered: "false",
+            pollingFrequency: "PT10S",
+            maxPacketLength: "256"
+        ), { String payload ->
+            int currentSend = sendCount.incrementAndGet()
+            if (currentSend == 1) {
+                firstSendStarted.countDown()
+                allowFirstSendToFinish.await(5, TimeUnit.SECONDS)
+            } else if (currentSend == 2) {
+                secondSendStarted.countDown()
+            }
+        })
+        first = Thread.start {
+            sink.accept("first:1|c")
+        }
+
+        expect:
+        firstSendStarted.await(5, TimeUnit.SECONDS)
+
+        when:
+        second = Thread.start {
+            sink.accept("second:2|c")
+        }
+
+        then:
+        secondSendStarted.await(5, TimeUnit.SECONDS)
+
+        cleanup:
+        allowFirstSendToFinish?.countDown()
+        first?.join(5_000)
+        second?.join(5_000)
+        sink?.close()
+    }
+
     void "verify native image line sink keeps sending after listener starts later"() {
         given:
         DatagramSocket reservation = new DatagramSocket(0)
@@ -85,6 +136,23 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
         cleanup:
         sink?.close()
         server?.close()
+    }
+
+    void "verify native image line sink bean absent when metrics are disabled"() {
+        given:
+        System.setProperty(IMAGE_CODE_PROPERTY, "runtime")
+        ApplicationContext context = ApplicationContext.run([
+            (MICRONAUT_METRICS_ENABLED)               : false,
+            (StatsdMeterRegistryFactory.STATSD_ENABLED): true,
+            (StatsdMeterRegistryFactory.STATSD_CONFIG + ".protocol"): "udp"
+        ])
+
+        expect:
+        !context.findBean(NativeImageUdpStatsdLineSink).present
+
+        cleanup:
+        context.close()
+        System.clearProperty(IMAGE_CODE_PROPERTY)
     }
 
     private static StatsdConfig config(Map<String, String> properties) {
