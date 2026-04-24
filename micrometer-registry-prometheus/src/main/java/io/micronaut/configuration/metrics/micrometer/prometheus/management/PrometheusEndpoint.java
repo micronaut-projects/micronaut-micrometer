@@ -29,10 +29,9 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -47,7 +46,7 @@ public class PrometheusEndpoint {
     private static final int PIPE_BUFFER_SIZE = 64 * 1024;
 
     private final PrometheusMeterRegistry prometheusMeterRegistry;
-    private final Executor scrapeExecutor;
+    private final ExecutorService scrapeExecutor;
 
     /**
      * @param prometheusMeterRegistry The meter registry
@@ -67,9 +66,15 @@ public class PrometheusEndpoint {
         this.scrapeExecutor = scrapeExecutor;
     }
 
-    private PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry, Executor scrapeExecutor) {
-        this.prometheusMeterRegistry = prometheusMeterRegistry;
-        this.scrapeExecutor = scrapeExecutor;
+    /**
+     * Scrapes the data.
+     *
+     * @return the data
+     * @deprecated Use the streamed endpoint response instead.
+     */
+    @Deprecated
+    public String scrape() {
+        return prometheusMeterRegistry.scrape();
     }
 
     /**
@@ -78,7 +83,7 @@ public class PrometheusEndpoint {
      * @return the data
      */
     @Read(produces = "text/plain; version=0.0.4")
-    public InputStream scrape() {
+    public InputStream scrapeStream() {
         PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
         PipedOutputStream outputStream;
         try {
@@ -86,20 +91,20 @@ public class PrometheusEndpoint {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
         }
-        CompletableFuture<Void> writeFuture = CompletableFuture.runAsync(() -> {
+        Future<?> writeFuture = scrapeExecutor.submit(() -> {
             try (PipedOutputStream stream = outputStream) {
                 prometheusMeterRegistry.scrape(stream);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-        }, scrapeExecutor);
+        });
         return new ProducerAwareInputStream(inputStream, writeFuture);
     }
 
     private static final class ProducerAwareInputStream extends FilterInputStream {
-        private final CompletableFuture<Void> writeFuture;
+        private final Future<?> writeFuture;
 
-        private ProducerAwareInputStream(InputStream inputStream, CompletableFuture<Void> writeFuture) {
+        private ProducerAwareInputStream(InputStream inputStream, Future<?> writeFuture) {
             super(inputStream);
             this.writeFuture = writeFuture;
         }
@@ -135,10 +140,13 @@ public class PrometheusEndpoint {
 
         private void awaitProducer() throws IOException {
             try {
-                writeFuture.join();
+                writeFuture.get();
             } catch (CancellationException ignored) {
                 // The consumer closed the stream early.
-            } catch (CompletionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Interrupted while streaming Prometheus scrape", e);
+            } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof UncheckedIOException uncheckedIOException) {
                     throw uncheckedIOException.getCause();
