@@ -21,6 +21,7 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.order.Ordered;
 import io.micronaut.core.util.SupplierUtil;
 import io.micronaut.http.HttpAttributes;
 import io.micronaut.http.HttpRequest;
@@ -28,6 +29,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
+import io.micronaut.http.filter.ServerFilterPhase;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
 
@@ -50,7 +52,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = HttpMetricsConfig.ENABLED, notEquals = FALSE)
 @Requires(condition = WebMetricsServerCondition.class)
 @Internal
-final class ServerMetricsFilter {
+final class ServerMetricsFilter implements Ordered {
 
     private static final String START_ATTRIBUTE = ServerMetricsFilter.class.getName() + ".START_ATTRIBUTE";
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
@@ -65,6 +67,11 @@ final class ServerMetricsFilter {
     public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
         this.meterRegistryProvider = SupplierUtil.memoized(meterRegistryProvider::get);
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
+    }
+
+    @Override
+    public int getOrder() {
+        return ServerFilterPhase.METRICS.order();
     }
 
     private String resolvePath(HttpRequest<?> request) {
