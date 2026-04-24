@@ -12,10 +12,13 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfi
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpHeaders
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.uri.UriBuilder
@@ -214,6 +217,36 @@ class HttpMetricsSpec extends Specification {
         registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
 
         cleanup:
+        embeddedServer.close()
+    }
+
+    void "test server metrics ignore preflight requests"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'micronaut.server.cors.enabled': true,
+                'micronaut.server.cors.configurations.web.allowed-origins': ['https://example.com'],
+                'spec.name': getClass().getSimpleName()
+        ])
+        def context = embeddedServer.applicationContext
+        HttpClient client = context.createBean(HttpClient, embeddedServer.URL)
+        HttpResponse<?> response = client.toBlocking().exchange(HttpRequest.OPTIONS('/test-http-metrics/foo')
+                .header(HttpHeaders.ORIGIN, 'https://example.com')
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() == 200
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        List<String> optionUris = registry.meters
+                .findAll { it.id.name == HttpServerMeterConfig.REQUESTS_METRIC && it.id.getTag('method') == 'OPTIONS' }
+                .collect { it.id.getTag('uri') }
+
+        then:
+        optionUris.isEmpty()
+
+        cleanup:
+        client.close()
         embeddedServer.close()
     }
 

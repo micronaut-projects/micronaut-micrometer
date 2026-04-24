@@ -15,6 +15,7 @@ import io.micronaut.core.annotation.Nullable
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.core.async.propagation.ReactorPropagation
 import io.micronaut.core.propagation.PropagatedContext
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.*
@@ -69,6 +70,8 @@ class ObservationHttpSpec extends Specification {
         context = ApplicationContext.builder(
             'micronaut.application.name': 'test-app',
             'micrometer.observation.http.exclusions[0]': '.*exclude.*',
+            'micronaut.server.cors.enabled': true,
+            'micronaut.server.cors.configurations.web.allowed-origins[0]': 'https://example.com',
             'spec.name': 'ObservationHttpSpec',
             'micrometer.observations.common-key-value.common_key': 'common_value'
         ).start()
@@ -311,6 +314,23 @@ class ObservationHttpSpec extends Specification {
                 it.hasNameEqualTo("http.server.requests")
                 it.hasLowCardinalityKeyValue("uri", "/client/order/{orderId}")
             }
+        }
+
+        cleanup:
+        testObservationRegistry.clear()
+    }
+
+    void 'preflight requests are not observed'() {
+        when:
+        HttpResponse<?> response = httpClient.toBlocking().exchange(HttpRequest.OPTIONS("/client/order/${UUID.randomUUID()}")
+            .header(HttpHeaders.ORIGIN, 'https://example.com')
+            .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() == 200
+
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry).doesNotHaveAnyObservation()
         }
 
         cleanup:
