@@ -27,6 +27,7 @@ import jakarta.inject.Singleton;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
@@ -55,7 +56,7 @@ final class NettyQueueMetricsSupport {
     private final AtomicInteger workerCounter = new AtomicInteger(-1);
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
-    private volatile MeterReferences meterReferences;
+    private final AtomicReference<MeterReferences> meterReferences = new AtomicReference<>();
 
     NettyQueueMetricsSupport(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
@@ -83,16 +84,17 @@ final class NettyQueueMetricsSupport {
     }
 
     private MeterReferences initializeMeters() {
-        MeterReferences currentMeterReferences = meterReferences;
+        MeterReferences currentMeterReferences = meterReferences.get();
         if (currentMeterReferences != null) {
             return currentMeterReferences;
         }
         synchronized (this) {
-            if (meterReferences != null) {
-                return meterReferences;
+            currentMeterReferences = meterReferences.get();
+            if (currentMeterReferences != null) {
+                return currentMeterReferences;
             }
             MeterRegistry registry = meterRegistryProvider.get();
-            meterReferences = new MeterReferences(
+            currentMeterReferences = new MeterReferences(
                     registry,
                     Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
                             .tag(GROUP, PARENT)
@@ -121,7 +123,8 @@ final class NettyQueueMetricsSupport {
                     .publishPercentileHistogram()
                     .register(registry)
             );
-            return meterReferences;
+            meterReferences.set(currentMeterReferences);
+            return currentMeterReferences;
         }
     }
 
