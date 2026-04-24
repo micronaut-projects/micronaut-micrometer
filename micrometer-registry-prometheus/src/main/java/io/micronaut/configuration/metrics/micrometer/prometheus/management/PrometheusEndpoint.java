@@ -72,7 +72,7 @@ public class PrometheusEndpoint {
      * @return the data
      * @deprecated Use the streamed endpoint response instead.
      */
-    @Deprecated
+    @Deprecated(since = "6.0")
     public String scrape() {
         return prometheusMeterRegistry.scrape();
     }
@@ -93,16 +93,21 @@ public class PrometheusEndpoint {
         private final PipedOutputStream outputStream;
         private Future<?> writeFuture;
 
-        ProducerAwareInputStream(InputStream inputStream, PipedOutputStream outputStream) {
+        ProducerAwareInputStream(PipedInputStream inputStream) throws IOException {
             super(inputStream);
-            this.outputStream = outputStream;
+            this.outputStream = new PipedOutputStream(inputStream);
         }
 
         static ProducerAwareInputStream create() {
+            PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
             try {
-                PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
-                return new ProducerAwareInputStream(inputStream, new PipedOutputStream(inputStream));
+                return new ProducerAwareInputStream(inputStream);
             } catch (IOException e) {
+                try {
+                    inputStream.close();
+                } catch (IOException closeException) {
+                    e.addSuppressed(closeException);
+                }
                 throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
             }
         }
