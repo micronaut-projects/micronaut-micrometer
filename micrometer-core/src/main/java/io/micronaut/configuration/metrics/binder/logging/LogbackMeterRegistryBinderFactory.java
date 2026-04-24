@@ -48,6 +48,6 @@ public class LogbackMeterRegistryBinderFactory {
     @Singleton
     @Primary
     public LogbackMetrics logbackMetrics() {
-        return new LogbackMetrics();
+        return new MicronautLogbackMetrics();
     }
 }

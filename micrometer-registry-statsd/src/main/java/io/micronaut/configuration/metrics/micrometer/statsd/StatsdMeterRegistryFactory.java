@@ -16,14 +16,21 @@
 package io.micronaut.configuration.metrics.micrometer.statsd;
 
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
+import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.TypeHint;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Singleton;
 
 import java.util.Properties;
 
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_DECLARED_FIELDS;
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_DECLARED_METHODS;
+import static io.micronaut.core.annotation.TypeHint.AccessType.ALL_PUBLIC_CONSTRUCTORS;
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
@@ -33,6 +40,23 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  * Creates a StatsD meter registry.
  */
 @Factory
+@TypeHint(
+    typeNames = {
+        "io.micrometer.shaded.io.netty.buffer.AbstractByteBufAllocator",
+        "io.micrometer.shaded.io.netty.util.ReferenceCountUtil",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueConsumerIndexField",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerIndexField",
+        "io.micrometer.shaded.io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueueProducerLimitField"
+    },
+    accessType = {
+        ALL_PUBLIC_CONSTRUCTORS,
+        ALL_DECLARED_METHODS,
+        ALL_DECLARED_FIELDS
+    }
+)
 public class StatsdMeterRegistryFactory {
 
     public static final String STATSD_CONFIG = MICRONAUT_METRICS_EXPORT + ".statsd";
@@ -46,10 +70,27 @@ public class StatsdMeterRegistryFactory {
      * @return StatsdMeterRegistry
      */
     @Singleton
+    @Bean(preDestroy = "close")
     @Requires(property = MICRONAUT_METRICS_ENABLED, notEquals = FALSE)
     @Requires(beans = CompositeMeterRegistry.class)
-    StatsdMeterRegistry statsdMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
+    StatsdMeterRegistry statsdMeterRegistry(ExportConfigurationProperties exportConfigurationProperties,
+                                            @Nullable NativeImageUdpStatsdLineSink nativeImageUdpStatsdLineSink) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new StatsdMeterRegistry(exportConfig::getProperty, SYSTEM);
+        StatsdConfig statsdConfig = exportConfig::getProperty;
+        if (nativeImageUdpStatsdLineSink != null) {
+            return StatsdMeterRegistry.builder(statsdConfig)
+                .lineSink(nativeImageUdpStatsdLineSink)
+                .clock(SYSTEM)
+                .build();
+        }
+        return new StatsdMeterRegistry(statsdConfig, SYSTEM);
+    }
+
+    @Singleton
+    @Bean(preDestroy = "close")
+    @Requires(condition = NativeImageStatsdCondition.class)
+    NativeImageUdpStatsdLineSink nativeImageUdpStatsdLineSink(ExportConfigurationProperties exportConfigurationProperties) {
+        Properties exportConfig = exportConfigurationProperties.getExport();
+        return new NativeImageUdpStatsdLineSink(exportConfig::getProperty);
     }
 }
