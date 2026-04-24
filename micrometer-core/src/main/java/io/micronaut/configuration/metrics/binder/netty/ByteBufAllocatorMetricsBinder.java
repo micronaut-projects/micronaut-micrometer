@@ -22,7 +22,6 @@ import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Internal;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufAllocatorMetric;
@@ -35,7 +34,6 @@ import io.netty.buffer.PooledByteBufAllocatorMetric;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import jakarta.annotation.PostConstruct;
 
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -77,7 +75,6 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.UNPOO
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USAGE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
-import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
@@ -87,7 +84,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  * @since 2.0
  */
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled", defaultValue = FALSE, notEquals = FALSE)
+@Requires(property = ByteBufAllocatorMetricsConfig.ENABLED, defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = ByteBufAllocator.class)
 @Context
 @Internal
@@ -109,12 +106,12 @@ final class ByteBufAllocatorMetricsBinder {
      * Adds metrics for Netty's default ByteBufAllocators.
      *
      * @param meterRegistryProvider The metric registry provider.
-     * @param kinds The kinds of metrics to add.
+     * @param configuration The ByteBuf allocator metrics configuration.
      */
     public ByteBufAllocatorMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider,
-                                         @Value("${" + MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics:null}") Set<ByteBufAllocatorMetricKind> kinds) {
+                                         ByteBufAllocatorMetricsConfig configuration) {
         this.meterRegistryProvider = meterRegistryProvider;
-        this.kinds = kinds == null || kinds.isEmpty() ? EnumSet.allOf(ByteBufAllocatorMetricKind.class) : kinds;
+        this.kinds = configuration.getMetrics();
     }
 
     /**

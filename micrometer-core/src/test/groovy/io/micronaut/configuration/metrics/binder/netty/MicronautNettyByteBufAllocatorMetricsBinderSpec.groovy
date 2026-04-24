@@ -54,9 +54,14 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
                  (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics"): [POOLED_ALLOCATOR, UNPOOLED_ALLOCATOR]]
         )
         Optional<ByteBufAllocatorMetricsBinder> optBinder = context.findBean(ByteBufAllocatorMetricsBinder)
+        ByteBufAllocatorMetricsConfig config = context.getBean(ByteBufAllocatorMetricsConfig)
 
         then:
         optBinder.isPresent()
+        config.enabled
+        config.metrics.size() == 2
+        config.metrics.contains(POOLED_ALLOCATOR)
+        config.metrics.contains(UNPOOLED_ALLOCATOR)
         optBinder.get().kinds.size() == 2
         optBinder.get().kinds.contains(POOLED_ALLOCATOR)
         optBinder.get().kinds.contains(UNPOOLED_ALLOCATOR)

@@ -1,0 +1,73 @@
+/*
+ * Copyright 2017-2024 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.micronaut.configuration.metrics.binder.netty;
+
+import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.util.Toggleable;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+
+/**
+ * Configuration for Netty ByteBuf allocator metrics.
+ *
+ * @since 5.10
+ */
+@ConfigurationProperties(ByteBufAllocatorMetricsConfig.PATH)
+public final class ByteBufAllocatorMetricsConfig implements Toggleable {
+
+    /**
+     * The configuration path.
+     */
+    public static final String PATH = MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators";
+
+    /**
+     * The enabled property.
+     */
+    public static final String ENABLED = PATH + ".enabled";
+
+    private boolean enabled;
+    private Set<ByteBufAllocatorMetricKind> metrics = EnumSet.allOf(ByteBufAllocatorMetricKind.class);
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled Whether Netty ByteBuf allocator metrics are enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    /**
+     * @return The configured metric kinds
+     */
+    public Set<ByteBufAllocatorMetricKind> getMetrics() {
+        return metrics;
+    }
+
+    /**
+     * @param metrics The configured metric kinds
+     */
+    public void setMetrics(Set<ByteBufAllocatorMetricKind> metrics) {
+        this.metrics = metrics == null || metrics.isEmpty() ? EnumSet.allOf(ByteBufAllocatorMetricKind.class) : EnumSet.copyOf(metrics);
+    }
+}
