@@ -18,6 +18,22 @@ package io.micronaut.configuration.metrics.micrometer.prometheus.management;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
+import io.micronaut.scheduling.TaskExecutors;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.UncheckedIOException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Adds a management endpoint for Prometheus.
@@ -27,16 +43,33 @@ import io.micronaut.management.endpoint.annotation.Read;
  */
 @Endpoint(PrometheusEndpoint.ID)
 public class PrometheusEndpoint {
-
     public static final String ID = "prometheus";
+    private static final int PIPE_BUFFER_SIZE = 64 * 1024;
 
     private final PrometheusMeterRegistry prometheusMeterRegistry;
+    private final Executor scrapeExecutor;
 
     /**
      * @param prometheusMeterRegistry The meter registry
      */
     public PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry) {
+        this(prometheusMeterRegistry, ForkJoinPool.commonPool());
+    }
+
+    /**
+     * @param prometheusMeterRegistry The meter registry
+     * @param scrapeExecutor The executor used to stream the scrape
+     */
+    @Inject
+    public PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry,
+                              @Named(TaskExecutors.BLOCKING) ExecutorService scrapeExecutor) {
         this.prometheusMeterRegistry = prometheusMeterRegistry;
+        this.scrapeExecutor = scrapeExecutor;
+    }
+
+    private PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry, Executor scrapeExecutor) {
+        this.prometheusMeterRegistry = prometheusMeterRegistry;
+        this.scrapeExecutor = scrapeExecutor;
     }
 
     /**
@@ -45,7 +78,73 @@ public class PrometheusEndpoint {
      * @return the data
      */
     @Read(produces = "text/plain; version=0.0.4")
-    public String scrape() {
-        return prometheusMeterRegistry.scrape();
+    public InputStream scrape() {
+        PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
+        PipedOutputStream outputStream;
+        try {
+            outputStream = new PipedOutputStream(inputStream);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
+        }
+        CompletableFuture<Void> writeFuture = CompletableFuture.runAsync(() -> {
+            try (PipedOutputStream stream = outputStream) {
+                prometheusMeterRegistry.scrape(stream);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }, scrapeExecutor);
+        return new ProducerAwareInputStream(inputStream, writeFuture);
+    }
+
+    private static final class ProducerAwareInputStream extends FilterInputStream {
+        private final CompletableFuture<Void> writeFuture;
+
+        private ProducerAwareInputStream(InputStream inputStream, CompletableFuture<Void> writeFuture) {
+            super(inputStream);
+            this.writeFuture = writeFuture;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int read = super.read();
+            verifyProducer(read);
+            return read;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int read = super.read(b, off, len);
+            verifyProducer(read);
+            return read;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            } finally {
+                writeFuture.cancel(true);
+            }
+        }
+
+        private void verifyProducer(int read) throws IOException {
+            if (read == -1) {
+                awaitProducer();
+            }
+        }
+
+        private void awaitProducer() throws IOException {
+            try {
+                writeFuture.join();
+            } catch (CancellationException ignored) {
+                // The consumer closed the stream early.
+            } catch (CompletionException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof UncheckedIOException uncheckedIOException) {
+                    throw uncheckedIOException.getCause();
+                }
+                throw new IOException("Failed to stream Prometheus scrape", cause);
+            }
+        }
     }
 }
