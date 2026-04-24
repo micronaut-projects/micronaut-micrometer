@@ -19,7 +19,6 @@ import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
-import java.net.ServerSocket
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +38,7 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
 
     private static final String CLIENT_GROUP = 'clients'
     private static final String CLIENT_ID = 'test-client'
+    private static final String SPEC_NAME = 'MicronautNettyQueuesMetricsBinderSpec'
     private static List<Class> eventLoopGroupFactoryInstrumentedClasses = [
             InstrumentedNioEventLoopGroupFactory,
             InstrumentedEpollEventLoopGroupFactory,
@@ -105,22 +105,15 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
     }
 
     void "test queue metrics are present for configured client event loop group"() {
-        when:
-        int port = nextAvailablePort()
-        Map<String, Object> config = [
-                (MICRONAUT_METRICS_ENABLED)                            : true,
-                (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled") : true,
-                (MICRONAUT_METRICS_BINDERS + ".executor.enabled")     : false,
-                'micronaut.server.port'                               : port,
-                'spec.name'                                           : getClass().getSimpleName()
-        ]
-        config["micronaut.http.services.${CLIENT_ID}.url".toString()] = "http://localhost:${port}".toString()
-        config["micronaut.http.services.${CLIENT_ID}.event-loop-group".toString()] = CLIENT_GROUP
-        config["micronaut.netty.event-loops.${CLIENT_GROUP}.num-threads".toString()] = 1
-        ApplicationContext context = ApplicationContext.run(config)
-        context.getBean(EmbeddedServer).start()
+        given:
+        ApplicationContext serverContext = startServerContext()
+        EmbeddedServer server = serverContext.getBean(EmbeddedServer)
+        ApplicationContext context = startClientContext(server.getURL().toString(), [
+                (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true,
+                (MICRONAUT_METRICS_BINDERS + ".executor.enabled")    : false
+        ])
 
-        then:
+        expect:
         eventLoopGroupFactoryInstrumentedClasses
                 .collect { context.findBean(it).isPresent() }
                 .any()
@@ -154,21 +147,14 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
 
         cleanup:
         context.close()
+        serverContext.close()
     }
 
     void "test executor metrics are present for configured client event loop group"() {
         given:
-        int port = nextAvailablePort()
-        Map<String, Object> config = [
-                (MICRONAUT_METRICS_ENABLED)                        : true,
-                'micronaut.server.port'                           : port,
-                'spec.name'                                       : getClass().getSimpleName()
-        ]
-        config["micronaut.http.services.${CLIENT_ID}.url".toString()] = "http://localhost:${port}".toString()
-        config["micronaut.http.services.${CLIENT_ID}.event-loop-group".toString()] = CLIENT_GROUP
-        config["micronaut.netty.event-loops.${CLIENT_GROUP}.num-threads".toString()] = 1
-        ApplicationContext context = ApplicationContext.run(config)
-        context.getBean(EmbeddedServer).start()
+        ApplicationContext serverContext = startServerContext()
+        EmbeddedServer server = serverContext.getBean(EmbeddedServer)
+        ApplicationContext context = startClientContext(server.getURL().toString())
         EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName(CLIENT_GROUP))
         MeterRegistry registry = context.getBean(MeterRegistry)
         CountDownLatch firstTaskStarted = new CountDownLatch(1)
@@ -198,28 +184,42 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         cleanup:
         releaseFirstTask.countDown()
         context.close()
+        serverContext.close()
     }
 
-    @io.micronaut.context.annotation.Requires(property = "spec.name", value = "MicronautNettyQueuesMetricsBinderSpec")
+    @io.micronaut.context.annotation.Requires(property = "spec.name", value = SPEC_NAME)
     @Client(id = CLIENT_ID, path = '/nettyQueuesMetricsTest')
     private static interface DummyClient {
         @Get
         String test()
     }
 
-    @io.micronaut.context.annotation.Requires(property = "spec.name", value = "MicronautNettyQueuesMetricsBinderSpec")
+    @io.micronaut.context.annotation.Requires(property = "spec.name", value = SPEC_NAME)
     @Controller('/nettyQueuesMetricsTest')
     private static class DummyController {
         @Get
         String root() { "root" }
     }
 
-    private static int nextAvailablePort() {
-        ServerSocket socket = new ServerSocket(0)
-        try {
-            return socket.localPort
-        } finally {
-            socket.close()
-        }
+    private static ApplicationContext startServerContext() {
+        ApplicationContext context = ApplicationContext.run([
+                'micronaut.server.port': 0,
+                'spec.name'            : SPEC_NAME
+        ])
+        context.getBean(EmbeddedServer).start()
+        return context
+    }
+
+    private static ApplicationContext startClientContext(String serverUrl, Map<String, Object> additionalConfig = [:]) {
+        Map<String, Object> config = [
+                (MICRONAUT_METRICS_ENABLED)                            : true,
+                'micronaut.server.enabled'                             : false,
+                'spec.name'                                            : SPEC_NAME
+        ]
+        config.putAll(additionalConfig)
+        config["micronaut.http.services.${CLIENT_ID}.url".toString()] = serverUrl
+        config["micronaut.http.services.${CLIENT_ID}.event-loop-group".toString()] = CLIENT_GROUP
+        config["micronaut.netty.event-loops.${CLIENT_GROUP}.num-threads".toString()] = 1
+        return ApplicationContext.run(config)
     }
 }

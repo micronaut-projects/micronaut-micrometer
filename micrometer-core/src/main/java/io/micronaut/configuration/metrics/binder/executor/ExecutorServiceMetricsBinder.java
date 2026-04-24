@@ -36,6 +36,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,6 +59,18 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
     private static final String EVENT_LOOP_GROUP_CLASS_NAME = "io.netty.channel.EventLoopGroup";
     private static final String SINGLE_THREAD_EVENT_EXECUTOR_CLASS_NAME = "io.netty.util.concurrent.SingleThreadEventExecutor";
     private static final String PENDING_TASKS_METHOD_NAME = "pendingTasks";
+    private static final ClassValue<Boolean> EVENT_LOOP_GROUP_TYPES = new NettyTypeMatcher(EVENT_LOOP_GROUP_CLASS_NAME);
+    private static final ClassValue<Boolean> SINGLE_THREAD_EVENT_EXECUTOR_TYPES = new NettyTypeMatcher(SINGLE_THREAD_EVENT_EXECUTOR_CLASS_NAME);
+    private static final ClassValue<Optional<Method>> PENDING_TASKS_METHODS = new ClassValue<>() {
+        @Override
+        protected Optional<Method> computeValue(Class<?> type) {
+            try {
+                return Optional.of(type.getMethod(PENDING_TASKS_METHOD_NAME));
+            } catch (NoSuchMethodException e) {
+                return Optional.empty();
+            }
+        }
+    };
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
@@ -89,7 +102,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         // EventLoopGroups need to stay unwrapped so the bean remains assignable as EventLoopGroup.
         if (isEventLoopGroup(unwrapped)) {
             bindEventLoopGroupMetrics(meterRegistry, unwrapped, beanIdentifier.getName(), tags);
-            return executorService;
+            return unwrapped;
         }
 
         // bind the service metrics
@@ -157,7 +170,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         }
         int pendingTasks = 0;
         for (Object eventExecutor : iterable) {
-            if (hasType(eventExecutor, SINGLE_THREAD_EVENT_EXECUTOR_CLASS_NAME)) {
+            if (isSingleThreadEventExecutor(eventExecutor)) {
                 pendingTasks += invokePendingTasks(eventExecutor);
             }
         }
@@ -178,12 +191,11 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
     }
 
     private static boolean isEventLoopGroup(ExecutorService executorService) {
-        return hasType(executorService, EVENT_LOOP_GROUP_CLASS_NAME);
+        return EVENT_LOOP_GROUP_TYPES.get(executorService.getClass());
     }
 
-    private static boolean hasType(Object bean, String className) {
-        Class<?> type = resolveType(bean.getClass().getClassLoader(), className);
-        return type != null && type.isInstance(bean);
+    private static boolean isSingleThreadEventExecutor(Object eventExecutor) {
+        return SINGLE_THREAD_EVENT_EXECUTOR_TYPES.get(eventExecutor.getClass());
     }
 
     private static Class<?> resolveType(ClassLoader classLoader, String className) {
@@ -203,11 +215,28 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
     }
 
     private static int invokePendingTasks(Object eventExecutor) {
-        try {
-            Method method = eventExecutor.getClass().getMethod(PENDING_TASKS_METHOD_NAME);
-            return ((Number) method.invoke(eventExecutor)).intValue();
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        Optional<Method> pendingTasksMethod = PENDING_TASKS_METHODS.get(eventExecutor.getClass());
+        if (pendingTasksMethod.isEmpty()) {
             return 0;
+        }
+        try {
+            return ((Number) pendingTasksMethod.get().invoke(eventExecutor)).intValue();
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            return 0;
+        }
+    }
+
+    private static final class NettyTypeMatcher extends ClassValue<Boolean> {
+        private final String className;
+
+        private NettyTypeMatcher(String className) {
+            this.className = className;
+        }
+
+        @Override
+        protected Boolean computeValue(Class<?> type) {
+            Class<?> resolvedType = resolveType(type.getClassLoader(), className);
+            return resolvedType != null && resolvedType.isAssignableFrom(type);
         }
     }
 }

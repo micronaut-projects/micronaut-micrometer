@@ -2,12 +2,17 @@ package io.micronaut.configuration.metrics.binder.executor
 
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micrometer.core.instrument.search.Search
+import io.micronaut.context.BeanProvider
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import io.micronaut.context.event.BeanCreatedEvent
+import io.micronaut.inject.BeanIdentifier
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.scheduling.instrument.InstrumentedExecutorService
 import io.micronaut.scheduling.TaskExecutors
 import io.netty.channel.DefaultEventLoop
 import io.netty.channel.EventLoopGroup
@@ -99,6 +104,51 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
 
         cleanup:
         context.close()
+    }
+
+    void "test wrapped event loop group is unwrapped and metrics are registered"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+        BeanProvider<MeterRegistry> meterRegistryProvider = Stub() {
+            get() >> registry
+        }
+        ExecutorServiceMetricsBinder binder = new ExecutorServiceMetricsBinder(meterRegistryProvider)
+        EventLoopGroup eventLoopGroup = new TestEventLoopGroup()
+        ExecutorService wrapped = new InstrumentedExecutorService() {
+            @Override
+            ExecutorService getTarget() {
+                eventLoopGroup
+            }
+
+            @Override
+            <T> java.util.concurrent.Callable<T> instrument(java.util.concurrent.Callable<T> task) {
+                task
+            }
+
+            @Override
+            Runnable instrument(Runnable command) {
+                command
+            }
+        }
+        BeanIdentifier beanIdentifier = Stub() {
+            getName() >> "wrapped-event-loop"
+        }
+        BeanCreatedEvent<ExecutorService> event = Stub() {
+            getBean() >> wrapped
+            getBeanIdentifier() >> beanIdentifier
+        }
+
+        when:
+        ExecutorService instrumented = binder.onCreated(event)
+
+        then:
+        instrumented.is(eventLoopGroup)
+        registry.get("executor.queued")
+                .tag("name", "wrapped-event-loop")
+                .gauge()
+        registry.get("executor.pool.size")
+                .tag("name", "wrapped-event-loop")
+                .gauge()
     }
 
     @Unroll
