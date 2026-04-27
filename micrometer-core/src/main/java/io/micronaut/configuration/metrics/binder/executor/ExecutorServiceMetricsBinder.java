@@ -51,6 +51,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private static final String THREAD_PER_TASK_EXECUTOR = "java.util.concurrent.ThreadPerTaskExecutor";
+    private static final String NETTY_EVENT_LOOP_GROUP = "io.netty.channel.EventLoopGroup";
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
@@ -70,7 +71,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped.getClass().getName().startsWith("io.netty")) {
+        if (isNettyEventLoopGroup(unwrapped.getClass()) || unwrapped.getClass().getName().startsWith("io.netty")) {
             return unwrapped;
         }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
@@ -124,5 +125,15 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
+    }
+
+    private static boolean isNettyEventLoopGroup(Class<?> type) {
+        for (Class<?> interfaceType : type.getInterfaces()) {
+            if (NETTY_EVENT_LOOP_GROUP.equals(interfaceType.getName()) || isNettyEventLoopGroup(interfaceType)) {
+                return true;
+            }
+        }
+        Class<?> superclass = type.getSuperclass();
+        return superclass != null && isNettyEventLoopGroup(superclass);
     }
 }

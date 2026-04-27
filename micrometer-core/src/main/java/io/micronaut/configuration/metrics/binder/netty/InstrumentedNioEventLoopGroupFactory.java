@@ -27,6 +27,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import java.nio.channels.spi.SelectorProvider;
@@ -43,6 +44,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  * @since 2.0
  */
 @Singleton
+@Named(NioEventLoopGroupFactory.NAME)
 @Internal
 @Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics

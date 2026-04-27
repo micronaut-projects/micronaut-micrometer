@@ -11,7 +11,9 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
+import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.server.EmbeddedServer
+import io.netty.channel.EventLoopGroup
 import spock.lang.Unroll
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -24,6 +26,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot
@@ -95,6 +98,30 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         new InstrumentedNioEventLoopGroupFactory(null)    | false
         new InstrumentedEpollEventLoopGroupFactory(null)  | true
         new InstrumentedKQueueEventLoopGroupFactory(null) | true
+    }
+
+    void "test configured client event loop queue metrics are present"() {
+        given:
+        ApplicationContext context = ApplicationContext.run(
+                [MICRONAUT_METRICS_ENABLED                            : true,
+                 (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true,
+                 "micronaut.netty.event-loops.client.num-threads"     : 1,
+                 "micronaut.http.client.event-loop-group"             : "client"]
+        )
+
+        when:
+        EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName("client"))
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        then:
+        eventLoopGroup
+        registry.get(dot(NETTY, QUEUE, SIZE))
+                .tags(Tags.of(GROUP, "client"))
+                .gauges()
+                .size() > 0
+
+        cleanup:
+        context.close()
     }
 
     @Ignore
