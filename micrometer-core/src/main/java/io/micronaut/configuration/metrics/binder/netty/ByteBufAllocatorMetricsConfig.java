@@ -26,7 +26,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 /**
  * Configuration for Netty ByteBuf allocator metrics.
  *
- * @since 5.10
+ * @since 6.0.0
  */
 @ConfigurationProperties(ByteBufAllocatorMetricsConfig.PATH)
 public final class ByteBufAllocatorMetricsConfig implements Toggleable {
