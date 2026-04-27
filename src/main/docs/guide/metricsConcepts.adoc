@@ -27,6 +27,7 @@ include::{testsmetricscore}/SimpleMeterRegistryConfigurer.java[]
 ----
 
 Micronaut can also add common tags to every meter via configuration. The legacy `micronaut.metrics.tags.*` prefix remains supported, and `micronaut.metrics.common-tags.*` is available as a clearer alias.
+When both prefixes configure the same tag key, `micronaut.metrics.common-tags.*` takes precedence.
 
 [configuration]
 ----

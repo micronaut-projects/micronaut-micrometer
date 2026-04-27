@@ -378,7 +378,7 @@ class MetricsEndpointSpec extends Specification {
     }
 
     @Unroll
-    void "test metrics endpoint with common tags from #configurationStyle #propertyName"() {
+    void "test metrics endpoint #name with common tags from #configurationStyle #propertyName"() {
         given:
         Map<String, Object> config = [
                 'endpoints.metrics.sensitive'          : false,
@@ -403,12 +403,15 @@ class MetricsEndpointSpec extends Specification {
         }
 
         where:
-        configurationStyle | propertyName                       | tagsConfig
-        "dotted"           | "micronaut.metrics.tags"           | ["micronaut.metrics.tags.test1"           : "test1-val", "micronaut.metrics.tags.test2"           : "test2-val"]
-        "dotted"           | "micronaut.metrics.common-tags"    | ["micronaut.metrics.common-tags.test1"    : "test1-val", "micronaut.metrics.common-tags.test2"    : "test2-val"]
-        "map"              | "micronaut.metrics.tags"           | ["micronaut.metrics.tags"                 : [test1: "test1-val", test2: "test2-val"]]
-        "map"              | "micronaut.metrics.common-tags"    | ["micronaut.metrics.common-tags"          : [test1: "test1-val", test2: "test2-val"]]
-        name = "process.files.open"
+        configurationStyle | propertyName                    | name                | tagsConfig
+        "dotted"           | "micronaut.metrics.tags"        | "process.files.open" | ["micronaut.metrics.tags.test1"       : "test1-val", "micronaut.metrics.tags.test2"       : "test2-val"]
+        "dotted"           | "micronaut.metrics.tags"        | "process.files.max"  | ["micronaut.metrics.tags.test1"       : "test1-val", "micronaut.metrics.tags.test2"       : "test2-val"]
+        "dotted"           | "micronaut.metrics.common-tags" | "process.files.open" | ["micronaut.metrics.common-tags.test1": "test1-val", "micronaut.metrics.common-tags.test2": "test2-val"]
+        "dotted"           | "micronaut.metrics.common-tags" | "process.files.max"  | ["micronaut.metrics.common-tags.test1": "test1-val", "micronaut.metrics.common-tags.test2": "test2-val"]
+        "map"              | "micronaut.metrics.tags"        | "process.files.open" | ["micronaut.metrics.tags"             : [test1: "test1-val", test2: "test2-val"]]
+        "map"              | "micronaut.metrics.tags"        | "process.files.max"  | ["micronaut.metrics.tags"             : [test1: "test1-val", test2: "test2-val"]]
+        "map"              | "micronaut.metrics.common-tags" | "process.files.open" | ["micronaut.metrics.common-tags"      : [test1: "test1-val", test2: "test2-val"]]
+        "map"              | "micronaut.metrics.common-tags" | "process.files.max"  | ["micronaut.metrics.common-tags"      : [test1: "test1-val", test2: "test2-val"]]
     }
 
     @Unroll

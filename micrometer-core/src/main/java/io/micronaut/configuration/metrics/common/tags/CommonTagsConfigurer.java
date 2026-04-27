@@ -47,11 +47,13 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
     private final List<Tag> commonTags = new ArrayList<>();
 
     public CommonTagsConfigurer(Environment environment) {
-        Map<String, Object> tags = new TreeMap<>();
-        tags.putAll(readConfiguredTags(environment, MICRONAUT_METRICS_TAGS));
+        Map<String, Object> tags = new TreeMap<>(readConfiguredTags(environment, MICRONAUT_METRICS_TAGS));
         tags.putAll(readConfiguredTags(environment, MICRONAUT_METRICS_COMMON_TAGS));
         for (Map.Entry<String, Object> entry : tags.entrySet()) {
-            commonTags.add(Tag.of(entry.getKey(), String.valueOf(entry.getValue())));
+            Object value = entry.getValue();
+            if (value != null) {
+                commonTags.add(Tag.of(entry.getKey(), String.valueOf(value)));
+            }
         }
     }
 

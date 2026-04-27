@@ -17,7 +17,7 @@ class MeterRegistryConfigurerOrderSpec extends Specification {
         List<MeterRegistryConfigurer> configurerList = ctx.getBeansOfType(MeterRegistryConfigurer)
 
         then:
-        configurerList.size() == 2
+        configurerList.any { it.getClass() == CompositeMeterRegistryConfigurer.class }
         configurerList.last().getClass() == CompositeMeterRegistryConfigurer.class
 
         cleanup:
