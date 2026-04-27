@@ -37,8 +37,6 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.core.util.StringUtils.TRUE;
 import static io.micronaut.http.HttpAttributes.EXCEPTION;
@@ -86,11 +84,13 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
             ((ServerRequestObservationContext) observation.getContext()).setResponse(response);
             Object body = response.body();
             if (body instanceof Publisher<?> publisher) {
-                AtomicBoolean stopped = new AtomicBoolean();
                 response.body(Flux.from(publisher)
-                    .doOnError(throwable -> recordError(stopped, observation, throwable))
+                    .doOnError(throwable -> {
+                        observation.error(throwable);
+                        observation.stop();
+                    })
                     .doFinally(signalType -> {
-                        if (signalType != SignalType.ON_ERROR && stopped.compareAndSet(false, true)) {
+                        if (signalType != SignalType.ON_ERROR) {
                             observation.stop();
                         }
                     }));
@@ -98,12 +98,5 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
             }
             observation.stop();
         });
-    }
-
-    private static void recordError(AtomicBoolean stopped, Observation observation, Throwable throwable) {
-        if (stopped.compareAndSet(false, true)) {
-            observation.error(throwable);
-            observation.stop();
-        }
     }
 }

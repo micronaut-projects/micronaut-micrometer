@@ -35,7 +35,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -96,22 +95,15 @@ final class ServerMetricsFilter {
         );
         Object body = response.body();
         if (response instanceof io.micronaut.http.MutableHttpResponse<?> mutableHttpResponse && body instanceof Publisher<?> publisher) {
-            AtomicBoolean recorded = new AtomicBoolean();
             mutableHttpResponse.body(Flux.from(publisher)
-                .doOnError(throwable -> recordError(recorded, webMetricsHelper, response, throwable))
+                .doOnError(throwable -> webMetricsHelper.error(response, throwable))
                 .doFinally(signalType -> {
-                    if (signalType != SignalType.ON_ERROR && recorded.compareAndSet(false, true)) {
+                    if (signalType != SignalType.ON_ERROR) {
                         webMetricsHelper.onResponse(response);
                     }
                 }));
             return;
         }
         webMetricsHelper.onResponse(response);
-    }
-
-    private static void recordError(AtomicBoolean recorded, WebMetricsHelper webMetricsHelper, HttpResponse<?> response, Throwable throwable) {
-        if (recorded.compareAndSet(false, true)) {
-            webMetricsHelper.error(response, throwable);
-        }
     }
 }
