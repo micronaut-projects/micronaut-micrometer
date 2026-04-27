@@ -26,8 +26,9 @@ import io.netty.util.internal.PlatformDependent;
 import jakarta.inject.Singleton;
 
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT;
@@ -52,11 +53,9 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 @Internal
 final class NettyQueueMetricsSupport {
 
-    private final AtomicInteger parentCounter = new AtomicInteger(-1);
-    private final AtomicInteger workerCounter = new AtomicInteger(-1);
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
-
-    private final AtomicReference<MeterReferences> meterReferences = new AtomicReference<>();
+    private final ConcurrentMap<String, GroupMetrics> groupMetrics = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, AtomicInteger> groupCounters = new ConcurrentHashMap<>();
 
     NettyQueueMetricsSupport(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
@@ -70,70 +69,60 @@ final class NettyQueueMetricsSupport {
     }
 
     Queue<Runnable> wrapTaskQueue(String kind, Queue<Runnable> queue) {
-        MeterReferences currentMeterReferences = initializeMeters();
-        boolean parent = PARENT.equals(kind);
+        GroupMetrics metrics = groupMetrics.computeIfAbsent(kind, this::createGroupMetrics);
+        int index = groupCounters.computeIfAbsent(kind, ignored -> new AtomicInteger(-1)).incrementAndGet();
         return new MonitoredQueue(
-                parent ? parentCounter.incrementAndGet() : workerCounter.incrementAndGet(),
-                currentMeterReferences.meterRegistry,
+                index,
+                metrics.meterRegistry,
                 Tag.of(GROUP, kind),
-                parent ? currentMeterReferences.parentTaskCounter : currentMeterReferences.workerTaskCounter,
-                parent ? currentMeterReferences.globalParentWaitTimeTimer : currentMeterReferences.globalWorkerWaitTimeTimer,
-                parent ? currentMeterReferences.globalParentExecutionTimer : currentMeterReferences.globalWorkerExecutionTimer,
+                metrics.taskCounter,
+                metrics.globalWaitTimeTimer,
+                metrics.globalExecutionTimer,
                 queue
         );
     }
 
-    private MeterReferences initializeMeters() {
-        MeterReferences currentMeterReferences = meterReferences.get();
-        if (currentMeterReferences != null) {
-            return currentMeterReferences;
-        }
-        synchronized (this) {
-            currentMeterReferences = meterReferences.get();
-            if (currentMeterReferences != null) {
-                return currentMeterReferences;
-            }
-            MeterRegistry registry = meterRegistryProvider.get();
-            currentMeterReferences = new MeterReferences(
-                    registry,
-                    Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                            .tag(GROUP, PARENT)
-                            .register(registry),
-                    Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                            .tag(GROUP, WORKER)
-                            .register(registry),
-                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-                    .description("Global wait time spent in the parent Queues.")
-                    .tag(GROUP, PARENT)
-                    .publishPercentileHistogram()
-                    .register(registry),
-                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-                    .description("Global parent runnable execution time.")
-                    .tag(GROUP, PARENT)
-                    .publishPercentileHistogram()
-                    .register(registry),
-                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-                    .description("Global wait time spent in the worker Queues.")
-                    .tag(GROUP, WORKER)
-                    .publishPercentileHistogram()
-                    .register(registry),
-                    Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-                    .description("Global worker runnable execution time.")
-                    .tag(GROUP, WORKER)
-                    .publishPercentileHistogram()
-                    .register(registry)
-            );
-            meterReferences.set(currentMeterReferences);
-            return currentMeterReferences;
-        }
+    private GroupMetrics createGroupMetrics(String kind) {
+        MeterRegistry registry = meterRegistryProvider.get();
+        Counter taskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                .tag(GROUP, kind)
+                .register(registry);
+        Timer waitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
+                .description(waitTimeDescription(kind))
+                .tag(GROUP, kind)
+                .publishPercentileHistogram()
+                .register(registry);
+        Timer executionTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
+                .description(executionTimeDescription(kind))
+                .tag(GROUP, kind)
+                .publishPercentileHistogram()
+                .register(registry);
+        return new GroupMetrics(registry, taskCounter, waitTimeTimer, executionTimer);
     }
 
-    private record MeterReferences(MeterRegistry meterRegistry,
-                                   Counter parentTaskCounter,
-                                   Counter workerTaskCounter,
-                                   Timer globalParentWaitTimeTimer,
-                                   Timer globalParentExecutionTimer,
-                                   Timer globalWorkerWaitTimeTimer,
-                                   Timer globalWorkerExecutionTimer) {
+    private static String waitTimeDescription(String kind) {
+        if (PARENT.equals(kind)) {
+            return "Global wait time spent in the parent Queues.";
+        }
+        if (WORKER.equals(kind)) {
+            return "Global wait time spent in the worker Queues.";
+        }
+        return "Global wait time spent in the event loop queues.";
+    }
+
+    private static String executionTimeDescription(String kind) {
+        if (PARENT.equals(kind)) {
+            return "Global parent runnable execution time.";
+        }
+        if (WORKER.equals(kind)) {
+            return "Global worker runnable execution time.";
+        }
+        return "Global runnable execution time for the event loop queues.";
+    }
+
+    private record GroupMetrics(MeterRegistry meterRegistry,
+                                Counter taskCounter,
+                                Timer globalWaitTimeTimer,
+                                Timer globalExecutionTimer) {
     }
 }

@@ -72,6 +72,6 @@ final class InstrumentedTaskQueueInterceptor implements TaskQueueInterceptor {
         if (workerGroupName.equals(groupName)) {
             return queueMetricsSupport.wrapTaskQueue(WORKER, original);
         }
-        return original;
+        return queueMetricsSupport.wrapTaskQueue(groupName, original);
     }
 }

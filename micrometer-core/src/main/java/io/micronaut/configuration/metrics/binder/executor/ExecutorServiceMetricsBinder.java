@@ -198,22 +198,6 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         return SINGLE_THREAD_EVENT_EXECUTOR_TYPES.get(eventExecutor.getClass());
     }
 
-    private static Class<?> resolveType(ClassLoader classLoader, String className) {
-        try {
-            return Class.forName(className, false, classLoader);
-        } catch (ClassNotFoundException e) {
-            ClassLoader fallbackClassLoader = ExecutorServiceMetricsBinder.class.getClassLoader();
-            if (fallbackClassLoader == classLoader) {
-                return null;
-            }
-            try {
-                return Class.forName(className, false, fallbackClassLoader);
-            } catch (ClassNotFoundException ignored) {
-                return null;
-            }
-        }
-    }
-
     private static int invokePendingTasks(Object eventExecutor) {
         Optional<Method> pendingTasksMethod = PENDING_TASKS_METHODS.get(eventExecutor.getClass());
         if (pendingTasksMethod.isEmpty()) {
@@ -237,6 +221,22 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         protected Boolean computeValue(Class<?> type) {
             Class<?> resolvedType = resolveType(type.getClassLoader(), className);
             return resolvedType != null && resolvedType.isAssignableFrom(type);
+        }
+
+        private static Class<?> resolveType(ClassLoader classLoader, String className) {
+            try {
+                return Class.forName(className, false, classLoader);
+            } catch (ClassNotFoundException e) {
+                ClassLoader fallbackClassLoader = ExecutorServiceMetricsBinder.class.getClassLoader();
+                if (fallbackClassLoader == classLoader) {
+                    return null;
+                }
+                try {
+                    return Class.forName(className, false, fallbackClassLoader);
+                } catch (ClassNotFoundException ignored) {
+                    return null;
+                }
+            }
         }
     }
 }
