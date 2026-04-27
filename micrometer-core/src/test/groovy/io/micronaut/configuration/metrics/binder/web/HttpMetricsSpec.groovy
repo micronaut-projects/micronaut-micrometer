@@ -7,17 +7,22 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpAttributes
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
+import io.micronaut.http.filter.ServerFilterChain
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.websocket.WebSocketBroadcaster
@@ -29,6 +34,7 @@ import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
 import spock.lang.Specification
 
+import jakarta.inject.Provider
 import jakarta.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -234,6 +240,49 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_ENABLED     | false
         (WebMetricsPublisher.ENABLED) | true
         (WebMetricsPublisher.ENABLED) | false
+    }
+
+    void "deprecated server request filter uses configured client error URI reporting"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+        def filter = new ServerRequestMeterRegistryFilter(
+                { registry } as Provider<MeterRegistry>,
+                new HttpMetricsConfig.ClientErrorsUrisConfig(reportClientErrorUris)
+        )
+        def request = HttpRequest.GET("/test-http-metrics/exception-handling")
+                .setAttribute(HttpAttributes.URI_TEMPLATE, "/test-http-metrics/exception-handling")
+        ServerFilterChain chain = Mock()
+
+        when:
+        Flux.from(filter.doFilter(request, chain)).blockLast()
+
+        then:
+        1 * chain.proceed(request) >> Flux.just(HttpResponse.status(CONFLICT))
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "409", "uri", expectedUri).timer().count() == 1
+
+        where:
+        reportClientErrorUris | expectedUri
+        true                  | "/test-http-metrics/exception-handling"
+        false                 | "BAD_REQUEST"
+    }
+
+    void "deprecated server request filter reports client error URIs by default"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+        def filter = new ServerRequestMeterRegistryFilter({ registry } as Provider<MeterRegistry>)
+        def request = HttpRequest.GET("/test-http-metrics/exception-handling")
+                .setAttribute(HttpAttributes.URI_TEMPLATE, "/test-http-metrics/exception-handling")
+        ServerFilterChain chain = Mock()
+
+        when:
+        Flux.from(filter.doFilter(request, chain)).blockLast()
+
+        then:
+        1 * chain.proceed(request) >> Flux.just(HttpResponse.status(CONFLICT))
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+                .tags("status", "409", "uri", "/test-http-metrics/exception-handling")
+                .timer()
+                .count() == 1
     }
 
     @PendingFeature
