@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import io.micronaut.core.util.Toggleable;
 import java.util.EnumSet;
 import java.util.Set;
 
-import io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
 
 /**
@@ -44,6 +43,36 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
 
     private boolean metricsEnabled;
     private Set<ByteBufAllocatorMetricKind> metrics = EnumSet.allOf(ByteBufAllocatorMetricKind.class);
+
+    /**
+     * Netty ByteBuf allocator metrics that can be exposed.
+     */
+    public enum ByteBufAllocatorMetricKind {
+        /**
+         * Metrics for the pooled ByteBuf allocator.
+         */
+        POOLED_ALLOCATOR,
+        /**
+         * Metrics for the unpooled ByteBuf allocator.
+         */
+        UNPOOLED_ALLOCATOR,
+        /**
+         * Metrics for pooled allocator arenas.
+         */
+        POOLED_ARENAS,
+        /**
+         * Metrics for pooled allocator arena subpages.
+         */
+        POOLED_ARENAS_SUBPAGES,
+        /**
+         * Metrics for pooled allocator arena chunk lists.
+         */
+        POOLED_ARENAS_CHUNKLISTS,
+        /**
+         * Metrics for pooled allocator arena chunks.
+         */
+        POOLED_ARENAS_CHUNKS
+    }
 
     @Override
     public boolean isEnabled() {

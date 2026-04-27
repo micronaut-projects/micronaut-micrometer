@@ -13,8 +13,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DIRECT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MEMORY
@@ -33,7 +33,7 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
 
         expect:
         !config.enabled
-        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
 
         when:
         config.enabled = true
@@ -47,13 +47,13 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         config.metrics = null
 
         then:
-        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
 
         when:
         config.metrics = [] as Set
 
         then:
-        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
     }
 
     @Unroll

@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind;
 import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
@@ -37,12 +38,12 @@ import jakarta.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.Set;
 
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR;
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS;
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKLISTS;
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKS;
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES;
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKLISTS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKS;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES;
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION;
@@ -92,15 +93,6 @@ final class ByteBufAllocatorMetricsBinder {
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
     private final Set<ByteBufAllocatorMetricKind> kinds;
-
-    enum ByteBufAllocatorMetricKind {
-        POOLED_ALLOCATOR,
-        UNPOOLED_ALLOCATOR,
-        POOLED_ARENAS,
-        POOLED_ARENAS_SUBPAGES,
-        POOLED_ARENAS_CHUNKLISTS,
-        POOLED_ARENAS_CHUNKS
-    }
 
     /**
      * Adds metrics for Netty's default ByteBufAllocators.
