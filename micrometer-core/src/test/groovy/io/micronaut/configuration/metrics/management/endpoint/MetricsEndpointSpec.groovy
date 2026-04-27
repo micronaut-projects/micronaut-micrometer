@@ -378,13 +378,15 @@ class MetricsEndpointSpec extends Specification {
     }
 
     @Unroll
-    void "test metrics endpoint with common tags from #propertyName"() {
+    void "test metrics endpoint with common tags from #configurationStyle #propertyName"() {
         given:
-        run('endpoints.metrics.sensitive'          : false,
-            (MICRONAUT_METRICS_ENABLED)            : true,
-            "micronaut.metrics.binders.web.enabled": true,
-            (propertyName + ".test1")             : "test1-val",
-            (propertyName + ".test2")             : "test2-val")
+        Map<String, Object> config = [
+                'endpoints.metrics.sensitive'          : false,
+                (MICRONAUT_METRICS_ENABLED)            : true,
+                "micronaut.metrics.binders.web.enabled": true
+        ]
+        config.putAll(tagsConfig)
+        run(config)
 
         expect:
         100.times {
@@ -401,8 +403,12 @@ class MetricsEndpointSpec extends Specification {
         }
 
         where:
-        propertyName << ["micronaut.metrics.tags", "micronaut.metrics.common-tags"]
-        name << ["process.files.open", "process.files.max"]
+        configurationStyle | propertyName                       | tagsConfig
+        "dotted"           | "micronaut.metrics.tags"           | ["micronaut.metrics.tags.test1"           : "test1-val", "micronaut.metrics.tags.test2"           : "test2-val"]
+        "dotted"           | "micronaut.metrics.common-tags"    | ["micronaut.metrics.common-tags.test1"    : "test1-val", "micronaut.metrics.common-tags.test2"    : "test2-val"]
+        "map"              | "micronaut.metrics.tags"           | ["micronaut.metrics.tags"                 : [test1: "test1-val", test2: "test2-val"]]
+        "map"              | "micronaut.metrics.common-tags"    | ["micronaut.metrics.common-tags"          : [test1: "test1-val", test2: "test2-val"]]
+        name = "process.files.open"
     }
 
     @Unroll
