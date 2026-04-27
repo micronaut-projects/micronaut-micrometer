@@ -23,6 +23,7 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.conventions.StringConvention;
+import io.micronaut.core.type.Argument;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,6 +41,8 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @RequiresMetrics
 @Requires(condition = CommonTagsCondition.class)
 public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegistry> {
+
+    private static final Argument<Map<String, Object>> TAGS_ARGUMENT = Argument.mapOf(String.class, Object.class);
 
     private final List<Tag> commonTags = new ArrayList<>();
 
@@ -67,15 +70,13 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
         return HIGHEST_PRECEDENCE;
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<String, Object> readConfiguredTags(Environment environment, String property) {
-        Map<String, Object> configuredTags = new LinkedHashMap<>();
-        if (environment.containsProperty(property)) {
-            configuredTags.putAll(environment.getProperty(property, Map.class).orElse(Map.of()));
-        }
         if (environment.containsProperties(property)) {
-            configuredTags.putAll(environment.getProperties(property, StringConvention.RAW));
+            return new LinkedHashMap<>(environment.getProperties(property, StringConvention.RAW));
         }
-        return configuredTags;
+        if (environment.containsProperty(property)) {
+            return new LinkedHashMap<>(environment.getProperty(property, TAGS_ARGUMENT).orElse(Map.of()));
+        }
+        return new LinkedHashMap<>();
     }
 }
