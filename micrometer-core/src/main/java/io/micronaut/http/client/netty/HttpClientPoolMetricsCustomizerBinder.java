@@ -23,8 +23,10 @@ import io.micronaut.core.annotation.Internal;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import jakarta.inject.Singleton;
+import org.jspecify.annotations.Nullable;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Registers HTTP client pool connection lifecycle instrumentation.
@@ -33,7 +35,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 @Internal
 @RequiresMetrics
 @Requires(classes = NettyClientCustomizer.Registry.class)
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled", value = "true")
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class HttpClientPoolMetricsCustomizerBinder implements BeanCreatedEventListener<NettyClientCustomizer.Registry> {
     private final HttpClientPoolMetricsRecorder recorder;
 
@@ -50,8 +52,8 @@ final class HttpClientPoolMetricsCustomizerBinder implements BeanCreatedEventLis
 
     private record MetricsCustomizer(
         HttpClientPoolMetricsRecorder recorder,
-        Channel channel,
-        HttpClientPoolMetricsRecorder.ConnectionAttempt attempt
+        @Nullable Channel channel,
+        HttpClientPoolMetricsRecorder.@Nullable ConnectionAttempt attempt
     ) implements NettyClientCustomizer {
 
         @Override

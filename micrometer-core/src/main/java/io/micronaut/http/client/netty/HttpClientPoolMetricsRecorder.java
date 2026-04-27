@@ -45,7 +45,7 @@ final class HttpClientPoolMetricsRecorder {
     static final String STATE_ACTIVE = "active";
 
     private final MeterRegistry meterRegistry;
-    private final AtomicInteger activeConnectionCount = new AtomicInteger();
+    private final AtomicInteger openConnectionCount = new AtomicInteger();
     private final AtomicInteger pendingConnectionCount = new AtomicInteger();
     private final Counter createdConnectionCount;
     private final Timer connectionCreateTimer;
@@ -54,7 +54,7 @@ final class HttpClientPoolMetricsRecorder {
         this.meterRegistry = meterRegistry;
         Tags openTags = Tags.of(CLIENT_TAG, CLIENT_ALL, STATE_TAG, STATE_OPEN);
         Tags pendingTags = Tags.of(CLIENT_TAG, CLIENT_ALL, STATE_TAG, STATE_PENDING);
-        Gauge.builder(CONNECTIONS, activeConnectionCount, AtomicInteger::get)
+        Gauge.builder(CONNECTIONS, openConnectionCount, AtomicInteger::get)
             .tags(openTags)
             .baseUnit(BaseUnits.CONNECTIONS)
             .description("The number of HTTP client pool connections currently open.")
@@ -83,8 +83,8 @@ final class HttpClientPoolMetricsRecorder {
     void connectionEstablished(ConnectionAttempt attempt) {
         if (attempt.pending.compareAndSet(true, false)) {
             pendingConnectionCount.decrementAndGet();
-            activeConnectionCount.incrementAndGet();
-            attempt.active.set(true);
+            openConnectionCount.incrementAndGet();
+            attempt.open.set(true);
             createdConnectionCount.increment();
             attempt.sample.stop(connectionCreateTimer);
         }
@@ -94,8 +94,8 @@ final class HttpClientPoolMetricsRecorder {
         if (attempt.pending.compareAndSet(true, false)) {
             pendingConnectionCount.decrementAndGet();
         }
-        if (attempt.active.compareAndSet(true, false)) {
-            activeConnectionCount.decrementAndGet();
+        if (attempt.open.compareAndSet(true, false)) {
+            openConnectionCount.decrementAndGet();
         }
     }
 
@@ -106,7 +106,7 @@ final class HttpClientPoolMetricsRecorder {
     static final class ConnectionAttempt {
         private final Timer.Sample sample;
         private final AtomicBoolean pending = new AtomicBoolean(true);
-        private final AtomicBoolean active = new AtomicBoolean(false);
+        private final AtomicBoolean open = new AtomicBoolean(false);
 
         private ConnectionAttempt(Timer.Sample sample) {
             this.sample = sample;
