@@ -17,6 +17,8 @@ import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CLIEN
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CONNECTIONS
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CONNECTIONS_CREATED
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CONNECTIONS_CREATE_TIME
+import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.REQUESTS
+import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.STATE_ACTIVE
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.STATE_OPEN
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.STATE_PENDING
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.STATE_TAG
@@ -40,6 +42,7 @@ class HttpClientPoolMetricsSpec extends Specification {
         MICRONAUT_METRICS_ENABLED                                  | true    | false
         MICRONAUT_METRICS_ENABLED                                  | false   | false
         MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled"     | true    | true
+        MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled"     | "yes"   | true
         MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled"     | false   | false
     }
 
@@ -51,6 +54,7 @@ class HttpClientPoolMetricsSpec extends Specification {
         ])
         MeterRegistry registry = embeddedServer.applicationContext.getBean(MeterRegistry)
         DummyClient client = embeddedServer.applicationContext.getBean(DummyClient)
+        embeddedServer.applicationContext.getBean(DefaultHttpClient)
 
         then:
         client.root() == "root"
@@ -60,6 +64,7 @@ class HttpClientPoolMetricsSpec extends Specification {
         registry.get(CONNECTIONS_CREATE_TIME).tag(CLIENT_TAG, CLIENT_ALL).timer().count() >= 1
         registry.get(CONNECTIONS).tags(CLIENT_TAG, CLIENT_ALL, STATE_TAG, STATE_OPEN).gauge().value() >= 1
         registry.get(CONNECTIONS).tags(CLIENT_TAG, CLIENT_ALL, STATE_TAG, STATE_PENDING).gauge().value() == 0
+        registry.get(REQUESTS).tags(CLIENT_TAG, "Primary", STATE_TAG, STATE_ACTIVE).gauge().value() == 0
 
         cleanup:
         embeddedServer.close()

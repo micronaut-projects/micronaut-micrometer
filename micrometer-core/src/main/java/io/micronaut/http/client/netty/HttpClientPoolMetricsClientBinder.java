@@ -26,6 +26,7 @@ import io.micronaut.core.annotation.Internal;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CLIENT_TAG;
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.CONNECTIONS;
 import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.REQUESTS;
@@ -40,7 +41,7 @@ import static io.micronaut.http.client.netty.HttpClientPoolMetricsRecorder.STATE
 @Internal
 @RequiresMetrics
 @Requires(classes = DefaultHttpClient.class)
-@Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled", value = "true")
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".web.client.pool.enabled", defaultValue = FALSE, notEquals = FALSE)
 final class HttpClientPoolMetricsClientBinder implements BeanCreatedEventListener<DefaultHttpClient> {
     private final HttpClientPoolMetricsRecorder recorder;
 
