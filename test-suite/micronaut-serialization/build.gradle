@@ -24,6 +24,10 @@ dependencies {
 
 graalvmNative.toolchainDetection = false
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
 micronaut {
     version.set(libs.versions.micronaut.platform)
     runtime("netty")

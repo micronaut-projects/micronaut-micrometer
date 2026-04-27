@@ -26,7 +26,6 @@ import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
-import org.reactivestreams.Publisher;
 import io.micronaut.micrometer.observation.ObservationPropagationContext;
 import io.micronaut.micrometer.observation.http.AbstractObservationFilter;
 import io.micronaut.micrometer.observation.http.ObservationHttpExclusionsConfiguration;
@@ -34,6 +33,11 @@ import io.micronaut.micrometer.observation.http.server.instrumentation.DefaultSe
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerHttpObservationDocumentation;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationContext;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationConvention;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SignalType;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.core.util.StringUtils.TRUE;
@@ -82,10 +86,24 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
             ((ServerRequestObservationContext) observation.getContext()).setResponse(response);
             Object body = response.body();
             if (body instanceof Publisher<?> publisher) {
-                response.body(new StreamingObservationBodyPublisher<>(publisher, observation));
+                AtomicBoolean stopped = new AtomicBoolean();
+                response.body(Flux.from(publisher)
+                    .doOnError(throwable -> recordError(stopped, observation, throwable))
+                    .doFinally(signalType -> {
+                        if (signalType != SignalType.ON_ERROR && stopped.compareAndSet(false, true)) {
+                            observation.stop();
+                        }
+                    }));
                 return;
             }
             observation.stop();
         });
+    }
+
+    private static void recordError(AtomicBoolean stopped, Observation observation, Throwable throwable) {
+        if (stopped.compareAndSet(false, true)) {
+            observation.error(throwable);
+            observation.stop();
+        }
     }
 }
