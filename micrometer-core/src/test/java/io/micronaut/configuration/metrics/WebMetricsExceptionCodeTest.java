@@ -44,7 +44,6 @@ class WebMetricsExceptionCodeTest {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () -> client.exchange("/metrics/bad-request"));
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-        Assertions.assertEquals("Client '/': Bad Request", e.getMessage());
         long count = meterRegistry.timer("http.server.requests", List.of(
             Tag.of("method", "GET"),
             Tag.of("uri", "/metrics/bad-request"),

@@ -250,7 +250,8 @@ class HttpMetricsSpec extends Specification {
 
     void "test rxjava3 server metrics keep custom meter filter tags"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        EmbeddedServer embeddedServer
+        embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
         def context = embeddedServer.applicationContext
         TestClient client = context.getBean(TestClient)
 
@@ -268,7 +269,7 @@ class HttpMetricsSpec extends Specification {
             .count() == 1
 
         cleanup:
-        embeddedServer.close()
+        embeddedServer?.close()
     }
 
     @PendingFeature
@@ -397,7 +398,8 @@ class HttpMetricsSpec extends Specification {
                     if (traceId == null) {
                         return id
                     }
-                    return id.replaceTags(Tags.concat([Tag.of('traceId', traceId)], id.getTagsAsIterable()))
+                    Iterable<Tag> tagsWithoutTraceId = id.getTagsAsIterable().findAll { Tag tag -> tag.key != 'traceId' }
+                    return id.replaceTags(Tags.concat([Tag.of('traceId', traceId)], tagsWithoutTraceId))
                 }
             }
         }

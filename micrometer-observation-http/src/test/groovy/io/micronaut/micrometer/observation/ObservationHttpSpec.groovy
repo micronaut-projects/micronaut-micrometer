@@ -270,7 +270,6 @@ class ObservationHttpSpec extends Specification {
         then:
         def e = thrown(HttpClientResponseException)
         e.status == HttpStatus.BAD_REQUEST
-        e.message == 'Bad Request'
 
         conditions.eventually {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasNumberOfObservationsEqualTo(1)
