@@ -69,12 +69,13 @@ class R2dbcPoolMetricsBinderFactorySpec extends Specification {
 
         then:
         noExceptionThrown()
-        !context.containsBean(R2dbcPoolMetricsBinderFactory)
-        !context.containsBean(R2dbcPoolMetricsBinder)
+        !context.containsBean(classLoader.loadClass('io.micronaut.configuration.metrics.binder.r2dbc.R2dbcPoolMetricsBinderFactory'))
+        !context.containsBean(classLoader.loadClass('io.micronaut.configuration.metrics.binder.r2dbc.R2dbcPoolMetricsBinder'))
 
         cleanup:
         context?.close()
         Thread.currentThread().contextClassLoader = originalClassLoader
+        classLoader?.close()
     }
 
     class StubFactory implements ConnectionFactory {
