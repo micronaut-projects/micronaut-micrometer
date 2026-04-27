@@ -259,6 +259,20 @@ You can customize what metrics are exposed using `micronaut.metrics.binders.nett
 * *NettyMetricsPipelineBinder*: Instrument Netty's channel, use `micronaut.metrics.binders.netty.channels.enabled` to toggle. Default is *false*.
 The provided metrics include the channel count, current active channel count, channel error count, bytes read and written.
 
+===== HTTP Client Pool Metrics
+
+Micronaut HTTP client pool metrics can be enabled with `micronaut.metrics.binders.web.client.pool.enabled=true`.
+The provided metrics include currently open and pending client pool connections, created connection count, connection creation time, and checked out requests for `DefaultHttpClient` beans.
+
+.HTTP Client Pool Metrics provided
+|=======
+|*Name*
+| http.client.pool.connections
+| http.client.pool.connections.created
+| http.client.pool.connections.create.time
+| http.client.pool.requests
+|=======
+
 == Adding Custom Metrics
 
 To add metrics to your application, dependency-inject a `MeterRegistry` bean and use the provided methods to access counters, timers, etc.
