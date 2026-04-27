@@ -21,6 +21,7 @@ import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.aop.InterceptedMethod;
+import io.micronaut.aop.InterceptPhase;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
@@ -96,6 +97,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
+    }
+
+    @Override
+    public int getOrder() {
+        return InterceptPhase.TRACE.getPosition();
     }
 
     @Override
