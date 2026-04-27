@@ -32,7 +32,7 @@ public final class CommonTagsCondition implements Condition {
             || containsConfiguredTags(context, MICRONAUT_METRICS_COMMON_TAGS);
     }
 
-    private static boolean containsConfiguredTags(ConditionContext context, String property) {
+    private static boolean containsConfiguredTags(ConditionContext<?> context, String property) {
         return context.containsProperty(property) || context.containsProperties(property);
     }
 }
