@@ -21,12 +21,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.io.UncheckedIOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -49,17 +49,10 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
     private final Consumer<String> sender;
 
     private StringBuilder buffer;
+    private int bufferBytes;
 
     NativeImageUdpStatsdLineSink(StatsdConfig config) {
-        this(config, payload -> {
-            try (DatagramSocket currentSocket = new DatagramSocket()) {
-                byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
-                InetAddress address = InetAddress.getByName(config.host());
-                currentSocket.send(new DatagramPacket(bytes, bytes.length, address, config.port()));
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
+        this(config, new UdpSender(config.host(), config.port()));
     }
 
     NativeImageUdpStatsdLineSink(StatsdConfig config, Consumer<String> sender) {
@@ -69,12 +62,17 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
         this.buffered = config.buffered();
         this.sender = sender;
         this.buffer = new StringBuilder(Math.max(128, maxPacketLength));
-        this.scheduler = Executors.newSingleThreadScheduledExecutor(new StatsdThreadFactory());
         Duration pollingFrequency = config.pollingFrequency();
-        this.scheduler.scheduleAtFixedRate(this::flushSafely,
-            pollingFrequency.toMillis(),
-            pollingFrequency.toMillis(),
-            TimeUnit.MILLISECONDS);
+        long pollingFrequencyMillis = pollingFrequency.toMillis();
+        if (buffered && pollingFrequencyMillis > 0) {
+            this.scheduler = Executors.newSingleThreadScheduledExecutor(new StatsdThreadFactory());
+            this.scheduler.scheduleAtFixedRate(this::flushSafely,
+                pollingFrequencyMillis,
+                pollingFrequencyMillis,
+                TimeUnit.MILLISECONDS);
+        } else {
+            this.scheduler = null;
+        }
     }
 
     @Override
@@ -87,17 +85,20 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
             if (!buffered) {
                 payloadToSend = line;
             } else {
-                int additionalLength = line.length();
+                int lineBytes = line.getBytes(StandardCharsets.UTF_8).length;
+                int additionalLength = lineBytes;
                 if (!buffer.isEmpty()) {
                     additionalLength += 1;
                 }
-                if (buffer.length() + additionalLength > maxPacketLength && !buffer.isEmpty()) {
+                if (bufferBytes + additionalLength > maxPacketLength && !buffer.isEmpty()) {
                     payloadToSend = clearBuffer();
                 }
                 if (!buffer.isEmpty()) {
                     buffer.append('\n');
+                    bufferBytes++;
                 }
                 buffer.append(line);
+                bufferBytes += lineBytes;
             }
         }
         if (payloadToSend != null) {
@@ -125,7 +126,9 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
 
     @Override
     public void close() {
-        scheduler.shutdownNow();
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
         String payloadToSend;
         synchronized (lock) {
             payloadToSend = clearBuffer();
@@ -133,6 +136,7 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
         if (payloadToSend != null) {
             send(payloadToSend);
         }
+        closeSender();
     }
 
     private String clearBuffer() {
@@ -141,7 +145,77 @@ final class NativeImageUdpStatsdLineSink implements Consumer<String>, Closeable 
         }
         String payload = buffer.toString();
         buffer = new StringBuilder(Math.max(128, maxPacketLength));
+        bufferBytes = 0;
         return payload;
+    }
+
+    private void closeSender() {
+        if (sender instanceof Closeable closeableSender) {
+            try {
+                closeableSender.close();
+            } catch (IOException e) {
+                LOG.debug("Error closing StatsD sender to {}:{}", host, port, e);
+            }
+        }
+    }
+
+    private static final class UdpSender implements Consumer<String>, Closeable {
+        private final Object lock = new Object();
+        private final String host;
+        private final int port;
+
+        private DatagramSocket socket;
+        private InetAddress address;
+
+        private UdpSender(String host, int port) {
+            this.host = host;
+            this.port = port;
+        }
+
+        @Override
+        public void accept(String payload) {
+            byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
+            synchronized (lock) {
+                try {
+                    DatagramSocket currentSocket = getSocket();
+                    InetAddress currentAddress = getAddress();
+                    currentSocket.send(new DatagramPacket(bytes, bytes.length, currentAddress, port));
+                } catch (IOException e) {
+                    closeSocket();
+                    address = null;
+                    throw new UncheckedIOException(e);
+                }
+            }
+        }
+
+        @Override
+        public void close() {
+            synchronized (lock) {
+                closeSocket();
+                address = null;
+            }
+        }
+
+        private DatagramSocket getSocket() throws IOException {
+            if (socket == null || socket.isClosed()) {
+                socket = new DatagramSocket();
+            }
+            return socket;
+        }
+
+        private InetAddress getAddress() throws IOException {
+            if (address == null) {
+                address = InetAddress.getByName(host);
+            }
+            return address;
+        }
+
+        private void closeSocket() {
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+        }
     }
 
     private static final class StatsdThreadFactory implements ThreadFactory {

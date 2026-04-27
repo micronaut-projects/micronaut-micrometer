@@ -39,6 +39,7 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
         imageCode | protocol | present
         "runtime" | "udp"    | true
         "runtime" | "tcp"    | false
+        "buildtime" | "udp"  | false
         null      | "udp"    | false
     }
 
@@ -60,6 +61,29 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
 
         then:
         payloads == ["first:1|c\nsecond:2|c"]
+
+        cleanup:
+        sink?.close()
+    }
+
+    void "verify native image line sink buffers according to utf8 payload bytes"() {
+        given:
+        List<String> payloads = []
+        NativeImageUdpStatsdLineSink sink = new NativeImageUdpStatsdLineSink(config(
+            host: "127.0.0.1",
+            port: "8125",
+            buffered: "true",
+            pollingFrequency: "PT10S",
+            maxPacketLength: "5"
+        ), payloads.&add)
+
+        when:
+        sink.accept("aé")
+        sink.accept("bé")
+        sink.close()
+
+        then:
+        payloads == ["aé", "bé"]
 
         cleanup:
         sink?.close()
@@ -110,6 +134,28 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
         sink?.close()
     }
 
+    void "verify native image line sink tolerates non positive polling frequency"() {
+        given:
+        List<String> payloads = []
+        NativeImageUdpStatsdLineSink sink = new NativeImageUdpStatsdLineSink(config(
+            host: "127.0.0.1",
+            port: "8125",
+            buffered: "true",
+            pollingFrequency: "PT0S",
+            maxPacketLength: "256"
+        ), payloads.&add)
+
+        when:
+        sink.accept("first:1|c")
+        sink.close()
+
+        then:
+        payloads == ["first:1|c"]
+
+        cleanup:
+        sink?.close()
+    }
+
     void "verify native image line sink keeps sending after listener starts later"() {
         given:
         DatagramSocket reservation = new DatagramSocket(0)
@@ -132,6 +178,34 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
 
         then:
         packet == "recovered:2|c"
+
+        cleanup:
+        sink?.close()
+        server?.close()
+    }
+
+    void "verify native image line sink reuses udp sender socket"() {
+        given:
+        DatagramSocket server = new DatagramSocket(0)
+        server.soTimeout = 5_000
+        NativeImageUdpStatsdLineSink sink = new NativeImageUdpStatsdLineSink(config(
+            host: "127.0.0.1",
+            port: server.localPort.toString(),
+            buffered: "false",
+            pollingFrequency: "PT0S",
+            maxPacketLength: "256"
+        ))
+
+        when:
+        sink.accept("first:1|c")
+        DatagramPacket first = receivePacket(server)
+        sink.accept("second:2|c")
+        DatagramPacket second = receivePacket(server)
+
+        then:
+        new String(first.data, first.offset, first.length) == "first:1|c"
+        new String(second.data, second.offset, second.length) == "second:2|c"
+        first.port == second.port
 
         cleanup:
         sink?.close()
@@ -163,9 +237,14 @@ class NativeImageUdpStatsdLineSinkSpec extends Specification {
     }
 
     private static String receive(DatagramSocket socket) {
+        DatagramPacket packet = receivePacket(socket)
+        return new String(packet.data, packet.offset, packet.length)
+    }
+
+    private static DatagramPacket receivePacket(DatagramSocket socket) {
         byte[] buffer = new byte[512]
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length)
         socket.receive(packet)
-        return new String(packet.data, packet.offset, packet.length)
+        return packet
     }
 }

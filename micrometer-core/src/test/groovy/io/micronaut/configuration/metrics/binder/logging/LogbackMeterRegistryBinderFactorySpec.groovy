@@ -81,8 +81,7 @@ class LogbackMeterRegistryBinderFactorySpec extends Specification {
 
     void "logback metrics close removes filters and reset listener"() {
         given:
-        def loggerContext = LoggerFactory.getILoggerFactory()
-        loggerContext.reset()
+        def loggerContext = newLoggerContext()
         def binder = new MicronautLogbackMetrics([], loggerContext)
         def registry = new SimpleMeterRegistry()
 
@@ -106,6 +105,33 @@ class LogbackMeterRegistryBinderFactorySpec extends Specification {
         cleanup:
         registry.close()
         loggerContext.stop()
+    }
+
+    void "logback metrics bind same registry once"() {
+        given:
+        def loggerContext = newLoggerContext()
+        def logger = loggerContext.getLogger("logback-binder-repeat-bind-test")
+        def binder = new MicronautLogbackMetrics([], loggerContext)
+        def registry = new SimpleMeterRegistry()
+
+        when:
+        binder.bindTo(registry)
+        binder.bindTo(registry)
+        logger.info("primary event")
+
+        then:
+        binder.@metricsTurboFilters.size() == 1
+        loggerContext.getTurboFilterList().findAll { it instanceof MicronautLogbackMetrics.MetricsTurboFilter }.size() == 1
+        registry.get("logback.events").tags("level", "info").functionCounter().count() == 1d
+
+        cleanup:
+        binder.close()
+        registry.close()
+        loggerContext.stop()
+    }
+
+    private static newLoggerContext() {
+        LoggerFactory.getILoggerFactory().class.getDeclaredConstructor().newInstance()
     }
 
     private static final class AsyncLoggingCounterRegistry extends SimpleMeterRegistry {

@@ -93,8 +93,14 @@ final class MicronautLogbackMetrics extends LogbackMetrics {
 
     @Override
     public void bindTo(MeterRegistry registry) {
-        MetricsTurboFilter filter = new MetricsTurboFilter(registry, tags);
         synchronized (metricsTurboFilters) {
+            MetricsTurboFilter existingFilter = metricsTurboFilters.get(registry);
+            if (existingFilter != null) {
+                loggerContext.getTurboFilterList().remove(existingFilter);
+                loggerContext.addTurboFilter(existingFilter);
+                return;
+            }
+            MetricsTurboFilter filter = new MetricsTurboFilter(registry, tags);
             metricsTurboFilters.put(registry, filter);
             loggerContext.addTurboFilter(filter);
         }

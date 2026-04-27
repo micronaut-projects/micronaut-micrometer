@@ -24,12 +24,13 @@ import io.micronaut.context.condition.ConditionContext;
 final class NativeImageStatsdCondition implements Condition {
 
     static final String NATIVE_IMAGE_CODE_PROPERTY = "org.graalvm.nativeimage.imagecode";
+    private static final String RUNTIME = "runtime";
     private static final String UDP = "UDP";
 
     @Override
     public boolean matches(ConditionContext context) {
         String imageCode = System.getProperty(NATIVE_IMAGE_CODE_PROPERTY);
-        if (imageCode == null || imageCode.isBlank()) {
+        if (!RUNTIME.equalsIgnoreCase(imageCode)) {
             return false;
         }
         String protocol = context.getProperty(StatsdMeterRegistryFactory.STATSD_CONFIG + ".protocol", String.class)
