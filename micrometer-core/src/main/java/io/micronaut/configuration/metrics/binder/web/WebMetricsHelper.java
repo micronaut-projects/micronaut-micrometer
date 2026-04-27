@@ -18,17 +18,19 @@ package io.micronaut.configuration.metrics.binder.web;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.core.annotation.Internal;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import io.micronaut.http.HttpAttributes;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.web.router.ErrorRouteInfo;
 import io.micronaut.web.router.RouteMatch;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -56,15 +58,18 @@ final class WebMetricsHelper {
     private static final String SERVICE_ID = "serviceId";
 
     private final MeterRegistry meterRegistry;
+    private final HttpRequest<?> request;
     private final String requestPath;
     private final long start;
     private final String httpMethod;
     private final String metricName;
     private final String serviceID;
     private final boolean reportClientErrorURIs;
+    private final List<HttpMetricsTagProvider> tagProviders;
 
     /**
      * @param meterRegistry         MeterRegistry bean
+     * @param request               The HTTP request
      * @param requestPath           The request path
      * @param start                 The start time of the request
      * @param httpMethod            The HTTP method name used
@@ -73,37 +78,62 @@ final class WebMetricsHelper {
      * @param reportClientErrorURIs Whether client errors provide uris or not
      */
     WebMetricsHelper(MeterRegistry meterRegistry,
+                     HttpRequest<?> request,
                      String requestPath,
                      long start,
                      String httpMethod,
                      String metricName,
                      String serviceID,
-                     boolean reportClientErrorURIs) {
+                     boolean reportClientErrorURIs,
+                     List<HttpMetricsTagProvider> tagProviders) {
         this.meterRegistry = meterRegistry;
+        this.request = request;
         this.requestPath = requestPath;
         this.start = start;
         this.httpMethod = httpMethod;
         this.metricName = metricName;
         this.serviceID = serviceID;
         this.reportClientErrorURIs = reportClientErrorURIs;
+        this.tagProviders = tagProviders;
+    }
+
+    /**
+     * @param meterRegistry         MeterRegistry bean
+     * @param request               The HTTP request
+     * @param requestPath           The request path
+     * @param start                 The start time of the request
+     * @param httpMethod            The HTTP method name used
+     * @param metricName            The metric name
+     * @param serviceID             The ID of the service called in the request
+     * @param reportClientErrorURIs Whether client errors provide uris or not
+     */
+    WebMetricsHelper(MeterRegistry meterRegistry,
+                     HttpRequest<?> request,
+                     String requestPath,
+                     long start,
+                     String httpMethod,
+                     String metricName,
+                     String serviceID,
+                     boolean reportClientErrorURIs) {
+        this(meterRegistry, request, requestPath, start, httpMethod, metricName, serviceID, reportClientErrorURIs, Collections.emptyList());
     }
 
     /**
      * Get the tags for the metrics based on request shape.
      *
-     * @param httpResponse The HTTP response
+     * @param httpResponse The HTTP response, if available
      * @param httpMethod   The name of the HTTP method (GET, POST, etc)
      * @param requestPath  The request path (/foo, /foo/bar, etc)
      * @param throwable    The throwable (optional)
      * @param serviceId         the service ID
      * @return A list of Tag objects
      */
-    private static List<Tag> getTags(HttpResponse<?> httpResponse,
-                                     String httpMethod,
-                                     String requestPath,
-                                     Throwable throwable,
-                                     String serviceId,
-                                     boolean reportClientErrorURIs) {
+    private List<Tag> getTags(@Nullable HttpResponse<?> httpResponse,
+                              String httpMethod,
+                              String requestPath,
+                              Throwable throwable,
+                              String serviceId,
+                              boolean reportClientErrorURIs) {
         List<@NonNull Tag> tags = new ArrayList<>(5);
         Tag t1 = method(httpMethod);
         if (t1 != null) {
@@ -115,6 +145,9 @@ final class WebMetricsHelper {
         Tag t5 = serviceId(serviceId);
         if (t5 != null) {
             tags.add(t5);
+        }
+        for (HttpMetricsTagProvider tagProvider : tagProviders) {
+            tagProvider.getTags(request, httpResponse, throwable).forEach(tags::add);
         }
         return tags;
     }
@@ -154,7 +187,7 @@ final class WebMetricsHelper {
      * @return Tag of URI
      */
     @NonNull
-    private static Tag uri(HttpResponse<?> httpResponse, String path, boolean reportClientErrorURIs) {
+    private static Tag uri(@Nullable HttpResponse<?> httpResponse, String path, boolean reportClientErrorURIs) {
         if (httpResponse != null) {
             int code = httpResponse.code();
             if (code >= 300 && code < 400) {
@@ -280,10 +313,10 @@ final class WebMetricsHelper {
     /**
      * Registers the error timer for a web request when an exception occurs.
      *
-     * @param httpResponse existing response object.
+     * @param httpResponse existing response object, if available.
      * @param throwable    exception that occurred
      */
-    public void error(HttpResponse<?> httpResponse, Throwable throwable) {
+    public void error(@Nullable HttpResponse<?> httpResponse, Throwable throwable) {
         if (httpResponse == null && throwable instanceof HttpResponseProvider httpResponseProvider) {
             httpResponse = httpResponseProvider.getResponse();
         }

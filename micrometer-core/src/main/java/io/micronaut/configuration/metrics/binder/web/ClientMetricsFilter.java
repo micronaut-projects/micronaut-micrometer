@@ -31,6 +31,7 @@ import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.filter.HttpClientFilter;
 import jakarta.inject.Provider;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -51,12 +52,16 @@ final class ClientMetricsFilter {
 
     private static final String START_ATTRIBUTE = ClientMetricsFilter.class.getName() + ".START_ATTRIBUTE";
     private final Provider<MeterRegistry> meterRegistryProvider;
+    private final List<HttpMetricsTagProvider> tagProviders;
 
     /**
-     * @param meterRegistryProvider the meter registry provider
+     * @param meterRegistryProvider The meter registry provider
+     * @param tagProviders          The HTTP metrics tag providers
      */
-    public ClientMetricsFilter(Provider<MeterRegistry> meterRegistryProvider) {
+    public ClientMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
+                               List<HttpMetricsTagProvider> tagProviders) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.tagProviders = tagProviders;
     }
 
     @RequestFilter
@@ -77,12 +82,14 @@ final class ClientMetricsFilter {
     private WebMetricsHelper createHelper(HttpRequest<?> request) {
         return new WebMetricsHelper(
             meterRegistryProvider.get(),
+            request,
             resolvePath(request),
             request.getAttribute(START_ATTRIBUTE, Long.class).orElseGet(System::nanoTime),
             request.getMethod().toString(),
             HttpClientMeterConfig.REQUESTS_METRIC,
             resolveServiceID(request),
-            true
+            true,
+            tagProviders
         );
     }
 

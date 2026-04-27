@@ -31,6 +31,7 @@ import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -57,14 +58,19 @@ final class ServerMetricsFilter {
     private final Supplier<MeterRegistry> meterRegistryProvider;
 
     private final boolean reportClientErrorURIs;
+    private final List<HttpMetricsTagProvider> tagProviders;
 
     /**
      * @param meterRegistryProvider  the meter registry provider
      * @param clientErrorsUrisConfig the client errors
+     * @param tagProviders           The HTTP metrics tag providers
      */
-    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider, HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
+    public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
+                               HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig,
+                               List<HttpMetricsTagProvider> tagProviders) {
         this.meterRegistryProvider = SupplierUtil.memoized(meterRegistryProvider::get);
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
+        this.tagProviders = tagProviders;
     }
 
     private String resolvePath(HttpRequest<?> request) {
@@ -83,12 +89,14 @@ final class ServerMetricsFilter {
     void onResponse(HttpRequest<?> request, HttpResponse<?> response) {
         WebMetricsHelper httpResponseWebMetricsPublisher = new WebMetricsHelper(
             meterRegistryProvider.get(),
+            request,
             resolvePath(request),
             request.getAttribute(START_ATTRIBUTE, Long.class).orElseGet(System::nanoTime),
             request.getMethod().toString(),
             HttpServerMeterConfig.REQUESTS_METRIC,
             null,
-            reportClientErrorURIs
+            reportClientErrorURIs,
+            tagProviders
         );
         httpResponseWebMetricsPublisher.onResponse(response);
     }
