@@ -149,6 +149,10 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         registry.get("executor.pool.size")
                 .tag("name", "wrapped-event-loop")
                 .gauge()
+
+        cleanup:
+        eventLoopGroup.shutdownGracefully().syncUninterruptibly()
+        eventLoopGroup.terminationFuture().syncUninterruptibly()
     }
 
     @Unroll

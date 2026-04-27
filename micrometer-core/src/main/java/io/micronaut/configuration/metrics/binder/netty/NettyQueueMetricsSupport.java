@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,20 +102,20 @@ final class NettyQueueMetricsSupport {
 
     private static String waitTimeDescription(String kind) {
         if (PARENT.equals(kind)) {
-            return "Global wait time spent in the parent Queues.";
+            return "Global wait time spent in the parent queues.";
         }
         if (WORKER.equals(kind)) {
-            return "Global wait time spent in the worker Queues.";
+            return "Global wait time spent in the worker queues.";
         }
         return "Global wait time spent in the event loop queues.";
     }
 
     private static String executionTimeDescription(String kind) {
         if (PARENT.equals(kind)) {
-            return "Global parent runnable execution time.";
+            return "Global runnable execution time for the parent queues.";
         }
         if (WORKER.equals(kind)) {
-            return "Global worker runnable execution time.";
+            return "Global runnable execution time for the worker queues.";
         }
         return "Global runnable execution time for the event loop queues.";
     }

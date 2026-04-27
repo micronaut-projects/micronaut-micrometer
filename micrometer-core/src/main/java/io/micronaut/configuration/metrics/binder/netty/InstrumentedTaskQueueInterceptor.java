@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import io.micronaut.http.server.netty.configuration.NettyHttpServerConfiguration
 import io.micronaut.inject.qualifiers.Qualifiers;
 import jakarta.inject.Singleton;
 
+import java.util.Optional;
 import java.util.Queue;
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT;
@@ -58,11 +59,12 @@ final class InstrumentedTaskQueueInterceptor implements TaskQueueInterceptor {
 
     @Override
     public Queue<Runnable> wrapTaskQueue(String groupName, Queue<Runnable> original) {
-        String workerGroupName = serverConfigurationProvider.find(Qualifiers.byName("default"))
+        Optional<NettyHttpServerConfiguration> serverConfiguration = serverConfigurationProvider.find(Qualifiers.byName("default"));
+        String workerGroupName = serverConfiguration
                 .map(NettyHttpServerConfiguration::getWorker)
                 .map(NettyHttpServerConfiguration.Worker::getName)
                 .orElse(EventLoopGroupConfiguration.DEFAULT);
-        String parentGroupName = serverConfigurationProvider.find(Qualifiers.byName("default"))
+        String parentGroupName = serverConfiguration
                 .map(NettyHttpServerConfiguration::getParent)
                 .map(NettyHttpServerConfiguration.Parent::getName)
                 .orElse(PARENT);
