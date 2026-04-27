@@ -25,7 +25,7 @@ class PrometheusEndpointSpec extends Specification {
     @AutoCleanup('shutdownNow')
     ExecutorService scrapeExecutor = Executors.newSingleThreadExecutor()
 
-    def setup() {
+    def setupSpec() {
         def registry = embeddedServer.applicationContext.getBean(MeterRegistry)
 
         new JvmMemoryMetrics().bindTo(registry)
