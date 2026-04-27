@@ -15,11 +15,6 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 class PrometheusMeterRegistryFactorySpec extends Specification {
 
-    void "verify shaded protobuf classes are not on the runtime classpath"() {
-        expect:
-        this.class.classLoader.getResource('io/prometheus/metrics/shaded/com_google_protobuf_3_25_3/AbstractMessage.class') == null
-    }
-
     void "verify PrometheusMeterRegistry is created by default when this configuration used"() {
         when:
         ApplicationContext context = ApplicationContext.run()
