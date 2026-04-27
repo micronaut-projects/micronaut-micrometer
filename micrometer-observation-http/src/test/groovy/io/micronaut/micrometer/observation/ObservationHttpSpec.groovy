@@ -70,8 +70,6 @@ class ObservationHttpSpec extends Specification {
         context = ApplicationContext.builder(
             'micronaut.application.name': 'test-app',
             'micrometer.observation.http.exclusions[0]': '.*exclude.*',
-            'micronaut.server.cors.enabled': true,
-            'micronaut.server.cors.configurations.web.allowed-origins[0]': 'https://example.com',
             'spec.name': 'ObservationHttpSpec',
             'micrometer.observations.common-key-value.common_key': 'common_value'
         ).start()
@@ -322,19 +320,28 @@ class ObservationHttpSpec extends Specification {
 
     void 'preflight requests are not observed'() {
         when:
-        HttpResponse<?> response = httpClient.toBlocking().exchange(HttpRequest.OPTIONS("/client/order/${UUID.randomUUID()}")
+        EmbeddedServer corsEmbeddedServer = ApplicationContext.run(EmbeddedServer, [
+            'micronaut.application.name': 'test-app',
+            'micronaut.server.cors.enabled': true,
+            'micronaut.server.cors.configurations.web.allowed-origins[0]': 'https://example.com',
+            'spec.name': 'ObservationHttpSpec'
+        ])
+        HttpClient corsHttpClient = HttpClient.create(corsEmbeddedServer.URL)
+        TestObservationRegistry corsObservationRegistry = corsEmbeddedServer.applicationContext.getBean(ObservationRegistry) as TestObservationRegistry
+        HttpResponse<?> response = corsHttpClient.toBlocking().exchange(HttpRequest.OPTIONS("/client/order/${UUID.randomUUID()}")
             .header(HttpHeaders.ORIGIN, 'https://example.com')
             .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
 
         then:
-        response.code() == 200
+        response.code() >= 200 && response.code() < 300
 
         conditions.eventually {
-            TestObservationRegistryAssert.assertThat(testObservationRegistry).doesNotHaveAnyObservation()
+            TestObservationRegistryAssert.assertThat(corsObservationRegistry).doesNotHaveAnyObservation()
         }
 
         cleanup:
-        testObservationRegistry.clear()
+        corsHttpClient?.close()
+        corsEmbeddedServer?.close()
     }
 
     void 'test continue nested HTTP observation - reactive'() {

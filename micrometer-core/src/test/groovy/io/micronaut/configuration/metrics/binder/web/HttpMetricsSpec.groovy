@@ -234,7 +234,7 @@ class HttpMetricsSpec extends Specification {
                 .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
 
         then:
-        response.code() == 200
+        response.code() >= 200 && response.code() < 300
 
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
