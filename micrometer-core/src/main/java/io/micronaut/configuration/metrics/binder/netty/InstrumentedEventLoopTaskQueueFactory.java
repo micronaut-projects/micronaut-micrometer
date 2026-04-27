@@ -20,11 +20,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.server.netty.NettyHttpServer;
+import io.micronaut.http.netty.channel.EventLoopGroupConfiguration;
 import io.micronaut.http.netty.channel.TaskQueueInterceptor;
+import io.micronaut.inject.qualifiers.Qualifiers;
 import io.netty.channel.EventLoopTaskQueueFactory;
 import io.netty.util.internal.PlatformDependent;
 import jakarta.inject.Named;
@@ -61,16 +64,21 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EventLoopTaskQueueFactory.class)
 @Internal
+@SuppressWarnings("java:S1874")
 final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory, TaskQueueInterceptor {
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
+    private final BeanContext beanContext;
     private final ConcurrentMap<String, EventLoopGroupMetrics> metrics = new ConcurrentHashMap<>();
 
     /**
      * @param meterRegistryProvider the metric registry provider
+     * @param beanContext the bean context
      */
-    public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {
+    public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                                 BeanContext beanContext) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.beanContext = beanContext;
         metrics.put(PARENT, EventLoopGroupMetrics.create(meterRegistryProvider.get(), PARENT));
         metrics.put(WORKER, EventLoopGroupMetrics.create(meterRegistryProvider.get(), WORKER));
     }
@@ -88,7 +96,7 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
     }
 
     private Queue<Runnable> newMonitoredQueue(String groupName, Queue<Runnable> queue) {
-        String name = groupName == null ? WORKER : groupName;
+        String name = normalizeGroupName(groupName);
         EventLoopGroupMetrics groupMetrics = metrics.computeIfAbsent(name, group -> EventLoopGroupMetrics.create(meterRegistryProvider.get(), group));
         return new MonitoredQueue(groupMetrics.queueCounter.incrementAndGet(),
                 meterRegistryProvider.get(),
@@ -97,6 +105,16 @@ final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueF
                 groupMetrics.globalWaitTimeTimer,
                 groupMetrics.globalExecutionTimer,
                 queue);
+    }
+
+    private String normalizeGroupName(String groupName) {
+        if (groupName == null || groupName.isEmpty()) {
+            return WORKER;
+        }
+        if (PARENT.equals(groupName) || WORKER.equals(groupName) || EventLoopGroupConfiguration.DEFAULT.equals(groupName)) {
+            return groupName;
+        }
+        return beanContext.findBean(EventLoopGroupConfiguration.class, Qualifiers.byName(groupName)).isPresent() ? groupName : WORKER;
     }
 
     private String findOrigin() {

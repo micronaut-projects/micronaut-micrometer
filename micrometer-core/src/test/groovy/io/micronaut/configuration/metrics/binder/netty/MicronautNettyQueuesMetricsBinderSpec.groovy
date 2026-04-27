@@ -9,14 +9,19 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
+import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
+import io.micronaut.http.netty.channel.NioEventLoopGroupFactory
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.server.EmbeddedServer
 import io.netty.channel.EventLoopGroup
 import spock.lang.Unroll
 import spock.lang.Ignore
 import spock.lang.Specification
+
+import java.util.concurrent.ConcurrentLinkedQueue
 
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ELEMENT
@@ -60,6 +65,28 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         MICRONAUT_METRICS_ENABLED                           | false   | false
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | true    | true
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | false   | false
+    }
+
+    @Unroll
+    void "test instrumented event loop group factory replaces #factoryName factory by name"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(
+                [(MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
+        )
+
+        then:
+        context.findBean(instrumentedClass).isPresent() == context.findBean(EventLoopGroupFactory, Qualifiers.byName(factoryName))
+                .map { instrumentedClass.isInstance(it) }
+                .orElse(false)
+
+        cleanup:
+        context.close()
+
+        where:
+        instrumentedClass                         | factoryName
+        InstrumentedNioEventLoopGroupFactory     | NioEventLoopGroupFactory.NAME
+        InstrumentedEpollEventLoopGroupFactory   | EpollEventLoopGroupFactory.NAME
+        InstrumentedKQueueEventLoopGroupFactory  | KQueueEventLoopGroupFactory.NAME
     }
 
     @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
@@ -119,6 +146,32 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
                 .tags(Tags.of(GROUP, "client"))
                 .gauges()
                 .size() > 0
+
+        cleanup:
+        context.close()
+    }
+
+    void "test unexpected event loop queue group names use worker metrics"() {
+        given:
+        ApplicationContext context = ApplicationContext.run(
+                [MICRONAUT_METRICS_ENABLED                            : true,
+                 (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
+        )
+
+        when:
+        InstrumentedEventLoopTaskQueueFactory factory = context.getBean(InstrumentedEventLoopTaskQueueFactory)
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        factory.wrapTaskQueue("unexpected", new ConcurrentLinkedQueue<Runnable>())
+
+        then:
+        registry.find(dot(NETTY, QUEUE, SIZE))
+                .tags(Tags.of(GROUP, "unexpected"))
+                .gauges()
+                .isEmpty()
+        registry.get(dot(NETTY, QUEUE, SIZE))
+                .tags(Tags.of(GROUP, WORKER))
+                .gauges()
+                .size() == 1
 
         cleanup:
         context.close()

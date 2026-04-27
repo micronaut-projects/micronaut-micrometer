@@ -247,7 +247,7 @@ If you use `io.micronaut.sql:micronaut-jdbc-tomcat` or `io.micronaut.sql:microna
 
 Currently, the following binders are provided to instrument Netty:
 
-* *EventLoopGroupFactoryBinder*: Instrument and expose event loop group queues metrics; use `micronaut.metrics.binders.netty.queues.enabled` to toggle. Default is *false*. The queues' size and tasks wait and execution time are exposed. Metrics are tagged with the event loop group name for configured Netty event loops, including event loops selected by HTTP clients.
+* *EventLoopGroupFactoryBinder*: Instrument and expose event loop group queues metrics; use `micronaut.metrics.binders.netty.queues.enabled` to toggle. Default is *false*. The queues' size and tasks wait and execution time are exposed. Metrics are tagged with the event loop group name for configured Netty server and client event loops.
 * *ByteBufAllocatorMetricsBinder*: Expose `ByteBuf` default allocators (https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html[UnpooledByteBufAllocator], https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html[PooledByteBufAllocator]) metrics; use `micronaut.metrics.binders.netty.bytebuf-allocators.enabled` to toggle. Default is *false*.
 You can customize what metrics are exposed using `micronaut.metrics.binders.netty.bytebuf-allocators.metrics`. By default, all available metrics are exposed. These flags are supported:
 ** `POOLED_ALLOCATOR`: expose `PooledByteBufAllocator` metrics,

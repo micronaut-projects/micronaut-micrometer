@@ -9,6 +9,7 @@ import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.scheduling.TaskExecutors
+import io.micronaut.scheduling.instrument.InstrumentedExecutorService
 import io.netty.channel.DefaultEventLoop
 import io.netty.channel.EventLoopGroup
 import jakarta.inject.Named
@@ -79,6 +80,19 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         context.close()
     }
 
+    void "test event loop group outside netty package not instrumented"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+        ExecutorService executorService = context.getBean(ExecutorService, Qualifiers.byName("delegating"))
+
+        then:
+        executorService instanceof TestEventLoopGroup
+        !(executorService instanceof InstrumentedExecutorService)
+
+        cleanup:
+        context.close()
+    }
+
     @Issue("https://github.com/micronaut-projects/micronaut-micrometer/issues/679")
     void "test the virtual task executor is unbound with no warnings logged"() {
         when:
@@ -128,6 +142,15 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         EventLoopGroup eventLoopGroup() {
             return new DefaultEventLoop()
         }
+
+        @Singleton
+        @Named("delegating")
+        TestEventLoopGroup delegatingEventLoopGroup() {
+            return new TestEventLoopGroup()
+        }
+    }
+
+    static class TestEventLoopGroup extends DefaultEventLoop {
     }
 
     class SimpleStreamsListener implements IStandardStreamsListener {
