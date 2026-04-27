@@ -273,5 +273,15 @@
     "type": "io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor",
     "member": "Constructor io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor(io.micrometer.core.instrument.MeterRegistry)",
     "reason": "Removed deprecated code for Micronaut Framework 5"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.web.HttpMetricsTagProvider",
+    "member": "Class io.micronaut.configuration.metrics.binder.web.HttpMetricsTagProvider",
+    "reason": "Add request-aware HTTP metrics tag provider extension point"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.binder.web.HttpMetricsTagProvider",
+    "member": "Method io.micronaut.configuration.metrics.binder.web.HttpMetricsTagProvider.getTags(io.micronaut.http.HttpRequest,io.micronaut.http.HttpResponse,java.lang.Throwable)",
+    "reason": "Add request-aware HTTP metrics tag provider extension point"
   }
 ]
