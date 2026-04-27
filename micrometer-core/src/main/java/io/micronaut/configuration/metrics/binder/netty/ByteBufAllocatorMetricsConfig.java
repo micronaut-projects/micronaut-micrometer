@@ -42,19 +42,19 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
      */
     public static final String ENABLED = PATH + ".enabled";
 
-    private boolean enabled;
+    private boolean metricsEnabled;
     private Set<ByteBufAllocatorMetricKind> metrics = EnumSet.allOf(ByteBufAllocatorMetricKind.class);
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return metricsEnabled;
     }
 
     /**
      * @param enabled Whether Netty ByteBuf allocator metrics are enabled
      */
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.metricsEnabled = enabled;
     }
 
     /**

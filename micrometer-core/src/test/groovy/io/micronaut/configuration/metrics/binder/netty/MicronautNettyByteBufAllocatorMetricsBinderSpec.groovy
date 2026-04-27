@@ -27,6 +27,35 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 
 class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
 
+    void "test ByteBufAllocator config defaults and metric normalization"() {
+        given:
+        ByteBufAllocatorMetricsConfig config = new ByteBufAllocatorMetricsConfig()
+
+        expect:
+        !config.enabled
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+
+        when:
+        config.enabled = true
+        config.metrics = EnumSet.of(POOLED_ALLOCATOR)
+
+        then:
+        config.enabled
+        config.metrics == EnumSet.of(POOLED_ALLOCATOR)
+
+        when:
+        config.metrics = null
+
+        then:
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+
+        when:
+        config.metrics = [] as Set
+
+        then:
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind)
+    }
+
     @Unroll
     void "test getting the beans #cfg #setting"() {
         when:
