@@ -103,11 +103,6 @@ public class PrometheusEndpoint {
             try {
                 return new ProducerAwareInputStream(inputStream);
             } catch (IOException e) {
-                try {
-                    inputStream.close();
-                } catch (IOException closeException) {
-                    e.addSuppressed(closeException);
-                }
                 throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
             }
         }

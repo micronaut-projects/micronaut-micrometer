@@ -15,9 +15,11 @@ import spock.lang.Specification
 import java.io.IOException
 import java.io.OutputStream
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
@@ -168,6 +170,63 @@ class PrometheusEndpointSpec extends Specification {
             throw failure
         }
         0 * registry.scrape()
+    }
+
+    void "test prometheus scrape stream ignores producer cancellation when awaiting completion"() {
+        given:
+        def registry = Mock(PrometheusMeterRegistry)
+        def executor = Mock(ExecutorService)
+        Future<?> future = Mock()
+        def endpoint = new PrometheusEndpoint(registry, executor)
+
+        when:
+        String result
+        endpoint.scrapeStream().withCloseable { inputStream ->
+            result = inputStream.getText(StandardCharsets.UTF_8.name())
+        }
+
+        then:
+        result == 'jvm_memory_used 1.0\n'
+        1 * executor.submit(_ as Runnable) >> { Runnable task ->
+            task.run()
+            future
+        }
+        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+            outputStream.write('jvm_memory_used 1.0\n'.getBytes(StandardCharsets.UTF_8))
+        }
+        1 * future.get() >> { throw new CancellationException('cancelled') }
+        0 * registry.scrape()
+    }
+
+    void "test prometheus scrape stream restores interrupt when awaiting producer completion"() {
+        given:
+        def registry = Mock(PrometheusMeterRegistry)
+        def executor = Mock(ExecutorService)
+        Future<?> future = Mock()
+        def endpoint = new PrometheusEndpoint(registry, executor)
+
+        when:
+        endpoint.scrapeStream().withCloseable { inputStream ->
+            inputStream.getText(StandardCharsets.UTF_8.name())
+        }
+
+        then:
+        def exception = thrown(IOException)
+        exception.message == 'Interrupted while streaming Prometheus scrape'
+        exception.cause instanceof InterruptedException
+        Thread.currentThread().isInterrupted()
+        1 * executor.submit(_ as Runnable) >> { Runnable task ->
+            task.run()
+            future
+        }
+        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+            outputStream.write('jvm_memory_used 1.0\n'.getBytes(StandardCharsets.UTF_8))
+        }
+        1 * future.get() >> { throw new InterruptedException('boom') }
+        0 * registry.scrape()
+
+        cleanup:
+        Thread.interrupted()
     }
 
     void "test prometheus scrape stream propagates scheduling failures"() {
