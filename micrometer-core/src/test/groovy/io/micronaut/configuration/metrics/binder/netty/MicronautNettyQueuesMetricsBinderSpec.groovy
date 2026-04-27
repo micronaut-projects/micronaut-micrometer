@@ -89,6 +89,23 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         InstrumentedKQueueEventLoopGroupFactory  | KQueueEventLoopGroupFactory.NAME
     }
 
+    void "test instrumented native event loop group factory is available by legacy name"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(
+                [(MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
+        )
+        Optional<EventLoopGroupFactory> nativeFactory = context.findBean(EventLoopGroupFactory, Qualifiers.byName(EventLoopGroupFactory.NATIVE))
+        List<Class> availableNativeFactories = [InstrumentedEpollEventLoopGroupFactory, InstrumentedKQueueEventLoopGroupFactory]
+                .findAll { context.findBean(it).isPresent() }
+
+        then:
+        nativeFactory.isPresent() == !availableNativeFactories.isEmpty()
+        !nativeFactory.isPresent() || availableNativeFactories.any { it.isInstance(nativeFactory.get()) }
+
+        cleanup:
+        context.close()
+    }
+
     @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
     void "test getting channel class from instrumented event loop group factory"(
             NettyChannelType channelType,
