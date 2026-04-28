@@ -30,8 +30,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.function.Function;
 
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
@@ -62,14 +64,20 @@ public class StackdriverMeterRegistryFactory {
     static final int METADATA_TIMEOUT_MILLIS = 1000;
     private final Path googleCloudConfigDirectory;
     private final String metadataProjectIdOverride;
+    private final Function<String, String> environment;
 
     StackdriverMeterRegistryFactory() {
-        this(null, null);
+        this(null, null, System::getenv);
     }
 
     StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride) {
+        this(googleCloudConfigDirectory, metadataProjectIdOverride, System::getenv);
+    }
+
+    StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride, Function<String, String> environment) {
         this.googleCloudConfigDirectory = googleCloudConfigDirectory;
         this.metadataProjectIdOverride = metadataProjectIdOverride;
+        this.environment = environment;
     }
 
     /**
@@ -104,7 +112,7 @@ public class StackdriverMeterRegistryFactory {
         };
     }
 
-    private String getDefaultProjectId() {
+    final String getDefaultProjectId() {
         String projectId = getPropertyOrEnvironment(GOOGLE_CLOUD_PROJECT);
         if (projectId == null) {
             projectId = getPropertyOrEnvironment(GCLOUD_PROJECT);
@@ -119,7 +127,11 @@ public class StackdriverMeterRegistryFactory {
     }
 
     private String getPropertyOrEnvironment(String name) {
-        return System.getProperty(name, System.getenv(name));
+        String value = System.getProperty(name);
+        if (value == null || value.isBlank()) {
+            value = environment.apply(name);
+        }
+        return value == null || value.isBlank() ? null : value;
     }
 
     final String getAppEngineProjectId() {
@@ -194,12 +206,12 @@ public class StackdriverMeterRegistryFactory {
         if (googleCloudConfigDirectory != null) {
             return googleCloudConfigDirectory;
         }
-        String cloudSdkConfig = System.getenv(CLOUDSDK_CONFIG);
+        String cloudSdkConfig = environment.apply(CLOUDSDK_CONFIG);
         if (cloudSdkConfig != null) {
             return Path.of(cloudSdkConfig);
         }
         if (isWindows()) {
-            String appData = System.getenv(APPDATA);
+            String appData = environment.apply(APPDATA);
             if (appData != null) {
                 return Path.of(appData, "gcloud");
             }
@@ -212,24 +224,44 @@ public class StackdriverMeterRegistryFactory {
             return null;
         }
         try {
-            String section = null;
-            for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
-                String trimmed = line.trim();
-                if (!trimmed.isEmpty() && !trimmed.startsWith(";")) {
-                    if (trimmed.startsWith("[") && trimmed.endsWith("]") && trimmed.length() > 2) {
-                        section = trimmed.substring(1, trimmed.length() - 1);
-                    } else if (section == null || "core".equals(section)) {
-                        String projectId = getProjectIdFromConfigLine(trimmed);
-                        if (projectId != null) {
-                            return projectId;
-                        }
-                    }
-                }
-            }
-            return null;
+            return getGoogleCloudProjectId(Files.readAllLines(path, StandardCharsets.UTF_8));
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private String getGoogleCloudProjectId(List<String> lines) {
+        String section = null;
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (isIgnoredConfigLine(trimmed)) {
+                continue;
+            }
+            String parsedSection = getConfigSection(trimmed);
+            if (parsedSection != null) {
+                section = parsedSection;
+                continue;
+            }
+            if (isCoreConfigSection(section)) {
+                String projectId = getProjectIdFromConfigLine(trimmed);
+                if (projectId != null) {
+                    return projectId;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isIgnoredConfigLine(String line) {
+        return line.isEmpty() || line.startsWith(";");
+    }
+
+    private String getConfigSection(String line) {
+        return line.startsWith("[") && line.endsWith("]") && line.length() > 2 ? line.substring(1, line.length() - 1) : null;
+    }
+
+    private boolean isCoreConfigSection(String section) {
+        return section == null || "core".equals(section);
     }
 
     final String getProjectIdFromConfigLine(String line) {
