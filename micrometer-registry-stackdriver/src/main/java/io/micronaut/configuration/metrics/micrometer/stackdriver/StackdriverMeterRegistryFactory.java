@@ -66,7 +66,7 @@ public class StackdriverMeterRegistryFactory {
     private final String metadataProjectIdOverride;
     private final UnaryOperator<String> environment;
 
-    StackdriverMeterRegistryFactory() {
+    public StackdriverMeterRegistryFactory() {
         this(null, null, System::getenv);
     }
 
