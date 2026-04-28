@@ -37,6 +37,8 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
+import java.util.concurrent.CompletionStage;
+
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.core.util.StringUtils.TRUE;
 import static io.micronaut.http.HttpAttributes.EXCEPTION;
@@ -94,6 +96,15 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
                             observation.stop();
                         }
                     }));
+                return;
+            }
+            if (body instanceof CompletionStage<?> completionStage) {
+                response.body(completionStage.whenComplete((result, throwable) -> {
+                    if (throwable != null) {
+                        observation.error(throwable);
+                    }
+                    observation.stop();
+                }));
                 return;
             }
             observation.stop();

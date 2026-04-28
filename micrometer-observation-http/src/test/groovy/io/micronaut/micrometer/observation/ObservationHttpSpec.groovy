@@ -42,6 +42,7 @@ import spock.util.concurrent.PollingConditions
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.TimeUnit
 
 import static io.micronaut.scheduling.TaskExecutors.IO
 
@@ -343,6 +344,47 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
+    void 'test server observation stays open until completion stage response completes'() {
+        given:
+        StreamingController.completionStageResponse = new CompletableFuture<>()
+
+        when:
+        CompletableFuture<String> response = CompletableFuture.supplyAsync {
+            reactorHttpClient.toBlocking().retrieve('/streaming/completion-stage', String)
+        }
+
+        then:
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasLowCardinalityKeyValue('uri', '/streaming/completion-stage')
+                .hasBeenStarted()
+                .isNotStopped()
+        }
+
+        when:
+        StreamingController.completionStageResponse.complete('completion-stage')
+
+        then:
+        response.get(5, TimeUnit.SECONDS) == 'completion-stage'
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasContextualNameEqualTo('http get /streaming/completion-stage')
+                .hasLowCardinalityKeyValue('uri', '/streaming/completion-stage')
+                .hasLowCardinalityKeyValue('completion-stage', 'done')
+                .hasBeenStarted()
+                .hasBeenStopped()
+        }
+        testObservationRegistry.getCurrentObservation() == null
+
+        cleanup:
+        testObservationRegistry.clear()
+        StreamingController.completionStageResponse = new CompletableFuture<>()
+    }
+
     void 'test continue nested HTTP observation - reactive'() {
 
         when:
@@ -527,6 +569,11 @@ class ObservationHttpSpec extends Specification {
     @Controller('/streaming')
     static class StreamingController {
 
+        static volatile CompletableFuture<String> completionStageResponse = new CompletableFuture<>()
+
+        @Inject
+        ObservationRegistry observationRegistry
+
         @Get(value = '/body', produces = 'text/plain')
         Publisher<String> body() {
             return Flux.deferContextual { contextView ->
@@ -537,6 +584,15 @@ class ObservationHttpSpec extends Specification {
                         observation.lowCardinalityKeyValue('streaming', i == 3 ? 'done' : 'progress')
                         return "stream-${i}\n"
                     }
+            }
+        }
+
+        @Get('/completion-stage')
+        CompletionStage<String> completionStage() {
+            def observation = observationRegistry.currentObservation
+            return completionStageResponse.thenApply {
+                observation.lowCardinalityKeyValue('completion-stage', 'done')
+                return it
             }
         }
     }

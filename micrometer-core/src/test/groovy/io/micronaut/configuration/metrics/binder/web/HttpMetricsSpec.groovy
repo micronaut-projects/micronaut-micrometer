@@ -31,6 +31,8 @@ import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
 
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 import spock.lang.Specification
 
 import jakarta.validation.constraints.NotBlank
@@ -171,6 +173,31 @@ class HttpMetricsSpec extends Specification {
         when:
         long elapsedNanos = System.nanoTime() - start
         Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/streaming').timer()
+
+        then:
+        serverTimer.count() == 1
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) >= Duration.ofMillis(250).toNanos()
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) <= elapsedNanos
+
+        cleanup:
+        rawClient.close()
+        embeddedServer.close()
+    }
+
+    void "test server metrics track completion stage response duration until completion"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        HttpClient rawClient = context.createBean(HttpClient, embeddedServer.URL)
+        long start = System.nanoTime()
+
+        then:
+        rawClient.toBlocking().retrieve('/test-http-metrics/completion-stage') == 'completion-stage'
+
+        when:
+        long elapsedNanos = System.nanoTime() - start
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/completion-stage').timer()
 
         then:
         serverTimer.count() == 1
@@ -327,6 +354,9 @@ class HttpMetricsSpec extends Specification {
         @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
         String streaming()
 
+        @Get("/test-http-metrics/completion-stage")
+        String completionStage()
+
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
     }
@@ -361,6 +391,14 @@ class HttpMetricsSpec extends Specification {
         @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
         Publisher<String> streaming() {
             return Flux.range(1, 3).delayElements(Duration.ofMillis(100)).map(i -> 'chunk-' + i + '\n')
+        }
+
+        @Get("/test-http-metrics/completion-stage")
+        CompletionStage<String> completionStage() {
+            return CompletableFuture.supplyAsync(() -> {
+                Thread.sleep(300)
+                return 'completion-stage'
+            })
         }
 
         @Error(exception = MyException)

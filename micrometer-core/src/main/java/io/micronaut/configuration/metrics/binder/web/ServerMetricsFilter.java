@@ -35,6 +35,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.SignalType;
 
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -102,6 +103,16 @@ final class ServerMetricsFilter {
                         webMetricsHelper.onResponse(response);
                     }
                 }));
+            return;
+        }
+        if (response instanceof io.micronaut.http.MutableHttpResponse<?> mutableHttpResponse && body instanceof CompletionStage<?> completionStage) {
+            mutableHttpResponse.body(completionStage.whenComplete((result, throwable) -> {
+                if (throwable == null) {
+                    webMetricsHelper.onResponse(response);
+                } else {
+                    webMetricsHelper.error(response, throwable);
+                }
+            }));
             return;
         }
         webMetricsHelper.onResponse(response);
