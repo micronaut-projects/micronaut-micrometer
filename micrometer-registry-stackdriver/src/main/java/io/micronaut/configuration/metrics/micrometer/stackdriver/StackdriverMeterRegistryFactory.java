@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
@@ -64,7 +64,7 @@ public class StackdriverMeterRegistryFactory {
     static final int METADATA_TIMEOUT_MILLIS = 1000;
     private final Path googleCloudConfigDirectory;
     private final String metadataProjectIdOverride;
-    private final Function<String, String> environment;
+    private final UnaryOperator<String> environment;
 
     StackdriverMeterRegistryFactory() {
         this(null, null, System::getenv);
@@ -74,7 +74,7 @@ public class StackdriverMeterRegistryFactory {
         this(googleCloudConfigDirectory, metadataProjectIdOverride, System::getenv);
     }
 
-    StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride, Function<String, String> environment) {
+    StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride, UnaryOperator<String> environment) {
         this.googleCloudConfigDirectory = googleCloudConfigDirectory;
         this.metadataProjectIdOverride = metadataProjectIdOverride;
         this.environment = environment;
@@ -245,18 +245,15 @@ public class StackdriverMeterRegistryFactory {
         String section = null;
         for (String line : lines) {
             String trimmed = line.trim();
-            if (isIgnoredConfigLine(trimmed)) {
-                continue;
-            }
-            String parsedSection = getConfigSection(trimmed);
-            if (parsedSection != null) {
-                section = parsedSection;
-                continue;
-            }
-            if (isCoreConfigSection(section)) {
-                String projectId = getProjectIdFromConfigLine(trimmed);
-                if (projectId != null) {
-                    return projectId;
+            if (!isIgnoredConfigLine(trimmed)) {
+                String parsedSection = getConfigSection(trimmed);
+                if (parsedSection != null) {
+                    section = parsedSection;
+                } else if (isCoreConfigSection(section)) {
+                    String projectId = getProjectIdFromConfigLine(trimmed);
+                    if (projectId != null) {
+                        return projectId;
+                    }
                 }
             }
         }
