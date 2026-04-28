@@ -2,6 +2,7 @@ package io.micronaut.configuration.metrics.binder.executor
 
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micrometer.core.instrument.search.Search
@@ -27,6 +28,7 @@ import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
 import java.util.concurrent.ExecutorService
+import java.util.function.ToDoubleFunction
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
@@ -112,8 +114,25 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         BeanProvider<MeterRegistry> meterRegistryProvider = Stub() {
             get() >> registry
         }
-        ExecutorServiceMetricsBinder binder = new ExecutorServiceMetricsBinder(meterRegistryProvider)
         EventLoopGroup eventLoopGroup = new TestEventLoopGroup()
+        ExecutorServiceMetricsContributor metricsContributor = new ExecutorServiceMetricsContributor() {
+            @Override
+            boolean supports(ExecutorService executorService) {
+                executorService.is(eventLoopGroup)
+            }
+
+            @Override
+            ExecutorService bindTo(MeterRegistry meterRegistry, ExecutorService executorService, String name, List<io.micrometer.core.instrument.Tag> tags) {
+                Gauge.builder("executor.queued", executorService, { 0d } as ToDoubleFunction<ExecutorService>)
+                        .tags(Tags.concat(tags, "name", name))
+                        .register(meterRegistry)
+                Gauge.builder("executor.pool.size", executorService, { 1d } as ToDoubleFunction<ExecutorService>)
+                        .tags(Tags.concat(tags, "name", name))
+                        .register(meterRegistry)
+                executorService
+            }
+        }
+        ExecutorServiceMetricsBinder binder = new ExecutorServiceMetricsBinder(meterRegistryProvider, [metricsContributor])
         ExecutorService wrapped = new InstrumentedExecutorService() {
             @Override
             ExecutorService getTarget() {

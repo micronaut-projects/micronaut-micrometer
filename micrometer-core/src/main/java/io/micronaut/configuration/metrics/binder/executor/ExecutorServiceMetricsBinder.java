@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package io.micronaut.configuration.metrics.binder.executor;
 
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
@@ -31,12 +30,8 @@ import io.micronaut.scheduling.instrument.InstrumentedExecutorService;
 import io.micronaut.scheduling.instrument.InstrumentedScheduledExecutorService;
 import jakarta.inject.Singleton;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -56,29 +51,18 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private static final String THREAD_PER_TASK_EXECUTOR = "java.util.concurrent.ThreadPerTaskExecutor";
-    private static final String EVENT_LOOP_GROUP_CLASS_NAME = "io.netty.channel.EventLoopGroup";
-    private static final String SINGLE_THREAD_EVENT_EXECUTOR_CLASS_NAME = "io.netty.util.concurrent.SingleThreadEventExecutor";
-    private static final String PENDING_TASKS_METHOD_NAME = "pendingTasks";
-    private static final ClassValue<Boolean> EVENT_LOOP_GROUP_TYPES = new NettyTypeMatcher(EVENT_LOOP_GROUP_CLASS_NAME);
-    private static final ClassValue<Boolean> SINGLE_THREAD_EVENT_EXECUTOR_TYPES = new NettyTypeMatcher(SINGLE_THREAD_EVENT_EXECUTOR_CLASS_NAME);
-    private static final ClassValue<Optional<Method>> PENDING_TASKS_METHODS = new ClassValue<>() {
-        @Override
-        protected Optional<Method> computeValue(Class<?> type) {
-            try {
-                return Optional.of(type.getMethod(PENDING_TASKS_METHOD_NAME));
-            } catch (NoSuchMethodException e) {
-                return Optional.empty();
-            }
-        }
-    };
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
+    private final List<ExecutorServiceMetricsContributor> metricsContributors;
 
     /**
      * @param meterRegistryProvider The meter registry provider
+     * @param metricsContributors The executor metrics contributors
      */
-    public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
+    public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                        List<ExecutorServiceMetricsContributor> metricsContributors) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.metricsContributors = metricsContributors;
     }
 
     @Override
@@ -99,10 +83,10 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
 
         List<Tag> tags = Collections.emptyList(); // allow tags?
 
-        // EventLoopGroups need to stay unwrapped so the bean remains assignable as EventLoopGroup.
-        if (isEventLoopGroup(unwrapped)) {
-            bindEventLoopGroupMetrics(meterRegistry, unwrapped, beanIdentifier.getName(), tags);
-            return unwrapped;
+        for (ExecutorServiceMetricsContributor metricsContributor : metricsContributors) {
+            if (metricsContributor.supports(unwrapped)) {
+                return metricsContributor.bindTo(meterRegistry, unwrapped, beanIdentifier.getName(), tags);
+            }
         }
 
         // bind the service metrics
@@ -145,98 +129,6 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                     return timer.wrap(command);
                 }
             };
-        }
-    }
-
-    private static void bindEventLoopGroupMetrics(MeterRegistry meterRegistry,
-                                                  ExecutorService eventLoopGroup,
-                                                  String name,
-                                                  List<Tag> tags) {
-        Iterable<Tag> meterTags = Tags.concat(tags, "name", name);
-        Gauge.builder("executor.queued", eventLoopGroup, ExecutorServiceMetricsBinder::pendingTasks)
-                .tags(meterTags)
-                .description("The approximate number of tasks that are queued for execution.")
-                .register(meterRegistry);
-        Gauge.builder("executor.pool.size", eventLoopGroup, ExecutorServiceMetricsBinder::poolSize)
-                .tags(meterTags)
-                .description("The current number of threads in the pool.")
-                .baseUnit("threads")
-                .register(meterRegistry);
-    }
-
-    private static double pendingTasks(ExecutorService eventLoopGroup) {
-        if (!(eventLoopGroup instanceof Iterable<?> iterable)) {
-            return 0;
-        }
-        int pendingTasks = 0;
-        for (Object eventExecutor : iterable) {
-            if (isSingleThreadEventExecutor(eventExecutor)) {
-                pendingTasks += invokePendingTasks(eventExecutor);
-            }
-        }
-        return pendingTasks;
-    }
-
-    private static double poolSize(ExecutorService eventLoopGroup) {
-        if (!(eventLoopGroup instanceof Iterable<?> iterable)) {
-            return 0;
-        }
-        int poolSize = 0;
-        Iterator<?> iterator = iterable.iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            poolSize++;
-        }
-        return poolSize;
-    }
-
-    private static boolean isEventLoopGroup(ExecutorService executorService) {
-        return EVENT_LOOP_GROUP_TYPES.get(executorService.getClass());
-    }
-
-    private static boolean isSingleThreadEventExecutor(Object eventExecutor) {
-        return SINGLE_THREAD_EVENT_EXECUTOR_TYPES.get(eventExecutor.getClass());
-    }
-
-    private static int invokePendingTasks(Object eventExecutor) {
-        Optional<Method> pendingTasksMethod = PENDING_TASKS_METHODS.get(eventExecutor.getClass());
-        if (pendingTasksMethod.isEmpty()) {
-            return 0;
-        }
-        try {
-            return ((Number) pendingTasksMethod.get().invoke(eventExecutor)).intValue();
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            return 0;
-        }
-    }
-
-    private static final class NettyTypeMatcher extends ClassValue<Boolean> {
-        private final String className;
-
-        private NettyTypeMatcher(String className) {
-            this.className = className;
-        }
-
-        @Override
-        protected Boolean computeValue(Class<?> type) {
-            Class<?> resolvedType = resolveType(type.getClassLoader(), className);
-            return resolvedType != null && resolvedType.isAssignableFrom(type);
-        }
-
-        private static Class<?> resolveType(ClassLoader classLoader, String className) {
-            try {
-                return Class.forName(className, false, classLoader);
-            } catch (ClassNotFoundException e) {
-                ClassLoader fallbackClassLoader = ExecutorServiceMetricsBinder.class.getClassLoader();
-                if (fallbackClassLoader == classLoader) {
-                    return null;
-                }
-                try {
-                    return Class.forName(className, false, fallbackClassLoader);
-                } catch (ClassNotFoundException ignored) {
-                    return null;
-                }
-            }
         }
     }
 }

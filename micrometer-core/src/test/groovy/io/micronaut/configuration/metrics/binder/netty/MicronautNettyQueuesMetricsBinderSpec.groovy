@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.search.RequiredSearch
+import io.micronaut.configuration.metrics.binder.executor.ExecutorServiceMetricsContributor
 import io.micronaut.context.ApplicationContext
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.http.annotation.Controller
@@ -156,6 +157,7 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         EmbeddedServer server = serverContext.getBean(EmbeddedServer)
         ApplicationContext context = startClientContext(server.getURL().toString())
         EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName(CLIENT_GROUP))
+        ExecutorServiceMetricsContributor metricsContributor = context.getBean(NettyEventLoopGroupMetricsContributor)
         MeterRegistry registry = context.getBean(MeterRegistry)
         CountDownLatch firstTaskStarted = new CountDownLatch(1)
         CountDownLatch releaseFirstTask = new CountDownLatch(1)
@@ -177,6 +179,7 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
 
         then:
         new PollingConditions(timeout: 3, delay: 0.1).eventually {
+            metricsContributor.supports(eventLoopGroup)
             queuedTasks.value() > 0
             poolSize.value() > 0
         }
