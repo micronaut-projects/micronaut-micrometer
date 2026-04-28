@@ -527,17 +527,17 @@ class ObservationHttpSpec extends Specification {
     @Controller('/streaming')
     static class StreamingController {
 
-        @Inject
-        ObservationRegistry observationRegistry
-
         @Get(value = '/body', produces = 'text/plain')
         Publisher<String> body() {
-            return Flux.range(1, 3)
-                .delayElements(Duration.ofMillis(50))
-                .map { i ->
-                    observationRegistry.currentObservation.lowCardinalityKeyValue('streaming', i == 3 ? 'done' : 'progress')
-                    return "stream-${i}\n"
-                }
+            return Flux.deferContextual { contextView ->
+                def observation = ObservedReactorPropagation.currentObservation(contextView)
+                return Flux.range(1, 3)
+                    .delayElements(Duration.ofMillis(50))
+                    .map { i ->
+                        observation.lowCardinalityKeyValue('streaming', i == 3 ? 'done' : 'progress')
+                        return "stream-${i}\n"
+                    }
+            }
         }
     }
 

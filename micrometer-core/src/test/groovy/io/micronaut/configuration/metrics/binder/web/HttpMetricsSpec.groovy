@@ -324,7 +324,7 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/exception-handling")
         HttpResponse exceptionHandling()
 
-        @Get(value = "/test-http-metrics/streaming", processes = MediaType.TEXT_PLAIN)
+        @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
         String streaming()
 
         @Get("/test-http-metrics-not-found")
