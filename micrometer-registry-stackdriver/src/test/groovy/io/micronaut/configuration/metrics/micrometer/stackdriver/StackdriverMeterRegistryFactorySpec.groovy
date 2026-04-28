@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.stackdriver.StackdriverMeterRegistry
 import io.micronaut.context.ApplicationContext
+import spock.lang.Isolated
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -15,6 +16,7 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.stackdriver.StackdriverMeterRegistryFactory.STACKDRIVER_CONFIG
 import static io.micronaut.configuration.metrics.micrometer.stackdriver.StackdriverMeterRegistryFactory.STACKDRIVER_ENABLED
 
+@Isolated("mutates system properties")
 class StackdriverMeterRegistryFactorySpec extends Specification {
 
     private static String MOCK_WAVEFRONT_PROJECTID = "stackdriverProjectId"
@@ -135,6 +137,60 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
         cleanup:
         context?.stop()
         restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalProjectId)
+    }
+
+    void "verify blank configured projectId falls back to Google Cloud defaults"() {
+        given:
+        String originalProjectId = System.getProperty(GOOGLE_CLOUD_PROJECT_PROPERTY)
+        System.setProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, "inferred-stackdriver-project-id")
+
+        when:
+        ApplicationContext context = ApplicationContext.run([
+                (STACKDRIVER_ENABLED)              : true,
+                (STACKDRIVER_CONFIG + ".projectId"): "  ",
+        ])
+        Optional<StackdriverMeterRegistry> stackdriverMeterRegistry = context.findBean(StackdriverMeterRegistry)
+
+        then:
+        stackdriverMeterRegistry.isPresent()
+        stackdriverMeterRegistry.get().config.projectId() == "inferred-stackdriver-project-id"
+
+        cleanup:
+        context?.stop()
+        restoreSystemProperty(GOOGLE_CLOUD_PROJECT_PROPERTY, originalProjectId)
+    }
+
+    void "verify inferred projectId is cached"() {
+        given:
+        String projectId = "initial-project-id"
+        StackdriverMeterRegistryFactory factory = new StackdriverMeterRegistryFactory(null, null, {
+            it == StackdriverMeterRegistryFactory.GOOGLE_CLOUD_PROJECT ? projectId : null
+        })
+        def stackdriverConfig = factory.stackdriverConfig(new Properties())
+
+        expect:
+        stackdriverConfig.projectId() == "initial-project-id"
+
+        when:
+        projectId = "updated-project-id"
+
+        then:
+        stackdriverConfig.projectId() == "initial-project-id"
+    }
+
+    void "verify unresolved projectId is cached"() {
+        given:
+        int environmentCalls = 0
+        StackdriverMeterRegistryFactory factory = new StackdriverMeterRegistryFactory(null, null, {
+            environmentCalls++
+            null
+        })
+        def stackdriverConfig = factory.stackdriverConfig(new Properties())
+
+        expect:
+        stackdriverConfig.projectId() == null
+        stackdriverConfig.projectId() == null
+        environmentCalls == 4
     }
 
     void "verify projectId falls back to GCLOUD_PROJECT when GOOGLE_CLOUD_PROJECT is absent"() {
@@ -413,6 +469,39 @@ class StackdriverMeterRegistryFactorySpec extends Specification {
 
         cleanup:
         deleteDirectory(configDirectory)
+    }
+
+    @Unroll
+    void "verify blank #environmentName environment value is ignored"() {
+        given:
+        Path userHome = Files.createTempDirectory("stackdriver-blank-env-home")
+        Path configDirectory = Files.createDirectories(userHome.resolve(".config").resolve("gcloud"))
+        Path configurationDirectory = Files.createDirectories(configDirectory.resolve("configurations"))
+        Files.writeString(configurationDirectory.resolve("config_default"), "[core]\nproject = default-gcloud-project-id\n")
+        String originalUserHome = System.getProperty("user.home")
+        String originalOsName = System.getProperty("os.name")
+        System.setProperty("user.home", userHome.toString())
+        if (windows) {
+            System.setProperty("os.name", "Windows 11")
+        }
+        StackdriverMeterRegistryFactory factory = new StackdriverMeterRegistryFactory(null, "metadata-project-id", {
+            it == environmentName ? environmentValue : null
+        })
+
+        expect:
+        factory.getGoogleCloudProjectId() == "default-gcloud-project-id"
+
+        cleanup:
+        restoreSystemProperty("user.home", originalUserHome)
+        restoreSystemProperty("os.name", originalOsName)
+        deleteDirectory(userHome)
+
+        where:
+        environmentName                                  | environmentValue | windows
+        StackdriverMeterRegistryFactory.CLOUDSDK_CONFIG  | ""               | false
+        StackdriverMeterRegistryFactory.CLOUDSDK_CONFIG  | "  "             | false
+        StackdriverMeterRegistryFactory.APPDATA          | ""               | true
+        StackdriverMeterRegistryFactory.APPDATA          | "  "             | true
     }
 
     @Unroll

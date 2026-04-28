@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,8 +97,11 @@ public class StackdriverMeterRegistryFactory {
         return new StackdriverMeterRegistry(stackdriverConfig(exportConfig), SYSTEM);
     }
 
-    private StackdriverConfig stackdriverConfig(Properties exportConfig) {
+    final StackdriverConfig stackdriverConfig(Properties exportConfig) {
         return new StackdriverConfig() {
+            private boolean defaultProjectIdResolved;
+            private String defaultProjectId;
+
             @Override
             public String get(String key) {
                 return exportConfig.getProperty(key);
@@ -107,7 +110,15 @@ public class StackdriverMeterRegistryFactory {
             @Override
             public String projectId() {
                 String configuredProjectId = exportConfig.getProperty(prefix() + ".projectId");
-                return configuredProjectId != null ? configuredProjectId : getDefaultProjectId();
+                return configuredProjectId != null && !configuredProjectId.isBlank() ? configuredProjectId : defaultProjectId();
+            }
+
+            private synchronized String defaultProjectId() {
+                if (!defaultProjectIdResolved) {
+                    defaultProjectId = getDefaultProjectId();
+                    defaultProjectIdResolved = true;
+                }
+                return defaultProjectId;
             }
         };
     }
@@ -207,12 +218,12 @@ public class StackdriverMeterRegistryFactory {
             return googleCloudConfigDirectory;
         }
         String cloudSdkConfig = environment.apply(CLOUDSDK_CONFIG);
-        if (cloudSdkConfig != null) {
+        if (cloudSdkConfig != null && !cloudSdkConfig.isBlank()) {
             return Path.of(cloudSdkConfig);
         }
         if (isWindows()) {
             String appData = environment.apply(APPDATA);
-            if (appData != null) {
+            if (appData != null && !appData.isBlank()) {
                 return Path.of(appData, "gcloud");
             }
         }
@@ -292,8 +303,9 @@ public class StackdriverMeterRegistryFactory {
         if (metadataProjectIdOverride != null) {
             return metadataProjectIdOverride;
         }
+        HttpURLConnection connection = null;
         try {
-            HttpURLConnection connection = (HttpURLConnection) URI.create("http://metadata.google.internal/computeMetadata/v1/project/project-id").toURL().openConnection();
+            connection = (HttpURLConnection) URI.create("http://metadata.google.internal/computeMetadata/v1/project/project-id").toURL().openConnection();
             connection.setConnectTimeout(METADATA_TIMEOUT_MILLIS);
             connection.setReadTimeout(METADATA_TIMEOUT_MILLIS);
             connection.setRequestProperty(METADATA_FLAVOR, GOOGLE);
@@ -306,6 +318,10 @@ public class StackdriverMeterRegistryFactory {
             }
         } catch (IOException e) {
             return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
