@@ -14,6 +14,7 @@ import io.micronaut.core.annotation.Introspected
 import io.micronaut.core.annotation.Nullable
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.core.async.propagation.ReactorPropagation
+import io.micronaut.core.propagation.MutablePropagatedContext
 import io.micronaut.core.propagation.PropagatedContext
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
@@ -23,6 +24,7 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.context.ServerRequestContext
 import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
+import io.micronaut.micrometer.observation.http.server.ObservationServerFilter
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.rxjava2.http.client.RxHttpClient
@@ -42,6 +44,7 @@ import spock.util.concurrent.PollingConditions
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 import static io.micronaut.scheduling.TaskExecutors.IO
@@ -383,6 +386,84 @@ class ObservationHttpSpec extends Specification {
         cleanup:
         testObservationRegistry.clear()
         StreamingController.completionStageResponse = new CompletableFuture<>()
+    }
+
+    void 'test server observation completion stage callback records successful response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/completion-stage-success')
+        def responseBody = new CompletableFuture<String>()
+        def response = HttpResponse.ok(responseBody)
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+
+        then:
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .isNotStopped()
+
+        when:
+        responseBody.complete('ok')
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .doesNotHaveError()
+    }
+
+    void 'test server observation completion stage callback records failed response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/completion-stage-failure')
+        def responseBody = new CompletableFuture<String>()
+        def response = HttpResponse.ok(responseBody)
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+        responseBody.completeExceptionally(new IllegalStateException('boom'))
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        thrown(ExecutionException)
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .hasError()
+    }
+
+    void 'test server observation publisher callback records failed response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/publisher-failure')
+        def response = HttpResponse.ok(Flux.error(new IllegalStateException('boom')))
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+        Flux.from(response.body() as Publisher).blockLast()
+
+        then:
+        thrown(IllegalStateException)
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .hasError()
     }
 
     void 'test continue nested HTTP observation - reactive'() {

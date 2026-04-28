@@ -7,11 +7,15 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpAttributes
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
@@ -33,6 +37,8 @@ import spock.lang.PendingFeature
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 import spock.lang.Specification
 
 import jakarta.validation.constraints.NotBlank
@@ -207,6 +213,56 @@ class HttpMetricsSpec extends Specification {
         cleanup:
         rawClient.close()
         embeddedServer.close()
+    }
+
+    void "test server metrics completion stage callback records successful response"() {
+        given:
+        SimpleMeterRegistry registry = new SimpleMeterRegistry()
+        ServerMetricsFilter filter = new ServerMetricsFilter({ registry }, new HttpMetricsConfig.ClientErrorsUrisConfig(true))
+        HttpRequest<?> request = HttpRequest.GET('/completion-stage-success')
+        request.setAttribute(HttpAttributes.URI_TEMPLATE, '/completion-stage-success')
+        CompletableFuture<String> completionStage = new CompletableFuture<>()
+        HttpResponse<?> response = HttpResponse.ok(completionStage)
+
+        when:
+        filter.onRequest(request)
+        filter.onResponse(request, response)
+
+        then:
+        registry.find(HttpServerMeterConfig.REQUESTS_METRIC).timer() == null
+
+        when:
+        completionStage.complete('ok')
+        response.body().get(5, TimeUnit.SECONDS)
+        Timer timer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/completion-stage-success', 'status', '200', 'exception', 'none')
+            .timer()
+
+        then:
+        timer.count() == 1
+    }
+
+    void "test server metrics completion stage callback records failed response"() {
+        given:
+        SimpleMeterRegistry registry = new SimpleMeterRegistry()
+        ServerMetricsFilter filter = new ServerMetricsFilter({ registry }, new HttpMetricsConfig.ClientErrorsUrisConfig(true))
+        HttpRequest<?> request = HttpRequest.GET('/completion-stage-failure')
+        request.setAttribute(HttpAttributes.URI_TEMPLATE, '/completion-stage-failure')
+        CompletableFuture<String> completionStage = new CompletableFuture<>()
+        HttpResponse<?> response = HttpResponse.ok(completionStage)
+
+        when:
+        filter.onRequest(request)
+        filter.onResponse(request, response)
+        completionStage.completeExceptionally(new IllegalStateException('boom'))
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        thrown(ExecutionException)
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/completion-stage-failure', 'status', '200', 'exception', 'IllegalStateException')
+            .timer()
+            .count() == 1
     }
 
     void "test client / server metrics ignored uris for client errors"() {
