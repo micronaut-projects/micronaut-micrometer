@@ -20,7 +20,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.Internal;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import jakarta.inject.Singleton;
 import org.jspecify.annotations.Nullable;
@@ -50,30 +49,36 @@ final class HttpClientPoolMetricsCustomizerBinder implements BeanCreatedEventLis
         return registry;
     }
 
-    private record MetricsCustomizer(
-        HttpClientPoolMetricsRecorder recorder,
-        @Nullable Channel channel,
-        HttpClientPoolMetricsRecorder.@Nullable ConnectionAttempt attempt
-    ) implements NettyClientCustomizer {
+    private static final class MetricsCustomizer implements NettyClientCustomizer {
+        private final HttpClientPoolMetricsRecorder recorder;
+        private final @Nullable Channel channel;
+        private HttpClientPoolMetricsRecorder.@Nullable ConnectionAttempt attempt;
 
-        @Override
-        public NettyClientCustomizer specializeForBootstrap(Bootstrap bootstrap) {
-            return new MetricsCustomizer(recorder, null, recorder.beginConnectionAttempt());
+        private MetricsCustomizer(
+            HttpClientPoolMetricsRecorder recorder,
+            @Nullable Channel channel,
+            HttpClientPoolMetricsRecorder.@Nullable ConnectionAttempt attempt
+        ) {
+            this.recorder = recorder;
+            this.channel = channel;
+            this.attempt = attempt;
         }
 
         @Override
         public NettyClientCustomizer specializeForChannel(Channel channel, ChannelRole role) {
-            if (role == ChannelRole.CONNECTION && attempt != null) {
-                channel.closeFuture().addListener(future -> recorder.connectionClosed(attempt));
-                return new MetricsCustomizer(recorder, channel, attempt);
+            if (role == ChannelRole.CONNECTION) {
+                return new MetricsCustomizer(recorder, channel, null);
             }
             return this;
         }
 
         @Override
         public void onStreamPipelineBuilt() {
-            if (channel != null && attempt != null) {
-                recorder.connectionEstablished(attempt);
+            if (channel != null && attempt == null) {
+                HttpClientPoolMetricsRecorder.ConnectionAttempt newAttempt = recorder.beginConnectionAttempt();
+                attempt = newAttempt;
+                channel.closeFuture().addListener(future -> recorder.connectionClosed(newAttempt));
+                recorder.connectionEstablished(newAttempt);
             }
         }
     }
