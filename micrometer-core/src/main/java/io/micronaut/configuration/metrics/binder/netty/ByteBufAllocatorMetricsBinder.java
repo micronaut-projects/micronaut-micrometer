@@ -72,6 +72,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SMALL;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SUBPAGE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.THREAD;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.TOTAL;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.UNPOOLED;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USAGE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED;
@@ -192,7 +193,7 @@ final class ByteBufAllocatorMetricsBinder {
 
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT), pam, PoolArenaMetric::numAllocations)
                 .description("Return the number of allocations done via the arena. This includes all sizes.")
-                .tags(tags)
+                .tags(tags.and(SIZE, TOTAL))
                 .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT), pam, PoolArenaMetric::numSmallAllocations)
                 .description("Return the number of small allocations done via the arena.")
@@ -209,7 +210,7 @@ final class ByteBufAllocatorMetricsBinder {
 
         Gauge.builder(dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT), pam, PoolArenaMetric::numDeallocations)
                 .description("Return the number of deallocations done via the arena. This includes all sizes.")
-                .tags(tags)
+                .tags(tags.and(SIZE, TOTAL))
                 .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT), pam, PoolArenaMetric::numSmallDeallocations)
                 .description("Return the number of small deallocations done via the arena.")
@@ -226,7 +227,7 @@ final class ByteBufAllocatorMetricsBinder {
 
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT), pam, PoolArenaMetric::numActiveAllocations)
                 .description("Return the number of currently active allocations.")
-                .tags(tags)
+                .tags(tags.and(SIZE, TOTAL))
                 .register(meterRegistry);
         Gauge.builder(dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT), pam, PoolArenaMetric::numActiveSmallAllocations)
                 .description("Return the number of currently active small allocations.")
