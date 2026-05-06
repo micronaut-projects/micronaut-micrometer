@@ -1,6 +1,6 @@
 [versions]
-micronaut-platform = "5.0.0-M2"
-micronaut = "5.0.0-M26"
+micronaut-platform = "5.0.0-M3"
+micronaut = "5.0.0-RC2"
 micronaut-gradle-plugin = "5.0.0-M1"
 
 managed-metrics-core = '4.2.38'
@@ -16,14 +16,14 @@ hdr-histogram = '2.2.2'
 
 micronaut-aws = "5.0.0-M3"
 micronaut-cache = "6.0.0-M3"
-micronaut-grpc = "5.0.0-M1"
+micronaut-grpc = "5.0.0-RC1"
 micronaut-r2dbc = "7.0.1-M2"
-micronaut-rxjava3 = "4.0.0-M1"
-micronaut-reactor = "4.0.0-M2"
-micronaut-serde = "3.0.0-M8"
-micronaut-sql = "7.0.1-M2"
-micronaut-data = "5.0.0-M6"
-micronaut-validation = "5.0.0-M2"
+micronaut-rxjava3 = "4.0.0-RC1"
+micronaut-reactor = "4.0.0-RC1"
+micronaut-serde = "3.0.0-RC2"
+micronaut-sql = "7.0.1-M3"
+micronaut-data = "5.0.0-M7"
+micronaut-validation = "5.0.0-RC2"
 micronaut-logging = "2.0.0-M2"
 
 [libraries]
