@@ -39,7 +39,6 @@ io.micronaut.configuration.metrics.micrometer.statsd
 io.micronaut.configuration.metrics.micrometer.wavefront
 io.micronaut.configuration.metrics.util
 io.micronaut.micrometer.annotation.processing
-io.micronaut.micrometer.info
 io.micronaut.micrometer.observation
 io.micronaut.micrometer.observation.datasource
 io.micronaut.micrometer.observation.http
