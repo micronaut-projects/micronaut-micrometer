@@ -24,7 +24,7 @@ micronaut-serde = "3.0.0-RC2"
 micronaut-sql = "7.0.1-M3"
 micronaut-data = "5.0.0-M7"
 micronaut-validation = "5.0.0-RC2"
-micronaut-logging = "2.0.0-M2"
+micronaut-logging = "2.0.0-RC1"
 
 [libraries]
 # Core
