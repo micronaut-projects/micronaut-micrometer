@@ -171,7 +171,7 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 6.0.0-SNAPSHOT </p>
+        <p><strong>Version:</strong> 6.0.0-RC1 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -1394,6 +1394,10 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 </div>
 </div>
 </p>
+</div>
+<div class="paragraph">
+<p>The annotation processor dependency is required so Micronaut can create the AOP proxy for <code>@Timed</code> and <code>@Counted</code>.
+Without it, the annotations remain on the method, but no interceptor runs and no meter is recorded.</p>
 </div>
 <div class="paragraph">
 <p>In order to support adding additional tags programmatically similar to Micrometer&#8217;s <code>TimedAspect</code> / <code>CountedAspect</code> ability using a <code>ProceedingJoinPoint</code>, create beans of type <code>AbstractMethodTagger</code></p>
