@@ -1,7 +1,0 @@
-plugins {
-    id 'io.micronaut.build.internal.micrometer-registry'
-}
-
-dependencies {
-    api libs.micrometer.registry.wavefront
-}

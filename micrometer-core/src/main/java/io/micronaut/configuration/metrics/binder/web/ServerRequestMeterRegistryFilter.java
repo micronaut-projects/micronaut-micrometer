@@ -17,13 +17,12 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
-import io.micronaut.http.HttpAttributes;
+import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
-import io.micronaut.http.uri.UriMatchTemplate;
-import io.micronaut.web.router.UriRouteInfo;
+import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
@@ -72,11 +71,11 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO, UriRouteMatch.class)
-            .map(UriRouteMatch::getRouteInfo)
-            .map(UriRouteInfo::getUriMatchTemplate)
-            .map(UriMatchTemplate::toPathString);
-        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
+        Optional<String> routeInfo = RouteAttributes.getRouteMatch(request)
+            .filter(UriRouteMatch.class::isInstance)
+            .map(UriRouteMatch.class::cast)
+            .map(match -> match.getRouteInfo().getUriMatchTemplate().toPathString());
+        return routeInfo.orElseGet(() -> BasicHttpAttributes.getUriTemplate(request)
                         .orElse(UNMATCHED_URI));
     }
 

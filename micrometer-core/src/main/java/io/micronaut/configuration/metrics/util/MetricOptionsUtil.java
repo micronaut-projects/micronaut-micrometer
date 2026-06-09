@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @since 5.10.0
  * @author Haiden Rothwell
  */
-final public class MetricOptionsUtil {
+public final class MetricOptionsUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetricOptionsUtil.class);
 

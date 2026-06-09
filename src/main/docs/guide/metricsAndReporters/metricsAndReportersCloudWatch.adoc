@@ -2,6 +2,8 @@ You can include the CloudWatch reporter via `io.micronaut.micrometer:micronaut-m
 
 dependency:micronaut-micrometer-registry-cloudwatch[groupId="io.micronaut.micrometer"]
 
+You will also need the https://micronaut-projects.github.io/micronaut-aws/latest/guide/#sdkHttpClient[AWS SDK HTTP Client] dependency in your classpath.
+
 You can configure this reporter using `micronaut.metrics.export.cloudwatch`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java[CloudWatchConfig] for more options.
 
 |=======

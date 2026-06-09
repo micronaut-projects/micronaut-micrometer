@@ -13,16 +13,24 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
+import io.micronaut.core.order.Ordered
 import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpAttributes
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
+import io.micronaut.http.annotation.Filter
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.filter.ServerFilterChain
+import io.micronaut.http.filter.HttpServerFilter
+import io.micronaut.http.filter.ServerFilterPhase
+import io.micronaut.http.exceptions.HttpStatusException
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.websocket.WebSocketBroadcaster
@@ -31,7 +39,6 @@ import io.micronaut.websocket.WebSocketSession
 import io.micronaut.websocket.annotation.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
-import spock.lang.PendingFeature
 import spock.lang.Specification
 
 import jakarta.inject.Provider
@@ -223,6 +230,62 @@ class HttpMetricsSpec extends Specification {
         embeddedServer.close()
     }
 
+    void "test server metrics ignore preflight requests"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'micronaut.server.cors.enabled': true,
+                'micronaut.server.cors.configurations.web.allowed-origins': ['https://example.com'],
+                'spec.name': getClass().getSimpleName()
+        ])
+        def context = embeddedServer.applicationContext
+        HttpClient client = context.createBean(HttpClient, embeddedServer.URL)
+        HttpResponse<?> response = client.toBlocking().exchange(HttpRequest.OPTIONS('/test-http-metrics/foo')
+                .header(HttpHeaders.ORIGIN, 'https://example.com')
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() >= 200 && response.code() < 300
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        List<String> optionUris = registry.meters
+                .findAll { it.id.name == HttpServerMeterConfig.REQUESTS_METRIC && it.id.getTag('method') == 'OPTIONS' }
+                .collect { it.id.getTag('uri') }
+
+        then:
+        optionUris.isEmpty()
+
+        cleanup:
+        client.close()
+    }
+
+    void "test server metrics record security-style short-circuit 401 and 403 responses"() {
+        given:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'spec.name': getClass().getSimpleName()
+        ])
+        def context = embeddedServer.applicationContext
+        TestClient client = context.getBean(TestClient)
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        when:
+        client.unauthorized()
+
+        then:
+        thrown(HttpClientResponseException)
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "401", "uri", "/test-http-metrics/unauthorized").timer().count() == 1
+
+        when:
+        client.forbidden()
+
+        then:
+        thrown(HttpClientResponseException)
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "403", "uri", "/test-http-metrics/forbidden").timer().count() == 1
+
+        cleanup:
+        embeddedServer.close()
+    }
+
     void "test getting the beans #cfg #setting"() {
         when:
         ApplicationContext context = ApplicationContext.run([(cfg): setting, 'spec.name': getClass().getSimpleName()])
@@ -285,7 +348,17 @@ class HttpMetricsSpec extends Specification {
                 .count() == 1
     }
 
-    @PendingFeature
+    void "test server metrics filter uses metrics phase order"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(['spec.name': getClass().getSimpleName()])
+
+        then:
+        context.getBean(ServerMetricsFilter).getOrder() == ServerFilterPhase.METRICS.order()
+
+        cleanup:
+        context.close()
+    }
+
     void "test websocket"() {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
@@ -343,6 +416,12 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/exception-handling")
         HttpResponse exceptionHandling()
 
+        @Get("/test-http-metrics/unauthorized")
+        HttpResponse unauthorized()
+
+        @Get("/test-http-metrics/forbidden")
+        HttpResponse forbidden()
+
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
     }
@@ -374,9 +453,36 @@ class HttpMetricsSpec extends Specification {
             throw new MyException("my custom exception")
         }
 
+        @Get("/test-http-metrics/unauthorized")
+        String unauthorized() { "unauthorized" }
+
+        @Get("/test-http-metrics/forbidden")
+        String forbidden() { "forbidden" }
+
         @Error(exception = MyException)
         HttpResponse<?> myExceptionHandler() {
             return HttpResponse.badRequest()
+        }
+    }
+
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    @Filter("/test-http-metrics/**")
+    static class SecurityShortCircuitFilter implements HttpServerFilter, Ordered {
+
+        @Override
+        int getOrder() {
+            return ServerFilterPhase.SECURITY.order()
+        }
+
+        @Override
+        Publisher<io.micronaut.http.MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+            if (request.path == "/test-http-metrics/unauthorized") {
+                throw new HttpStatusException(HttpStatus.UNAUTHORIZED, "unauthorized")
+            }
+            if (request.path == "/test-http-metrics/forbidden") {
+                throw new HttpStatusException(HttpStatus.FORBIDDEN, "forbidden")
+            }
+            return chain.proceed(request)
         }
     }
 
