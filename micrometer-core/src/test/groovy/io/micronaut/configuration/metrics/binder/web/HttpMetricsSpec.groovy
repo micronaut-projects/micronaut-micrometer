@@ -19,6 +19,7 @@ import io.micronaut.core.propagation.MutablePropagatedContext
 import io.micronaut.core.propagation.ThreadPropagatedContextElement
 import io.micronaut.core.order.Ordered
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
@@ -28,6 +29,7 @@ import io.micronaut.http.annotation.Filter
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.RequestFilter
 import io.micronaut.http.annotation.ServerFilter
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.filter.HttpServerFilter
@@ -237,6 +239,35 @@ class HttpMetricsSpec extends Specification {
         embeddedServer.close()
     }
 
+    void "test server metrics ignore preflight requests"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
+                'micronaut.server.cors.enabled': true,
+                'micronaut.server.cors.configurations.web.allowed-origins': ['https://example.com'],
+                'spec.name': getClass().getSimpleName()
+        ])
+        def context = embeddedServer.applicationContext
+        HttpClient client = context.createBean(HttpClient, embeddedServer.URL)
+        HttpResponse<?> response = client.toBlocking().exchange(HttpRequest.OPTIONS('/test-http-metrics/foo')
+                .header(HttpHeaders.ORIGIN, 'https://example.com')
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() >= 200 && response.code() < 300
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        List<String> optionUris = registry.meters
+                .findAll { it.id.name == HttpServerMeterConfig.REQUESTS_METRIC && it.id.getTag('method') == 'OPTIONS' }
+                .collect { it.id.getTag('uri') }
+
+        then:
+        optionUris.isEmpty()
+
+        cleanup:
+        client.close()
+    }
+  
     void "test server metrics record security-style short-circuit 401 and 403 responses"() {
         given:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [

@@ -2,6 +2,7 @@ package io.micronaut.configuration.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
@@ -51,6 +52,17 @@ class WebMetricsExceptionCodeTest {
             Tag.of("exception", "BadRequestException")
         )).count();
         Assertions.assertEquals(1, count);
+
+
+        Timer fallbackTimer = meterRegistry.find("http.server.requests")
+            .tags(List.of(
+                Tag.of("method", "GET"),
+                Tag.of("uri", "/metrics/bad-request"),
+                Tag.of("status", "500"),
+                Tag.of("exception", "BadRequestException")
+            ))
+            .timer();
+        Assertions.assertTrue(fallbackTimer == null || fallbackTimer.count() == 0);
     }
 
     @Controller("/metrics")

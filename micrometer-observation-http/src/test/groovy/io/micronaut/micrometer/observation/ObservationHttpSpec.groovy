@@ -15,6 +15,7 @@ import io.micronaut.core.annotation.Nullable
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.core.async.propagation.ReactorPropagation
 import io.micronaut.core.propagation.PropagatedContext
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
@@ -341,6 +342,32 @@ class ObservationHttpSpec extends Specification {
 
         cleanup:
         testObservationRegistry.clear()
+    }
+
+    void 'preflight requests are not observed'() {
+        when:
+        EmbeddedServer corsEmbeddedServer = ApplicationContext.run(EmbeddedServer, [
+            'micronaut.application.name': 'test-app',
+            'micronaut.server.cors.enabled': true,
+            'micronaut.server.cors.configurations.web.allowed-origins[0]': 'https://example.com',
+            'spec.name': 'ObservationHttpSpec'
+        ])
+        HttpClient corsHttpClient = HttpClient.create(corsEmbeddedServer.URL)
+        TestObservationRegistry corsObservationRegistry = corsEmbeddedServer.applicationContext.getBean(ObservationRegistry) as TestObservationRegistry
+        HttpResponse<?> response = corsHttpClient.toBlocking().exchange(HttpRequest.OPTIONS("/client/order/${UUID.randomUUID()}")
+            .header(HttpHeaders.ORIGIN, 'https://example.com')
+            .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() >= 200 && response.code() < 300
+
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(corsObservationRegistry).doesNotHaveAnyObservation()
+        }
+
+        cleanup:
+        corsHttpClient?.close()
+        corsEmbeddedServer?.close()
     }
 
     void 'test continue nested HTTP observation - reactive'() {
