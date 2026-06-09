@@ -6,6 +6,10 @@ dependencies {
     api libs.micrometer.registry.prometheus
     api projects.micronautMicrometerRegistryPrometheus
     api libs.managed.prometheus.metrics.exporter.pushgateway
+    api libs.prometheus.metrics.config
+    api libs.prometheus.metrics.core
+    api libs.prometheus.metrics.exposition.formats
+    api libs.prometheus.metrics.tracer.common
     testImplementation(mnSerde.micronaut.serde.jackson)
 }
 

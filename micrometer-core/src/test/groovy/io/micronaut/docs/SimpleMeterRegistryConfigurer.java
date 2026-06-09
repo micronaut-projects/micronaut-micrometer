@@ -19,13 +19,12 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.Order;
-import io.micronaut.core.order.Ordered;
 import jakarta.inject.Singleton;
 
 @Order(Integer.MAX_VALUE)
 @Singleton
 @RequiresMetrics
-public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer<SimpleMeterRegistry>, Ordered {
+public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer<SimpleMeterRegistry> {
 
     @Override
     public void configure(SimpleMeterRegistry meterRegistry) {

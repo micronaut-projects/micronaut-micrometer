@@ -250,18 +250,19 @@ final class WebMetricsHelper {
      * @param httpResponse the HTTP response
      */
     public void onResponse(HttpResponse<?> httpResponse) {
-        Throwable throwable = httpResponse.getAttribute(HttpAttributes.EXCEPTION, Throwable.class).orElse(null);
-        if (throwable != null) {
+        // Avoid using the conversion service for exceptions
+        Object exception = httpResponse.getAttribute(HttpAttributes.EXCEPTION).orElse(null);
+        if (exception instanceof Throwable throwable) {
             RouteMatch<?> routeMatch = httpResponse.getAttribute(HttpAttributes.ROUTE_MATCH, RouteMatch.class).orElse(null);
             if (routeMatch != null && routeMatch.getRouteInfo() instanceof ErrorRouteInfo<?, ?>) {
                 // Avoid publishing an error on error route
                 // Should this be configurable?
-                success(httpResponse);
+                success(httpResponse, throwable);
             } else {
                 error(httpResponse, throwable);
             }
         } else {
-            success(httpResponse);
+            success(httpResponse, null);
         }
     }
 
@@ -270,8 +271,8 @@ final class WebMetricsHelper {
      *
      * @param httpResponse the HTTP response
      */
-    public void success(HttpResponse<?> httpResponse) {
-        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, null, serviceID, reportClientErrorURIs);
+    public void success(HttpResponse<?> httpResponse, @Nullable Throwable throwable) {
+        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, httpResponse.code() >= 400 ? throwable : null, serviceID, reportClientErrorURIs);
         meterRegistry.timer(metricName, tags)
             .record(System.nanoTime() - start, NANOSECONDS);
     }

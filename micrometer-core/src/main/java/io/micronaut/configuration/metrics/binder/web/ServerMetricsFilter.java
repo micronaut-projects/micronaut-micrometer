@@ -34,7 +34,7 @@ import jakarta.inject.Provider;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static io.micronaut.core.util.StringUtils.TRUE;
+import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Registers the timers and meters for each request.
@@ -47,7 +47,7 @@ import static io.micronaut.core.util.StringUtils.TRUE;
  */
 @ServerFilter("${micronaut.metrics.http.path:/**}")
 @RequiresMetrics
-@Requires(bean = HttpMetricsConfig.class, beanProperty = "enabled", value = TRUE)
+@Requires(property = HttpMetricsConfig.ENABLED, notEquals = FALSE)
 @Requires(condition = WebMetricsServerCondition.class)
 @Internal
 final class ServerMetricsFilter {

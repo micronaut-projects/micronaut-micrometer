@@ -39,7 +39,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test client / server metrics with #cfg #setting"() {
         when:
-        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting, "spec.name": "HttpMetricsSpec"])
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [(cfg): setting, 'spec.name': getClass().getSimpleName()])
         def context = embeddedServer.applicationContext
         TestClient client = context.getBean(TestClient)
 
@@ -155,7 +155,7 @@ class HttpMetricsSpec extends Specification {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
                 'micronaut.metrics.binders.web.client-errors-uris.enabled': false,
-                "spec.name": "HttpMetricsSpec"
+                'spec.name': getClass().getSimpleName()
         ])
         def context = embeddedServer.getApplicationContext()
         TestClient client = context.getBean(TestClient)
@@ -218,7 +218,7 @@ class HttpMetricsSpec extends Specification {
 
     void "test getting the beans #cfg #setting"() {
         when:
-        ApplicationContext context = ApplicationContext.run([(cfg): setting])
+        ApplicationContext context = ApplicationContext.run([(cfg): setting, 'spec.name': getClass().getSimpleName()])
 
         then:
         context.findBean(ClientMetricsFilter).isPresent() == setting
@@ -239,11 +239,11 @@ class HttpMetricsSpec extends Specification {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
                 (MICRONAUT_METRICS_ENABLED): true,
-                "spec.name": "HttpMetricsSpec",
+                "spec.name": getClass().getSimpleName(),
         ])
         MeterRegistry registry = embeddedServer.getApplicationContext().getBean(MeterRegistry)
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
-        
+
         then:
         registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
 

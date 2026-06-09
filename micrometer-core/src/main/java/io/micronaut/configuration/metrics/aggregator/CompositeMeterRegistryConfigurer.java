@@ -96,4 +96,9 @@ public class CompositeMeterRegistryConfigurer implements MeterRegistryConfigurer
             }
         }
     }
+
+    @Override
+    public int getOrder() {
+        return LOWEST_PRECEDENCE;
+    }
 }
