@@ -23,13 +23,14 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.order.Ordered;
 import io.micronaut.core.util.SupplierUtil;
-import io.micronaut.http.HttpAttributes;
+import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.http.filter.ServerFilterPhase;
+import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
 
@@ -75,9 +76,11 @@ final class ServerMetricsFilter implements Ordered {
     }
 
     private String resolvePath(HttpRequest<?> request) {
-        Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO, UriRouteMatch.class)
+        Optional<String> routeInfo = RouteAttributes.getRouteMatch(request)
+            .filter(UriRouteMatch.class::isInstance)
+            .map(UriRouteMatch.class::cast)
             .map(match -> match.getRouteInfo().getUriMatchTemplate().toPathString());
-        return routeInfo.orElseGet(() -> request.getAttribute(HttpAttributes.URI_TEMPLATE, String.class)
+        return routeInfo.orElseGet(() -> BasicHttpAttributes.getUriTemplate(request)
             .orElse(UNMATCHED_URI));
     }
 
