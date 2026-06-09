@@ -1,5 +1,23 @@
 package io.micronaut.micrometer.observation.datasource;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.tck.TestObservationRegistry;
+import io.micrometer.observation.tck.TestObservationRegistryAssert;
+import io.micrometer.tracing.Tracer;
+import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Internal;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
 @MicronautTest
