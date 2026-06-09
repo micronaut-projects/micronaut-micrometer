@@ -18,11 +18,13 @@ import io.micronaut.core.propagation.PropagatedContext
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.context.ServerRequestContext
+import io.micronaut.http.server.exceptions.ExceptionHandler
 import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
@@ -258,6 +260,30 @@ class ObservationHttpSpec extends Specification {
                 it.hasLowCardinalityKeyValue("status", "404")
             }
         }
+        cleanup:
+        testObservationRegistry.clear()
+    }
+
+    void 'test handled error preserves response status'() {
+        when:
+        reactorHttpClient.toBlocking().exchange('/handled-error/test', String)
+
+        then:
+        def e = thrown(HttpClientResponseException)
+        e.status == HttpStatus.BAD_REQUEST
+
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry).hasNumberOfObservationsEqualTo(1)
+            TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
+                it.hasContextualNameEqualTo('http get /handled-error/test')
+                it.hasNameEqualTo('http.server.requests')
+                it.hasLowCardinalityKeyValue('uri', '/handled-error/test')
+                it.hasLowCardinalityKeyValue('status', '400')
+                it.hasLowCardinalityKeyValue('exception', 'GenericException')
+                it.hasError()
+            }
+        }
+
         cleanup:
         testObservationRegistry.clear()
     }
@@ -576,6 +602,34 @@ class ObservationHttpSpec extends Specification {
         @Observed
         void throwAnError() {
             throw new RuntimeException("throwAnError")
+        }
+    }
+
+    @Controller('/handled-error')
+    static class HandledErrorController {
+
+        @Get('/test')
+        String test() {
+            throw new GenericException('bad request')
+        }
+    }
+
+    static class GenericException extends RuntimeException {
+
+        GenericException(String message) {
+            super(message)
+        }
+    }
+
+    @Produces
+    @Singleton
+    @Requires(property = 'spec.name', value = 'ObservationHttpSpec')
+    static class GenericExceptionHandler implements ExceptionHandler<GenericException, HttpResponse<?>> {
+
+        @Override
+        HttpResponse<?> handle(HttpRequest request, GenericException exception) {
+            HttpResponse.badRequest()
+                .body(exception.message)
         }
     }
 

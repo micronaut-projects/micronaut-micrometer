@@ -2,15 +2,21 @@ package io.micronaut.configuration.metrics.binder.web
 
 import groovy.transform.InheritConstructors
 import io.micrometer.common.lang.NonNull
+import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
+import io.micrometer.core.instrument.config.MeterFilter
 import io.micrometer.core.instrument.search.MeterNotFoundException
+import io.micrometer.core.instrument.Tags
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import io.micronaut.core.propagation.MutablePropagatedContext
+import io.micronaut.core.propagation.ThreadPropagatedContextElement
 import io.micronaut.core.order.Ordered
 import io.micronaut.core.util.CollectionUtils
 import io.micronaut.http.HttpHeaders
@@ -21,6 +27,8 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Filter
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.RequestFilter
+import io.micronaut.http.annotation.ServerFilter
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -35,9 +43,13 @@ import io.micronaut.websocket.WebSocketClient
 import io.micronaut.websocket.WebSocketSession
 import io.micronaut.websocket.annotation.*
 import org.reactivestreams.Publisher
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
+import org.slf4j.MDC
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 
+import jakarta.inject.Singleton
 import jakarta.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -301,6 +313,30 @@ class HttpMetricsSpec extends Specification {
         (WebMetricsPublisher.ENABLED) | false
     }
 
+    void "test rxjava3 server metrics keep custom meter filter tags"() {
+        when:
+        EmbeddedServer embeddedServer
+        embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        TestClient client = context.getBean(TestClient)
+
+        then:
+        client.rxjava3() == 'rxjava3'
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        then:
+        registry.get('custom.metric').tag('traceId', 'rxjava3').counter().count() == 1
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/test-http-metrics/rxjava3', 'traceId', 'rxjava3')
+            .timer()
+            .count() == 1
+
+        cleanup:
+        embeddedServer?.close()
+    }
+  
     void "test server metrics filter uses metrics phase order"() {
         when:
         ApplicationContext context = ApplicationContext.run(['spec.name': getClass().getSimpleName()])
@@ -377,11 +413,21 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
+
+        @Get("/test-http-metrics/rxjava3")
+        String rxjava3()
     }
 
     @Requires(property = "spec.name", value = "HttpMetricsSpec")
     @Controller
     static class TestController {
+
+        private final MeterRegistry meterRegistry
+
+        TestController(MeterRegistry meterRegistry) {
+            this.meterRegistry = meterRegistry
+        }
+
         @Get
         String root() { "root" }
 
@@ -406,6 +452,14 @@ class HttpMetricsSpec extends Specification {
             throw new MyException("my custom exception")
         }
 
+        @Get("/test-http-metrics/rxjava3")
+        Single<String> rxjava3() {
+            return Single.fromCallable(() -> {
+                meterRegistry.counter('custom.metric').increment()
+                return 'rxjava3'
+            }).subscribeOn(Schedulers.io())
+        }
+
         @Get("/test-http-metrics/unauthorized")
         String unauthorized() { "unauthorized" }
 
@@ -415,6 +469,62 @@ class HttpMetricsSpec extends Specification {
         @Error(exception = MyException)
         HttpResponse<?> myExceptionHandler() {
             return HttpResponse.badRequest()
+        }
+    }
+
+    @Factory
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    static class MeterFilterFactory {
+
+        @Singleton
+        MeterFilter traceIdMeterFilter() {
+            return new MeterFilter() {
+                @Override
+                io.micrometer.core.instrument.Meter.Id map(io.micrometer.core.instrument.Meter.Id id) {
+                    String traceId = MDC.get('traceId')
+                    if (traceId == null) {
+                        return id
+                    }
+                    Iterable<Tag> tagsWithoutTraceId = id.getTagsAsIterable().findAll { Tag tag -> tag.key != 'traceId' }
+                    return id.replaceTags(Tags.concat([Tag.of('traceId', traceId)], tagsWithoutTraceId))
+                }
+            }
+        }
+    }
+
+    @Singleton
+    @ServerFilter("/test-http-metrics/rxjava3")
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    static class TraceIdFilter {
+
+        @RequestFilter
+        void request(MutablePropagatedContext mutablePropagatedContext) {
+            MDC.put('traceId', 'rxjava3')
+            mutablePropagatedContext.add(new MdcPropagationContext(MDC.getCopyOfContextMap()))
+            MDC.clear()
+        }
+    }
+
+    static record MdcPropagationContext(Map<String, String> contextMap) implements ThreadPropagatedContextElement<Map<String, String>> {
+
+        @Override
+        Map<String, String> updateThreadContext() {
+            Map<String, String> oldContextMap = MDC.getCopyOfContextMap()
+            if (contextMap == null || contextMap.isEmpty()) {
+                MDC.clear()
+            } else {
+                MDC.setContextMap(contextMap)
+            }
+            return oldContextMap
+        }
+
+        @Override
+        void restoreThreadContext(Map<String, String> oldState) {
+            if (oldState == null || oldState.isEmpty()) {
+                MDC.clear()
+            } else {
+                MDC.setContextMap(oldState)
+            }
         }
     }
 

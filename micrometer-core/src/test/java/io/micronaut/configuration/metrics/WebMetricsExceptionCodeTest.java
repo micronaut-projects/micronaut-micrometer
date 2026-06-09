@@ -53,6 +53,7 @@ class WebMetricsExceptionCodeTest {
         )).count();
         Assertions.assertEquals(1, count);
 
+
         Timer fallbackTimer = meterRegistry.find("http.server.requests")
             .tags(List.of(
                 Tag.of("method", "GET"),
