@@ -88,6 +88,17 @@ By default, client URIs are captured when an error is handled.
 This can cause trouble in some monitoring tools due to a large amount of distinct URIs captured.
 This URI capturing can be disabled by setting `micronaut.metrics.binders.web.client-errors-uris.enabled` to `false`.
 
+.Custom tags
+
+To add request-aware custom tags to the built-in HTTP server and client metrics, create a bean that implements `HttpMetricsTagProvider`.
+Each provider is invoked when Micronaut records `http.server.requests` or `http.client.requests`.
+
+.Example
+[source,java]
+----
+include::{testsmetricscore}/HttpMetricsTagProviderExample.java[tags=imports;class]
+----
+
 .Customizing
 
 The web metrics can be configured to enable percentiles, histogram, service level objectives and the expected min and max duration of the requests.

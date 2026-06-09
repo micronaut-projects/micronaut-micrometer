@@ -1,6 +1,7 @@
 package io.micronaut.configuration.metrics.binder.web
 
 import groovy.transform.InheritConstructors
+import io.micrometer.core.instrument.Tag
 import io.micrometer.common.lang.NonNull
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
@@ -12,10 +13,12 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfi
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Header
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.uri.UriBuilder
@@ -29,6 +32,7 @@ import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
 import spock.lang.Specification
 
+import jakarta.inject.Singleton
 import jakarta.validation.constraints.NotBlank
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -37,6 +41,32 @@ import static io.micronaut.http.HttpStatus.CONFLICT
 import static io.micronaut.http.HttpStatus.NOT_FOUND
 
 class HttpMetricsSpec extends Specification {
+
+    void "test client and server metrics include custom tags"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        TestClient client = context.getBean(TestClient)
+
+        then:
+        client.tagged("custom-value") == 'ok custom-value'
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        then:
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/test-http-metrics/tagged', 'custom', 'custom-value')
+            .timer()
+            .count() == 1
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/test-http-metrics/tagged', 'custom', 'custom-value')
+            .timer()
+            .count() == 1
+
+        cleanup:
+        embeddedServer.close()
+    }
 
     void "test client / server metrics with #cfg #setting"() {
         when:
@@ -285,6 +315,9 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/{id}")
         String template(String id)
 
+        @Get("/test-http-metrics/tagged")
+        String tagged(@Header("X-Custom-Tag") String customTag)
+
         @Get("/test-http-metrics/error")
         HttpResponse error()
 
@@ -309,6 +342,9 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/{id}")
         String template(String id) { "ok " + id }
+
+        @Get("/test-http-metrics/tagged")
+        String tagged(@Header("X-Custom-Tag") String customTag) { "ok " + customTag }
 
         @Get("/test-http-metrics/error")
         HttpResponse error() {
@@ -365,6 +401,16 @@ class HttpMetricsSpec extends Specification {
             return broadcaster.broadcast(String.format("Leaving %s!", username))
         }
 
+    }
+
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    @Singleton
+    static class TestHttpMetricsTagProvider implements HttpMetricsTagProvider {
+
+        @Override
+        Iterable<Tag> getTags(HttpRequest<?> request, HttpResponse<?> response, Throwable throwable) {
+            return [Tag.of("custom", request.headers.get("X-Custom-Tag") ?: "none")]
+        }
     }
 
     @InheritConstructors
