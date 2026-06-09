@@ -2,7 +2,7 @@ This section documents breaking changes between Micronaut Micrometer versions:
 
 === Micronaut Micrometer 6.0.0
 
-- The Wavefront registry module io.micronaut.micrometer:micronaut-micrometer-registry-wavefront has been removed. https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/release-announcements/0/25153[Broadcom announced the end of life of Tanzu Observability (Wavefront)], and the Wavefront service has no longer been available since October 31, 2025. The module also depends on Jackson 2 through the upstream Wavefront SDK and is not compatible with Micronaut 5’s Jackson 3 baseline. Micrometer deprecated the Wavefront registry in https://github.com/micrometer-metrics/micrometer/issues/6328[micrometer-metrics/micrometer#6328].
+- The Wavefront registry module `io.micronaut.micrometer:micronaut-micrometer-registry-wavefront` has been removed. https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/release-announcements/0/25153[Broadcom announced the end of life of Tanzu Observability (Wavefront)], and the Wavefront service has not been available since October 31, 2025. The module also depends on Jackson 2 through the upstream Wavefront SDK and is not compatible with Micronaut 5's Jackson 3 baseline. Micrometer deprecated the Wavefront registry in https://github.com/micrometer-metrics/micrometer/issues/6328[micrometer-metrics/micrometer#6328].
 
 - The factory default constructor for `io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory` deprecated previously has been removed.
 `CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)` is used instead.
