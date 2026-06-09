@@ -1,30 +1,29 @@
 [versions]
-micronaut-platform = "4.10.11"
-micronaut = "5.0.0-M21"
-micronaut-gradle-plugin = "4.6.2"
+micronaut-platform = "5.0.2"
+micronaut = "5.0.2"
+micronaut-gradle-plugin = "5.0.0"
 
-managed-metrics-core = '4.2.38'
+managed-metrics-core = '4.2.39'
 managed-micrometer = '1.16.5'
 managed-micrometer-tracing = '1.6.5'
 managed-new-relic-registry = '0.10.0'
-managed-prometheus-metrics-exporter-pushgateway = '1.5.1'
+managed-prometheus-metrics-exporter-pushgateway = '1.6.1'
 managed-datasource-micrometer = '2.2.1'
 reflections = '0.10.2'
 
-jcache = "1.1.1"
 hdr-histogram = '2.2.2'
 
-micronaut-aws = "5.0.0-M1"
-micronaut-cache = "6.0.0-M2"
-micronaut-grpc = "5.0.0-M1"
-micronaut-r2dbc = "7.0.1-M1"
-micronaut-rxjava3 = "4.0.0-M1"
-micronaut-reactor = "4.0.0-M1"
-micronaut-serde = "3.0.0-M6"
-micronaut-sql = "7.0.1-M1"
-micronaut-data = "5.0.0-M5"
-micronaut-validation = "5.0.0-M1"
-micronaut-logging = "2.0.0-M1"
+micronaut-aws = "5.0.0"
+micronaut-cache = "6.0.0"
+micronaut-grpc = "5.0.0"
+micronaut-r2dbc = "7.0.1"
+micronaut-rxjava3 = "4.0.0"
+micronaut-reactor = "4.0.0"
+micronaut-serde = "3.0.0"
+micronaut-sql = "7.0.1"
+micronaut-data = "5.0.4"
+micronaut-validation = "5.0.0"
+micronaut-logging = "2.0.0"
 
 [libraries]
 # Core
@@ -77,10 +76,8 @@ micrometer-registry-prometheus = { module = 'io.micrometer:micrometer-registry-p
 micrometer-registry-signalfx = { module = 'io.micrometer:micrometer-registry-signalfx', version.ref = 'managed-micrometer' }
 micrometer-registry-stackdriver = { module = 'io.micrometer:micrometer-registry-stackdriver', version.ref = 'managed-micrometer' }
 micrometer-registry-statsd = { module = 'io.micrometer:micrometer-registry-statsd', version.ref = 'managed-micrometer' }
-micrometer-registry-wavefront = { module = 'io.micrometer:micrometer-registry-wavefront', version.ref = 'managed-micrometer' }
 
 r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
 
-jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

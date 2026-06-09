@@ -17,11 +17,9 @@ import jakarta.inject.Singleton;
 import net.ttddyy.observation.tracing.DataSourceBaseObservationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledInNativeImage;
 
 import java.util.List;
 
-@DisabledInNativeImage
 @MicronautTest
 @Property(name = "spec.name", value = "micrometer-ds-native-test")
 class MicronautObservationDataSourceTest {

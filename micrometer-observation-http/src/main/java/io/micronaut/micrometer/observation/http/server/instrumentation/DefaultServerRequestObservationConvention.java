@@ -19,10 +19,11 @@ import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpAttributes;
+import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.uri.UriMatchTemplate;
+import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteInfo;
 
 import java.util.Optional;
@@ -78,16 +79,12 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
     }
 
     private String getRoute(HttpRequest<?> request) {
-        Optional<String> routeInfo = request.getAttribute(HttpAttributes.ROUTE_INFO)
+        Optional<String> routeInfo = RouteAttributes.getRouteInfo(request)
             .filter(UriRouteInfo.class::isInstance)
             .map(ri -> (UriRouteInfo<?, ?>) ri)
             .map(UriRouteInfo::getUriMatchTemplate)
             .map(UriMatchTemplate::toPathString);
-        return routeInfo.orElseGet(() ->
-            request.getAttribute(HttpAttributes.URI_TEMPLATE)
-                .map(Object::toString)
-                .orElse(null)
-        );
+        return routeInfo.orElseGet(() -> BasicHttpAttributes.getUriTemplate(request).orElse(null));
     }
 
     @Override
