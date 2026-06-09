@@ -1,8 +1,0 @@
-plugins {
-    id 'io.micronaut.build.internal.micrometer-registry'
-}
-
-dependencies {
-    api platform(libs.boms.jackson) // align Jackson brought transitively by wavefront-sdk-java because 2.15.3 is vulnerable.
-    api libs.micrometer.registry.wavefront
-}
