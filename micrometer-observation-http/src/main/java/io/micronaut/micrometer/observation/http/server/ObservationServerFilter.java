@@ -33,6 +33,11 @@ import io.micronaut.micrometer.observation.http.server.instrumentation.DefaultSe
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerHttpObservationDocumentation;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationContext;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationConvention;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SignalType;
+
+import java.util.concurrent.CompletionStage;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
 import static io.micronaut.core.util.StringUtils.TRUE;
@@ -79,6 +84,29 @@ public final class ObservationServerFilter extends AbstractObservationFilter {
         request.getAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, Observation.class).ifPresent(observation -> {
             response.getAttribute(EXCEPTION, Throwable.class).ifPresent(observation::error);
             ((ServerRequestObservationContext) observation.getContext()).setResponse(response);
+            Object body = response.body();
+            if (body instanceof Publisher<?> publisher) {
+                response.body(Flux.from(publisher)
+                    .doOnError(throwable -> {
+                        observation.error(throwable);
+                        observation.stop();
+                    })
+                    .doFinally(signalType -> {
+                        if (signalType != SignalType.ON_ERROR) {
+                            observation.stop();
+                        }
+                    }));
+                return;
+            }
+            if (body instanceof CompletionStage<?> completionStage) {
+                response.body(completionStage.whenComplete((result, throwable) -> {
+                    if (throwable != null) {
+                        observation.error(throwable);
+                    }
+                    observation.stop();
+                }));
+                return;
+            }
             observation.stop();
         });
     }

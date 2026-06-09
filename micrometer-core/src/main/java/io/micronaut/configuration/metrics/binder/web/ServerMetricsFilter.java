@@ -30,8 +30,12 @@ import io.micronaut.http.annotation.ResponseFilter;
 import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.web.router.UriRouteMatch;
 import jakarta.inject.Provider;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.SignalType;
 
 import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
@@ -81,7 +85,7 @@ final class ServerMetricsFilter {
 
     @ResponseFilter
     void onResponse(HttpRequest<?> request, HttpResponse<?> response) {
-        WebMetricsHelper httpResponseWebMetricsPublisher = new WebMetricsHelper(
+        WebMetricsHelper webMetricsHelper = new WebMetricsHelper(
             meterRegistryProvider.get(),
             resolvePath(request),
             request.getAttribute(START_ATTRIBUTE, Long.class).orElseGet(System::nanoTime),
@@ -90,6 +94,27 @@ final class ServerMetricsFilter {
             null,
             reportClientErrorURIs
         );
-        httpResponseWebMetricsPublisher.onResponse(response);
+        Object body = response.body();
+        if (response instanceof io.micronaut.http.MutableHttpResponse<?> mutableHttpResponse && body instanceof Publisher<?> publisher) {
+            mutableHttpResponse.body(Flux.from(publisher)
+                .doOnError(throwable -> webMetricsHelper.error(response, throwable))
+                .doFinally(signalType -> {
+                    if (signalType != SignalType.ON_ERROR) {
+                        webMetricsHelper.onResponse(response);
+                    }
+                }));
+            return;
+        }
+        if (response instanceof io.micronaut.http.MutableHttpResponse<?> mutableHttpResponse && body instanceof CompletionStage<?> completionStage) {
+            mutableHttpResponse.body(completionStage.whenComplete((result, throwable) -> {
+                if (throwable == null) {
+                    webMetricsHelper.onResponse(response);
+                } else {
+                    webMetricsHelper.error(response, throwable);
+                }
+            }));
+            return;
+        }
+        webMetricsHelper.onResponse(response);
     }
 }

@@ -14,6 +14,7 @@ import io.micronaut.core.annotation.Introspected
 import io.micronaut.core.annotation.Nullable
 import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.core.async.propagation.ReactorPropagation
+import io.micronaut.core.propagation.MutablePropagatedContext
 import io.micronaut.core.propagation.PropagatedContext
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
@@ -23,6 +24,7 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.context.ServerRequestContext
 import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
+import io.micronaut.micrometer.observation.http.server.ObservationServerFilter
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.rxjava2.http.client.RxHttpClient
@@ -39,8 +41,11 @@ import spock.lang.AutoCleanup
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 
 import static io.micronaut.scheduling.TaskExecutors.IO
 
@@ -317,6 +322,150 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
+
+    void 'test server observation stays open until streaming response completes'() {
+        when:
+        String response = reactorHttpClient.toBlocking().retrieve('/streaming/body', String)
+
+        then:
+        response == 'stream-1\nstream-2\nstream-3\n'
+
+        and:
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasContextualNameEqualTo('http get /streaming/body')
+                .hasLowCardinalityKeyValue('uri', '/streaming/body')
+                .hasLowCardinalityKeyValue('streaming', 'done')
+                .hasBeenStarted()
+                .hasBeenStopped()
+        }
+        testObservationRegistry.getCurrentObservation() == null
+
+        cleanup:
+        testObservationRegistry.clear()
+    }
+
+    void 'test server observation stays open until completion stage response completes'() {
+        given:
+        StreamingController.completionStageResponse = new CompletableFuture<>()
+
+        when:
+        CompletableFuture<String> response = CompletableFuture.supplyAsync {
+            reactorHttpClient.toBlocking().retrieve('/streaming/completion-stage', String)
+        }
+
+        then:
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasLowCardinalityKeyValue('uri', '/streaming/completion-stage')
+                .hasBeenStarted()
+                .isNotStopped()
+        }
+
+        when:
+        StreamingController.completionStageResponse.complete('completion-stage')
+
+        then:
+        response.get(5, TimeUnit.SECONDS) == 'completion-stage'
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(testObservationRegistry)
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasContextualNameEqualTo('http get /streaming/completion-stage')
+                .hasLowCardinalityKeyValue('uri', '/streaming/completion-stage')
+                .hasLowCardinalityKeyValue('completion-stage', 'done')
+                .hasBeenStarted()
+                .hasBeenStopped()
+        }
+        testObservationRegistry.getCurrentObservation() == null
+
+        cleanup:
+        testObservationRegistry.clear()
+        StreamingController.completionStageResponse = new CompletableFuture<>()
+    }
+
+    void 'test server observation completion stage callback records successful response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/completion-stage-success')
+        def responseBody = new CompletableFuture<String>()
+        def response = HttpResponse.ok(responseBody)
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+
+        then:
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .isNotStopped()
+
+        when:
+        responseBody.complete('ok')
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .doesNotHaveError()
+    }
+
+    void 'test server observation completion stage callback records failed response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/completion-stage-failure')
+        def responseBody = new CompletableFuture<String>()
+        def response = HttpResponse.ok(responseBody)
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+        responseBody.completeExceptionally(new IllegalStateException('boom'))
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        thrown(ExecutionException)
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .hasError()
+    }
+
+    void 'test server observation publisher callback records failed response'() {
+        given:
+        def registry = TestObservationRegistry.create()
+        def filter = new ObservationServerFilter(registry, null, null)
+        def request = HttpRequest.GET('/publisher-failure')
+        def response = HttpResponse.ok(Flux.error(new IllegalStateException('boom')))
+
+        when:
+        filter.request(request, MutablePropagatedContext.of(PropagatedContext.empty()))
+        filter.response(request, response)
+        Flux.from(response.body() as Publisher).blockLast()
+
+        then:
+        thrown(IllegalStateException)
+        TestObservationRegistryAssert.assertThat(registry)
+            .hasObservationWithNameEqualTo('http.server.requests')
+            .that()
+            .hasBeenStarted()
+            .hasBeenStopped()
+            .hasError()
+    }
+
     void 'test continue nested HTTP observation - reactive'() {
 
         when:
@@ -495,6 +644,38 @@ class ObservationHttpSpec extends Specification {
         @Get('/hello/{name}')
         @SingleResult
         Publisher<String> continuedRx(String name)
+    }
+
+
+    @Controller('/streaming')
+    static class StreamingController {
+
+        static volatile CompletableFuture<String> completionStageResponse = new CompletableFuture<>()
+
+        @Inject
+        ObservationRegistry observationRegistry
+
+        @Get(value = '/body', produces = 'text/plain')
+        Publisher<String> body() {
+            return Flux.deferContextual { contextView ->
+                def observation = ObservedReactorPropagation.currentObservation(contextView)
+                return Flux.range(1, 3)
+                    .delayElements(Duration.ofMillis(50))
+                    .map { i ->
+                        observation.lowCardinalityKeyValue('streaming', i == 3 ? 'done' : 'progress')
+                        return "stream-${i}\n"
+                    }
+            }
+        }
+
+        @Get('/completion-stage')
+        CompletionStage<String> completionStage() {
+            def observation = observationRegistry.currentObservation
+            return completionStageResponse.thenApply {
+                observation.lowCardinalityKeyValue('completion-stage', 'done')
+                return it
+            }
+        }
     }
 
     @Controller('/error')

@@ -7,15 +7,21 @@ import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.core.instrument.distribution.HistogramSnapshot
 import io.micrometer.core.instrument.search.MeterNotFoundException
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
+import io.micronaut.http.HttpAttributes
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.MediaType
+import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.uri.UriBuilder
@@ -27,6 +33,12 @@ import io.micronaut.websocket.annotation.*
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
+
+import java.time.Duration
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 import spock.lang.Specification
 
 import jakarta.validation.constraints.NotBlank
@@ -150,6 +162,107 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".web.client.min"         | 0.1           | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1.0E8     | 3.0E10
         MICRONAUT_METRICS_BINDERS + ".web.client.max"         | 60            | 0                      | 0                      | null            | 0               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 6.0E10
         MICRONAUT_METRICS_BINDERS + ".web.client.slos"        | "0.1,0.2,0.5" | 0                      | 0                      | null            | 3               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
+    }
+
+
+    void "test server metrics track streaming response duration until completion"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        HttpClient rawClient = context.createBean(HttpClient, embeddedServer.URL)
+        long start = System.nanoTime()
+
+        then:
+        rawClient.toBlocking().retrieve('/test-http-metrics/streaming') == 'chunk-1\nchunk-2\nchunk-3\n'
+
+        when:
+        long elapsedNanos = System.nanoTime() - start
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/streaming').timer()
+
+        then:
+        serverTimer.count() == 1
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) >= Duration.ofMillis(250).toNanos()
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) <= elapsedNanos
+
+        cleanup:
+        rawClient.close()
+        embeddedServer.close()
+    }
+
+    void "test server metrics track completion stage response duration until completion"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        HttpClient rawClient = context.createBean(HttpClient, embeddedServer.URL)
+        long start = System.nanoTime()
+
+        then:
+        rawClient.toBlocking().retrieve('/test-http-metrics/completion-stage') == 'completion-stage'
+
+        when:
+        long elapsedNanos = System.nanoTime() - start
+        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/completion-stage').timer()
+
+        then:
+        serverTimer.count() == 1
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) >= Duration.ofMillis(250).toNanos()
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) <= elapsedNanos
+
+        cleanup:
+        rawClient.close()
+        embeddedServer.close()
+    }
+
+    void "test server metrics completion stage callback records successful response"() {
+        given:
+        SimpleMeterRegistry registry = new SimpleMeterRegistry()
+        ServerMetricsFilter filter = new ServerMetricsFilter({ registry }, new HttpMetricsConfig.ClientErrorsUrisConfig(true))
+        HttpRequest<?> request = HttpRequest.GET('/completion-stage-success')
+        request.setAttribute(HttpAttributes.URI_TEMPLATE, '/completion-stage-success')
+        CompletableFuture<String> completionStage = new CompletableFuture<>()
+        HttpResponse<?> response = HttpResponse.ok(completionStage)
+
+        when:
+        filter.onRequest(request)
+        filter.onResponse(request, response)
+
+        then:
+        registry.find(HttpServerMeterConfig.REQUESTS_METRIC).timer() == null
+
+        when:
+        completionStage.complete('ok')
+        response.body().get(5, TimeUnit.SECONDS)
+        Timer timer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/completion-stage-success', 'status', '200', 'exception', 'none')
+            .timer()
+
+        then:
+        timer.count() == 1
+    }
+
+    void "test server metrics completion stage callback records failed response"() {
+        given:
+        SimpleMeterRegistry registry = new SimpleMeterRegistry()
+        ServerMetricsFilter filter = new ServerMetricsFilter({ registry }, new HttpMetricsConfig.ClientErrorsUrisConfig(true))
+        HttpRequest<?> request = HttpRequest.GET('/completion-stage-failure')
+        request.setAttribute(HttpAttributes.URI_TEMPLATE, '/completion-stage-failure')
+        CompletableFuture<String> completionStage = new CompletableFuture<>()
+        HttpResponse<?> response = HttpResponse.ok(completionStage)
+
+        when:
+        filter.onRequest(request)
+        filter.onResponse(request, response)
+        completionStage.completeExceptionally(new IllegalStateException('boom'))
+        response.body().get(5, TimeUnit.SECONDS)
+
+        then:
+        thrown(ExecutionException)
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/completion-stage-failure', 'status', '200', 'exception', 'IllegalStateException')
+            .timer()
+            .count() == 1
     }
 
     void "test client / server metrics ignored uris for client errors"() {
@@ -294,6 +407,12 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/exception-handling")
         HttpResponse exceptionHandling()
 
+        @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
+        String streaming()
+
+        @Get("/test-http-metrics/completion-stage")
+        String completionStage()
+
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
     }
@@ -323,6 +442,19 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/exception-handling")
         HttpResponse exceptionHandling() {
             throw new MyException("my custom exception")
+        }
+
+        @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
+        Publisher<String> streaming() {
+            return Flux.range(1, 3).delayElements(Duration.ofMillis(100)).map(i -> 'chunk-' + i + '\n')
+        }
+
+        @Get("/test-http-metrics/completion-stage")
+        CompletionStage<String> completionStage() {
+            return CompletableFuture.supplyAsync(() -> {
+                Thread.sleep(300)
+                return 'completion-stage'
+            })
         }
 
         @Error(exception = MyException)
