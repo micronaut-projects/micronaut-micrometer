@@ -6,7 +6,7 @@ dependencies {
     annotationProcessor(mn.micronaut.graal)
     implementation(platform(mnGrpc.boms.grpc))
 
-    compileOnly(libs.jcache)
+    compileOnly(mnCache.jcache)
     compileOnly(libs.grpc.api)
     compileOnly(mnLogging.logback.classic)
     compileOnly(mnCache.micronaut.cache.core)

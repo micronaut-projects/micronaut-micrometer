@@ -39,6 +39,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Factory
 @RequiresMetrics
+@Requires(classes = ConnectionPool.class)
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".r2dbc.enabled", notEquals = FALSE)
 public class R2dbcPoolMetricsBinderFactory {
 
@@ -57,7 +58,6 @@ public class R2dbcPoolMetricsBinderFactory {
         if (factory instanceof ConnectionPool) {
             poolMetrics = ((ConnectionPool) factory).getMetrics().orElse(null);
         }
-
         return new R2dbcPoolMetricsBinder(poolMetrics, dataSourceName, Collections.emptyList());
     }
 }
