@@ -171,7 +171,7 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 6.0.0 </p>
+        <p><strong>Version:</strong> 6.0.1 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -769,6 +769,19 @@ public class MeterFilterFactory {
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.web.enabled</code></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CORS preflight requests that are handled before application route matching are not recorded as normal server request metrics.
+This avoids creating <code>http.server.requests</code> metrics with high-cardinality URI tags when no route template is available for the <code>OPTIONS</code> request.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <div class="title">Filter Path</div>
@@ -5059,6 +5072,19 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 <div class="paragraph">
 <p>The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics and traces. . With this module, every request received by the server and every request sent from the server triggers the creation of an observation with the necessary low and high cardinality values. Depending on your application&#8217;s configuration, these values can be displayed as metrics (if you have registered the <code>MeterRegistry</code> singleton bean) and as trace spans (if you have registered the <code>Trace</code> singleton bean).</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CORS preflight requests that are handled before application route matching do not create normal server HTTP observations.
+This avoids creating observations or exported metrics with high-cardinality URI values when no route template is available for the <code>OPTIONS</code> request.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>To include this module in your project, add the following dependency:</p>
 </div>
@@ -5243,6 +5269,9 @@ To trace query parameter values, this property <code>micrometer.observation.data
 <h3 id="_micronaut_micrometer_6_0_0">Micronaut Micrometer 6.0.0</h3>
 <div class="ulist">
 <ul>
+<li>
+<p>The Wavefront registry module <code>io.micronaut.micrometer:micronaut-micrometer-registry-wavefront</code> has been removed. <a href="https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/release-announcements/0/25153">Broadcom announced the end of life of Tanzu Observability (Wavefront)</a>, and the Wavefront service has not been available since October 31, 2025. The module also depends on Jackson 2 through the upstream Wavefront SDK and is not compatible with Micronaut 5&#8217;s Jackson 3 baseline. Micrometer deprecated the Wavefront registry in <a href="https://github.com/micrometer-metrics/micrometer/issues/6328">micrometer-metrics/micrometer#6328</a>.</p>
+</li>
 <li>
 <p>The factory default constructor for <code>io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory</code> deprecated previously has been removed.
 <code>CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)</code> is used instead.</p>
