@@ -18,7 +18,7 @@ package io.micronaut.configuration.metrics.aggregator;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.core.annotation.Indexed;
-import org.jspecify.annotations.NonNull;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.order.Ordered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

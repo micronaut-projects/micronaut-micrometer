@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+
 @MicronautTest
 @Property(name = "spec.name", value = "micrometer-ds-native-test")
 class MicronautObservationDataSourceTest {

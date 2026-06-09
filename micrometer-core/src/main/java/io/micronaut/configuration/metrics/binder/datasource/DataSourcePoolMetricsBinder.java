@@ -19,7 +19,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import org.jspecify.annotations.NonNull;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 
 import javax.sql.DataSource;

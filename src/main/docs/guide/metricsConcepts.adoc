@@ -79,9 +79,6 @@ There is a default web filter provided for web metrics. All routes, status codes
 
 *Control Property*: `micronaut.metrics.binders.web.enabled`
 
-NOTE: CORS preflight requests that are handled before application route matching are not recorded as normal server request metrics.
-This avoids creating `http.server.requests` metrics with high-cardinality URI tags when no route template is available for the `OPTIONS` request.
-
 .Filter Path
 If enabled, by default the path `/**` is intercepted. To change which paths are run through the filter for the server, set `micronaut.metrics.http.path`. For the client, set `micronaut.metrics.http.client.path`.
 

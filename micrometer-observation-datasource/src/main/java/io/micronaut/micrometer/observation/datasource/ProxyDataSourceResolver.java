@@ -15,12 +15,13 @@
  */
 package io.micronaut.micrometer.observation.datasource;
 
-import io.micronaut.core.order.Ordered;
+import io.micronaut.context.annotation.Primary;
 import io.micronaut.jdbc.DataSourceResolver;
 import jakarta.inject.Singleton;
 import net.ttddyy.dsproxy.support.ProxyDataSource;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * A custom implementation of {@link DataSourceResolver} that resolves the underlying target data source
@@ -33,19 +34,25 @@ import javax.sql.DataSource;
  * @since 5.10
  */
 @Singleton
-final class ProxyDataSourceResolver implements DataSourceResolver, Ordered {
+@Primary
+final class ProxyDataSourceResolver implements DataSourceResolver {
+
+    private final List<DataSourceResolver> dataSourceResolvers;
+
+    ProxyDataSourceResolver(List<DataSourceResolver> dataSourceResolvers) {
+        this.dataSourceResolvers = dataSourceResolvers;
+    }
 
     @Override
     public DataSource resolve(DataSource dataSource) {
+        // The list of resolvers can be empty
+        for (DataSourceResolver dataSourceResolver : dataSourceResolvers) {
+            dataSource = dataSourceResolver.resolve(dataSource);
+        }
         // Unwrap ProxyDataSource if needed
         if (dataSource instanceof ProxyDataSource proxyDataSource) {
             dataSource = proxyDataSource.getDataSource();
         }
         return dataSource;
-    }
-
-    @Override
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
     }
 }

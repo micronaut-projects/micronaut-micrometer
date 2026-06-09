@@ -2,8 +2,6 @@ You can use the Micrometer `@Timed` and `@Counted` annotations on any bean metho
 
 dependency:micronaut-micrometer-annotation[groupId="io.micronaut.micrometer", scope="annotationProcessor"]
 
-The annotation processor dependency is required so Micronaut can create the AOP proxy for `@Timed` and `@Counted`.
-Without it, the annotations remain on the method, but no interceptor runs and no meter is recorded.
 
 In order to support adding additional tags programmatically similar to Micrometer's `TimedAspect` / `CountedAspect` ability using a `ProceedingJoinPoint`, create beans of type `AbstractMethodTagger`
 

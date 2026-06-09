@@ -16,7 +16,7 @@
 package io.micronaut.micrometer.observation.http;
 
 import io.micronaut.core.annotation.Internal;
-import org.jspecify.annotations.Nullable;
+import io.micronaut.core.annotation.Nullable;
 
 import java.util.function.Predicate;
 

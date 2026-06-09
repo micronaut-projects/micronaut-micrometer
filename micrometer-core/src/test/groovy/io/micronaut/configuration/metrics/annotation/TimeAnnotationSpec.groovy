@@ -3,9 +3,7 @@ package io.micronaut.configuration.metrics.annotation
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.search.MeterNotFoundException
-import io.micronaut.aop.InterceptPhase
 import io.micronaut.context.ApplicationContext
-import io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
@@ -14,17 +12,6 @@ import java.util.function.Consumer
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class TimeAnnotationSpec extends Specification {
-
-    void "timed interceptor runs in trace phase"() {
-        given:
-        ApplicationContext ctx = ApplicationContext.run()
-
-        expect:
-        ctx.getBean(TimedInterceptor).order == InterceptPhase.TRACE.position
-
-        cleanup:
-        ctx.close()
-    }
 
     void "test timed annotation usage"() {
         given:

@@ -27,11 +27,12 @@ import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
 import io.micronaut.core.annotation.AnnotationMetadata;
-import org.jspecify.annotations.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Inject;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -60,6 +61,31 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     private final ConversionService conversionService;
     private final List<AbstractMethodTagger> methodTaggers;
 
+    /**
+     * @param meterRegistry The meter registry
+     * @deprecated Pass conversion service in new constructor
+     */
+    @Deprecated
+    public CountedInterceptor(MeterRegistry meterRegistry) {
+        this(meterRegistry, ConversionService.SHARED);
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @deprecated Pass list of AbstractMethodTagger in new constructor
+     */
+    @Deprecated
+    public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
+        this(meterRegistry, conversionService, Collections.emptyList());
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
+     */
+    @Inject
     public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;

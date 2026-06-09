@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2026 original authors
+ * Copyright 2017-2019 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,13 @@
 package io.micronaut.configuration.metrics.micrometer.stackdriver;
 
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.stackdriver.StackdriverConfig;
 import io.micrometer.stackdriver.StackdriverMeterRegistry;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
-import java.util.function.UnaryOperator;
 
 import static io.micrometer.core.instrument.Clock.SYSTEM;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED;
@@ -51,34 +40,6 @@ public class StackdriverMeterRegistryFactory {
 
     public static final String STACKDRIVER_CONFIG = MICRONAUT_METRICS_EXPORT + ".stackdriver";
     public static final String STACKDRIVER_ENABLED = STACKDRIVER_CONFIG + ".enabled";
-    static final String GOOGLE_CLOUD_PROJECT = "GOOGLE_CLOUD_PROJECT";
-    static final String GCLOUD_PROJECT = "GCLOUD_PROJECT";
-    static final String GOOGLE_APPLICATION_CREDENTIALS = "GOOGLE_APPLICATION_CREDENTIALS";
-    static final String CLOUDSDK_CONFIG = "CLOUDSDK_CONFIG";
-    static final String APPDATA = "APPDATA";
-    static final String APP_ENGINE_APPLICATION_ID = "com.google.appengine.application.id";
-    static final String DEFAULT_GCLOUD_CONFIG = "default";
-    static final String METADATA_FLAVOR = "Metadata-Flavor";
-    static final String GOOGLE = "Google";
-    static final String PROJECT_ID_JSON_FIELD = "\"project_id\"";
-    static final int METADATA_TIMEOUT_MILLIS = 1000;
-    private final Path googleCloudConfigDirectory;
-    private final String metadataProjectIdOverride;
-    private final UnaryOperator<String> environment;
-
-    public StackdriverMeterRegistryFactory() {
-        this(null, null, System::getenv);
-    }
-
-    StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride) {
-        this(googleCloudConfigDirectory, metadataProjectIdOverride, System::getenv);
-    }
-
-    StackdriverMeterRegistryFactory(Path googleCloudConfigDirectory, String metadataProjectIdOverride, UnaryOperator<String> environment) {
-        this.googleCloudConfigDirectory = googleCloudConfigDirectory;
-        this.metadataProjectIdOverride = metadataProjectIdOverride;
-        this.environment = environment;
-    }
 
     /**
      * Create a StackdriverMeterRegistry bean if global metrics are enabled
@@ -94,235 +55,6 @@ public class StackdriverMeterRegistryFactory {
     @Requires(beans = CompositeMeterRegistry.class)
     StackdriverMeterRegistry stackdriverMeterRegistry(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
-        return new StackdriverMeterRegistry(stackdriverConfig(exportConfig), SYSTEM);
-    }
-
-    final StackdriverConfig stackdriverConfig(Properties exportConfig) {
-        return new StackdriverConfig() {
-            private boolean defaultProjectIdResolved;
-            private String defaultProjectId;
-
-            @Override
-            public String get(String key) {
-                return exportConfig.getProperty(key);
-            }
-
-            @Override
-            public String projectId() {
-                String configuredProjectId = exportConfig.getProperty(prefix() + ".projectId");
-                return configuredProjectId != null && !configuredProjectId.isBlank() ? configuredProjectId : defaultProjectId();
-            }
-
-            private synchronized String defaultProjectId() {
-                if (!defaultProjectIdResolved) {
-                    defaultProjectId = getDefaultProjectId();
-                    defaultProjectIdResolved = true;
-                }
-                return defaultProjectId;
-            }
-        };
-    }
-
-    final String getDefaultProjectId() {
-        String projectId = getPropertyOrEnvironment(GOOGLE_CLOUD_PROJECT);
-        if (projectId == null) {
-            projectId = getPropertyOrEnvironment(GCLOUD_PROJECT);
-        }
-        if (projectId == null) {
-            projectId = getAppEngineProjectId();
-        }
-        if (projectId == null) {
-            projectId = getServiceAccountProjectId();
-        }
-        return projectId != null ? projectId : getGoogleCloudProjectId();
-    }
-
-    private String getPropertyOrEnvironment(String name) {
-        String value = System.getProperty(name);
-        if (value == null || value.isBlank()) {
-            value = environment.apply(name);
-        }
-        return value == null || value.isBlank() ? null : value;
-    }
-
-    final String getAppEngineProjectId() {
-        String projectId = System.getProperty(APP_ENGINE_APPLICATION_ID);
-        if (projectId == null) {
-            return null;
-        }
-        int colonIndex = projectId.indexOf(':');
-        return colonIndex > -1 ? projectId.substring(colonIndex + 1) : projectId;
-    }
-
-    final String getServiceAccountProjectId() {
-        String credentialsPath = getPropertyOrEnvironment(GOOGLE_APPLICATION_CREDENTIALS);
-        if (credentialsPath == null) {
-            return null;
-        }
-        try {
-            return extractProjectId(Files.readString(Path.of(credentialsPath), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private String extractProjectId(String credentialsJson) {
-        int keyIndex = credentialsJson.indexOf(PROJECT_ID_JSON_FIELD);
-        if (keyIndex < 0) {
-            return null;
-        }
-        int colonIndex = credentialsJson.indexOf(':', keyIndex + PROJECT_ID_JSON_FIELD.length());
-        if (colonIndex < 0) {
-            return null;
-        }
-        int valueStart = colonIndex + 1;
-        while (valueStart < credentialsJson.length() && Character.isWhitespace(credentialsJson.charAt(valueStart))) {
-            valueStart++;
-        }
-        if (valueStart >= credentialsJson.length() || credentialsJson.charAt(valueStart) != '"') {
-            return null;
-        }
-        StringBuilder projectId = new StringBuilder();
-        boolean escaped = false;
-        for (int i = valueStart + 1; i < credentialsJson.length(); i++) {
-            char current = credentialsJson.charAt(i);
-            if (escaped) {
-                projectId.append(current);
-                escaped = false;
-            } else if (current == '\\') {
-                escaped = true;
-            } else if (current == '"') {
-                return projectId.toString();
-            } else {
-                projectId.append(current);
-            }
-        }
-        return null;
-    }
-
-    final String getGoogleCloudProjectId() {
-        Path configDirectory = getGoogleCloudConfigDirectory();
-        String activeConfig = readFirstLine(configDirectory.resolve("active_config"));
-        if (activeConfig == null || activeConfig.isBlank()) {
-            activeConfig = DEFAULT_GCLOUD_CONFIG;
-        }
-        String projectId = getGoogleCloudProjectId(configDirectory.resolve("configurations").resolve("config_" + activeConfig));
-        if (projectId == null) {
-            projectId = getGoogleCloudProjectId(configDirectory.resolve("properties"));
-        }
-        return projectId != null ? projectId : getMetadataProjectId();
-    }
-
-    private Path getGoogleCloudConfigDirectory() {
-        if (googleCloudConfigDirectory != null) {
-            return googleCloudConfigDirectory;
-        }
-        String cloudSdkConfig = environment.apply(CLOUDSDK_CONFIG);
-        if (cloudSdkConfig != null && !cloudSdkConfig.isBlank()) {
-            return Path.of(cloudSdkConfig);
-        }
-        if (isWindows()) {
-            String appData = environment.apply(APPDATA);
-            if (appData != null && !appData.isBlank()) {
-                return Path.of(appData, "gcloud");
-            }
-        }
-        return Path.of(System.getProperty("user.home"), ".config", "gcloud");
-    }
-
-    private String getGoogleCloudProjectId(Path path) {
-        if (!Files.isRegularFile(path)) {
-            return null;
-        }
-        try {
-            return getGoogleCloudProjectId(Files.readAllLines(path, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private String getGoogleCloudProjectId(List<String> lines) {
-        String section = null;
-        for (String line : lines) {
-            String trimmed = line.trim();
-            if (!isIgnoredConfigLine(trimmed)) {
-                String parsedSection = getConfigSection(trimmed);
-                if (parsedSection != null) {
-                    section = parsedSection;
-                } else if (isCoreConfigSection(section)) {
-                    String projectId = getProjectIdFromConfigLine(trimmed);
-                    if (projectId != null) {
-                        return projectId;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean isIgnoredConfigLine(String line) {
-        return line.isEmpty() || line.startsWith(";");
-    }
-
-    private String getConfigSection(String line) {
-        return line.startsWith("[") && line.endsWith("]") && line.length() > 2 ? line.substring(1, line.length() - 1) : null;
-    }
-
-    private boolean isCoreConfigSection(String section) {
-        return section == null || "core".equals(section);
-    }
-
-    final String getProjectIdFromConfigLine(String line) {
-        int equalsIndex = line.indexOf('=');
-        if (equalsIndex < 0) {
-            return null;
-        }
-        String key = line.substring(0, equalsIndex).trim();
-        if (!"project".equals(key)) {
-            return null;
-        }
-        String value = line.substring(equalsIndex + 1).trim();
-        return value.isEmpty() ? null : value;
-    }
-
-    private String readFirstLine(Path path) {
-        if (!Files.isRegularFile(path)) {
-            return null;
-        }
-        try (InputStream inputStream = Files.newInputStream(path)) {
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).lines().findFirst().orElse(null);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private String getMetadataProjectId() {
-        if (metadataProjectIdOverride != null) {
-            return metadataProjectIdOverride;
-        }
-        HttpURLConnection connection = null;
-        try {
-            connection = (HttpURLConnection) URI.create("http://metadata.google.internal/computeMetadata/v1/project/project-id").toURL().openConnection();
-            connection.setConnectTimeout(METADATA_TIMEOUT_MILLIS);
-            connection.setReadTimeout(METADATA_TIMEOUT_MILLIS);
-            connection.setRequestProperty(METADATA_FLAVOR, GOOGLE);
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK || !GOOGLE.equals(connection.getHeaderField(METADATA_FLAVOR))) {
-                return null;
-            }
-            try (InputStream inputStream = connection.getInputStream()) {
-                String projectId = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).trim();
-                return projectId.isEmpty() ? null : projectId;
-            }
-        } catch (IOException e) {
-            return null;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    private boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("windows");
+        return new StackdriverMeterRegistry(exportConfig::getProperty, SYSTEM);
     }
 }
