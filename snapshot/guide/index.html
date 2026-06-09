@@ -5244,6 +5244,9 @@ To trace query parameter values, this property <code>micrometer.observation.data
 <div class="ulist">
 <ul>
 <li>
+<p>The Wavefront registry module <code>io.micronaut.micrometer:micronaut-micrometer-registry-wavefront</code> has been removed. <a href="https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/release-announcements/0/25153">Broadcom announced the end of life of Tanzu Observability (Wavefront)</a>, and the Wavefront service has not been available since October 31, 2025. The module also depends on Jackson 2 through the upstream Wavefront SDK and is not compatible with Micronaut 5&#8217;s Jackson 3 baseline. Micrometer deprecated the Wavefront registry in <a href="https://github.com/micrometer-metrics/micrometer/issues/6328">micrometer-metrics/micrometer#6328</a>.</p>
+</li>
+<li>
 <p>The factory default constructor for <code>io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory</code> deprecated previously has been removed.
 <code>CloudWatchMeterRegistryFactory(AwsCredentialsProviderChain, AwsRegionProviderChain, UserAgentProvider, AWSServiceConfiguration)</code> is used instead.</p>
 </li>
