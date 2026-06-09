@@ -53,6 +53,23 @@ class WebMetricsExceptionCodeTest {
         Assertions.assertNull(meterRegistry.find("http.server.requests")
             .tags("status", "500", "exception", "BadRequestException")
             .timer());
+        long count = meterRegistry.timer("http.server.requests", List.of(
+            Tag.of("method", "GET"),
+            Tag.of("uri", "/metrics/bad-request"),
+            Tag.of("status", "400"),
+            Tag.of("exception", "BadRequestException")
+        )).count();
+        Assertions.assertEquals(1, count);
+
+        Timer fallbackTimer = meterRegistry.find("http.server.requests")
+            .tags(List.of(
+                Tag.of("method", "GET"),
+                Tag.of("uri", "/metrics/bad-request"),
+                Tag.of("status", "500"),
+                Tag.of("exception", "BadRequestException")
+            ))
+            .timer();
+        Assertions.assertTrue(fallbackTimer == null || fallbackTimer.count() == 0);
     }
 
     @Controller("/metrics")
