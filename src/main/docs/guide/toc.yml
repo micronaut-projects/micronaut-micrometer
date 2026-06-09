@@ -32,4 +32,5 @@ observation:
   title: Observation
   datasourceObservation: Datasource Observation
 metricsGuides: Guides
+breaks: Breaking Changes
 repository: Repository

@@ -21,6 +21,7 @@ import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.aop.InterceptedMethod;
+import io.micronaut.aop.InterceptPhase;
 import io.micronaut.aop.InterceptorBean;
 import io.micronaut.aop.MethodInterceptor;
 import io.micronaut.aop.MethodInvocationContext;
@@ -35,7 +36,6 @@ import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.util.CollectionUtils;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
@@ -90,33 +90,18 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
 
     /**
      * @param meterRegistry The meter registry
-     * @deprecated Pass conversion service in new constructor
-     */
-    @Deprecated
-    protected TimedInterceptor(MeterRegistry meterRegistry) {
-        this(meterRegistry, ConversionService.SHARED, Collections.emptyList());
-    }
-
-    /**
-     * @param meterRegistry The meter registry
-     * @param conversionService The conversion service
-     * @deprecated Pass list of AbstractMethodTaggers in new constructor
-     */
-    @Deprecated
-    protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService) {
-        this(meterRegistry, conversionService, Collections.emptyList());
-    }
-
-    /**
-     * @param meterRegistry The meter registry
      * @param conversionService The conversion service
      * @param methodTaggers Additional tag builders
      */
-    @Inject
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
+    }
+
+    @Override
+    public int getOrder() {
+        return InterceptPhase.TRACE.getPosition();
     }
 
     @Override

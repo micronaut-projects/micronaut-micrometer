@@ -3,11 +3,12 @@ You can include the Stackdriver reporter via `io.micronaut.micrometer:micronaut-
 dependency:micronaut-micrometer-registry-stackdriver[groupId="io.micronaut.micrometer"]
 
 You can configure this reporter using `micronaut.metrics.export.stackdriver`. The most commonly changed configuration properties are listed below, but see https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java[StackdriverConfig] for more options.
+If `projectId` is not configured explicitly, Micronaut falls back to Google Cloud's default project ID discovery.
 
 |=======
 |*Name* |*Description*
 |enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
-|projectId |Stackdriver Project ID. Required.
+|projectId |Stackdriver Project ID. If omitted, Micronaut falls back to Google Cloud default project ID discovery.
 |step |How frequently to report metrics. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
 |descriptions | Whether meter descriptions should be sent to InfluxDB. Disable to minimize the amount of data sent on each scrape. Default: `true`
 |=======

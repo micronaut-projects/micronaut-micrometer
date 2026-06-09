@@ -6,7 +6,7 @@ dependencies {
     annotationProcessor(mn.micronaut.graal)
     implementation(platform(mnGrpc.boms.grpc))
 
-    compileOnly(libs.jcache)
+    compileOnly(mnCache.jcache)
     compileOnly(libs.grpc.api)
     compileOnly(mnLogging.logback.classic)
     compileOnly(mnCache.micronaut.cache.core)
@@ -37,7 +37,7 @@ dependencies {
     testImplementation(mnSql.micronaut.jdbc)
     testImplementation(mn.micronaut.management)
     testImplementation(mn.micronaut.http.validation)
-    testImplementation(mnRxjava2.micronaut.rxjava2)
+    testImplementation(mnRxjava3.micronaut.rxjava3)
     testImplementation(mnSerde.micronaut.serde.jackson)
     testImplementation(mn.netty.buffer)
     testImplementation(mn.netty.transport.native.epoll)

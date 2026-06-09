@@ -258,5 +258,20 @@
     "type": "io.micronaut.configuration.metrics.micrometer.cloudwatch.$CloudWatchMeterRegistryFactory$CloudWatchMeterRegistry2$Definition$Reference",
     "member": "Implemented interface io.micronaut.inject.BeanDefinitionReference",
     "reason": "use AWS cloud watch client instead of default one"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory",
+    "member": "Constructor io.micronaut.configuration.metrics.micrometer.cloudwatch.CloudWatchMeterRegistryFactory()",
+    "reason": "Removed deprecated code for Micronaut Framework 5"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor",
+    "member": "Constructor io.micronaut.configuration.metrics.micrometer.intercept.CountedInterceptor(io.micrometer.core.instrument.MeterRegistry)",
+    "reason": "Removed deprecated code for Micronaut Framework 5"
+  },
+  {
+    "type": "io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor",
+    "member": "Constructor io.micronaut.configuration.metrics.micrometer.intercept.TimedInterceptor(io.micrometer.core.instrument.MeterRegistry)",
+    "reason": "Removed deprecated code for Micronaut Framework 5"
   }
 ]

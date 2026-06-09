@@ -11,7 +11,7 @@ import spock.lang.Unroll
 
 import static io.micronaut.configuration.metrics.binder.retry.RetryMetricsBinder.RETRY_METRICS_ENABLED
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
-import static org.junit.Assert.assertThrows
+import static org.junit.jupiter.api.Assertions.assertThrows
 
 class RetryMetricsBinderSpec extends Specification {
 

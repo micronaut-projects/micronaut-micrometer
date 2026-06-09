@@ -16,6 +16,7 @@ import io.micronaut.core.async.annotation.SingleResult
 import io.micronaut.core.async.propagation.ReactorPropagation
 import io.micronaut.core.propagation.MutablePropagatedContext
 import io.micronaut.core.propagation.PropagatedContext
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.*
@@ -27,9 +28,10 @@ import io.micronaut.micrometer.observation.utils.ObservedReactorPropagation
 import io.micronaut.micrometer.observation.http.server.ObservationServerFilter
 import io.micronaut.reactor.http.client.ReactorHttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import io.micronaut.rxjava2.http.client.RxHttpClient
+import io.micronaut.rxjava3.http.client.Rx3HttpClient
+import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
@@ -47,7 +49,6 @@ import java.util.concurrent.CompletionStage
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
-import static io.micronaut.scheduling.TaskExecutors.IO
 
 @Slf4j("LOG")
 class ObservationHttpSpec extends Specification {
@@ -177,10 +178,10 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
-    void 'test observation rxjava2'() {
+    void 'test observation rxjava3'() {
 
         when:
-        HttpResponse<String> response = reactorHttpClient.toBlocking().exchange('/rxjava2/test', String)
+        HttpResponse<String> response = reactorHttpClient.toBlocking().exchange('/rxjava3/test', String)
 
         then:
         conditions.eventually {
@@ -322,7 +323,6 @@ class ObservationHttpSpec extends Specification {
         testObservationRegistry.clear()
     }
 
-
     void 'test server observation stays open until streaming response completes'() {
         when:
         String response = reactorHttpClient.toBlocking().retrieve('/streaming/body', String)
@@ -459,11 +459,37 @@ class ObservationHttpSpec extends Specification {
         then:
         thrown(IllegalStateException)
         TestObservationRegistryAssert.assertThat(registry)
-            .hasObservationWithNameEqualTo('http.server.requests')
-            .that()
-            .hasBeenStarted()
-            .hasBeenStopped()
-            .hasError()
+                .hasObservationWithNameEqualTo('http.server.requests')
+                .that()
+                .hasBeenStarted()
+                .hasBeenStopped()
+                .hasError()
+    }
+
+    void 'preflight requests are not observed'() {
+        when:
+        EmbeddedServer corsEmbeddedServer = ApplicationContext.run(EmbeddedServer, [
+            'micronaut.application.name': 'test-app',
+            'micronaut.server.cors.enabled': true,
+            'micronaut.server.cors.configurations.web.allowed-origins[0]': 'https://example.com',
+            'spec.name': 'ObservationHttpSpec'
+        ])
+        HttpClient corsHttpClient = HttpClient.create(corsEmbeddedServer.URL)
+        TestObservationRegistry corsObservationRegistry = corsEmbeddedServer.applicationContext.getBean(ObservationRegistry) as TestObservationRegistry
+        HttpResponse<?> response = corsHttpClient.toBlocking().exchange(HttpRequest.OPTIONS("/client/order/${UUID.randomUUID()}")
+            .header(HttpHeaders.ORIGIN, 'https://example.com')
+            .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, 'GET'))
+
+        then:
+        response.code() >= 200 && response.code() < 300
+
+        conditions.eventually {
+            TestObservationRegistryAssert.assertThat(corsObservationRegistry).doesNotHaveAnyObservation()
+        }
+
+        cleanup:
+        corsHttpClient?.close()
+        corsEmbeddedServer?.close()
     }
 
     void 'test continue nested HTTP observation - reactive'() {
@@ -480,8 +506,8 @@ class ObservationHttpSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
                 it.hasContextualNameEqualTo("http get /propagate/nestedReactive/{name}")
                 it.hasNameEqualTo("http.server.requests")
-                it.hasLowCardinalityKeyValue("foo", "bar")
-                it.hasLowCardinalityKeyValue("foo2", "bar2")
+                it.hasHighCardinalityKeyValue("foo", "bar")
+                it.hasHighCardinalityKeyValue("foo2", "bar2")
             }
         }
 
@@ -503,8 +529,8 @@ class ObservationHttpSpec extends Specification {
             TestObservationRegistryAssert.assertThat(testObservationRegistry).hasAnObservation {
                 it.hasContextualNameEqualTo("http get /propagate/nestedReactive2/{name}")
                 it.hasNameEqualTo("http.server.requests")
-                it.hasLowCardinalityKeyValue("foo", "bar")
-                it.hasLowCardinalityKeyValue("foo3", "bar3")
+                it.hasHighCardinalityKeyValue("foo", "bar")
+                it.hasHighCardinalityKeyValue("foo3", "bar3")
             }
         }
 
@@ -526,7 +552,7 @@ class ObservationHttpSpec extends Specification {
         @Inject
         ObservationRegistry observationRegistry
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Post("/enter")
         @Observed(name = "enter")
         Mono<String> enter(@Header("X-TrackingId") String tracingId, @Body SomeBody body) {
@@ -538,7 +564,7 @@ class ObservationHttpSpec extends Specification {
             )
         }
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Get("/test")
         @Observed
         Mono<String> test(@Header("X-TrackingId") String tracingId) {
@@ -556,7 +582,7 @@ class ObservationHttpSpec extends Specification {
 
         }
 
-        @ExecuteOn(IO)
+        @ExecuteOn(TaskExecutors.BLOCKING)
         @Get("/test2")
         Mono<String> test2(@Header("X-TrackingId") String tracingId) {
             LOG.debug("test2")
@@ -604,13 +630,13 @@ class ObservationHttpSpec extends Specification {
         Publisher<String> nestedReactive(String name) {
 
             def current = observationRegistry.getCurrentObservation()
-            current.lowCardinalityKeyValue('foo', 'bar')
+            current.highCardinalityKeyValue('foo', 'bar')
             return Flux.deferContextual { contextView ->
                 Flux.from(propagateClient.continuedRx(name))
                         .flatMap({ String res ->
                             // Here thread switch can occur,
                             // that means the thread might be different and Span.current() wouldn't work
-                            current.lowCardinalityKeyValue('foo2', 'bar2')
+                            current.highCardinalityKeyValue('foo2', 'bar2')
                             // NOTE: the span needs to be not closed for this attribute setting to work
                             return Mono.just(name)
                         })
@@ -621,7 +647,7 @@ class ObservationHttpSpec extends Specification {
         @SingleResult
         Publisher<String> nestedReactive2(String name) {
             def current = observationRegistry.getCurrentObservation()
-            current.lowCardinalityKeyValue('foo', 'bar')
+            current.highCardinalityKeyValue('foo', 'bar')
             return Flux.deferContextual { contextView ->
                 {
                         Flux.from(propagateClient.continuedRx(name))
@@ -630,7 +656,7 @@ class ObservationHttpSpec extends Specification {
                                     // that means the thread might be different and Span.current() wouldn't work
                                     // We need can retrieve the current span from the Reactor context
                                     def currentInnerSpan = ObservedReactorPropagation.currentObservation(contextView)
-                                    currentInnerSpan.lowCardinalityKeyValue('foo3', 'bar3')
+                                    currentInnerSpan.highCardinalityKeyValue('foo3', 'bar3')
                                     return Mono.just(name)
                                 }).contextWrite(contextView)
                     }
@@ -740,18 +766,18 @@ class ObservationHttpSpec extends Specification {
         void excludeTest() {}
     }
 
-    @Controller('/rxjava2')
-    static class RxJava2 {
+    @Controller('/rxjava3')
+    static class RxJava {
 
         @Inject
         @Client("/")
-        RxHttpClient rxHttpClient
+        Rx3HttpClient rxHttpClient
 
         @Get("/test")
         Single<String> test() {
             return Single.fromPublisher(
                     rxHttpClient.retrieve(HttpRequest
-                            .GET("/rxjava2/test2"), String)
+                            .GET("/rxjava3/test2"), String)
             )
         }
 
