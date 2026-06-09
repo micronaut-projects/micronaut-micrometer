@@ -85,7 +85,7 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  * @since 2.0
  */
 @RequiresMetrics
-@Requires(property = ByteBufAllocatorMetricsConfig.ENABLED, defaultValue = FALSE, notEquals = FALSE)
+@Requires(property = ByteBufAllocatorMetricsConfig.PROPERTY_ENABLED, defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = ByteBufAllocator.class)
 @Context
 @Internal

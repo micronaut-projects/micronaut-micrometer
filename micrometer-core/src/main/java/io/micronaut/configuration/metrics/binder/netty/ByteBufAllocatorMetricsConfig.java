@@ -39,9 +39,9 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
     /**
      * The enabled property.
      */
-    public static final String ENABLED = PATH + ".enabled";
+    public static final String PROPERTY_ENABLED = PATH + ".enabled";
 
-    private boolean metricsEnabled;
+    private boolean enabled;
     private Set<ByteBufAllocatorMetricKind> metrics = EnumSet.allOf(ByteBufAllocatorMetricKind.class);
 
     /**
@@ -76,14 +76,14 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
 
     @Override
     public boolean isEnabled() {
-        return metricsEnabled;
+        return enabled;
     }
 
     /**
      * @param enabled Whether Netty ByteBuf allocator metrics are enabled
      */
     public void setEnabled(boolean enabled) {
-        this.metricsEnabled = enabled;
+        this.enabled = enabled;
     }
 
     /**
