@@ -8,7 +8,7 @@ managed-jackson = '2.21.2'
 managed-micrometer = '1.17.0'
 managed-micrometer-tracing = '1.7.0'
 managed-new-relic-registry = '0.10.0'
-managed-prometheus-metrics-exporter-pushgateway = '1.6.1'
+managed-prometheus-metrics-exporter-pushgateway = '1.7.0'
 managed-datasource-micrometer = '2.2.1'
 reflections = '0.10.2'
 
