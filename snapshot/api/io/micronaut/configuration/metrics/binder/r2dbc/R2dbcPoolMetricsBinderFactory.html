@@ -81,8 +81,7 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="annotations">@Factory
 <a href="../../annotation/RequiresMetrics.html" title="annotation interface in io.micronaut.configuration.metrics.annotation">@RequiresMetrics</a>
-@Requires(property="micronaut.metrics.binders.r2dbc.enabled",
-          notEquals="false")
+@Requires(classes=io.r2dbc.pool.ConnectionPool.class) @Requires(property="micronaut.metrics.binders.r2dbc.enabled",notEquals="false")
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">R2dbcPoolMetricsBinderFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Instruments Micronaut related R2DBC pool metrics via Micrometer.</div>
