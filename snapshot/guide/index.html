@@ -770,6 +770,19 @@ public class MeterFilterFactory {
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.web.enabled</code></p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CORS preflight requests that are handled before application route matching are not recorded as normal server request metrics.
+This avoids creating <code>http.server.requests</code> metrics with high-cardinality URI tags when no route template is available for the <code>OPTIONS</code> request.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <div class="title">Filter Path</div>
 <p>If enabled, by default the path <code>/**</code> is intercepted. To change which paths are run through the filter for the server, set <code>micronaut.metrics.http.path</code>. For the client, set <code>micronaut.metrics.http.client.path</code>.</p>
@@ -5058,6 +5071,19 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 <h3 id="_micrometer_observation_http">Micrometer Observation HTTP</h3>
 <div class="paragraph">
 <p>The Micronaut Observation HTTP module offers automatic instrumentation for both the Micronaut HTTP server and Micronaut HTTP clients, making it easy to monitor HTTP-related metrics and traces. . With this module, every request received by the server and every request sent from the server triggers the creation of an observation with the necessary low and high cardinality values. Depending on your application&#8217;s configuration, these values can be displayed as metrics (if you have registered the <code>MeterRegistry</code> singleton bean) and as trace spans (if you have registered the <code>Trace</code> singleton bean).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+CORS preflight requests that are handled before application route matching do not create normal server HTTP observations.
+This avoids creating observations or exported metrics with high-cardinality URI values when no route template is available for the <code>OPTIONS</code> request.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>To include this module in your project, add the following dependency:</p>
