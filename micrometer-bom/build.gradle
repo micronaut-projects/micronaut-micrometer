@@ -9,5 +9,15 @@ micronautBom {
                 // See: https://github.com/micrometer-metrics/micrometer/issues/5395
                 "io.micrometer:concurrency-tests:${libs.versions.managed.micrometer.asProvider().get()}",
         ])
+        acceptedVersionRegressions.addAll([
+                // Removed with the Jackson 2 BOM while moving to the Jackson 3 baseline.
+                "jackson",
+        ])
+        acceptedLibraryRegressions.addAll([
+                // Removed with the Jackson 2 BOM while moving to the Jackson 3 baseline.
+                "boms-jackson",
+                // Wavefront is end-of-life and the registry module has been removed.
+                "micronaut-micrometer-registry-wavefront",
+        ])
     }
 }
