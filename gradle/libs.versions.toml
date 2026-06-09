@@ -12,7 +12,6 @@ managed-prometheus-metrics-exporter-pushgateway = '1.6.1'
 managed-datasource-micrometer = '2.2.1'
 reflections = '0.10.2'
 
-jcache = "1.1.1"
 hdr-histogram = '2.2.2'
 
 micronaut-aws = "5.0.0"
@@ -84,5 +83,4 @@ micrometer-registry-wavefront = { module = 'io.micrometer:micrometer-registry-wa
 r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
 
-jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
