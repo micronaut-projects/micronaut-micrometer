@@ -13,8 +13,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
-import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsBinder.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DIRECT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MEMORY
@@ -26,6 +26,35 @@ import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
 
 class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
+
+    void "test ByteBufAllocator config defaults and metric normalization"() {
+        given:
+        ByteBufAllocatorMetricsConfig config = new ByteBufAllocatorMetricsConfig()
+
+        expect:
+        !config.enabled
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
+
+        when:
+        config.enabled = true
+        config.metrics = EnumSet.of(POOLED_ALLOCATOR)
+
+        then:
+        config.enabled
+        config.metrics == EnumSet.of(POOLED_ALLOCATOR)
+
+        when:
+        config.metrics = null
+
+        then:
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
+
+        when:
+        config.metrics = [] as Set
+
+        then:
+        config.metrics == EnumSet.allOf(ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind)
+    }
 
     @Unroll
     void "test getting the beans #cfg #setting"() {
@@ -54,9 +83,14 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
                  (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.metrics"): [POOLED_ALLOCATOR, UNPOOLED_ALLOCATOR]]
         )
         Optional<ByteBufAllocatorMetricsBinder> optBinder = context.findBean(ByteBufAllocatorMetricsBinder)
+        ByteBufAllocatorMetricsConfig config = context.getBean(ByteBufAllocatorMetricsConfig)
 
         then:
         optBinder.isPresent()
+        config.enabled
+        config.metrics.size() == 2
+        config.metrics.contains(POOLED_ALLOCATOR)
+        config.metrics.contains(UNPOOLED_ALLOCATOR)
         optBinder.get().kinds.size() == 2
         optBinder.get().kinds.contains(POOLED_ALLOCATOR)
         optBinder.get().kinds.contains(UNPOOLED_ALLOCATOR)

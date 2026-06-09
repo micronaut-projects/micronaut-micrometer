@@ -16,7 +16,7 @@
 package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micronaut.context.annotation.Value;
+import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
@@ -24,6 +24,7 @@ import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
 import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteMatch;
+import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import org.reactivestreams.Publisher;
 import java.util.Optional;
@@ -45,15 +46,28 @@ public class ServerRequestMeterRegistryFilter implements HttpServerFilter {
     private static final String ATTRIBUTE_KEY = "micronaut.filter." + ServerRequestMeterRegistryFilter.class.getSimpleName();
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private final Provider<MeterRegistry> meterRegistryProvider;
-
-    @Value("${" + WebMetricsPublisher.CLIENT_ERROR_URIS_ENABLED + ":true}")
-    private boolean reportClientErrorURIs;
+    private final boolean reportClientErrorURIs;
 
     /**
      * @param meterRegistryProvider the meter registry provider
      */
     public ServerRequestMeterRegistryFilter(Provider<MeterRegistry> meterRegistryProvider) {
+        this(meterRegistryProvider, true);
+    }
+
+    /**
+     * @param meterRegistryProvider the meter registry provider
+     * @param clientErrorsUrisConfig the client errors uris config
+     */
+    @Inject
+    public ServerRequestMeterRegistryFilter(Provider<MeterRegistry> meterRegistryProvider,
+                                            HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig) {
+        this(meterRegistryProvider, clientErrorsUrisConfig.enabled());
+    }
+
+    private ServerRequestMeterRegistryFilter(Provider<MeterRegistry> meterRegistryProvider, boolean reportClientErrorURIs) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.reportClientErrorURIs = reportClientErrorURIs;
     }
 
     private String resolvePath(HttpRequest<?> request) {
