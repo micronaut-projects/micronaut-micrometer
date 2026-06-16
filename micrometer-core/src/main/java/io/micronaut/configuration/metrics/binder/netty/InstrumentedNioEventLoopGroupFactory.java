@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.netty;
 
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
+import io.micronaut.context.annotation.BootstrapContextCompatible;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
@@ -27,6 +28,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.RejectedExecutionHandlers;
 import io.netty.util.concurrent.ThreadPerTaskExecutor;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
 import java.nio.channels.spi.SelectorProvider;
@@ -44,6 +46,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Singleton
 @Internal
+@Named(NioEventLoopGroupFactory.NAME)
+@BootstrapContextCompatible
 @Replaces(bean = NioEventLoopGroupFactory.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
