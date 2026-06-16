@@ -2,12 +2,18 @@ package io.micronaut.configuration.metrics.binder.executor
 
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Tags
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micrometer.core.instrument.search.RequiredSearch
 import io.micrometer.core.instrument.search.Search
+import io.micronaut.context.BeanProvider
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import io.micronaut.context.event.BeanCreatedEvent
+import io.micronaut.inject.BeanIdentifier
 import io.micronaut.inject.qualifiers.Qualifiers
+import io.micronaut.scheduling.instrument.InstrumentedExecutorService
 import io.micronaut.scheduling.TaskExecutors
 import io.netty.channel.DefaultEventLoop
 import io.netty.channel.EventLoopGroup
@@ -22,6 +28,7 @@ import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
 import java.util.concurrent.ExecutorService
+import java.util.function.ToDoubleFunction
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
@@ -101,6 +108,72 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         context.close()
     }
 
+    void "test wrapped event loop group is unwrapped and metrics are registered"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+        BeanProvider<MeterRegistry> meterRegistryProvider = Stub() {
+            get() >> registry
+        }
+        EventLoopGroup eventLoopGroup = new TestEventLoopGroup()
+        ExecutorServiceMetricsContributor metricsContributor = new ExecutorServiceMetricsContributor() {
+            @Override
+            boolean supports(ExecutorService executorService) {
+                executorService.is(eventLoopGroup)
+            }
+
+            @Override
+            ExecutorService bindTo(MeterRegistry meterRegistry, ExecutorService executorService, String name, List<io.micrometer.core.instrument.Tag> tags) {
+                Gauge.builder("executor.queued", executorService, { 0d } as ToDoubleFunction<ExecutorService>)
+                        .tags(Tags.concat(tags, "name", name))
+                        .register(meterRegistry)
+                Gauge.builder("executor.pool.size", executorService, { 1d } as ToDoubleFunction<ExecutorService>)
+                        .tags(Tags.concat(tags, "name", name))
+                        .register(meterRegistry)
+                executorService
+            }
+        }
+        ExecutorServiceMetricsBinder binder = new ExecutorServiceMetricsBinder(meterRegistryProvider, [metricsContributor])
+        ExecutorService wrapped = new InstrumentedExecutorService() {
+            @Override
+            ExecutorService getTarget() {
+                eventLoopGroup
+            }
+
+            @Override
+            <T> java.util.concurrent.Callable<T> instrument(java.util.concurrent.Callable<T> task) {
+                task
+            }
+
+            @Override
+            Runnable instrument(Runnable command) {
+                command
+            }
+        }
+        BeanIdentifier beanIdentifier = Stub() {
+            getName() >> "wrapped-event-loop"
+        }
+        BeanCreatedEvent<ExecutorService> event = Stub() {
+            getBean() >> wrapped
+            getBeanIdentifier() >> beanIdentifier
+        }
+
+        when:
+        ExecutorService instrumented = binder.onCreated(event)
+
+        then:
+        instrumented.is(eventLoopGroup)
+        registry.get("executor.queued")
+                .tag("name", "wrapped-event-loop")
+                .gauge()
+        registry.get("executor.pool.size")
+                .tag("name", "wrapped-event-loop")
+                .gauge()
+
+        cleanup:
+        eventLoopGroup.shutdownGracefully().syncUninterruptibly()
+        eventLoopGroup.terminationFuture().syncUninterruptibly()
+    }
+
     @Unroll
     void "test getting the beans #cfg #setting"() {
         when:
@@ -126,8 +199,11 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         @Named("test")
         @Requires(sdk = Requires.Sdk.MICRONAUT, version = "2.0.0")
         EventLoopGroup eventLoopGroup() {
-            return new DefaultEventLoop()
+            return new TestEventLoopGroup()
         }
+    }
+
+    static class TestEventLoopGroup extends DefaultEventLoop {
     }
 
     class SimpleStreamsListener implements IStandardStreamsListener {
