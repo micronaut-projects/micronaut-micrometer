@@ -46,6 +46,7 @@ final class NettyMetrics {
     static final String SMALL = "small";
     static final String NORMAL = "normal";
     static final String HUGE = "huge";
+    static final String TOTAL = "total";
 
     static final String SUBPAGE = "subpage";
     static final String CHUNKLIST = "chunklist";

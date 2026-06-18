@@ -1,6 +1,7 @@
 package io.micronaut.configuration.metrics.binder.netty
 
 import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.search.RequiredSearch
@@ -15,11 +16,17 @@ import spock.util.concurrent.PollingConditions
 
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ARENA
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.COUNT
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DEALLOCATION
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.DIRECT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MEMORY
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.POOLED
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -139,6 +146,32 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
 
         cleanup:
         context.close()
+    }
+
+    @Unroll
+    void "test ByteBufAllocator metrics pooled arena counter meters share consistent tag keys for #name"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(
+                [MICRONAUT_METRICS_ENABLED                                        : true,
+                 (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true]
+        )
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        Collection<Meter> meters = registry.find(name).meters()
+        Set<Set<String>> distinctTagKeySets = meters.collect { Meter m -> m.id.tags.collect { it.key } as Set } as Set
+        Set<String> sizeValues = meters.collect { Meter m -> m.id.getTag(SIZE) } as Set
+
+        then:
+        !meters.isEmpty()
+        distinctTagKeySets.size() == 1
+        sizeValues == ['total', 'small', 'normal', 'huge'] as Set
+
+        cleanup:
+        context.close()
+
+        where:
+        name << [dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT),
+                 dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT),
+                 dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT)]
     }
 
     @Client('/bytebufallocatortest')
