@@ -23,7 +23,7 @@ micronaut-serde = "3.0.0"
 micronaut-sql = "7.0.1"
 micronaut-data = "5.0.4"
 micronaut-validation = "5.0.0"
-micronaut-logging = "2.0.0"
+micronaut-logging = "2.0.1"
 
 [libraries]
 # Core
