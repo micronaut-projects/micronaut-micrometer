@@ -1,7 +1,7 @@
 [versions]
-micronaut-platform = "5.0.2"
 micronaut = "5.0.2"
 micronaut-gradle-plugin = "5.0.0"
+micronaut-platform = "5.0.4"
 
 managed-metrics-core = '4.2.39'
 managed-micrometer = '1.16.5'
