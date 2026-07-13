@@ -33,6 +33,8 @@ import jakarta.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -51,6 +53,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<ExecutorService> {
 
     private static final String THREAD_PER_TASK_EXECUTOR = "java.util.concurrent.ThreadPerTaskExecutor";
+    private static final String NETTY_EVENT_LOOP_GROUP = "io.netty.channel.EventLoopGroup";
+    private static final ConcurrentMap<Class<?>, Boolean> NETTY_EVENT_LOOP_GROUP_TYPES = new ConcurrentHashMap<>();
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
 
@@ -70,7 +74,7 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
         // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped.getClass().getName().startsWith("io.netty")) {
+        if (isNettyEventLoopGroup(unwrapped.getClass()) || unwrapped.getClass().getName().startsWith("io.netty")) {
             return unwrapped;
         }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
@@ -124,5 +128,25 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
                 }
             };
         }
+    }
+
+    private static boolean isNettyEventLoopGroup(Class<?> type) {
+        Boolean cached = NETTY_EVENT_LOOP_GROUP_TYPES.get(type);
+        if (cached != null) {
+            return cached;
+        }
+        boolean result = hasNettyEventLoopGroup(type);
+        NETTY_EVENT_LOOP_GROUP_TYPES.putIfAbsent(type, result);
+        return result;
+    }
+
+    private static boolean hasNettyEventLoopGroup(Class<?> type) {
+        for (Class<?> interfaceType : type.getInterfaces()) {
+            if (NETTY_EVENT_LOOP_GROUP.equals(interfaceType.getName()) || isNettyEventLoopGroup(interfaceType)) {
+                return true;
+            }
+        }
+        Class<?> superclass = type.getSuperclass();
+        return superclass != null && isNettyEventLoopGroup(superclass);
     }
 }

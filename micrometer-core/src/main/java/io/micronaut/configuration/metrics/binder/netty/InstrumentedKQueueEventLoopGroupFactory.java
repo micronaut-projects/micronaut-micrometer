@@ -20,7 +20,6 @@ import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import org.jspecify.annotations.Nullable;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.micronaut.http.netty.channel.KQueueAvailabilityCondition;
 import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
@@ -47,8 +46,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Singleton
 @Internal
-@Replaces(bean = KQueueEventLoopGroupFactory.class, named = EventLoopGroupFactory.NATIVE)
-@Named(EventLoopGroupFactory.NATIVE)
+@Replaces(bean = KQueueEventLoopGroupFactory.class, named = KQueueEventLoopGroupFactory.NAME)
+@Named(KQueueEventLoopGroupFactory.NAME)
 @Requires(classes = KQueue.class, condition = KQueueAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)

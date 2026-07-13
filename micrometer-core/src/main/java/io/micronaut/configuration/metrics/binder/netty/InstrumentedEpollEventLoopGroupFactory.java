@@ -22,7 +22,6 @@ import io.micronaut.core.annotation.Internal;
 import org.jspecify.annotations.Nullable;
 import io.micronaut.http.netty.channel.EpollAvailabilityCondition;
 import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory;
-import io.micronaut.http.netty.channel.EventLoopGroupFactory;
 import io.netty.channel.DefaultSelectStrategyFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -47,8 +46,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
  */
 @Singleton
 @Internal
-@Replaces(bean = EpollEventLoopGroupFactory.class, named = EventLoopGroupFactory.NATIVE)
-@Named(EventLoopGroupFactory.NATIVE)
+@Replaces(bean = EpollEventLoopGroupFactory.class, named = EpollEventLoopGroupFactory.NAME)
+@Named(EpollEventLoopGroupFactory.NAME)
 @Requires(classes = Epoll.class, condition = EpollAvailabilityCondition.class)
 @RequiresMetrics
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
