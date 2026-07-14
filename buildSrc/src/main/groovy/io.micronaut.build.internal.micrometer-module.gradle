@@ -9,7 +9,11 @@ plugins {
 ossIndexAudit {
         excludeVulnerabilityIds = [
                 'CVE-2024-23082', // disputed / false position. See https://www.threeten.org/threetenbp/security.html
-                'CVE-2024-23081' // disputed / false position. See https://www.threeten.org/threetenbp/security.html
+                'CVE-2024-23081', // disputed / false position. See https://www.threeten.org/threetenbp/security.html
+                'CVE-2026-14683', // HdrHistogram has no patched release
+                'CVE-2026-14684', // HdrHistogram has no patched release
+                'CVE-2026-14685', // HdrHistogram has no patched release
+                'CVE-2026-14686' // HdrHistogram has no patched release
         ]
         excludeCoordinates = [
                 "org.threeten:threetenbp:1.7.2", // no version patched https://ossindex.sonatype.org/component/pkg:maven/org.threeten/threetenbp
