@@ -79,6 +79,19 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         context.close()
     }
 
+    @Issue("https://github.com/micronaut-projects/micronaut-micrometer/issues/1186")
+    void "test loom carrier event loop group not instrumented"() {
+        when:
+        ApplicationContext context = ApplicationContext.run()
+        EventLoopGroup eventLoopGroup = context.getBean(EventLoopGroup, Qualifiers.byName("loom-carrier"))
+
+        then:
+        eventLoopGroup instanceof TestEventLoopGroup
+
+        cleanup:
+        context.close()
+    }
+
     @Issue("https://github.com/micronaut-projects/micronaut-micrometer/issues/679")
     void "test the virtual task executor is unbound with no warnings logged"() {
         when:
@@ -126,8 +139,17 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
         @Named("test")
         @Requires(sdk = Requires.Sdk.MICRONAUT, version = "2.0.0")
         EventLoopGroup eventLoopGroup() {
-            return new DefaultEventLoop()
+            return new TestEventLoopGroup()
         }
+
+        @Singleton
+        @Named("loom-carrier")
+        TestEventLoopGroup loomCarrierEventLoopGroup() {
+            return new TestEventLoopGroup()
+        }
+    }
+
+    static class TestEventLoopGroup extends DefaultEventLoop {
     }
 
     class SimpleStreamsListener implements IStandardStreamsListener {

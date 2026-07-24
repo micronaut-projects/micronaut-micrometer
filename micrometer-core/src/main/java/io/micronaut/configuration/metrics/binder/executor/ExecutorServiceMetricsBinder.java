@@ -53,12 +53,16 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
     private static final String THREAD_PER_TASK_EXECUTOR = "java.util.concurrent.ThreadPerTaskExecutor";
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
+    private final List<ExecutorServiceMetricsContributor> metricsContributors;
 
     /**
      * @param meterRegistryProvider The meter registry provider
+     * @param metricsContributors The executor metrics contributors
      */
-    public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider) {
+    public ExecutorServiceMetricsBinder(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                        List<ExecutorServiceMetricsContributor> metricsContributors) {
         this.meterRegistryProvider = meterRegistryProvider;
+        this.metricsContributors = metricsContributors;
     }
 
     @Override
@@ -69,10 +73,6 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         while (unwrapped instanceof InstrumentedExecutorService) {
             unwrapped = ((InstrumentedExecutorService) unwrapped).getTarget();
         }
-        // Netty EventLoopGroups require separate instrumentation.
-        if (unwrapped.getClass().getName().startsWith("io.netty")) {
-            return unwrapped;
-        }
         // ExecutorServiceMetrics does not provide metrics for virtual threads
         if (unwrapped.getClass().getName().equals(THREAD_PER_TASK_EXECUTOR)) {
             return executorService;
@@ -82,6 +82,12 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
         BeanIdentifier beanIdentifier = event.getBeanIdentifier();
 
         List<Tag> tags = Collections.emptyList(); // allow tags?
+
+        for (ExecutorServiceMetricsContributor metricsContributor : metricsContributors) {
+            if (metricsContributor.supports(unwrapped)) {
+                return metricsContributor.bindTo(meterRegistry, unwrapped, beanIdentifier.getName(), tags);
+            }
+        }
 
         // bind the service metrics
         new ExecutorServiceMetrics(unwrapped, beanIdentifier.getName(), tags).bindTo(meterRegistry);
