@@ -117,6 +117,10 @@ arbitrary transports.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html#bindTo(io.micrometer.core.instrument.MeterRegistry)" class="member-name-link">bindTo(MeterRegistry)</a> - Method in class io.micronaut.configuration.metrics.binder.r2dbc.<a href="io/micronaut/configuration/metrics/binder/r2dbc/R2dbcPoolMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.r2dbc">R2dbcPoolMetricsBinder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsContributor.html#bindTo(io.micrometer.core.instrument.MeterRegistry,java.util.concurrent.ExecutorService,java.lang.String,java.util.List)" class="member-name-link">bindTo(MeterRegistry, ExecutorService, String, List)</a> - Method in interface io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsContributor.html" title="interface in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsContributor</a></dt>
+<dd>
+<div class="block">Bind metrics for the executor service.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/aggregator/AbstractMethodTagger.html#buildTags(io.micronaut.aop.MethodInvocationContext)" class="member-name-link">buildTags(MethodInvocationContext)</a> - Method in class io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/AbstractMethodTagger.html" title="class in io.micronaut.configuration.metrics.aggregator">AbstractMethodTagger</a></dt>
 <dd>
 <div class="block">Build list of tags using <code>MethodInvocationContext</code> which will be included on published metric.</div>
@@ -395,8 +399,12 @@ to the micrometer meter registry.</div>
 <dd>
 <div class="block">Instruments Micronaut related thread pools via Micrometer.</div>
 </dd>
-<dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html#%3Cinit%3E(io.micronaut.context.BeanProvider)" class="member-name-link">ExecutorServiceMetricsBinder(BeanProvider)</a> - Constructor for class io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsBinder</a></dt>
+<dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html#%3Cinit%3E(io.micronaut.context.BeanProvider,java.util.List)" class="member-name-link">ExecutorServiceMetricsBinder(BeanProvider, List)</a> - Constructor for class io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsBinder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsContributor.html" class="type-name-link" title="interface in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsContributor</a> - Interface in <a href="io/micronaut/configuration/metrics/binder/executor/package-summary.html">io.micronaut.configuration.metrics.binder.executor</a></dt>
+<dd>
+<div class="block">Contributes metrics for executor service implementations that need custom binding.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/ExportConfigurationProperties.html" class="type-name-link" title="class in io.micronaut.configuration.metrics.micrometer">ExportConfigurationProperties</a> - Class in <a href="io/micronaut/configuration/metrics/micrometer/package-summary.html">io.micronaut.configuration.metrics.micrometer</a></dt>
 <dd>
 <div class="block">Stores metrics export configuration.</div>
@@ -1425,6 +1433,8 @@ the Micronaut Micrometer New Relic configuration.</div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Called for publisher.</div>
 </dd>
+<dt><a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsContributor.html#supports(java.util.concurrent.ExecutorService)" class="member-name-link">supports(ExecutorService)</a> - Method in interface io.micronaut.configuration.metrics.binder.executor.<a href="io/micronaut/configuration/metrics/binder/executor/ExecutorServiceMetricsContributor.html" title="interface in io.micronaut.configuration.metrics.binder.executor">ExecutorServiceMetricsContributor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html#supports(T)" class="member-name-link">supports(T)</a> - Method in interface io.micronaut.configuration.metrics.aggregator.<a href="io/micronaut/configuration/metrics/aggregator/MeterRegistryConfigurer.html" title="interface in io.micronaut.configuration.metrics.aggregator">MeterRegistryConfigurer</a></dt>
 <dd>
 <div class="block">Determines if this configurer supports the meter registry type.</div>
