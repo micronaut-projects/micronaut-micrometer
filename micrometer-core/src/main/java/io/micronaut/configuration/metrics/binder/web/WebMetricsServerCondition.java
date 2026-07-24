@@ -25,12 +25,19 @@ import io.micronaut.core.reflect.ClassUtils;
 public class WebMetricsServerCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context) {
-        boolean isClassPresent = ClassUtils.isPresent("io.micronaut.micrometer.observation.http.server.ObservationServerFilter", context.getBeanContext().getClassLoader());
+        boolean observationPresent = ClassUtils.isPresent(
+            "io.micronaut.micrometer.observation.http.server.ObservationServerFilter",
+            context.getBeanContext().getClassLoader()
+        );
 
-        if (!context.containsProperty("micrometer.observation.http.server.enabled") && isClassPresent) {
-            return false;
+        if (!observationPresent) {
+            return true;
         }
 
-        return !context.containsProperty("micrometer.observation.server.server.enabled") || !context.getProperty("micrometer.observation.http.server.enabled", Boolean.class).orElse(false);
+        boolean observationEnabled = context
+            .getProperty("micrometer.observation.http.server.enabled", Boolean.class)
+            .orElse(Boolean.TRUE);
+
+        return !observationEnabled;
     }
 }

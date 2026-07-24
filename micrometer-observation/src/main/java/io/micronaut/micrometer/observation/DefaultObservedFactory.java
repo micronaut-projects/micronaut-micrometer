@@ -24,6 +24,9 @@ import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.Observations;
+import io.micronaut.runtime.event.annotation.EventListener;
+import io.micronaut.context.event.ShutdownEvent;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
@@ -85,6 +88,7 @@ public final class DefaultObservedFactory {
         observationPredicates.forEach(observationRegistry.observationConfig()::observationPredicate);
         observationFilters.forEach(observationRegistry.observationConfig()::observationFilter);
         observationConventions.forEach(observationRegistry.observationConfig()::observationConvention);
+        Observations.setRegistry(observationRegistry);
         return observationRegistry;
     }
 
@@ -157,6 +161,11 @@ public final class DefaultObservedFactory {
     @Requires(classes = {TracingObservationHandler.class})
     ObservationHandlerGroupingClass observationHandlerGroupingClassMeterTracer() {
         return new ObservationHandlerGroupingClass(TracingObservationHandler.class);
+    }
+
+    @EventListener
+    void onShutdown(ShutdownEvent shutdown) {
+        Observations.resetRegistry();
     }
 
 }
