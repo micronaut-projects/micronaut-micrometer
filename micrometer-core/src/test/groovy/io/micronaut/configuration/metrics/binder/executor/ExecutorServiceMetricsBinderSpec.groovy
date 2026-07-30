@@ -225,9 +225,6 @@ class ExecutorServiceMetricsBinderSpec extends Specification {
     static class TestEventLoopGroup extends DefaultEventLoop {
     }
 
-    static class TestEventLoopGroup extends DefaultEventLoop {
-    }
-
     class SimpleStreamsListener implements IStandardStreamsListener {
         List<String> messages = []
         @Override void standardOut(String m) { messages << m }
