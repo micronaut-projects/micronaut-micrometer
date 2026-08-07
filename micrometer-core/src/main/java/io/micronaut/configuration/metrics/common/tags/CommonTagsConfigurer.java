@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2026 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,41 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
-import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.env.Environment;
+import io.micronaut.core.naming.conventions.StringConvention;
+import io.micronaut.core.type.Argument;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_COMMON_TAGS;
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_TAGS;
 
 /**
  * Configures every MeterRegistry with common tags.
  */
 @Factory
 @RequiresMetrics
-@Requires(property = MICRONAUT_METRICS_COMMON_TAGS)
+@Requires(condition = CommonTagsCondition.class)
 public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegistry> {
+
+    private static final Argument<Map<String, Object>> STRING_OBJECT_MAP = Argument.mapOf(String.class, Object.class);
 
     private final List<Tag> commonTags = new ArrayList<>();
 
-    public CommonTagsConfigurer(ExportConfigurationProperties configuration) {
-        Properties tags = configuration.getTags();
-        for (String key : tags.stringPropertyNames()) {
-            commonTags.add(Tag.of(key, tags.getProperty(key)));
+    public CommonTagsConfigurer(Environment environment) {
+        Map<String, Object> tags = new TreeMap<>(readConfiguredTags(environment, MICRONAUT_METRICS_TAGS));
+        tags.putAll(readConfiguredTags(environment, MICRONAUT_METRICS_COMMON_TAGS));
+        for (Map.Entry<String, Object> entry : tags.entrySet()) {
+            Object value = entry.getValue();
+            if (value != null) {
+                commonTags.add(Tag.of(entry.getKey(), String.valueOf(value)));
+            }
         }
     }
 
@@ -59,5 +70,15 @@ public class CommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegist
     @Override
     public int getOrder() {
         return HIGHEST_PRECEDENCE;
+    }
+
+    private static Map<String, Object> readConfiguredTags(Environment environment, String property) {
+        if (environment.containsProperties(property)) {
+            return new LinkedHashMap<>(environment.getProperties(property, StringConvention.RAW));
+        }
+        if (environment.containsProperty(property)) {
+            return new LinkedHashMap<>(environment.getProperty(property, STRING_OBJECT_MAP).orElse(Map.of()));
+        }
+        return new LinkedHashMap<>();
     }
 }

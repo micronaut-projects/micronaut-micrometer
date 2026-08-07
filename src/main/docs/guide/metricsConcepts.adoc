@@ -26,6 +26,18 @@ include::{metricscore}/aggregator/MeterRegistryConfigurer.java[]
 include::{testsmetricscore}/SimpleMeterRegistryConfigurer.java[]
 ----
 
+Micronaut can also add common tags to every meter via configuration. The legacy `micronaut.metrics.tags.*` prefix remains supported, and `micronaut.metrics.common-tags.*` is available as a clearer alias.
+When both prefixes configure the same tag key, `micronaut.metrics.common-tags.*` takes precedence.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    common-tags:
+      application: ${micronaut.application.name}
+      region: us-east-1
+----
+
 === Meter Filter
 
 * A https://micrometer.io/docs/concepts#_meter_filters[meter filter] can be used to determine if a Meter is to be added to the registry.
