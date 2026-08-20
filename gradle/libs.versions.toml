@@ -11,6 +11,9 @@ managed-datasource-micrometer = '2.2.1'
 reflections = '0.10.2'
 
 hdr-histogram = '2.2.2'
+jackson = '2.21.5'
+rabbitmq = '5.33.1'
+httpclient5 = '5.6.3'
 
 micronaut-aws = "5.1.0"
 micronaut-cache = "6.1.0"
@@ -44,6 +47,9 @@ groovy-json = { module = "org.apache.groovy:groovy-json" }
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
+jackson-databind = { module = 'com.fasterxml.jackson.core:jackson-databind', version.ref = 'jackson' }
+rabbitmq-amqp-client = { module = 'com.rabbitmq:amqp-client', version.ref = 'rabbitmq' }
+httpclient5 = { module = 'org.apache.httpcomponents.client5:httpclient5', version.ref = 'httpclient5' }
 
 managed-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
 

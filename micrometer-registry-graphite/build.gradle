@@ -4,4 +4,8 @@ plugins {
 
 dependencies {
     api libs.micrometer.registry.graphite
+
+    constraints {
+        api libs.rabbitmq.amqp.client
+    }
 }
