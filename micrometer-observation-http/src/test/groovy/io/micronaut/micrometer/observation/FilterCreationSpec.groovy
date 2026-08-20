@@ -23,6 +23,32 @@ class FilterCreationSpec extends Specification{
         context.getBeansOfType(ServerMetricsFilter).size() == 0
     }
 
+    void 'if micrometer observation server filter is explicitly enabled do not also create web server metrics'() {
+        when:
+        def context = io.micronaut.context.ApplicationContext.builder(
+                'micronaut.application.name': 'test-app',
+                'micrometer.observation.http.server.enabled': true
+        ).start()
+
+        then:
+        context.getBeansOfType(MeterRegistry).size() == 1
+        context.getBeansOfType(ObservationServerFilter).size() == 1
+        context.getBeansOfType(ServerMetricsFilter).size() == 0
+    }
+
+    void 'if micrometer observation client filter is explicitly enabled do not also create web client metrics'() {
+        when:
+        def context = io.micronaut.context.ApplicationContext.builder(
+                'micronaut.application.name': 'test-app',
+                'micrometer.observation.http.client.enabled': true
+        ).start()
+
+        then:
+        context.getBeansOfType(MeterRegistry).size() == 1
+        context.getBeansOfType(ObservationClientFilter).size() == 1
+        context.getBeansOfType(ClientMetricsFilter).size() == 0
+    }
+
     void 'if micrometer observation client filter is disabled enable web client metrics by default'() {
         when:
         def context = io.micronaut.context.ApplicationContext.builder(
