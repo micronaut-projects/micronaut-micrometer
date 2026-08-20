@@ -31,7 +31,7 @@ public class WebMetricsClientCondition implements Condition {
             return false;
         }
 
-        return !context.containsProperty("micrometer.observation.client.server.enabled") || !context.getProperty("micrometer.observation.http.client.enabled", Boolean.class).orElse(false);
+        return !isClassPresent || !context.getProperty("micrometer.observation.http.client.enabled", Boolean.class).orElse(false);
     }
 
 }
