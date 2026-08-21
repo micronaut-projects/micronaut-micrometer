@@ -378,12 +378,13 @@ class MetricsEndpointSpec extends Specification {
     }
 
     @Unroll
-    void "test metrics endpoint with common tags"() {
+    void "test metrics endpoint with common tags from #configStyle"() {
         given:
-        run('endpoints.metrics.sensitive'          : false,
+        run([
+            'endpoints.metrics.sensitive'          : false,
             (MICRONAUT_METRICS_ENABLED)            : true,
-            "micronaut.metrics.binders.web.enabled": true,
-            "micronaut.metrics.tags"               : ["test1": "test1-val", "test2": "test2-val"])
+            "micronaut.metrics.binders.web.enabled": true
+        ] + tagConfig)
 
         expect:
         100.times {
@@ -400,7 +401,11 @@ class MetricsEndpointSpec extends Specification {
         }
 
         where:
-        name << ["process.files.open", "process.files.max"]
+        configStyle         | name                | tagConfig
+        "legacy dotted"     | "process.files.open" | ["micronaut.metrics.tags.test1": "test1-val", "micronaut.metrics.tags.test2": "test2-val"]
+        "legacy map"        | "process.files.max"  | ["micronaut.metrics.tags": [test1: "test1-val", test2: "test2-val"]]
+        "common-tags dotted" | "process.files.open" | ["micronaut.metrics.common-tags.test1": "test1-val", "micronaut.metrics.common-tags.test2": "test2-val"]
+        "common-tags map"    | "process.files.max"  | ["micronaut.metrics.common-tags": [test1: "test1-val", test2: "test2-val"]]
     }
 
     @Unroll

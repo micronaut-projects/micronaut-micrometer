@@ -3,7 +3,10 @@ package io.micronaut.configuration.metrics.micrometer.prometheus
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Requires
+import jakarta.inject.Singleton
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -100,5 +103,39 @@ class PrometheusMeterRegistryFactorySpec extends Specification {
 
         cleanup:
         context.stop()
+    }
+
+    void "verify common tags are applied before meters are registered"() {
+        given:
+        ApplicationContext context = ApplicationContext.run([
+                "spec.name": getClass().getSimpleName()
+        ])
+        PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry)
+
+        when:
+        prometheusMeterRegistry.counter("test.counter").increment()
+        context.getBean(CompositeMeterRegistry).counter("test.counter").increment()
+
+        then:
+        noExceptionThrown()
+        prometheusMeterRegistry.scrape().contains('application="test-suite"')
+
+        cleanup:
+        context.stop()
+    }
+
+    @Singleton
+    @Requires(property = "spec.name", value = "PrometheusMeterRegistryFactorySpec")
+    static class CustomCommonTagsConfigurer implements MeterRegistryConfigurer<MeterRegistry> {
+
+        @Override
+        void configure(MeterRegistry meterRegistry) {
+            meterRegistry.config().commonTags("application", "test-suite")
+        }
+
+        @Override
+        Class<MeterRegistry> getType() {
+            return MeterRegistry
+        }
     }
 }

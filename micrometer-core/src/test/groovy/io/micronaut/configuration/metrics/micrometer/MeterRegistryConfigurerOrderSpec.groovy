@@ -11,14 +11,13 @@ class MeterRegistryConfigurerOrderSpec extends Specification {
     void "verify beans created by in correct order"() {
         when:
         ApplicationContext ctx = ApplicationContext.run([
-                "test.properties.enabled": true,
-                "micronaut.metrics.tags.test": "test"
+                "test.properties.enabled": true
         ])
 
         List<MeterRegistryConfigurer> configurerList = ctx.getBeansOfType(MeterRegistryConfigurer)
 
         then:
-        configurerList.size() == 3
+        configurerList.size() == 2
         configurerList.last().getClass() == CompositeMeterRegistryConfigurer.class
 
         cleanup:
