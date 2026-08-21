@@ -3,4 +3,8 @@ plugins {
 }
 dependencies {
     api(libs.micrometer.registry.atlas)
+
+    constraints {
+        api(libs.jackson.databind)
+    }
 }

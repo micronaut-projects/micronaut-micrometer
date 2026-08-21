@@ -6,4 +6,8 @@ dependencies {
     api(libs.micrometer.registry.cloudwatch2)
     api(mnAws.micronaut.aws.sdk.v2)
     api(mnAws.micronaut.aws.ua)
+
+    constraints {
+        api(libs.httpclient5)
+    }
 }
