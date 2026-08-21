@@ -620,6 +620,73 @@ public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Micronaut can also add common tags to every meter via configuration. The legacy <code>micronaut.metrics.tags.<strong></code> prefix remains supported, and <code>micronaut.metrics.common-tags.</strong></code> is available as a clearer alias.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.common-tags.application=${micronaut.application.name}
+micronaut.metrics.common-tags.region=us-east-1</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    common-tags:
+      application: ${micronaut.application.name}
+      region: us-east-1</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {common-tags = {application = "${micronaut.application.name}", region = "us-east-1"}}}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    commonTags {
+      application = "${micronaut.application.name}"
+      region = "us-east-1"
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      common-tags {
+        application = "${micronaut.application.name}"
+        region = "us-east-1"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "common-tags": {
+        "application": "${micronaut.application.name}",
+        "region": "us-east-1"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_meter_filter">Meter Filter</h3>
