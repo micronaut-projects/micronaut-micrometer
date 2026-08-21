@@ -13,7 +13,7 @@ reflections = '0.10.2'
 hdr-histogram = '2.2.2'
 jackson = '2.21.5'
 rabbitmq = '5.33.1'
-httpclient5 = '5.6.3'
+httpclient5 = '5.6.4'
 
 micronaut-aws = "5.1.0"
 micronaut-cache = "6.1.0"
