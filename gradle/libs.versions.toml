@@ -4,8 +4,8 @@ micronaut = "5.1.12"
 micronaut-gradle-plugin = "5.0.2"
 
 managed-metrics-core = '4.2.39'
-managed-micrometer-tracing = '1.6.5'
 managed-micrometer = '1.16.7'
+managed-micrometer-tracing = '1.6.7'
 managed-new-relic-registry = '0.10.0'
 managed-prometheus-metrics-exporter-pushgateway = '1.6.1'
 managed-datasource-micrometer = '2.2.1'
