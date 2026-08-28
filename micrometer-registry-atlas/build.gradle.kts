@@ -5,6 +5,8 @@ dependencies {
     api(libs.micrometer.registry.atlas)
 
     constraints {
-        api(libs.jackson.databind)
+        // Spectator 1.9.9, pulled in by the Atlas registry, requests vulnerable Jackson 2.21.2.
+        implementation(libs.jackson2.core)
+        implementation(libs.jackson2.databind)
     }
 }
