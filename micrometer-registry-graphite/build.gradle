@@ -4,4 +4,9 @@ plugins {
 
 dependencies {
     api(libs.micrometer.registry.graphite)
+
+    constraints {
+        // Dropwizard Metrics 4.2.39, pulled in by the Graphite registry, requests vulnerable AMQP client 5.30.0.
+        implementation(libs.amqp.client)
+    }
 }

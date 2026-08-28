@@ -13,6 +13,7 @@ reflections = '0.10.2'
 
 hdr-histogram = '2.2.2'
 jackson2 = '2.21.5'
+amqp-client = '5.34.0'
 
 micronaut-aws = "5.1.1"
 micronaut-cache = "6.1.1"
@@ -48,6 +49,7 @@ grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
 jackson2-core = { module = 'com.fasterxml.jackson.core:jackson-core', version.ref = 'jackson2' }
 jackson2-databind = { module = 'com.fasterxml.jackson.core:jackson-databind', version.ref = 'jackson2' }
+amqp-client = { module = 'com.rabbitmq:amqp-client', version.ref = 'amqp-client' }
 
 managed-prometheus-metrics-exporter-pushgateway = { module = 'io.prometheus:prometheus-metrics-exporter-pushgateway', version.ref = 'managed-prometheus-metrics-exporter-pushgateway' }
 
