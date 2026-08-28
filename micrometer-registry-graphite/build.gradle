@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    api libs.micrometer.registry.graphite
+    api(libs.micrometer.registry.graphite)
 }
