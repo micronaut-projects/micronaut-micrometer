@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.grpc.api)
     compileOnly(mnLogging.logback.classic)
     compileOnly(mnCache.micronaut.cache.core)
+    compileOnly(mn.micronaut.http.client)
     compileOnly(mn.micronaut.http.server.netty)
     compileOnly(mnSql.micronaut.jdbc)
     compileOnly(mn.micronaut.management)
