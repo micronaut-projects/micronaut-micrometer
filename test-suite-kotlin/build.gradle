@@ -1,0 +1,11 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-test-suite'
+    id 'io.micronaut.build.internal.kotlin-ksp'
+}
+
+dependencies {
+    kspTest mn.micronaut.inject.kotlin
+    kspTest mnValidation.micronaut.validation.processor
+    // creates the AOP proxies for @Timed / @Counted
+    kspTest projects.micronautMicrometerAnnotation
+}
