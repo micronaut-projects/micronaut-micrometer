@@ -1,0 +1,10 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-test-suite'
+}
+
+dependencies {
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor mnValidation.micronaut.validation.processor
+    // creates the AOP proxies for @Timed / @Counted
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+}
