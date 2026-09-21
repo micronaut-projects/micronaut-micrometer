@@ -1,15 +1,11 @@
 from micronaut.context.annotation import Requires
 
 # tag::imports[]
+from io.micrometer.core.instrument.simple import SimpleMeterRegistry
 from jakarta.inject import Singleton
 from micronaut.configuration.metrics.aggregator import MeterRegistryConfigurer
 from micronaut.configuration.metrics.annotation import RequiresMetrics
 from micronaut.core.annotation import Order
-
-try:
-    from io.micrometer.core.instrument.simple import SimpleMeterRegistry
-except ImportError:  # TODO(python): packages under `io.` other than `io.micronaut` cannot be imported at runtime
-    from micrometer.core.instrument.simple import SimpleMeterRegistry
 # end::imports[]
 
 

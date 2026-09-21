@@ -1,15 +1,10 @@
 from micronaut.context.annotation import Requires
 
 # tag::imports[]
+from io.micrometer.core.instrument import Tag
+from io.micrometer.core.instrument.config import MeterFilter
 from jakarta.inject import Singleton
 from micronaut.context.annotation import Bean, Factory
-
-try:
-    from io.micrometer.core.instrument import Tag
-    from io.micrometer.core.instrument.config import MeterFilter
-except ImportError:  # TODO(python): packages under `io.` other than `io.micronaut` cannot be imported at runtime
-    from micrometer.core.instrument import Tag
-    from micrometer.core.instrument.config import MeterFilter
 # end::imports[]
 
 

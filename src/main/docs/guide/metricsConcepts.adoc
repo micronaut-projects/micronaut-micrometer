@@ -269,9 +269,6 @@ See the https://micrometer.io/docs[Micrometer docs] for more information.
 .Custom Metrics Example
 snippet::io.micronaut.docs.metrics.custom.IndexController[tags="imports,class"]
 
-[.lang-python]
-NOTE: A Python controller with constrained parameters (`NotBlank`) needs an explicit `@Validated` on the class, and a reactive method returns a `Publisher` annotated with `@SingleResult`.
-
 == Custom Exception Metrics
 
 To report on response codes for custom handled exceptions, implement `io.micronaut.http.HttpResponseProvider`.
