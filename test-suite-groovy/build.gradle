@@ -1,0 +1,12 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-test-suite'
+    id 'groovy'
+}
+
+dependencies {
+    testCompileOnly mn.micronaut.inject.groovy
+    testCompileOnly mnValidation.micronaut.validation.processor
+    // creates the AOP proxies for @Timed / @Counted
+    testCompileOnly projects.micronautMicrometerAnnotation
+    testImplementation mnTest.micronaut.test.spock
+}

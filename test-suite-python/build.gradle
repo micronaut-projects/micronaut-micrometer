@@ -1,0 +1,18 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-test-suite'
+    id 'io.micronaut.build.internal.python'
+}
+
+dependencies {
+    // Annotation processors MUST be testImplementation (not testAnnotationProcessor): the Python
+    // compiler takes the (jar-resolved) compile classpath as its annotation processor path.
+    testImplementation mn.micronaut.inject.python.test
+    testImplementation mn.micronaut.context.python
+    testImplementation mnValidation.micronaut.validation.processor
+    // creates the AOP proxies for @Timed / @Counted
+    testImplementation projects.micronautMicrometerAnnotation
+}
+
+tasks.withType(Test).configureEach {
+    systemProperty "micronaut.python.pool.enabled", "false"
+}
