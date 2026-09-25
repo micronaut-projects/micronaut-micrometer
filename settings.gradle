@@ -17,6 +17,7 @@ include 'micrometer-core'
 include 'micrometer-observation'
 include 'micrometer-observation-datasource'
 include 'micrometer-observation-http'
+include 'micrometer-observation-kafka'
 include 'micrometer-registry-appoptics'
 include 'micrometer-registry-atlas'
 include 'micrometer-registry-azure-monitor'
@@ -49,6 +50,7 @@ micronautBuild {
     importMicronautCatalog("micronaut-aws")
     importMicronautCatalog("micronaut-cache")
     importMicronautCatalog("micronaut-grpc")
+    importMicronautCatalog("micronaut-kafka")
     importMicronautCatalog("micronaut-r2dbc")
     importMicronautCatalog("micronaut-rxjava3")
     importMicronautCatalog("micronaut-serde")
