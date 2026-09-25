@@ -1,0 +1,22 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    api projects.micronautMicrometerObservation
+
+    implementation libs.managed.micrometer.observation
+    compileOnly mnKafka.micronaut.kafka
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testAnnotationProcessor projects.micronautMicrometerAnnotation
+    testImplementation mnKafka.micronaut.kafka
+    testImplementation mnTestResources.testcontainers.kafka
+    testImplementation(libs.managed.micrometer.observation.test) {
+        exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
+    }
+    testImplementation projects.micronautMicrometerCore
+    testImplementation libs.managed.micrometer.tracing
+}
