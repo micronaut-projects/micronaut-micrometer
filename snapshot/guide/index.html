@@ -373,41 +373,89 @@
 </div>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Gradle</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
-    ...
-    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
-    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
-    // Also required to enable endpoint
-    implementation "io.micronaut:micronaut-management"
-    ...
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core")</span></code></pre>
 </div>
 </div>
-<div class="listingblock">
-<div class="title">Maven</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
-  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
-  &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
-  &lt;version&gt;${micronaut.version}&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
-  &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
-  &lt;version&gt;${micronaut.version}&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;!-- Also required to enable endpoint --&gt;
-&lt;dependency&gt;
-  &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
-  &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
-  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p><code>micronaut-micrometer-registry-statsd</code> (or any other registry) also pulls in <code>micronaut-micrometer-core</code>, so the explicit <code>micronaut-micrometer-core</code> dependency above is only included to make the example verbose:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The <code>micronaut-management</code> dependency is also required to enable the endpoint:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:micronaut-management")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut:micronaut-management"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
 </div>
 <div class="paragraph">
 <p>To configure the metrics endpoint, supply configuration through <code>endpoints.metrics</code>.</p>
@@ -577,27 +625,10 @@ public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; extends 
 }</code></pre>
 </div>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
- * Copyright 2017-2019 original authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.micronaut.docs;
-
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.Order;
@@ -616,6 +647,75 @@ public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt
     @Override
     public Class&lt;SimpleMeterRegistry&gt; getType() {
         return SimpleMeterRegistry.class;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument.simple import SimpleMeterRegistry
+from jakarta.inject import Singleton
+from micronaut.configuration.metrics.aggregator import MeterRegistryConfigurer
+from micronaut.configuration.metrics.annotation import RequiresMetrics
+from micronaut.core.annotation import Order
+
+@Order(2147483647)
+@Singleton
+@RequiresMetrics
+class SimpleMeterRegistryConfigurer(MeterRegistryConfigurer[SimpleMeterRegistry]):
+
+    def configure(self, meterRegistry: SimpleMeterRegistry) -&gt; None:
+        meterRegistry.config().commonTags("key", "value")
+
+    def getType(self) -&gt; type[SimpleMeterRegistry]:
+        return SimpleMeterRegistry</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics
+import io.micronaut.core.annotation.Order
+import jakarta.inject.Singleton
+
+@Order(Int.MAX_VALUE)
+@Singleton
+@RequiresMetrics
+class SimpleMeterRegistryConfigurer : MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt; {
+
+    override fun configure(meterRegistry: SimpleMeterRegistry) {
+        meterRegistry.config().commonTags("key", "value")
+    }
+
+    override fun getType(): Class&lt;SimpleMeterRegistry&gt; = SimpleMeterRegistry::class.java
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics
+import io.micronaut.core.annotation.Order
+import jakarta.inject.Singleton
+
+@Order(Integer.MAX_VALUE)
+@Singleton
+@RequiresMetrics
+class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt; {
+
+    @Override
+    void configure(SimpleMeterRegistry meterRegistry) {
+        meterRegistry.config().commonTags("key", "value")
+    }
+
+    @Override
+    Class&lt;SimpleMeterRegistry&gt; getType() {
+        SimpleMeterRegistry
     }
 }</code></pre>
 </div>
@@ -703,12 +803,10 @@ micronaut.metrics.common-tags.region=us-east-1</code></pre>
 <div class="paragraph">
 <p>You can create custom filters similar to the following inside your application. <code>MeterFilter</code> provides several convenience methods to help with the creation of these filters.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micrometer.core.instrument.Tag;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -744,6 +842,116 @@ public class MeterFilterFactory {
     @Singleton
     MeterFilter renameFilter() {
         return MeterFilter.renameTag("http.server.requests", "method", "httpmethod");
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import Tag
+from io.micrometer.core.instrument.config import MeterFilter
+from jakarta.inject import Singleton
+from micronaut.context.annotation import Bean, Factory
+
+@Factory
+class MeterFilterFactory:
+
+    @Bean
+    @Singleton
+    def add_common_tag_filter(self) -&gt; MeterFilter:
+        """Add global tags to all metrics."""
+        return MeterFilter.commonTags([Tag.of("scope", "demo")])
+
+    @Bean
+    @Singleton
+    def rename_filter(self) -&gt; MeterFilter:
+        """Rename a tag key for every metric beginning with a given prefix.
+
+        This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
+
+        OLD: http.server.requests ['method':'GET", ...]
+        NEW: http.server.requests ['httpmethod':'GET", ...]
+        """
+        return MeterFilter.renameTag("http.server.requests", "method", "httpmethod")</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.Tag
+import io.micrometer.core.instrument.config.MeterFilter
+import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Factory
+import jakarta.inject.Singleton
+
+@Factory
+class MeterFilterFactory {
+
+    /**
+     * Add global tags to all metrics.
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    fun addCommonTagFilter(): MeterFilter =
+        MeterFilter.commonTags(listOf(Tag.of("scope", "demo")))
+
+    /**
+     * Rename a tag key for every metric beginning with a given prefix.
+     *
+     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
+     *
+     * OLD: http.server.requests ['method':'GET", ...]
+     * NEW: http.server.requests ['httpmethod':'GET", ...]
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    fun renameFilter(): MeterFilter =
+        MeterFilter.renameTag("http.server.requests", "method", "httpmethod")
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.Tag
+import io.micrometer.core.instrument.config.MeterFilter
+import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.Factory
+import jakarta.inject.Singleton
+
+@Factory
+class MeterFilterFactory {
+
+    /**
+     * Add global tags to all metrics.
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter addCommonTagFilter() {
+        MeterFilter.commonTags([Tag.of("scope", "demo")])
+    }
+
+    /**
+     * Rename a tag key for every metric beginning with a given prefix.
+     * &lt;p&gt;
+     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
+     * &lt;p&gt;
+     * OLD: http.server.requests ['method':'GET", ...]
+     * NEW: http.server.requests ['httpmethod':'GET", ...]
+     *
+     * @return meter filter
+     */
+    @Bean
+    @Singleton
+    MeterFilter renameFilter() {
+        MeterFilter.renameTag("http.server.requests", "method", "httpmethod")
     }
 }</code></pre>
 </div>
@@ -1196,15 +1404,31 @@ micronaut.metrics.binders.web.client.max=60</code></pre>
 <div class="paragraph">
 <p><a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> needs to be on the classpath, so <a href="https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer">hibernate-micrometer</a> should be downloaded:</p>
 </div>
-<div class="listingblock">
-<div class="title">Gradle</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
-    ...
-    implementation("org.hibernate:hibernate-micrometer")
-    ...
-}</code></pre>
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"org.hibernate:hibernate-micrometer")</span></code></pre>
 </div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+    &lt;artifactId&gt;hibernate-micrometer&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"org.hibernate:hibernate-micrometer"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
 </div>
 <div class="paragraph">
 <p>Micrometer automatically exposes Hibernate statistics. See the source code for <a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> for the available metrics.</p>
@@ -1360,12 +1584,10 @@ The provided metrics include the channel count, current active channel count, ch
 <div class="paragraph">
 <p>See the <a href="https://micrometer.io/docs">Micrometer docs</a> for more information.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">Custom Metrics Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micrometer.core.instrument.MeterRegistry;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import jakarta.validation.constraints.NotBlank;
@@ -1390,6 +1612,78 @@ class IndexController {
 }</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom Metrics Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import MeterRegistry
+from jakarta.validation.constraints import NotBlank
+from micronaut.http.annotation import Controller, Get
+from reactor.core.publisher import Mono
+
+@Controller
+class IndexController:
+
+    def __init__(self, meterRegistry: MeterRegistry):
+        self.meterRegistry = meterRegistry
+
+    @Get("/hello/{name}")
+    def hello(self, name: Annotated[str, NotBlank]) -&gt; Mono[str]:
+        self.meterRegistry \
+            .counter("web.access", "controller", "index", "action", "hello") \
+            .increment()
+        return Mono.just("Hello " + name)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom Metrics Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.MeterRegistry
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import jakarta.validation.constraints.NotBlank
+import reactor.core.publisher.Mono
+
+@Controller
+open class IndexController(private val meterRegistry: MeterRegistry) {
+
+    @Get("/hello/{name}")
+    open fun hello(@NotBlank name: String): Mono&lt;String&gt; {
+        meterRegistry
+            .counter("web.access", "controller", "index", "action", "hello")
+            .increment()
+        return Mono.just("Hello $name")
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">Custom Metrics Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.MeterRegistry
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import jakarta.validation.constraints.NotBlank
+import reactor.core.publisher.Mono
+
+@Controller
+class IndexController {
+
+    private final MeterRegistry meterRegistry
+
+    IndexController(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry
+    }
+
+    @Get("/hello/{name}")
+    Mono&lt;String&gt; hello(@NotBlank String name) {
+        meterRegistry
+                .counter("web.access", "controller", "index", "action", "hello")
+                .increment()
+        Mono.just("Hello " + name)
+    }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1402,12 +1696,10 @@ The default value reported for an <code>ExceptionHandler</code> is 500.</p>
 <div class="paragraph">
 <p>See the <a href="https://docs.micronaut.io/latest/guide/">Micronaut docs</a> for more information on <code>ExceptionHandler</code>.</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">ExceptionHandler Reporting Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micronaut.http.HttpResponse;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
 
 public class OutOfStockException extends RuntimeException implements HttpResponseProvider {
@@ -1415,6 +1707,45 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
     @Override
     public HttpResponse&lt;?&gt; getResponse() {
         return HttpResponse.ok(0);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">ExceptionHandler Reporting Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.lang import RuntimeException
+from micronaut.http import HttpResponse, HttpResponseProvider
+
+class OutOfStockException(RuntimeException, HttpResponseProvider):
+
+    def getResponse(self) -&gt; HttpResponse:
+        return HttpResponse.ok(0)</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">ExceptionHandler Reporting Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpResponseProvider
+
+class OutOfStockException : RuntimeException(), HttpResponseProvider {
+
+    override fun getResponse(): HttpResponse&lt;*&gt; = HttpResponse.ok(0)
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">ExceptionHandler Reporting Example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpResponseProvider
+
+class OutOfStockException extends RuntimeException implements HttpResponseProvider {
+
+    @Override
+    HttpResponse&lt;?&gt; getResponse() {
+        HttpResponse.ok(0)
     }
 }</code></pre>
 </div>
@@ -1452,6 +1783,15 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 &lt;/annotationProcessorPaths&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+build = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-annotation"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -1461,12 +1801,10 @@ Without it, the annotations remain on the method, but no interceptor runs and no
 <div class="paragraph">
 <p>In order to support adding additional tags programmatically similar to Micrometer&#8217;s <code>TimedAspect</code> / <code>CountedAspect</code> ability using a <code>ProceedingJoinPoint</code>, create beans of type <code>AbstractMethodTagger</code></p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">MetricsTagger example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micrometer.core.instrument.Tag;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.Tag;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import jakarta.inject.Singleton;
@@ -1483,15 +1821,59 @@ public class MethodNameTagger extends AbstractMethodTagger {
 }</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricsTagger example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import Tag
+from jakarta.inject import Singleton
+from micronaut.aop import MethodInvocationContext
+from micronaut.configuration.metrics.aggregator import AbstractMethodTagger
+
+@Singleton
+class MethodNameTagger(AbstractMethodTagger):
+    def buildTags(self, context: MethodInvocationContext) -&gt; list[Tag]:
+        return [Tag.of("method", context.getMethodName())]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricsTagger example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.Tag
+import io.micronaut.aop.MethodInvocationContext
+import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger
+import jakarta.inject.Singleton
+
+@Singleton
+class MethodNameTagger : AbstractMethodTagger() {
+    override fun buildTags(context: MethodInvocationContext&lt;Any, Any&gt;): List&lt;Tag&gt; =
+        listOf(Tag.of("method", context.methodName))
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricsTagger example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.Tag
+import io.micronaut.aop.MethodInvocationContext
+import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger
+import jakarta.inject.Singleton
+
+@Singleton
+class MethodNameTagger extends AbstractMethodTagger {
+    @Override
+    List&lt;Tag&gt; buildTags(MethodInvocationContext&lt;Object, Object&gt; context) {
+        [Tag.of("method", context.methodName)]
+    }
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>You can filter these taggers by utilizing the <code>MetricOptions</code> annotation</p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">MetricOptions filtering taggers example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micrometer.core.annotation.Timed;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.annotation.Timed;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import jakarta.inject.Singleton;
 
@@ -1509,15 +1891,76 @@ public class MetricOptionsFilterTaggersExample {
 }</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions filtering taggers example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.annotation import Timed
+from jakarta.inject import Singleton
+from micronaut.configuration.metrics.annotation import MetricOptions
+
+from .MethodNameTagger import MethodNameTagger
+
+@Singleton
+class MetricOptionsFilterTaggersExample:
+
+    @MetricOptions(
+        filterTaggers=True,  # Specify that not all taggers should be applied
+        taggers=[MethodNameTagger]  # Specific taggers to apply
+    )
+    @Timed(value="do_something")
+    def do_something(self) -&gt; None:
+        pass</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions filtering taggers example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.annotation.Timed
+import io.micronaut.configuration.metrics.annotation.MetricOptions
+import jakarta.inject.Singleton
+
+@Singleton
+open class MetricOptionsFilterTaggersExample {
+
+    @MetricOptions(
+        filterTaggers = true, // Specify that not all taggers should be applied
+        taggers = [MethodNameTagger::class] // Specific taggers to apply
+    )
+    @Timed(value = "do_something")
+    open fun doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions filtering taggers example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.annotation.Timed
+import io.micronaut.configuration.metrics.annotation.MetricOptions
+import jakarta.inject.Singleton
+
+@Singleton
+class MetricOptionsFilterTaggersExample {
+
+    @MetricOptions(
+        filterTaggers = true, // Specify that not all taggers should be applied
+        taggers = [MethodNameTagger] // Specific taggers to apply
+    )
+    @Timed(value = "do_something")
+    void doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>The <code>MetricOptions</code> annotation also provides a means of only processing / publishing a metric based on an <code>EvaluatedExpression</code></p>
 </div>
-<div class="listingblock">
+<div class="listingblock multi-language-sample">
 <div class="title">MetricOptions condition example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
-
-import io.micrometer.core.annotation.Timed;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.annotation.Timed;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import jakarta.inject.Singleton;
 
@@ -1526,10 +1969,71 @@ public class MetricOptionsConditionExample {
 
     @MetricOptions(
         // If condition is set, the metric will only be processed and published when it evaluates to true
-        condition = " #{ env['property'] == true }"
+        condition = "#{ env['property'] == 'true' }"
     )
-    @Timed(value = "do_something")
+    @Timed(value = "do_something_conditionally")
     public void doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions condition example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.annotation import Timed
+from jakarta.inject import Singleton
+from micronaut.configuration.metrics.annotation import MetricOptions
+
+@Singleton
+class MetricOptionsConditionExample:
+
+    @MetricOptions(
+        # If condition is set, the metric will only be processed and published when it evaluates to true
+        condition="#{ env['property'] == 'true' }"
+    )
+    @Timed(value="do_something_conditionally")
+    def do_something(self) -&gt; None:
+        pass</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions condition example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.annotation.Timed
+import io.micronaut.configuration.metrics.annotation.MetricOptions
+import jakarta.inject.Singleton
+
+@Singleton
+open class MetricOptionsConditionExample {
+
+    @MetricOptions(
+        // If condition is set, the metric will only be processed and published when it evaluates to true
+        condition = "#{ env['property'] == 'true' }"
+    )
+    @Timed(value = "do_something_conditionally")
+    open fun doSomething() {
+        // ...
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title">MetricOptions condition example</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.annotation.Timed
+import io.micronaut.configuration.metrics.annotation.MetricOptions
+import jakarta.inject.Singleton
+
+@Singleton
+class MetricOptionsConditionExample {
+
+    @MetricOptions(
+        // If condition is set, the metric will only be processed and published when it evaluates to true
+        condition = "#{ env['property'] == 'true' }"
+    )
+    @Timed(value = "do_something_conditionally")
+    void doSomething() {
         // ...
     }
 }</code></pre>
@@ -1579,6 +2083,15 @@ public class MetricOptionsConditionExample {
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-appoptics&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-appoptics"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -1729,6 +2242,15 @@ micronaut.metrics.export.appoptics.step=PT1M</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-atlas"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -1868,6 +2390,15 @@ micronaut.metrics.export.atlas.step=PT1M</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-azure-monitor"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -2005,6 +2536,15 @@ micronaut.metrics.export.azuremonitor.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-cloudwatch&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -2161,6 +2701,15 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-datadog"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -2302,6 +2851,15 @@ micronaut.metrics.export.datadog.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-dynatrace&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-dynatrace"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -2485,6 +3043,15 @@ micronaut {
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-elastic"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -2613,6 +3180,15 @@ micronaut.metrics.export.elastic.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-ganglia&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-ganglia"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -2752,6 +3328,15 @@ micronaut.metrics.export.ganglia.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-graphite&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-graphite"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -2902,6 +3487,15 @@ micronaut.metrics.export.graphite.port=2004</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-humio"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -3030,6 +3624,15 @@ micronaut.metrics.export.humio.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-influx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-influx"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -3166,6 +3769,15 @@ micronaut.metrics.export.influx.step=PT1M</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-jmx"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -3294,6 +3906,15 @@ micronaut.metrics.export.jmx.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-kairos&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-kairos"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -3437,6 +4058,15 @@ micronaut.metrics.export.kairos.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -3592,6 +4222,15 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic-telemetry&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -3770,6 +4409,15 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-otlp"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -3898,6 +4546,15 @@ micronaut.metrics.export.otlp.url=http://otel-collector:4318/v1/metrics</code></
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -4111,6 +4768,15 @@ micronaut {
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus-pushgateway"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -4316,6 +4982,15 @@ micronaut {
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-signalfx"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -4457,6 +5132,15 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-stackdriver&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-stackdriver"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -4601,6 +5285,15 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -4760,6 +5453,15 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-wavefront"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -4915,6 +5617,15 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -4939,6 +5650,15 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -4983,6 +5703,15 @@ This avoids creating observations or exported metrics with high-cardinality URI 
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-observation-http&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-http"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -5032,6 +5761,15 @@ This avoids creating observations or exported metrics with high-cardinality URI 
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-observation-datasource&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-datasource"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
