@@ -8,23 +8,14 @@ Without it, the annotations remain on the method, but no interceptor runs and no
 In order to support adding additional tags programmatically similar to Micrometer's `TimedAspect` / `CountedAspect` ability using a `ProceedingJoinPoint`, create beans of type `AbstractMethodTagger`
 
 .MetricsTagger example
-[source,java]
-----
-include::{testsmetricscore}/MethodNameTagger.java[]
-----
+snippet::io.micronaut.docs.metrics.annotation.MethodNameTagger[tags="imports,class"]
 
 You can filter these taggers by utilizing the `MetricOptions` annotation
 
 .MetricOptions filtering taggers example
-[source,java]
-----
-include::{testsmetricscore}/MetricOptionsFilterTaggersExample.java[]
-----
+snippet::io.micronaut.docs.metrics.annotation.MetricOptionsFilterTaggersExample[tags="imports,class"]
 
 The `MetricOptions` annotation also provides a means of only processing / publishing a metric based on an `EvaluatedExpression`
 
 .MetricOptions condition example
-[source,java]
-----
-include::{testsmetricscore}/MetricOptionsConditionExample.java[]
-----
+snippet::io.micronaut.docs.metrics.annotation.MetricOptionsConditionExample[tags="imports,class"]

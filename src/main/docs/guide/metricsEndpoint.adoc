@@ -95,42 +95,15 @@ micronaut:
     enabled: true
 ----
 
-.Gradle
+dependency:micronaut-micrometer-core[groupId="io.micronaut.micrometer"]
 
-[source,groovy]
-----
-dependencies {
-    ...
-    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
-    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
-    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
-    // Also required to enable endpoint
-    implementation "io.micronaut:micronaut-management"
-    ...
-}
-----
+`micronaut-micrometer-registry-statsd` (or any other registry) also pulls in `micronaut-micrometer-core`, so the explicit `micronaut-micrometer-core` dependency above is only included to make the example verbose:
 
-.Maven
-[source,xml]
-----
-<dependency>
-  <groupId>io.micronaut.micrometer</groupId>
-  <artifactId>micronaut-micrometer-core</artifactId>
-  <version>${micronaut.version}</version>
-</dependency>
-<!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example -->
-<dependency>
-  <groupId>io.micronaut.micrometer</groupId>
-  <artifactId>micronaut-micrometer-registry-statsd</artifactId>
-  <version>${micronaut.version}</version>
-</dependency>
-<!-- Also required to enable endpoint -->
-<dependency>
-  <groupId>io.micronaut</groupId>
-  <artifactId>micronaut-management</artifactId>
-  <version>${micronaut.version}</version>
-</dependency>
-----
+dependency:micronaut-micrometer-registry-statsd[groupId="io.micronaut.micrometer"]
+
+The `micronaut-management` dependency is also required to enable the endpoint:
+
+dependency:micronaut-management[groupId="io.micronaut"]
 
 To configure the metrics endpoint, supply configuration through `endpoints.metrics`.
 

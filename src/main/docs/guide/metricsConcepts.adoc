@@ -21,10 +21,7 @@ include::{metricscore}/aggregator/MeterRegistryConfigurer.java[]
 ----
 
 .Example
-[source,java]
-----
-include::{testsmetricscore}/SimpleMeterRegistryConfigurer.java[]
-----
+snippet::io.micronaut.docs.metrics.configurer.SimpleMeterRegistryConfigurer[tags="imports,class"]
 
 Micronaut can also add common tags to every meter via configuration. The legacy `micronaut.metrics.tags.*` prefix remains supported, and `micronaut.metrics.common-tags.*` is available as a clearer alias.
 
@@ -45,10 +42,7 @@ micronaut:
 You can create custom filters similar to the following inside your application. `MeterFilter` provides several convenience methods to help with the creation of these filters.
 
 .Example
-[source,java]
-----
-include::{testsmetricscore}/MeterFilterFactory.java[]
-----
+snippet::io.micronaut.docs.metrics.filter.MeterFilterFactory[tags="imports,class"]
 
 === Meter Binder
 
@@ -209,16 +203,8 @@ jpa:
 
 https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] needs to be on the classpath, so https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer[hibernate-micrometer] should be downloaded:
 
-.Gradle
+dependency:hibernate-micrometer[groupId="org.hibernate"]
 
-[source,groovy]
-----
-dependencies {
-    ...
-    implementation("org.hibernate:hibernate-micrometer")
-    ...
-}
-----
 Micrometer automatically exposes Hibernate statistics. See the source code for https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java[HibernateMetrics] for the available metrics.
 
 ===== DataSource Metrics
@@ -281,10 +267,7 @@ To add metrics to your application, dependency-inject a `MeterRegistry` bean and
 See the https://micrometer.io/docs[Micrometer docs] for more information.
 
 .Custom Metrics Example
-[source,java]
-----
-include::{testsmetricscore}/IndexController.java[]
-----
+snippet::io.micronaut.docs.metrics.custom.IndexController[tags="imports,class"]
 
 == Custom Exception Metrics
 
@@ -294,7 +277,4 @@ The default value reported for an `ExceptionHandler` is 500.
 See the https://docs.micronaut.io/latest/guide/[Micronaut docs] for more information on `ExceptionHandler`.
 
 .ExceptionHandler Reporting Example
-[source,java]
-----
-include::{testsmetricscore}/OutOfStockException.java[]
-----
+snippet::io.micronaut.docs.metrics.exception.OutOfStockException[tags="imports,class"]
