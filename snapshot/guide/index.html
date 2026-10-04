@@ -337,7 +337,8 @@
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -479,7 +480,9 @@ endpoints.metrics.sensitive=Boolean</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">endpoints = {metrics = {enabled = "Boolean", sensitive = "Boolean"}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.metrics]
+enabled = "Boolean"
+sensitive = "Boolean"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -742,7 +745,9 @@ micronaut.metrics.common-tags.region=us-east-1</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {common-tags = {application = "${micronaut.application.name}", region = "us-east-1"}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics.common-tags]
+application = "${micronaut.application.name}"
+region = "us-east-1"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1109,7 +1114,19 @@ micronaut.metrics.binders.web.client.max=60</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {binders = {web = {server = {percentiles = "0.95,0.99", histogram = true, slos = "0.1,0.4,0.5,2", min = 0.1, max = 60}, client = {percentiles = "0.95,0.99", histogram = true, slos = "0.1,0.4,0.5,2", min = 0.1, max = 60}}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics.binders.web.server]
+percentiles = "0.95,0.99"
+histogram = true
+slos = "0.1,0.4,0.5,2"
+min = 0.1
+max = 60
+
+[micronaut.metrics.binders.web.client]
+percentiles = "0.95,0.99"
+histogram = true
+slos = "0.1,0.4,0.5,2"
+min = 0.1
+max = 60</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1353,7 +1370,8 @@ micronaut.metrics.binders.web.client.max=60</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">jpa = {default = {properties = {hibernate = {generate_statistics = true}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[jpa.default.properties.hibernate]
+generate_statistics = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2154,7 +2172,14 @@ micronaut.metrics.export.appoptics.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {appoptics = {enabled = true, apiToken = "${APPOPTICS_API_TOKEN}", uri = "https://api.appoptics.com/v1/measurements", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.appoptics]
+enabled = true
+apiToken = "${APPOPTICS_API_TOKEN}"
+uri = "https://api.appoptics.com/v1/measurements"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2305,7 +2330,13 @@ micronaut.metrics.export.atlas.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {atlas = {enabled = true, uri = "http://localhost:7101/api/v1/publish", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.atlas]
+enabled = true
+uri = "http://localhost:7101/api/v1/publish"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2453,7 +2484,13 @@ micronaut.metrics.export.azuremonitor.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {azuremonitor = {enabled = true, instrumentationKey = "${AZUREMONITOR_INSTRUMENTATION_KEY}", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.azuremonitor]
+enabled = true
+instrumentationKey = "${AZUREMONITOR_INSTRUMENTATION_KEY}"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2604,7 +2641,13 @@ micronaut.metrics.export.cloudwatch.batchSize=10</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {cloudwatch = {enabled = true, namespace = "myAwesomeAppMetrics", batchSize = 10}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.cloudwatch]
+enabled = true
+namespace = "myAwesomeAppMetrics"
+batchSize = 10</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2768,7 +2811,13 @@ micronaut.metrics.export.datadog.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {datadog = {apiKey = "${DATADOG_APIKEY}", enabled = true, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.datadog]
+apiKey = "${DATADOG_APIKEY}"
+enabled = true
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2936,8 +2985,18 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">endpoints = {prometheus = {sensitive = false}}
-micronaut = {metrics = {enabled = true, export = {dynatrace = {enabled = true, apiToken = "${DYNATRACE_DEVICE_API_TOKEN}", uri = "${DYNATRACE_DEVICE_URI}", deviceId = "${DYNATRACE_DEVICE_ID}", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
+sensitive = false
+
+[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.dynatrace]
+enabled = true
+apiToken = "${DYNATRACE_DEVICE_API_TOKEN}"
+uri = "${DYNATRACE_DEVICE_URI}"
+deviceId = "${DYNATRACE_DEVICE_ID}"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3100,7 +3159,12 @@ micronaut.metrics.export.elastic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {elastic = {enabled = true, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.elastic]
+enabled = true
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3245,7 +3309,13 @@ micronaut.metrics.export.ganglia.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {ganglia = {enabled = true, protocolVersion = 3.1, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.ganglia]
+enabled = true
+protocolVersion = 3.1
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3399,7 +3469,14 @@ micronaut.metrics.export.graphite.port=2004</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {graphite = {enabled = true, step = "PT1M", host = "localhost", port = 2004}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.graphite]
+enabled = true
+step = "PT1M"
+host = "localhost"
+port = 2004</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3544,7 +3621,12 @@ micronaut.metrics.export.humio.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {humio = {enabled = true, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.humio]
+enabled = true
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3687,7 +3769,12 @@ micronaut.metrics.export.influx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {influx = {enabled = true, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.influx]
+enabled = true
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3826,7 +3913,12 @@ micronaut.metrics.export.jmx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {jmx = {enabled = true, step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.jmx]
+enabled = true
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3975,7 +4067,13 @@ micronaut.metrics.export.kairos.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {kairos = {enabled = true, uri = "http://localhost:8080/api/v1/datapoints", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.kairos]
+enabled = true
+uri = "http://localhost:8080/api/v1/datapoints"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4133,7 +4231,14 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {newrelic = {enabled = true, apiKey = "${NEWRELIC_API_KEY}", accountId = "${NEWRELIC_ACCOUNT_ID}", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.newrelic]
+enabled = true
+apiKey = "${NEWRELIC_API_KEY}"
+accountId = "${NEWRELIC_ACCOUNT_ID}"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4293,7 +4398,14 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {newrelic = {enabled = true, apiKey = "${NEWRELIC_API_KEY}", serviceName = "My Micronaut Service", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.newrelic]
+enabled = true
+apiKey = "${NEWRELIC_API_KEY}"
+serviceName = "My Micronaut Service"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4466,7 +4578,12 @@ micronaut.metrics.export.otlp.url=http://otel-collector:4318/v1/metrics</code></
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {otlp = {enabled = true, url = "http://otel-collector:4318/v1/metrics"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.otlp]
+enabled = true
+url = "http://otel-collector:4318/v1/metrics"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4615,8 +4732,16 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">endpoints = {prometheus = {sensitive = false}}
-micronaut = {metrics = {enabled = true, export = {prometheus = {enabled = true, step = "PT1M", descriptions = true}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
+sensitive = false
+
+[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.prometheus]
+enabled = true
+step = "PT1M"
+descriptions = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4866,8 +4991,21 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">endpoints = {prometheus = {sensitive = false}}
-micronaut = {metrics = {enabled = true, export = {prometheus = {enabled = true, step = "PT1M", descriptions = true, pushgateway = {enabled = true, address = "localhost:9091", interval = "PT1M"}}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
+sensitive = false
+
+[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.prometheus]
+enabled = true
+step = "PT1M"
+descriptions = true
+
+[micronaut.metrics.export.prometheus.pushgateway]
+enabled = true
+address = "localhost:9091"
+interval = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5049,7 +5187,13 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {signalfx = {enabled = true, accessToken = "${SIGNALFX_API_TOKEN}", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.signalfx]
+enabled = true
+accessToken = "${SIGNALFX_API_TOKEN}"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5202,7 +5346,13 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {stackdriver = {enabled = true, projectId = "${STACKDRIVER_PROJECT_ID}", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.stackdriver]
+enabled = true
+projectId = "${STACKDRIVER_PROJECT_ID}"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5362,7 +5512,15 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {statsd = {enabled = true, flavor = "datadog", step = "PT1M", host = "localhost", port = 8125}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.statsd]
+enabled = true
+flavor = "datadog"
+step = "PT1M"
+host = "localhost"
+port = 8125</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5526,7 +5684,14 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true, export = {wavefront = {enabled = true, apiToken = "${WAVEFRONT_API_TOKEN}", uri = "https://longboard.wavefront.com", step = "PT1M"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[micronaut.metrics.export.wavefront]
+enabled = true
+apiToken = "${WAVEFRONT_API_TOKEN}"
+uri = "https://longboard.wavefront.com"
+step = "PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5797,7 +5962,8 @@ runtime = [
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micrometer = {observation = {datasource = {enabled = true}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micrometer.observation.datasource]
+enabled = true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
