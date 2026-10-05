@@ -33,9 +33,14 @@ import static io.micronaut.core.util.StringUtils.TRUE;
  * terminal outcome.
  *
  * <p>The observation is started in {@link #onStart} and stopped in exactly one of {@link #onSuccess}
- * or {@link #onError}, mirroring the way the HTTP server filter brackets a request. Because the
- * consumer processor reuses the returned handle across application retries of the same record, a
- * single observation spans all retry attempts rather than one per attempt.</p>
+ * or {@link #onError}. Because the consumer processor reuses the returned handle across blocking
+ * retries of the same record, a single observation spans all retry attempts rather than one per
+ * attempt. A successful non-blocking retry-topic dispatch is reported as {@link #onError}, since the
+ * failed record is handed off to a separate retry topic that begins its own observation when consumed.</p>
+ *
+ * <p>Each individual attempt is bracketed by {@link #onAttemptStart} and {@link #onAttemptEnd}, which
+ * open and close an {@link Observation.Scope} so the observation is the current context only while the
+ * listener runs and is cleared again before any retry delay (avoiding scope leakage to other records).</p>
  */
 @Internal
 @Singleton
@@ -70,6 +75,17 @@ public final class ObservationKafkaListenerProcessingObserver implements KafkaCo
         return KafkaListenerObservationDocumentation.KAFKA_LISTENER
             .observation(observationConvention, DEFAULT_CONVENTION, () -> context, observationRegistry)
             .start();
+    }
+
+    @Override
+    @Nullable
+    public Object onAttemptStart(Object handle) {
+        return ((Observation) handle).openScope();
+    }
+
+    @Override
+    public void onAttemptEnd(Object attempt) {
+        ((Observation.Scope) attempt).close();
     }
 
     @Override
