@@ -40,11 +40,13 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class LogbackMeterRegistryBinderFactory {
 
     /**
-     * Logback metrics bean.
+     * Logback metrics bean. It is closed with the context, which removes the turbo filters it adds to the Logback
+     * context: they would otherwise keep the meter registry it was bound to, and record into it, after the context
+     * is closed.
      *
      * @return logbackMetrics bean
      */
-    @Bean
+    @Bean(preDestroy = "close")
     @Singleton
     @Primary
     public LogbackMetrics logbackMetrics() {
