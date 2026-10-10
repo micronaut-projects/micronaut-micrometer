@@ -40,6 +40,7 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'test-suite:micronaut-serialization'
 include 'test-suite:test-observation-datasource'
+include 'test-suite-dev-reload'
 
 // documentation test suites (sources of the user guide `snippet::` macros)
 include 'test-suite'
