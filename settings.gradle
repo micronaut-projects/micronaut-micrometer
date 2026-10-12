@@ -40,7 +40,6 @@ include 'micrometer-registry-stackdriver'
 include 'micrometer-registry-statsd'
 include 'test-suite:micronaut-serialization'
 include 'test-suite:test-observation-datasource'
-include 'test-suite-dev-reload'
 
 // documentation test suites (sources of the user guide `snippet::` macros)
 include 'test-suite'
@@ -69,7 +68,22 @@ micronautBuild {
 // snapshots are resolved from it. Projects declare their own repositories, which replace the
 // settings ones, so it is added to each project too. To build against a core checkout instead,
 // pass --include-build <path-to-micronaut-core>. Remove once the build moves to a core release.
+// test-suite-dev-reload runs against micronaut-dev-tck, which is not in core 5.3.x yet: it comes from the
+// development mode stack (micronaut-projects/micronaut-core#13575). Publish that stack to Maven local with
+// publishToMavenLocal and pass -PdevReload to include the suite and resolve io.micronaut snapshots from
+// Maven local first.
+def devReload = providers.gradleProperty("devReload").present
+if (devReload) {
+    include 'test-suite-dev-reload'
+}
 def micronautSnapshotRepositories = { RepositoryHandler repositories ->
+    if (devReload) {
+        repositories.mavenLocal {
+            content {
+                includeVersionByRegex("io\\.micronaut(\\..*)?", ".*", ".*-SNAPSHOT")
+            }
+        }
+    }
     repositories.maven {
         url = "https://central.sonatype.com/repository/maven-snapshots/"
         mavenContent {
