@@ -72,6 +72,9 @@ public final class KafkaListenerObservationContext extends ReceiverContext<Consu
             return null;
         }
         Header header = record.headers().lastHeader(name);
-        return header == null ? null : new String(header.value(), StandardCharsets.UTF_8);
+        if (header == null || header.value() == null) {
+            return null;
+        }
+        return new String(header.value(), StandardCharsets.UTF_8);
     }
 }
