@@ -32,10 +32,12 @@ import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.Order;
 import io.micronaut.core.order.Ordered;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
 
 import java.util.List;
@@ -48,7 +50,10 @@ import java.util.stream.Collectors;
  * <ul>
  *     <li>{@link ObservationRegistry} - Instrumented ObservationRegistry</li>
  *     <li>{@link ObservationHandler} - Observation Handlers for exporting metrics, traces</li>
- *     <li>{@link ObservationFilter} - ObservationFilter that adds common low cardinality key values to all observations</li>
+ *     <li>{@link ObservationFilter} - ObservationFilter that adds common low cardinality key values to all observations,
+ *     when {@code micrometer.observations.common-key-value} is configured</li>
+ *     <li>{@link ObservationPredicate} - ObservationPredicate that enables or disables observations by name prefix,
+ *     when {@code micrometer.observations.enable} is configured</li>
  * </ul>
  */
 @Factory
@@ -71,6 +76,12 @@ public final class DefaultObservedFactory {
      * {@link #propagatingSenderTracingObservationHandler(Tracer, Propagator)}.
      */
     public static final int SENDER_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
+
+    /**
+     * Whether the observations recorded as meters also start a {@code <name>.active} long task
+     * timer, {@code true} by default.
+     */
+    public static final String LONG_TASK_TIMER_ENABLED = "micrometer.observations.long-task-timer.enabled";
 
     @Singleton
     ObservationRegistry observationRegistry(
@@ -120,20 +131,34 @@ public final class DefaultObservedFactory {
     @Requires(classes = MeterRegistry.class)
     @Requires(beans = MeterRegistry.class)
     @Requires(missingBeans = Tracer.class)
-    public ObservationHandler<?> defaultMeterObservationHandler(MeterRegistry meterRegistry) {
-        return new DefaultMeterObservationHandler(meterRegistry);
+    public ObservationHandler<?> defaultMeterObservationHandler(MeterRegistry meterRegistry,
+                                                                @Property(name = LONG_TASK_TIMER_ENABLED, defaultValue = StringUtils.TRUE) boolean longTaskTimer) {
+        return meterObservationHandler(meterRegistry, longTaskTimer);
     }
 
     @Singleton
     @SuppressWarnings("java:S1452")
     @Requires(classes = {MeterRegistry.class, Tracer.class})
     @Requires(beans = {MeterRegistry.class, Tracer.class})
-    public ObservationHandler<?> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry, Tracer tracer) {
-        DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
-        return new TracingAwareMeterObservationHandler<>(delegate, tracer);
+    public ObservationHandler<?> tracingAwareMeterObservationHandler(MeterRegistry meterRegistry,
+                                                                     Tracer tracer,
+                                                                     @Property(name = LONG_TASK_TIMER_ENABLED, defaultValue = StringUtils.TRUE) boolean longTaskTimer) {
+        return new TracingAwareMeterObservationHandler<>(meterObservationHandler(meterRegistry, longTaskTimer), tracer);
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param longTaskTimer Whether the observations start a {@code <name>.active} long task timer
+     * @return The handler that records the observations as meters
+     */
+    private static DefaultMeterObservationHandler meterObservationHandler(MeterRegistry meterRegistry, boolean longTaskTimer) {
+        return longTaskTimer
+            ? new DefaultMeterObservationHandler(meterRegistry)
+            : new DefaultMeterObservationHandler(meterRegistry, DefaultMeterObservationHandler.IgnoredMeters.LONG_TASK_TIMER);
     }
 
     @Singleton
+    @Requires(property = ObservationProperties.PREFIX + ".common-key-value")
     public static ObservationFilter commonKeyValuesFilter(ObservationProperties properties) {
         if (properties.commonKeyValue() == null || properties.commonKeyValue().isEmpty()) {
             return context -> context;
@@ -159,4 +184,17 @@ public final class DefaultObservedFactory {
         return new ObservationHandlerGroupingClass(TracingObservationHandler.class);
     }
 
+    /**
+     * The predicate of {@code micrometer.observations.enable}, which only exists when it is
+     * configured.
+     *
+     * @param properties The observation properties
+     * @return The predicate enabling and disabling observations by name prefix
+     */
+    @Singleton
+    @Requires(property = ObservationProperties.PREFIX + ".enable")
+    ObservationPredicate propertiesObservationPredicate(ObservationProperties properties) {
+        Map<String, Boolean> enable = properties.enable();
+        return new PropertiesObservationPredicate(enable == null ? Map.of() : enable);
+    }
 }

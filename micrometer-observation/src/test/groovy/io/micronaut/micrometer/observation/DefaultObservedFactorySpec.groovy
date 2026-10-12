@@ -29,7 +29,7 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(Tracer).size() == 0
         context.getBeansOfType(Propagator).size() == 0
         context.getBeansOfType(ObservationHandler).size() == 0
-        context.getBeansOfType(ObservationFilter).size() == 1
+        context.getBeansOfType(ObservationFilter).size() == 0
         context.getBeansOfType(ObservationHandlerGroupingClass).size() == 2
         context.getBeansOfType(ObservationHandlerGrouping).size() == 1
         context.getBeansOfType(ObservationRegistry).size() == 1
@@ -51,7 +51,7 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(ObservationHandlerGroupingClass).size() == 2
         context.getBeansOfType(ObservationHandler)*.class*.simpleName.containsAll(['DefaultMeterObservationHandler'])
         context.getBeansOfType(ObservationHandlerGrouping).size() == 1
-        context.getBeansOfType(ObservationFilter).size() == 1
+        context.getBeansOfType(ObservationFilter).size() == 0
     }
 
     void 'test trace and no metrics'() {
@@ -68,7 +68,7 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(ObservationHandler).size() == 1
         context.getBeansOfType(ObservationHandlerGroupingClass).size() == 2
         context.getBeansOfType(ObservationHandler)*.class*.simpleName.containsAll(['DefaultTracingObservationHandler'])
-        context.getBeansOfType(ObservationFilter).size() == 1
+        context.getBeansOfType(ObservationFilter).size() == 0
         context.getBeansOfType(ObservationHandlerGrouping).size() == 1
         context.getBeansOfType(ObservationRegistry).size() == 1
     }
@@ -88,7 +88,7 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(ObservationHandler).size() == 3
         context.getBeansOfType(ObservationHandlerGroupingClass).size() == 2
         context.getBeansOfType(ObservationHandler)*.class*.simpleName.containsAll(['PropagatingReceiverTracingObservationHandler', 'DefaultTracingObservationHandler', 'PropagatingSenderTracingObservationHandler'])
-        context.getBeansOfType(ObservationFilter).size() == 1
+        context.getBeansOfType(ObservationFilter).size() == 0
         context.getBeansOfType(ObservationHandlerGrouping).size() == 1
         context.getBeansOfType(ObservationRegistry).size() == 1
     }
@@ -111,7 +111,7 @@ class DefaultObservedFactorySpec extends Specification {
         context.getBeansOfType(ObservationHandlerGroupingClass).size() == 2
         context.getBeansOfType(ObservationHandlerGrouping).size() == 1
         context.getBeansOfType(ObservationHandler)*.class*.simpleName.containsAll(['TracingAwareMeterObservationHandler', 'PropagatingReceiverTracingObservationHandler', 'PropagatingSenderTracingObservationHandler', 'DefaultTracingObservationHandler'])
-        context.getBeansOfType(ObservationFilter).size() == 1
+        context.getBeansOfType(ObservationFilter).size() == 0
         def handlers = context.getBeansOfType(ObservationHandler)
         // verify order of tracing handlers
         handlers[-1].class == DefaultTracingObservationHandler.class
