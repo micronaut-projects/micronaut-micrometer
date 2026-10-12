@@ -90,12 +90,17 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
     @RequestFilter
     public CompletionStage<HttpResponse<?>> request(MutableHttpRequest<?> request,
                                                     FilterContinuation<CompletionStage<HttpResponse<?>>> continuation) {
-        if (shouldExclude(request.getPath())) {
+        if (observationRegistry.isNoop() || shouldExclude(request.getPath())) {
+            // nothing observes the requests (e.g. no handler), or excluded
             return continuation.proceed();
         }
         ClientRequestObservationContext observationContext = new ClientRequestObservationContext(request);
         Observation observation = ClientHttpObservationDocumentation.HTTP_CLIENT_EXCHANGES.observation(this.observationConvention,
             DEFAULT_OBSERVATION_CONVENTION, () -> observationContext, this.observationRegistry).start();
+        if (observation.isNoop()) {
+            // e.g. disabled by an ObservationPredicate: there is nothing to stop
+            return continuation.proceed();
+        }
         request.setAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, observation);
 
         // The observation is current for the downstream only: the propagated context of the filter is left

@@ -94,13 +94,19 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
 
     @RequestFilter
     public void request(HttpRequest<?> request, MutablePropagatedContext mutablePropagatedContext) {
-        if (shouldExclude(request.getPath()) || request.getAttribute(SERVER_OBSERVATION_ATTRIBUTE).isPresent()) {
-            // excluded, or the filters run again for the same request
+        if (observationRegistry.isNoop()
+            || shouldExclude(request.getPath())
+            || request.getAttribute(SERVER_OBSERVATION_ATTRIBUTE).isPresent()) {
+            // nothing observes the requests (e.g. no handler), excluded, or the filters run again for the same request
             return;
         }
         ServerRequestObservationContext context = new ServerRequestObservationContext(request);
         Observation observation = ServerHttpObservationDocumentation.HTTP_SERVER_REQUESTS.observation(this.observationConvention,
             DEFAULT_OBSERVATION_CONVENTION, () -> context, this.observationRegistry).start();
+        if (observation.isNoop()) {
+            // e.g. disabled by an ObservationPredicate: there is nothing to stop
+            return;
+        }
         ServerObservation serverObservation = new ServerObservation(observation, context);
         request.setAttribute(MICROMETER_OBSERVATION_ATTRIBUTE_KEY, observation);
         request.setAttribute(SERVER_OBSERVATION_ATTRIBUTE, serverObservation);
