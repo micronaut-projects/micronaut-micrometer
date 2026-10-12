@@ -21,3 +21,19 @@ micronaut:
         enabled: true
         url: http://otel-collector:4318/v1/metrics
 ----
+
+=== OTLP Registry Customization
+
+The registry is built with the following beans when they exist:
+
+|=======
+|*Bean* |*Use*
+|`io.micrometer.core.instrument.Clock` |The clock of the registry. Default: the system clock
+|`io.micrometer.registry.otlp.OtlpMetricsSender` |Sends the metrics, for example over gRPC or through a custom HTTP client. Default: HTTP to `url`
+|`io.micrometer.registry.otlp.ExemplarContextProvider` |Provides the trace context of exemplars, see below
+|`java.util.concurrent.ThreadFactory` named `otlp` |Creates the thread that publishes the metrics
+|=======
+
+=== Exemplars
+
+When a Micrometer Tracing `io.micrometer.tracing.Tracer` bean exists, for example from Micronaut Tracing, the Prometheus and OTLP registries record exemplars with the trace and span ids of the current span, when the span is sampled. Without a `Tracer` bean, the registries are created without exemplar support. Set `micronaut.metrics.exemplars.enabled` to `false` to not record exemplars even when there is a `Tracer` bean. Set `micronaut.metrics.exemplars.include` to `all` to record exemplars for spans that are not sampled; the default, `sampled-traces`, only records them for sampled spans. An `ExemplarContextProvider` bean takes precedence over the one created from the `Tracer`.
