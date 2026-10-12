@@ -18,15 +18,18 @@ package io.micronaut.configuration.metrics.micrometer.newrelictelemetry;
 import com.newrelic.telemetry.Attributes;
 import com.newrelic.telemetry.micrometer.NewRelicRegistry;
 import com.newrelic.telemetry.micrometer.NewRelicRegistryConfig;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.util.NamedThreadFactory;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.function.UnaryOperator;
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
@@ -41,6 +44,9 @@ public class NewRelicTelemetryMeterRegistryFactory {
     public static final String NEWRELIC_CONFIG = MICRONAUT_METRICS_EXPORT + ".newrelic";
     public static final String NEWRELIC_ENABLED = NEWRELIC_CONFIG + ".enabled";
 
+    private static final Logger LOG = LoggerFactory.getLogger(NewRelicTelemetryMeterRegistryFactory.class);
+    private static final String HOST_ATTRIBUTE = "host";
+
     /**
      * Create a NewRelicRegistry bean if global metrics are enabled
      * and New Relic is enabled. Will be true by default when this
@@ -50,15 +56,11 @@ public class NewRelicTelemetryMeterRegistryFactory {
      * @return NewRelicRegistry
      */
     @Singleton
-    NewRelicRegistry newRelicRegistry(NewRelicRegistryConfig config) throws UnknownHostException {
+    NewRelicRegistry newRelicRegistry(NewRelicRegistryConfig config) {
         NewRelicRegistry newRelicRegistry =
                 NewRelicRegistry.builder(config)
-                        .commonAttributes(
-                                new Attributes()
-                                        .put("host", InetAddress.getLocalHost().getHostName()))
+                        .commonAttributes(commonAttributes(() -> InetAddress.getLocalHost().getHostName(), System::getenv))
                         .build();
-        newRelicRegistry.config().meterFilter(MeterFilter.ignoreTags("plz_ignore_me"));
-        newRelicRegistry.config().meterFilter(MeterFilter.denyNameStartsWith("jvm.threads"));
         newRelicRegistry.start(new NamedThreadFactory("newrelic.micrometer.registry"));
         return newRelicRegistry;
     }
@@ -72,5 +74,46 @@ public class NewRelicTelemetryMeterRegistryFactory {
     NewRelicTelemetryMicronautConfig newRelicRegistryConfig(ExportConfigurationProperties exportConfigurationProperties) {
         Properties exportConfig = exportConfigurationProperties.getExport();
         return exportConfig::getProperty;
+    }
+
+    /**
+     * Resolves the common attributes. The {@code host} attribute is the local host name, or the {@code HOSTNAME} or
+     * {@code COMPUTERNAME} environment variable when the local host name cannot be resolved, for example in a
+     * container without a resolvable host name. It is omitted when none of these are available.
+     *
+     * @param hostNameLookup The local host name lookup
+     * @param environment The environment variables
+     * @return The common attributes
+     */
+    static Attributes commonAttributes(HostNameLookup hostNameLookup, UnaryOperator<String> environment) {
+        Attributes attributes = new Attributes();
+        String host;
+        try {
+            host = hostNameLookup.hostName();
+        } catch (IOException e) {
+            host = environment.apply("HOSTNAME");
+            if (StringUtils.isEmpty(host)) {
+                host = environment.apply("COMPUTERNAME");
+            }
+            if (LOG.isWarnEnabled()) {
+                LOG.warn("Unable to resolve the local host name for the New Relic '{}' attribute, using: {}", HOST_ATTRIBUTE, host, e);
+            }
+        }
+        if (StringUtils.isNotEmpty(host)) {
+            attributes.put(HOST_ATTRIBUTE, host);
+        }
+        return attributes;
+    }
+
+    /**
+     * Looks up the local host name.
+     */
+    @FunctionalInterface
+    interface HostNameLookup {
+        /**
+         * @return The host name
+         * @throws IOException if the host name cannot be resolved
+         */
+        String hostName() throws IOException;
     }
 }

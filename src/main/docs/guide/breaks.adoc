@@ -7,6 +7,7 @@ This section documents breaking changes between Micronaut Micrometer versions:
 - A client request that is cancelled before its response is received is recorded with the status `CLIENT_ERROR`.
 - The HTTP client observations are now also stopped for error statuses and for failures without a response, which leaked them before.
 - `ObservationServerFilter` runs in the `ServerFilterPhase.METRICS` phase. It had the default order `0` before.
+- The New Relic Telemetry registry (`micronaut-micrometer-registry-new-relic-telemetry`) no longer drops meters whose name starts with `jvm.threads` or removes `plz_ignore_me` tags. These filters were copied from New Relic's sample code. Register a `MeterFilter` bean, for example `MeterFilter.denyNameStartsWith("jvm.threads")`, to keep excluding the thread meters. The registry also no longer fails to start when the local host name cannot be resolved.
 
 === Micronaut Micrometer 6.0.0
 
