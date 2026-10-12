@@ -9,7 +9,9 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import java.util.concurrent.TimeUnit
 
 @Property(name = "spec.name", value = "OutOfStockExceptionTest")
 @MicronautTest
@@ -29,9 +31,15 @@ class OutOfStockExceptionTest {
         assertEquals(HttpStatus.OK, response.status)
         assertEquals(0, response.body())
 
-        val timer = meterRegistry.get("http.server.requests")
+        // the server timer is recorded once the response was written
+        val search = meterRegistry.find("http.server.requests")
             .tags("uri", "/stock/{name}", "exception", "OutOfStockException", "status", "200")
-            .timer()
-        assertEquals(1, timer.count())
+        val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+        while (search.timer() == null && System.nanoTime() < deadline) {
+            Thread.onSpinWait()
+        }
+        val timer = search.timer()
+        assertNotNull(timer)
+        assertEquals(1, timer!!.count())
     }
 }

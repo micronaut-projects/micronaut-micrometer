@@ -16,6 +16,10 @@
 package io.micronaut.micrometer.observation.http;
 
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.http.HttpHeaders;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpRequestWrapper;
+import io.micronaut.http.LifecycleHttpRequest;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -29,6 +33,8 @@ public abstract class AbstractObservationFilter {
     public static final String CLIENT_PATH = "${micrometer.observation.http.client.path:/**}";
     public static final String SERVER_PATH = "${micrometer.observation.http.server.path:/**}";
     public static final String MICROMETER_OBSERVATION_ATTRIBUTE_KEY = "micrometer.observation";
+
+    private static final String WEBSOCKET = "websocket";
 
     @Nullable
     private final Predicate<String> pathExclusionTest;
@@ -51,5 +57,30 @@ public abstract class AbstractObservationFilter {
      */
     protected boolean shouldExclude(@Nullable String path) {
         return pathExclusionTest != null && path != null && pathExclusionTest.test(path);
+    }
+
+    /**
+     * The server request that runs its disposal resources once it is released, after its response
+     * was written (see {@link LifecycleHttpRequest#addDisposalResource}). A WebSocket upgrade
+     * request is not released when the connection is upgraded, so it has none.
+     *
+     * @param request The request, or a wrapper of it
+     * @return The lifecycle of the request, or {@code null}
+     */
+    @Nullable
+    protected static LifecycleHttpRequest<?> lifecycle(HttpRequest<?> request) {
+        HttpRequest<?> current = request;
+        while (!(current instanceof LifecycleHttpRequest<?>)) {
+            if (current instanceof HttpRequestWrapper<?> wrapper) {
+                current = wrapper.getDelegate();
+            } else {
+                return null;
+            }
+        }
+        String upgrade = request.getHeaders().get(HttpHeaders.UPGRADE);
+        if (upgrade != null && upgrade.equalsIgnoreCase(WEBSOCKET)) {
+            return null;
+        }
+        return (LifecycleHttpRequest<?>) current;
     }
 }

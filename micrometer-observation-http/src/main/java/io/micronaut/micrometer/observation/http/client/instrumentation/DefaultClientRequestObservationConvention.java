@@ -100,7 +100,7 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
             return STATUS_CLIENT_ERROR;
         }
 
-        return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, String.valueOf(response.getStatus().getCode()));
+        return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, String.valueOf(response.code()));
     }
 
     private KeyValue clientName(ClientRequestObservationContext context) {

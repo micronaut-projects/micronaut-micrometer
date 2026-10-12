@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @MicronautTest
@@ -35,6 +36,11 @@ class WebMetricsExceptionWithGlobalErrorRouteTest {
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
         Assertions.assertEquals(e.code(), HttpStatus.BAD_REQUEST.getCode());
         Assertions.assertEquals("BAD REQUEST FROM HANDLER", e.getMessage());
+        // the server timer is recorded once the response was written
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (meterRegistry.find("http.server.requests").tags("uri", "/metrics/test", "status", "400").timer() == null && System.nanoTime() < deadline) {
+            Thread.onSpinWait();
+        }
         long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "400"), Tag.of("exception", "IllegalArgumentException"))).count();
         Assertions.assertEquals(1, count);
     }
