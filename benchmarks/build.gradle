@@ -1,0 +1,70 @@
+// JMH benchmarks measuring the overhead of the Micrometer integrations.
+// This project is deliberately NOT published: it applies neither the module nor the publishing
+// conventions, so it is not part of the BOM, japicmp, javadoc aggregation or the release.
+// See README.md for how to run it.
+plugins {
+    id 'java'
+    id 'io.micronaut.build.internal.micrometer-base'
+    alias libs.plugins.jmh
+}
+
+dependencies {
+    jmhAnnotationProcessor platform(libs.micronaut.core)
+    jmhAnnotationProcessor mn.micronaut.inject.java
+    // creates the AOP proxies for @Timed / @Counted / @Observed
+    jmhAnnotationProcessor projects.micronautMicrometerAnnotation
+    jmhAnnotationProcessor libs.jmh.generator.annprocess
+
+    jmhImplementation platform(libs.micronaut.core)
+    jmhImplementation projects.micronautMicrometerCore
+    jmhImplementation projects.micronautMicrometerObservationHttp
+    jmhImplementation projects.micronautMicrometerRegistryPrometheus
+    jmhImplementation libs.managed.micrometer.observation
+    jmhImplementation mn.micronaut.http.server.netty
+    jmhImplementation mn.micronaut.http.client
+    jmhImplementation mn.micronaut.management
+    jmhImplementation mnReactor.micronaut.reactor
+    jmhImplementation mnSerde.micronaut.serde.jackson
+    jmhImplementation libs.jmh.core
+}
+
+configurations.configureEach {
+    resolutionStrategy.preferProjectModules()
+}
+
+def csv = { String name -> providers.gradleProperty(name).map { it.split(',')*.trim().findAll { it } } }
+// the plugin passes the includes / excludes to JMH as a single comma separated argument, which JMH reads as one
+// regular expression: several expressions are therefore combined into one alternation
+def regexps = { String name -> csv(name).map { List<String> list -> list.size() > 1 ? [list.collect { "(?:$it)" }.join('|')] : list } }
+
+// Short runs by default: the numbers are indicative, see README.md.
+// Override with -Pjmh.includes=..., -Pjmh.fork=..., -Pjmh.iterations=..., -Pjmh.warmupIterations=...,
+// -Pjmh.warmup=2s, -Pjmh.timeOnIteration=2s, -Pjmh.profilers=gc, -Pjmh.params=name=v1|v2;other=v3
+jmh {
+    includes = regexps('jmh.includes').getOrElse([])
+    excludes = regexps('jmh.excludes').getOrElse([])
+    fork = providers.gradleProperty('jmh.fork').map { it as int }.getOrElse(1)
+    warmupIterations = providers.gradleProperty('jmh.warmupIterations').map { it as int }.getOrElse(3)
+    iterations = providers.gradleProperty('jmh.iterations').map { it as int }.getOrElse(5)
+    warmup = providers.gradleProperty('jmh.warmup').getOrElse('2s')
+    timeOnIteration = providers.gradleProperty('jmh.timeOnIteration').getOrElse('2s')
+    profilers = csv('jmh.profilers').getOrElse([])
+    jmhVersion = libs.versions.jmh.asProvider().get()
+    resultFormat = 'JSON'
+    // -Pjmh.resultsFile=/tmp/main.json keeps the results of one branch apart from another
+    def customResultsFile = providers.gradleProperty('jmh.resultsFile').orNull
+    if (customResultsFile) {
+        resultsFile = file(customResultsFile)
+    }
+    providers.gradleProperty('jmh.params').orNull?.split(';')?.each { String param ->
+        def (name, values) = param.split('=', 2)
+        def valueList = objects.listProperty(String).value(values.split('\\|')*.trim())
+        // wrapped so Groovy does not pick the put(key, Provider<value>) overload for the ListProperty
+        benchmarkParameters.put(name.trim(), providers.provider { valueList })
+    }
+}
+
+// Keep the benchmarks compiling as part of the regular build, without running them.
+tasks.named('check') {
+    dependsOn tasks.named('jmhClasses')
+}
