@@ -47,6 +47,42 @@ final class PrometheusPushGatewayConfig {
     private Duration interval;
     private Duration initialDelay;
     private Map<String, String> groupingKeys;
+    private ShutdownOperation shutdownOperation = ShutdownOperation.NONE;
+
+    /**
+     * What is done with the metrics of the application in the Pushgateway when the application shuts down.
+     *
+     * @since 6.2.0
+     */
+    enum ShutdownOperation {
+        /**
+         * Nothing is done.
+         */
+        NONE,
+        /**
+         * The metrics are pushed a last time.
+         */
+        PUSH,
+        /**
+         * The metrics are deleted from the Pushgateway.
+         */
+        DELETE
+    }
+
+    /**
+     * @return What is done with the metrics in the Pushgateway when the application shuts down.
+     */
+    public ShutdownOperation getShutdownOperation() {
+        return shutdownOperation;
+    }
+
+    /**
+     * @param shutdownOperation What is done with the metrics in the Pushgateway when the application shuts down.
+     * Default {@link ShutdownOperation#NONE}.
+     */
+    public void setShutdownOperation(@Nullable ShutdownOperation shutdownOperation) {
+        this.shutdownOperation = shutdownOperation != null ? shutdownOperation : ShutdownOperation.NONE;
+    }
 
     /**
      * @return Map of the grouping keys.
