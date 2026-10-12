@@ -265,16 +265,17 @@ The provided metrics include the channel count, current active channel count, ch
 
 ===== HTTP Client Pool Metrics
 
-Micronaut HTTP client pool metrics can be enabled with `micronaut.metrics.binders.web.client.pool.enabled=true`.
-The provided metrics include currently open and pending client pool connections, created connection count, connection creation time, and checked out requests for `DefaultHttpClient` beans.
+The connection pools of the Netty HTTP clients can be instrumented with `micronaut.metrics.binders.web.client.pool.enabled=true`. Default is *false*. The meters cover the connections and requests of every HTTP client in the application, declarative clients included, and every per-host pool of those clients. They have no client or host tag, so the per-host pools that a client creates and evicts never leave meters behind. WebSocket connections are not pool connections and are not counted.
 
 .HTTP Client Pool Metrics provided
 |=======
-|*Name*
-| http.client.pool.connections
-| http.client.pool.connections.created
-| http.client.pool.connections.create.time
-| http.client.pool.requests
+|*Name* |*Type* |*Tags* |*Description*
+| http.client.pool.connections | Gauge | `state=open` | Connections that the pools can use
+| http.client.pool.connections | Gauge | `state=pending` | Connection attempts in progress, until the TLS handshake and the protocol negotiation are done
+| http.client.pool.connections.created | Counter | `protocol` (`http/1.1`, `h2`, `h3`) | Connections established
+| http.client.pool.connections.create.time | Timer | `protocol` (`http/1.1`, `h2`, `h3`) | Time from the start of a connection attempt until the connection is established
+| http.client.pool.connections.failed | Counter | | Connection attempts that closed before the connection was established
+| http.client.pool.requests | Gauge | `state=active` | Requests running on a pool connection
 |=======
 
 == Adding Custom Metrics
