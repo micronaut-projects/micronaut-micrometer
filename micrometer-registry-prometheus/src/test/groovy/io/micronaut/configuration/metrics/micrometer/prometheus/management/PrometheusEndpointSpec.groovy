@@ -154,7 +154,7 @@ class PrometheusEndpointSpec extends Specification {
 
         then:
         result == 'jvm_memory_used 1.0\n'
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+        1 * registry.scrape(_ as OutputStream, PrometheusEndpoint.TEXT_FORMAT, null) >> { OutputStream outputStream, String contentType, Set<String> includedNames ->
             outputStream.write('jvm_memory_used 1.0\n'.getBytes(StandardCharsets.UTF_8))
         }
         0 * registry.scrape()
@@ -186,7 +186,7 @@ class PrometheusEndpointSpec extends Specification {
         then:
         def exception = thrown(UncheckedIOException)
         exception.cause.is(failure)
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+        1 * registry.scrape(_ as OutputStream, PrometheusEndpoint.TEXT_FORMAT, null) >> { OutputStream outputStream, String contentType, Set<String> includedNames ->
             throw failure
         }
         0 * registry.scrape()
@@ -208,7 +208,7 @@ class PrometheusEndpointSpec extends Specification {
 
         then:
         new String((byte[]) bytes, StandardCharsets.UTF_8) == 'abc'
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+        1 * registry.scrape(_ as OutputStream, PrometheusEndpoint.TEXT_FORMAT, null) >> { OutputStream outputStream, String contentType, Set<String> includedNames ->
             outputStream.write('abc'.getBytes(StandardCharsets.UTF_8))
         }
         0 * registry.scrape()
@@ -225,7 +225,7 @@ class PrometheusEndpointSpec extends Specification {
 
         then:
         result == 'abc'
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+        1 * registry.scrape(_ as OutputStream, PrometheusEndpoint.TEXT_FORMAT, null) >> { OutputStream outputStream, String contentType, Set<String> includedNames ->
             outputStream.write('abc'.getBytes(StandardCharsets.UTF_8))
         }
         0 * executor._

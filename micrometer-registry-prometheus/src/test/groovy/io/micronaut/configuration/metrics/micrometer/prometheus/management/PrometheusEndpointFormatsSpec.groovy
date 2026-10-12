@@ -1,0 +1,160 @@
+package io.micronaut.configuration.metrics.micrometer.prometheus.management
+
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusConfig
+import io.micronaut.context.ApplicationContext
+import io.micronaut.http.HttpHeaders
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.HttpClient
+import io.micronaut.runtime.server.EmbeddedServer
+import spock.lang.AutoCleanup
+import spock.lang.Shared
+import spock.lang.Specification
+
+import java.nio.charset.StandardCharsets
+
+class PrometheusEndpointFormatsSpec extends Specification {
+
+    // the Accept header that Prometheus sends by default
+    static final String PROMETHEUS_ACCEPT = 'application/openmetrics-text;version=1.0.0,application/openmetrics-text;version=0.0.1;q=0.75,text/plain;version=0.0.4;q=0.5,*/*;q=0.1'
+    static final String PROTOBUF_ACCEPT = 'application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0.7,text/plain;version=0.0.4;q=0.3'
+
+    @Shared
+    @AutoCleanup
+    EmbeddedServer server = ApplicationContext.run(EmbeddedServer, [
+            'endpoints.prometheus.sensitive': false
+    ])
+
+    @Shared
+    @AutoCleanup
+    HttpClient client = server.applicationContext.createBean(HttpClient, server.URL)
+
+    def setupSpec() {
+        Counter.builder('test.formats.counter').register(server.applicationContext.getBean(MeterRegistry)).increment()
+    }
+
+    void "the Prometheus text format is returned by default"() {
+        when:
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus'), String)
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.TEXT_FORMAT
+        response.body().contains('test_formats_counter_total 1.0')
+        !response.body().contains('# EOF')
+    }
+
+    void "the Prometheus text format is returned when it is asked for"() {
+        when:
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, 'text/plain'), String)
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.TEXT_FORMAT
+        response.body().contains('test_formats_counter_total 1.0')
+    }
+
+    void "the OpenMetrics format is returned for #accept"() {
+        when:
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, accept), String)
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.OPENMETRICS_FORMAT
+        response.body().contains('test_formats_counter_total 1.0')
+        response.body().endsWith('# EOF\n')
+
+        where:
+        accept << ['application/openmetrics-text', PROMETHEUS_ACCEPT]
+    }
+
+    void "the protobuf format is returned when it is asked for"() {
+        when:
+        HttpResponse<byte[]> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, PROTOBUF_ACCEPT), byte[])
+        String body = new String(response.body(), StandardCharsets.UTF_8)
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.PROTOBUF_FORMAT
+        body.contains('test_formats_counter')
+        !body.contains('# TYPE')
+    }
+
+    void "the scrape is filtered with includedNames"() {
+        when:
+        String body = client.toBlocking().retrieve(HttpRequest.GET("/prometheus?$query"), String)
+
+        then:
+        body.contains('test_formats_counter_total 1.0')
+        body.contains('jvm_memory_used_bytes') == includesJvm
+        !body.contains('process_cpu_usage')
+
+        where:
+        query                                                              | includesJvm
+        'includedNames=test_formats_counter'                         | false
+        'includedNames=test_formats_counter,jvm_memory_used_bytes'   | true
+        'includedNames=test_formats_counter&includedNames=jvm_memory_used_bytes' | true
+    }
+
+    void "the Prometheus text format is returned when OpenMetrics is disabled"() {
+        given:
+        EmbeddedServer server = ApplicationContext.run(EmbeddedServer, [
+                'endpoints.prometheus.sensitive'                                : false,
+                (PrometheusEndpoint.OPENMETRICS_ENABLED)                        : false
+        ])
+        HttpClient client = server.applicationContext.createBean(HttpClient, server.URL)
+
+        when:
+        HttpResponse<String> openMetrics = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, PROMETHEUS_ACCEPT), String)
+        HttpResponse<byte[]> protobuf = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, PROTOBUF_ACCEPT), byte[])
+
+        then:
+        openMetrics.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.TEXT_FORMAT
+        !openMetrics.body().contains('# EOF')
+        protobuf.header(HttpHeaders.CONTENT_TYPE) == PrometheusEndpoint.PROTOBUF_FORMAT
+
+        cleanup:
+        client.close()
+        server.close()
+    }
+
+    void "Prometheus client properties are passed through with their keys unchanged"() {
+        given:
+        EmbeddedServer server = ApplicationContext.run(EmbeddedServer, [
+                'endpoints.prometheus.sensitive'                                                      : false,
+                'micronaut.metrics.export.prometheus.properties.io.prometheus.exporter.include_created_timestamps': true,
+                'micronaut.metrics.export.prometheus.properties.io.prometheus.exemplars.sampleIntervalMilliseconds': 120
+        ])
+        HttpClient client = server.applicationContext.createBean(HttpClient, server.URL)
+        Counter.builder('test.created.counter').register(server.applicationContext.getBean(MeterRegistry)).increment()
+        Properties properties = server.applicationContext.getBean(PrometheusConfig).prometheusProperties()
+
+        when:
+        String body = client.toBlocking().retrieve(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, 'application/openmetrics-text'), String)
+
+        then:
+        properties.getProperty('io.prometheus.exporter.include_created_timestamps') == 'true'
+        properties.getProperty('io.prometheus.exemplars.sampleIntervalMilliseconds') == '120'
+        // the default from Micrometer is kept
+        properties.getProperty('io.prometheus.exporter.exemplarsOnAllMetricTypes') == 'true'
+        body.contains('test_created_counter_created')
+
+        cleanup:
+        client.close()
+        server.close()
+    }
+
+    void "the scrape is buffered and sized from the previous scrape"() {
+        given:
+        PrometheusEndpoint endpoint = server.applicationContext.getBean(PrometheusEndpoint)
+
+        when:
+        HttpResponse<InputStream> first = endpoint.scrape('application/openmetrics-text', null)
+        byte[] firstBytes = first.body().bytes
+        HttpResponse<InputStream> second = endpoint.scrape('application/openmetrics-text', null)
+
+        then:
+        first.contentType.get().toString().startsWith('application/openmetrics-text')
+        firstBytes.length > 0
+        endpoint.lastScrapeSize > 0
+        second.body().bytes.length > 0
+    }
+}

@@ -4,5 +4,7 @@ plugins {
 
 dependencies {
     api libs.micrometer.registry.prometheus
+    // a runtime dependency of micrometer-registry-prometheus, used by the endpoint to select the format
+    compileOnly libs.prometheus.metrics.exposition.textformats
     testImplementation(mnSerde.micronaut.serde.jackson)
 }
