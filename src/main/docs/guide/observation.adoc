@@ -32,6 +32,14 @@ You can configure the behavior of this module by modifying the following propert
 
 - To disable HTTP server instrumentation, set the `micrometer.observation.http.server.enabled` property to `false` (the default value is `true`).
 - To disable HTTP client instrumentation, set the `micrometer.observation.http.client.enabled` property to `false` (the default value is `true`).
+- To exclude paths from the server and client observations, set `micrometer.observation.http.exclusions` to a list of regular expressions. A request is not observed when its path matches one of the expressions entirely.
+
+Each HTTP observation is stopped exactly once:
+
+- A server observation is started when the request enters the filter chain and stopped once its response has been completely written, including a streamed body. If the client disconnects while the body is streamed, the observation is stopped when the connection closes. If writing the body fails before anything was sent, the observation is stopped with the error response that replaced it. WebSocket upgrade requests are stopped when the response filters run.
+- A client observation is stopped when the response or the failure is received, or when the request is cancelled. An error status (for example `404` or `500`) stops it with that status and the `HttpClientResponseException` as its error. A failure without a response (for example a refused connection or a read timeout) stops it with the status `CLIENT_ERROR` and the failure as its error. A cancelled request stops it with the status `CLIENT_ERROR` and no error.
+
+The server filter runs in the `ServerFilterPhase.METRICS` phase, like the web metrics filter: before the tracing, session and security filters. A filter that should run with the server observation as its current observation must have an order after `ServerFilterPhase.METRICS.order()`.
 
 === Micrometer Observation Kafka
 
