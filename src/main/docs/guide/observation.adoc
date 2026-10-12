@@ -32,3 +32,18 @@ You can configure the behavior of this module by modifying the following propert
 
 - To disable HTTP server instrumentation, set the `micrometer.observation.http.server.enabled` property to `false` (the default value is `true`).
 - To disable HTTP client instrumentation, set the `micrometer.observation.http.client.enabled` property to `false` (the default value is `true`).
+
+=== Micrometer Observation Kafka
+
+The Micronaut Observation Kafka module records an observation for each record that a Micronaut Kafka listener consumes. The observation spans the whole processing of the record: it starts when the record is first processed, is the current observation during each processing attempt (the first delivery and every blocking retry, but not the delay between them), and stops when the record is processed successfully or fails for good. A record that is handed off to a retry topic stops its observation with the error, and the retry record gets its own observation.
+
+The observation is named `messaging.kafka.listener`, and its contextual name is the topic followed by `receive`. Its low cardinality key values are `messaging.system` (`kafka`), `messaging.operation` (`receive`), `messaging.destination.name` (the topic), `messaging.kafka.consumer.group` (the consumer group, or `unknown`) and `error`. Its high cardinality key values are `messaging.kafka.client.id`, `messaging.kafka.destination.partition` and `messaging.kafka.message.offset`. The observation is a consumer observation, so a tracing handler joins the trace context propagated in the record headers.
+
+To include this module in your project, add the following dependency:
+
+dependency:micronaut-micrometer-observation-kafka[groupId="io.micronaut.micrometer", scope="implementation"]
+
+- To disable Kafka listener instrumentation, set the `micrometer.observation.kafka.enabled` property to `false` (the default value is `true`).
+- To change the name or the key values of the observation, register a bean of type `KafkaListenerObservationConvention`.
+
+NOTE: The module needs a version of Micronaut Kafka that provides the `KafkaConsumerProcessingObserver` integration point.
