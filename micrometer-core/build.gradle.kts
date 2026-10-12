@@ -47,6 +47,7 @@ dependencies {
     testImplementation(mnR2dbc.r2dbc.pool)
     testImplementation(libs.reflections)
     testImplementation(libs.micrometer.java21)
+    testImplementation(mn.netty.pkitesting)
     testRuntimeOnly(mn.micronaut.http.server.netty)
 
     testImplementation(mnTest.micronaut.test.junit5)
