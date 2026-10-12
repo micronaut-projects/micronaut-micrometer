@@ -22,11 +22,9 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpStatus;
-import io.micronaut.http.uri.UriMatchTemplate;
 import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteInfo;
-
-import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Default {@link ServerRequestObservationConvention}.
@@ -46,6 +44,8 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
     private static final KeyValue EXCEPTION_NONE = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.EXCEPTION, KeyValue.NONE_VALUE);
 
     private final String name;
+
+    private final RoutePaths routePaths = new RoutePaths();
 
     /**
      * Create a convention with the default name {@code "http.server.requests"}.
@@ -78,13 +78,11 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
         return "http " + httpMethod;
     }
 
-    private String getRoute(HttpRequest<?> request) {
-        Optional<String> routeInfo = RouteAttributes.getRouteInfo(request)
-            .filter(UriRouteInfo.class::isInstance)
-            .map(ri -> (UriRouteInfo<?, ?>) ri)
-            .map(UriRouteInfo::getUriMatchTemplate)
-            .map(UriMatchTemplate::toPathString);
-        return routeInfo.orElseGet(() -> BasicHttpAttributes.getUriTemplate(request).orElse(null));
+    private @Nullable String getRoute(HttpRequest<?> request) {
+        if (RouteAttributes.getRouteInfo(request).orElse(null) instanceof UriRouteInfo<?, ?> uriRouteInfo) {
+            return routePaths.pathString(uriRouteInfo.getUriMatchTemplate());
+        }
+        return BasicHttpAttributes.getUriTemplate(request).orElse(null);
     }
 
     @Override
