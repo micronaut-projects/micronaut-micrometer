@@ -19,3 +19,9 @@ dependencies {
     testImplementation projects.micronautMicrometerCore
     testImplementation libs.managed.micrometer.tracing
 }
+
+micronautBuild {
+    binaryCompatibility {
+        enabledAfter "6.2.0"
+    }
+}
