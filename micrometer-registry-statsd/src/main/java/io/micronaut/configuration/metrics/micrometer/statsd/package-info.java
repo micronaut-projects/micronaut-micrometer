@@ -18,8 +18,10 @@
  */
 @Configuration
 @Requires(property = StatsdMeterRegistryFactory.STATSD_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(StatsdMeterRegistryFactory.STATSD_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.statsd;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

@@ -18,8 +18,10 @@
  */
 @Configuration
 @Requires(property = CloudWatchMeterRegistryFactory.CLOUDWATCH_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(CloudWatchMeterRegistryFactory.CLOUDWATCH_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.cloudwatch;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

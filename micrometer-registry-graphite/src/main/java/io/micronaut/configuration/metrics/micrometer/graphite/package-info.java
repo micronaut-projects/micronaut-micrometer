@@ -18,8 +18,10 @@
  */
 @Configuration
 @Requires(property = GraphiteMeterRegistryFactory.GRAPHITE_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(GraphiteMeterRegistryFactory.GRAPHITE_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.graphite;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

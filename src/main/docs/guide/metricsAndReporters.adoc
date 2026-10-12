@@ -1,3 +1,31 @@
 == Metrics Registries & Reporters
 
 By default, there is a `/metrics` endpoint configured, and metrics are provided to it for viewing or retrieving via HTTP. To register a specific type of reporter, include a typed registry configuration. The following are the currently supported libraries for reporting metrics.
+
+=== Enabling and Disabling Registries
+
+Each registry is enabled when its module is on the classpath, and can be disabled with `micronaut.metrics.export.<name>.enabled: false`, for example `micronaut.metrics.export.prometheus.enabled: false`.
+
+To change the default for every registry that exports metrics, set `micronaut.metrics.export.defaults.enabled`. A registry whose own `enabled` property is set ignores the default, so you can disable all registries and enable only some of them:
+
+[configuration]
+----
+micronaut:
+  metrics:
+    export:
+      defaults:
+        enabled: false
+      prometheus:
+        enabled: true
+----
+
+.Export properties
+|=======
+|*Property* |*Type* |*Default* |*Description*
+|`micronaut.metrics.export.defaults.enabled` |boolean |`true` |Whether registries that export metrics are enabled when their own `enabled` property is not set.
+|`micronaut.metrics.export.<name>.enabled` |boolean |the value of `micronaut.metrics.export.defaults.enabled` |Whether the registry is enabled.
+|=======
+
+When no registry is enabled, meters are recorded in a `SimpleMeterRegistry`, so the metrics endpoint and the application code keep working. This is useful in tests: set `micronaut.metrics.export.defaults.enabled: false` in `application-test.yml`, or add the <<metricsTesting, test support module>>, which does it for you.
+
+NOTE: `micronaut.metrics.export.defaults.enabled` does not affect the logging registry, which is only enabled when `micronaut.metrics.export.logging.enabled` is `true`.

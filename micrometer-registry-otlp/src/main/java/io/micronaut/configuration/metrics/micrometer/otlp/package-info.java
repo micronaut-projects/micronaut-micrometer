@@ -18,8 +18,10 @@
  */
 @Configuration
 @Requires(property = OtlpMeterRegistryFactory.OTLP_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(OtlpMeterRegistryFactory.OTLP_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.otlp;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

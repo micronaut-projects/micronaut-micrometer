@@ -21,8 +21,10 @@
  */
 @Configuration
 @Requires(property = InfluxMeterRegistryFactory.INFLUX_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(InfluxMeterRegistryFactory.INFLUX_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.influx;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

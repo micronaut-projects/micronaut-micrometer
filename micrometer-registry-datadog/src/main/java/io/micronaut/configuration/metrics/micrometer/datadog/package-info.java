@@ -21,8 +21,10 @@
  */
 @Configuration
 @Requires(property = DatadogMeterRegistryFactory.DATADOG_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(DatadogMeterRegistryFactory.DATADOG_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.datadog;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
