@@ -16,6 +16,6 @@
 /**
  * Contains classes that provide Micrometer Observation integration for Micronaut Kafka listeners.
  *
- * @since 6.1.0
+ * @since 6.2.0
  */
 package io.micronaut.micrometer.observation.kafka;

@@ -13,7 +13,6 @@ dependencies {
     testAnnotationProcessor mn.micronaut.inject.java
     testAnnotationProcessor projects.micronautMicrometerAnnotation
     testImplementation mnKafka.micronaut.kafka
-    testImplementation mnTestResources.testcontainers.kafka
     testImplementation(libs.managed.micrometer.observation.test) {
         exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
     }

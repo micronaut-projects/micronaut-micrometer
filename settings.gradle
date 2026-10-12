@@ -17,7 +17,6 @@ include 'micrometer-core'
 include 'micrometer-observation'
 include 'micrometer-observation-datasource'
 include 'micrometer-observation-http'
-include 'micrometer-observation-kafka'
 include 'micrometer-registry-appoptics'
 include 'micrometer-registry-atlas'
 include 'micrometer-registry-azure-monitor'
@@ -47,6 +46,13 @@ include 'test-suite'
 include 'test-suite-groovy'
 include 'test-suite-kotlin'
 include 'test-suite-python'
+
+// micrometer-observation-kafka implements the KafkaConsumerProcessingObserver SPI that is not in a
+// micronaut-kafka release yet (micronaut-projects/micronaut-kafka#1407). Pass -PkafkaObservation to include
+// it, with --include-build <path-to-micronaut-kafka> pointing at a checkout that has the SPI.
+if (providers.gradleProperty("kafkaObservation").present) {
+    include 'micrometer-observation-kafka'
+}
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 

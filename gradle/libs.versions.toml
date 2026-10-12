@@ -21,6 +21,7 @@ amqp-client = '5.37.0'
 micronaut-aws = "5.1.1"
 micronaut-cache = "6.1.1"
 micronaut-grpc = "5.2.0"
+micronaut-kafka = "6.2.0"
 micronaut-r2dbc = "7.2.0"
 micronaut-rxjava3 = "4.1.0"
 micronaut-reactor = "4.3.0"
@@ -39,6 +40,7 @@ micronaut-validation = { module = "io.micronaut.validation:micronaut-validation-
 micronaut-aws = { module = "io.micronaut.aws:micronaut-aws-bom", version.ref = "micronaut-aws" }
 micronaut-cache = { module = "io.micronaut.cache:micronaut-cache-bom", version.ref = "micronaut-cache" }
 micronaut-grpc = { module = "io.micronaut.grpc:micronaut-grpc-bom", version.ref = "micronaut-grpc" }
+micronaut-kafka = { module = "io.micronaut.kafka:micronaut-kafka-bom", version.ref = "micronaut-kafka" }
 micronaut-r2dbc = { module = "io.micronaut.r2dbc:micronaut-r2dbc-bom", version.ref = "micronaut-r2dbc" }
 micronaut-rxjava3 = { module = "io.micronaut.rxjava3:micronaut-rxjava3-bom", version.ref = "micronaut-rxjava3" }
 micronaut-reactor = { module = 'io.micronaut.reactor:micronaut-reactor-bom', version.ref = 'micronaut-reactor'}
