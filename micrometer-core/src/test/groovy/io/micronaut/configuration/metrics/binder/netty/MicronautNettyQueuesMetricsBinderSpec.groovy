@@ -19,6 +19,7 @@ import io.micronaut.http.netty.channel.NettyChannelType
 import io.micronaut.http.netty.channel.NioEventLoopGroupFactory
 import io.micronaut.runtime.server.EmbeddedServer
 import io.netty.channel.EventLoopGroup
+import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
@@ -32,8 +33,11 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.EXECU
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GLOBAL
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.GROUP
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.PARENT
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.QUEUE
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WAIT_TIME
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.WORKER
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_ENABLED
@@ -176,6 +180,41 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         serverContext.close()
     }
 
+    void "test queue metrics are present for the server worker and a configured parent event loop group"() {
+        given:
+        ApplicationContext context = startServerContext([
+                (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true,
+                'micronaut.netty.event-loops.parent.num-threads'     : 1
+        ])
+        EmbeddedServer server = context.getBean(EmbeddedServer)
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        expect:
+        new URL(server.URL, '/nettyQueuesMetricsTest').text == 'root'
+        !registry.find(dot(NETTY, QUEUE, SIZE)).tags(Tags.of(GROUP, WORKER)).gauges().isEmpty()
+        !registry.find(dot(NETTY, QUEUE, SIZE)).tags(Tags.of(GROUP, PARENT)).gauges().isEmpty()
+
+        cleanup:
+        context.close()
+    }
+
+    @PendingFeature(reason = "Micronaut Core 5.3 creates the server's own acceptor group, when micronaut.netty.event-loops.parent is not configured, without the TaskQueueInterceptor beans")
+    void "test queue metrics are present for the implicit server parent event loop group"() {
+        given:
+        ApplicationContext context = startServerContext([
+                (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true
+        ])
+        EmbeddedServer server = context.getBean(EmbeddedServer)
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        expect:
+        new URL(server.URL, '/nettyQueuesMetricsTest').text == 'root'
+        !registry.find(dot(NETTY, QUEUE, SIZE)).tags(Tags.of(GROUP, PARENT)).gauges().isEmpty()
+
+        cleanup:
+        context.close()
+    }
+
     void "test executor metrics are present for configured client event loop group"() {
         given:
         ApplicationContext serverContext = startServerContext()
@@ -229,11 +268,13 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         String root() { "root" }
     }
 
-    private static ApplicationContext startServerContext() {
-        ApplicationContext context = ApplicationContext.run([
+    private static ApplicationContext startServerContext(Map<String, Object> additionalConfig = [:]) {
+        Map<String, Object> config = [
                 'micronaut.server.port': 0,
                 'spec.name'            : SPEC_NAME
-        ])
+        ]
+        config.putAll(additionalConfig)
+        ApplicationContext context = ApplicationContext.run(config)
         context.getBean(EmbeddedServer).start()
         return context
     }
