@@ -1,6 +1,6 @@
 [versions]
-micronaut-platform = "5.2.1"
-micronaut = "5.2.13"
+micronaut-platform = "5.2.2"
+micronaut = "5.2.15"
 
 micronaut-gradle-plugin = "5.0.2"
 managed-metrics-core = '4.2.40'
@@ -13,7 +13,7 @@ reflections = '0.10.2'
 
 hdr-histogram = '2.2.2'
 rabbitmq = '5.33.1'
-httpclient5 = '5.6.4'
+httpclient5 = '5.6.5'
 
 jackson2 = '2.22.3'
 amqp-client = '5.37.0'
@@ -26,7 +26,7 @@ micronaut-rxjava3 = "4.1.0"
 micronaut-reactor = "4.3.0"
 micronaut-serde = "3.2.4"
 micronaut-sql = "7.2.0"
-micronaut-data = "5.2.0"
+micronaut-data = "5.2.2"
 micronaut-validation = "5.2.1"
 micronaut-logging = "2.1.0"
 
