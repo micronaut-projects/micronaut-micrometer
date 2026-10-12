@@ -20,6 +20,7 @@ import io.micrometer.common.KeyValues;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.BasicHttpAttributes;
+import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.uri.UriMatchTemplate;
@@ -52,6 +53,25 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
 
     private static final KeyValue EXCEPTION_NONE = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.EXCEPTION, KeyValue.NONE_VALUE);
 
+    private static final int MIN_CACHED_STATUS = 100;
+
+    // the key values and lower case names that would otherwise be created for each request
+    private static final KeyValue[] STATUS_KEY_VALUES = new KeyValue[500];
+
+    private static final KeyValue[] METHOD_KEY_VALUES = new KeyValue[HttpMethod.values().length];
+
+    private static final String[] LOWER_CASE_METHODS = new String[HttpMethod.values().length];
+
+    static {
+        for (int i = 0; i < STATUS_KEY_VALUES.length; i++) {
+            STATUS_KEY_VALUES[i] = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, Integer.toString(MIN_CACHED_STATUS + i));
+        }
+        for (HttpMethod method : HttpMethod.values()) {
+            METHOD_KEY_VALUES[method.ordinal()] = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.METHOD, method.name());
+            LOWER_CASE_METHODS[method.ordinal()] = method.name().toLowerCase();
+        }
+    }
+
     private final String name;
 
     // UriMatchTemplate#toPathString computes the path on every call. Equal templates of different routes share
@@ -81,7 +101,7 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
 
     @Override
     public String getContextualName(ServerRequestObservationContext context) {
-        String httpMethod = context.getCarrier().getMethod().name().toLowerCase();
+        String httpMethod = LOWER_CASE_METHODS[context.getCarrier().getMethod().ordinal()];
         String route = getRoute(context.getCarrier());
 
         if (route != null) {
@@ -130,13 +150,19 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
     }
 
     private KeyValue method(ServerRequestObservationContext context) {
-        return KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.METHOD, context.getCarrier().getMethod().name());
+        return METHOD_KEY_VALUES[context.getCarrier().getMethod().ordinal()];
     }
 
     private KeyValue status(ServerRequestObservationContext context) {
-        return (context.getResponse() != null) ?
-            KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, Integer.toString(context.getResponse().code())) :
-            STATUS_UNKNOWN;
+        if (context.getResponse() == null) {
+            return STATUS_UNKNOWN;
+        }
+        int code = context.getResponse().code();
+        int index = code - MIN_CACHED_STATUS;
+        if (index >= 0 && index < STATUS_KEY_VALUES.length) {
+            return STATUS_KEY_VALUES[index];
+        }
+        return KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, Integer.toString(code));
     }
 
     private KeyValue uri(ServerRequestObservationContext context) {

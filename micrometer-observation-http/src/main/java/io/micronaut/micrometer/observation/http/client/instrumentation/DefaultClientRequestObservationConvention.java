@@ -19,6 +19,7 @@ import io.micrometer.common.KeyValue;
 import io.micrometer.common.KeyValues;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.http.HttpMethod;
 import io.micronaut.http.HttpResponse;
 
 import static io.micronaut.http.HttpAttributes.SERVICE_ID;
@@ -46,6 +47,25 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
 
     private static final KeyValue HTTP_URL_NONE = KeyValue.of(ClientHttpObservationDocumentation.HighCardinalityKeyNames.HTTP_URL, KeyValue.NONE_VALUE);
 
+    private static final int MIN_CACHED_STATUS = 100;
+
+    // the key values and contextual names that would otherwise be created for each request
+    private static final KeyValue[] STATUS_KEY_VALUES = new KeyValue[500];
+
+    private static final KeyValue[] METHOD_KEY_VALUES = new KeyValue[HttpMethod.values().length];
+
+    private static final String[] CONTEXTUAL_NAMES = new String[HttpMethod.values().length];
+
+    static {
+        for (int i = 0; i < STATUS_KEY_VALUES.length; i++) {
+            STATUS_KEY_VALUES[i] = KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, String.valueOf(MIN_CACHED_STATUS + i));
+        }
+        for (HttpMethod method : HttpMethod.values()) {
+            METHOD_KEY_VALUES[method.ordinal()] = KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.METHOD, method.name());
+            CONTEXTUAL_NAMES[method.ordinal()] = "http " + method.name().toLowerCase();
+        }
+    }
+
     private final String name;
 
     /**
@@ -70,7 +90,7 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
 
     @Override
     public String getContextualName(ClientRequestObservationContext context) {
-        return "http " + context.getCarrier().getMethod().name().toLowerCase();
+        return CONTEXTUAL_NAMES[context.getCarrier().getMethod().ordinal()];
     }
 
     @Override
@@ -88,7 +108,7 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
 
     private KeyValue method(ClientRequestObservationContext context) {
         if (context.getCarrier() != null) {
-            return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.METHOD, context.getCarrier().getMethod().name());
+            return METHOD_KEY_VALUES[context.getCarrier().getMethod().ordinal()];
         } else {
             return METHOD_NONE;
         }
@@ -100,7 +120,12 @@ public final class DefaultClientRequestObservationConvention implements ClientRe
             return STATUS_CLIENT_ERROR;
         }
 
-        return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, String.valueOf(response.code()));
+        int code = response.code();
+        int index = code - MIN_CACHED_STATUS;
+        if (index >= 0 && index < STATUS_KEY_VALUES.length) {
+            return STATUS_KEY_VALUES[index];
+        }
+        return KeyValue.of(ClientHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, String.valueOf(code));
     }
 
     private KeyValue clientName(ClientRequestObservationContext context) {
