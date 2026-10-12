@@ -343,6 +343,24 @@ micronaut:
 | disk.total
 |=======
 
+===== Startup Time Metrics
+
+The startup time metrics report how long the application took to start, measured as the JVM uptime when the event is published, so they include the time spent before the application context was created.
+
+* `application.started.time` is registered when the application context has started.
+* `application.ready.time` is registered when an embedded application, such as the HTTP server, has started. If the application has no embedded application, it has the same value as `application.started.time`.
+
+Both gauges have a `main.application.class` tag when the JVM reports the main class. The tag is omitted when the application was started with `java -jar` or in a native image.
+
+*Control Property*: `micronaut.metrics.binders.startup.enabled` (default `true`)
+
+.Metrics provided
+|=======
+|*Name*
+| application.started.time
+| application.ready.time
+|=======
+
 ===== Logback Metrics
 
 The logging metrics bindings provide logging metrics if using https://logback.qos.ch/[Logback].
