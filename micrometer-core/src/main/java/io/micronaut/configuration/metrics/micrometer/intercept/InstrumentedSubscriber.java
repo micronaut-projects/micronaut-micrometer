@@ -31,7 +31,7 @@ import reactor.util.context.Context;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
- * Subscriber that notifies {@link #onStart()} when subscribed and {@link #onFinish(Throwable, boolean)} exactly once
+ * Subscriber that notifies {@link #onStart()} when subscribed and {@link #onFinish(Object, Throwable, boolean)} exactly once
  * when the subscription completes, errors or is cancelled. For single result publishers the first value is treated as
  * successful completion, so a downstream cancellation after the value has been emitted is not reported as a
  * cancellation.
@@ -92,10 +92,11 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
     /**
      * Invoked exactly once when the subscription terminates.
      *
+     * @param value The value of a single result publisher, or {@code null}
      * @param error The error or {@code null} if the publisher completed successfully or was cancelled
      * @param cancelled Whether the subscription was cancelled before it completed
      */
-    protected abstract void onFinish(@Nullable Throwable error, boolean cancelled);
+    protected abstract void onFinish(@Nullable Object value, @Nullable Throwable error, boolean cancelled);
 
     @Override
     public final void onSubscribe(Subscription s) {
@@ -113,20 +114,20 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
     @Override
     public final void onNext(T t) {
         if (singleResult) {
-            finish(null, false);
+            finish(t, null, false);
         }
         actual.onNext(t);
     }
 
     @Override
     public final void onError(Throwable t) {
-        finish(t, false);
+        finish(null, t, false);
         actual.onError(t);
     }
 
     @Override
     public final void onComplete() {
-        finish(null, false);
+        finish(null, null, false);
         actual.onComplete();
     }
 
@@ -140,7 +141,7 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
 
     @Override
     public final void cancel() {
-        finish(null, true);
+        finish(null, null, true);
         Subscription s = upstream;
         if (s != null) {
             s.cancel();
@@ -166,10 +167,10 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
         return null;
     }
 
-    private void finish(@Nullable Throwable error, boolean cancelled) {
+    private void finish(@Nullable Object value, @Nullable Throwable error, boolean cancelled) {
         if (FINISHED_UPDATER.compareAndSet(this, 0, 1)) {
             try {
-                onFinish(error, cancelled);
+                onFinish(value, error, cancelled);
             } catch (Exception e) {
                 LOG.error("Error recording method metrics", e);
             }
