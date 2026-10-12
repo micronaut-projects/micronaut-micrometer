@@ -64,7 +64,7 @@ public class ServerMetricsFilterBenchmark {
     static {
         try {
             RESOLVE_PATH = MethodHandles.privateLookupIn(ServerMetricsFilter.class, MethodHandles.lookup())
-                .findVirtual(ServerMetricsFilter.class, "resolvePath", MethodType.methodType(String.class, HttpRequest.class));
+                .findStatic(ServerMetricsFilter.class, "resolvePath", MethodType.methodType(String.class, HttpRequest.class));
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -100,7 +100,7 @@ public class ServerMetricsFilterBenchmark {
     @Benchmark
     public String resolvePath(Exchange exchange) {
         try {
-            return (String) RESOLVE_PATH.invokeExact(filter, (HttpRequest<?>) exchange.request);
+            return (String) RESOLVE_PATH.invokeExact((HttpRequest<?>) exchange.request);
         } catch (Throwable e) {
             throw new IllegalStateException(e);
         }
