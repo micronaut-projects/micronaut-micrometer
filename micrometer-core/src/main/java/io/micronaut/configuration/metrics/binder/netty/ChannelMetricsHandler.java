@@ -27,8 +27,8 @@ import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +48,10 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot;
 /**
  * Metrics for Netty Channels.
  *
+ * <p>A channel is accounted when the handler is added to its pipeline and released when the handler is removed,
+ * which Netty does when the channel is closed and deregistered. This works whether the handler is added before or
+ * after the channel is registered, and accounts each channel once.</p>
+ *
  * @author Christophe Roudet
  * @since 2.0
  */
@@ -60,7 +64,8 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
      */
     static final String CHANNEL_METRICS = "channel-metrics";
 
-    private static final String ACTIVE_CHANNEL_TIMER = "active-channel-timer";
+    private static final AttributeKey<Timer.Sample> ACTIVE_CHANNEL_SAMPLE =
+        AttributeKey.valueOf(ChannelMetricsHandler.class, "activeChannelSample");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelMetricsHandler.class);
 
@@ -97,20 +102,21 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) {
-        channelCount.increment();
-        activeChannelCount.increment();
-        ctx.pipeline().addAfter(
-                CHANNEL_METRICS,
-                ACTIVE_CHANNEL_TIMER,
-                new ActiveChannelTimerHandler());
-        ctx.fireChannelRegistered();
+    public void handlerAdded(ChannelHandlerContext ctx) {
+        Timer.Sample sample = Timer.start(meterRegistryProvider.get());
+        if (ctx.channel().attr(ACTIVE_CHANNEL_SAMPLE).setIfAbsent(sample) == null) {
+            channelCount.increment();
+            activeChannelCount.increment();
+        }
     }
 
     @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        activeChannelCount.decrement();
-        ctx.fireChannelUnregistered();
+    public void handlerRemoved(ChannelHandlerContext ctx) {
+        Timer.Sample sample = ctx.channel().attr(ACTIVE_CHANNEL_SAMPLE).getAndSet(null);
+        if (sample != null) {
+            activeChannelCount.decrement();
+            sample.stop(activeChannelTimer);
+        }
     }
 
     @Override
@@ -155,20 +161,5 @@ final class ChannelMetricsHandler extends ChannelDuplexHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         channelErrorCount.increment();
         ctx.fireExceptionCaught(cause);
-    }
-
-    private class ActiveChannelTimerHandler extends ChannelInboundHandlerAdapter {
-        private final Timer.Sample start;
-
-        ActiveChannelTimerHandler() {
-            start = Timer.start(meterRegistryProvider.get());
-        }
-
-        @Override
-        public void channelUnregistered(ChannelHandlerContext ctx) {
-            start.stop(activeChannelTimer);
-            ctx.pipeline().remove(this);
-            ctx.fireChannelUnregistered();
-        }
     }
 }
