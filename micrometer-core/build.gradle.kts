@@ -19,6 +19,7 @@ dependencies {
     compileOnly(mn.netty.transport.native.kqueue)
     compileOnly(mnR2dbc.r2dbc.pool)
     compileOnly(libs.hdr.histogram)
+    compileOnly(libs.micrometer.java21)
 
     implementation(mn.reactor)
     compileOnly(mn.micronaut.retry)
@@ -45,6 +46,7 @@ dependencies {
     testImplementation(mn.netty.transport.native.kqueue)
     testImplementation(mnR2dbc.r2dbc.pool)
     testImplementation(libs.reflections)
+    testImplementation(libs.micrometer.java21)
     testRuntimeOnly(mn.micronaut.http.server.netty)
 
     testImplementation(mnTest.micronaut.test.junit5)
