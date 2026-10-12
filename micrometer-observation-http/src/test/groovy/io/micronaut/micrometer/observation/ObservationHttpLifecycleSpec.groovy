@@ -117,6 +117,8 @@ class ObservationHttpLifecycleSpec extends Specification {
 
         when:
         def first = Flux.from(streamingClient.dataStream(HttpRequest.GET('/lifecycle/endless'))).blockFirst(Duration.ofSeconds(5))
+        // closing the client closes the connection, which the server sees as a disconnect mid-stream
+        streamingClient.close()
 
         then:
         first != null
