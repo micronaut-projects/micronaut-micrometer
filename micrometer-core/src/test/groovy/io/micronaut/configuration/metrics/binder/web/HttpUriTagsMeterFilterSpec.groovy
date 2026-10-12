@@ -1,9 +1,17 @@
 package io.micronaut.configuration.metrics.binder.web
 
+import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Timer
 import io.micrometer.core.instrument.config.MeterFilter
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Factory
 import io.micronaut.context.annotation.Requires
+import io.micronaut.core.annotation.Order
+import jakarta.inject.Singleton
+
+import java.util.concurrent.TimeUnit
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -84,6 +92,83 @@ class HttpUriTagsMeterFilterSpec extends Specification {
         cleanup:
         client.close()
         server.close()
+    }
+
+    void "setting only max-uri-tags does not apply the legacy http distribution settings: #side"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run([
+                'spec.name'                                                     : 'HttpUriTagsMeterFilterSpec.distribution',
+                ("micronaut.metrics.binders.web.${side}.max-uri-tags".toString()): 10
+        ])
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when: 'an earlier filter configures percentiles, a histogram and an SLO'
+        Timer timer = registry.timer(meter, 'uri', '/a')
+        timer.record(10, TimeUnit.MILLISECONDS)
+
+        then: 'they are not reset by the legacy percentile filter'
+        timer.takeSnapshot().percentileValues()*.percentile() == [0.5d]
+        timer.takeSnapshot().histogramCounts()*.bucket() == [TimeUnit.MILLISECONDS.toNanos(100) as double]
+
+        cleanup:
+        ctx.close()
+
+        where:
+        side     | meter
+        'server' | 'http.server.requests'
+        'client' | 'http.client.requests'
+    }
+
+    void "the legacy http distribution settings are still applied when their own keys are set: #key"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run([
+                'spec.name'                                               : 'HttpUriTagsMeterFilterSpec.distribution',
+                'micronaut.metrics.binders.web.server.max-uri-tags'       : 10,
+                ("micronaut.metrics.binders.web.server.${key}".toString()): value
+        ])
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        Timer timer = registry.timer('http.server.requests', 'uri', '/a')
+        timer.record(10, TimeUnit.MILLISECONDS)
+
+        then: 'the legacy filter is created and replaces the earlier percentiles'
+        timer.takeSnapshot().percentileValues()*.percentile() == percentiles
+
+        cleanup:
+        ctx.close()
+
+        where:
+        key           | value | percentiles
+        'percentiles' | '0.9' | [0.9d]
+        'histogram'   | true  | []
+        'slos'        | '0.1' | []
+        'min'         | 0.1   | []
+        'max'         | 10    | []
+    }
+
+    @Factory
+    @Requires(property = 'spec.name', value = 'HttpUriTagsMeterFilterSpec.distribution')
+    static class EarlyDistributionFilterFactory {
+
+        @Singleton
+        @Order(-100)
+        MeterFilter earlyDistributionFilter() {
+            new MeterFilter() {
+                @Override
+                DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
+                    if (id.name.startsWith('http.')) {
+                        return DistributionStatisticConfig.builder()
+                                .percentiles(0.5d)
+                                .percentilesHistogram(true)
+                                .serviceLevelObjectives(TimeUnit.MILLISECONDS.toNanos(100) as double)
+                                .build()
+                                .merge(config)
+                    }
+                    config
+                }
+            }
+        }
     }
 
     @Requires(property = 'spec.name', value = 'HttpUriTagsMeterFilterSpec')
