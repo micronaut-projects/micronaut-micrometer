@@ -12,8 +12,11 @@ import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.netty.channel.EpollEventLoopGroupFactory
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
+import io.micronaut.http.netty.channel.KQueueEventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
+import io.micronaut.http.netty.channel.NioEventLoopGroupFactory
 import io.micronaut.runtime.server.EmbeddedServer
 import io.netty.channel.EventLoopGroup
 import spock.lang.Specification
@@ -65,6 +68,28 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         MICRONAUT_METRICS_ENABLED                           | false   | false
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | true    | true
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | false   | false
+    }
+
+    @Unroll
+    void "test instrumented event loop group factory replaces #factoryName factory by name"() {
+        when:
+        ApplicationContext context = ApplicationContext.run(
+                [(MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true]
+        )
+
+        then:
+        context.findBean(instrumentedClass).isPresent() == context.findBean(EventLoopGroupFactory, Qualifiers.byName(factoryName))
+                .map { instrumentedClass.isInstance(it) }
+                .orElse(false)
+
+        cleanup:
+        context.close()
+
+        where:
+        instrumentedClass                       | factoryName
+        InstrumentedNioEventLoopGroupFactory    | NioEventLoopGroupFactory.NAME
+        InstrumentedEpollEventLoopGroupFactory  | EpollEventLoopGroupFactory.NAME
+        InstrumentedKQueueEventLoopGroupFactory | KQueueEventLoopGroupFactory.NAME
     }
 
     @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
