@@ -129,13 +129,14 @@ This URI capturing can be disabled by setting `micronaut.metrics.binders.web.cli
 .Custom tags
 
 To add request-aware custom tags to the built-in HTTP server and client metrics, create a bean that implements `HttpMetricsTagProvider`.
-Each provider is invoked when Micronaut records `http.server.requests` or `http.client.requests`.
+Each provider is invoked once per request, when Micronaut records `http.server.requests` or `http.client.requests`: with the final response of a server request, and with the response or the failure of a client request (the response is `null` when the client request failed without one or was cancelled).
+A tag of a provider replaces a default tag with the same key.
+Without provider beans, the web metrics do no extra work.
 
-.Example
-[source,java]
-----
-include::{testsmetricscore}/HttpMetricsTagProviderExample.java[tags=imports;class]
-----
+NOTE: The tags must have a low cardinality: every distinct combination of tag values creates a new timer.
+
+.HttpMetricsTagProvider Example
+snippet::io.micronaut.docs.metrics.tags.TenantTagProvider[tags="imports,class"]
 
 .Customizing
 

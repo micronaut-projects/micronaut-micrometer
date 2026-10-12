@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Provides custom tags for HTTP client and server request metrics.
  *
- * @since 6.0.0
+ * @since 6.2.0
  */
 @FunctionalInterface
 public interface HttpMetricsTagProvider {

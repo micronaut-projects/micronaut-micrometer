@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpServerMeterConfig;
@@ -85,18 +86,22 @@ final class ServerMetricsFilter implements Ordered {
     private final boolean reportClientErrorURIs;
     @Nullable
     private final Predicate<String> exclusions;
+    private final HttpMetricsTagProvider[] tagProviders;
 
     /**
      * @param meterRegistryProvider  the meter registry provider
      * @param clientErrorsUrisConfig the client errors
      * @param exclusions             the regular expressions of the paths not to record
+     * @param tagProviders           the providers of custom tags
      */
     public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
                                HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig,
-                               @Property(name = "micronaut.metrics.http.exclusions") @Nullable List<String> exclusions) {
+                               @Property(name = "micronaut.metrics.http.exclusions") @Nullable List<String> exclusions,
+                               List<HttpMetricsTagProvider> tagProviders) {
         this.meterRegistry = SupplierUtil.memoized(meterRegistryProvider::get);
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
         this.exclusions = HttpPathExclusions.of(exclusions);
+        this.tagProviders = WebMetricsHelper.tagProviders(tagProviders);
     }
 
     @Override
@@ -126,7 +131,7 @@ final class ServerMetricsFilter implements Ordered {
     @ResponseFilter
     void onResponse(HttpRequest<?> request, HttpResponse<?> response) {
         if (request.getAttribute(REQUEST_METRICS_ATTRIBUTE).orElse(null) instanceof RequestMetrics metrics) {
-            metrics.responded(resolvePath(request), response);
+            metrics.responded(request, resolvePath(request), response);
         }
     }
 
@@ -190,6 +195,10 @@ final class ServerMetricsFilter implements Ordered {
         private boolean deferred;
         // the tags of the last response, published by the volatile write of responded
         @Nullable
+        private HttpRequest<?> request;
+        @Nullable
+        private HttpResponse<?> response;
+        @Nullable
         private String path;
         private int status;
         @Nullable
@@ -209,10 +218,11 @@ final class ServerMetricsFilter implements Ordered {
          * Takes the tags of the response. If the response filters run again for the request, the
          * tags of the response that replaces the first one are recorded.
          *
+         * @param request  The request
          * @param path     The path of the request
          * @param response The response
          */
-        void responded(String path, HttpResponse<?> response) {
+        void responded(HttpRequest<?> request, String path, HttpResponse<?> response) {
             int code = response.code();
             Throwable error = RouteAttributes.getException(response).orElse(null);
             if (error != null && code < 400
@@ -221,6 +231,8 @@ final class ServerMetricsFilter implements Ordered {
                 // exception handler keeps the exception, see HttpResponseProvider
                 error = null;
             }
+            this.request = request;
+            this.response = response;
             this.path = path;
             this.status = code;
             this.exception = error;
@@ -261,6 +273,10 @@ final class ServerMetricsFilter implements Ordered {
                 return;
             }
             try {
+                HttpMetricsTagProvider[] tagProviders = filter.tagProviders;
+                Tags providedTags = tagProviders.length == 0
+                    ? null
+                    : WebMetricsHelper.providedTags(tagProviders, request, response, RouteAttributes.getException(response).orElse(null));
                 WebMetricsHelper.recordTimer(
                     filter.meterRegistry.get(),
                     HttpServerMeterConfig.REQUESTS_METRIC,
@@ -270,7 +286,8 @@ final class ServerMetricsFilter implements Ordered {
                     null,
                     filter.reportClientErrorURIs,
                     status,
-                    exception
+                    exception,
+                    providedTags
                 );
             } catch (RuntimeException e) {
                 // the recording runs when the request is released, which must not fail
