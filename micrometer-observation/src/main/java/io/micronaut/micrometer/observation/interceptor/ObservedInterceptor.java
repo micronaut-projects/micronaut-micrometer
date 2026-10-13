@@ -60,6 +60,7 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
 
     private final ObservationRegistry observationRegistry;
     private final ConversionService conversionService;
+    @SuppressWarnings("java:S3077") // copy-on-write: a published map is never mutated
     private volatile Map<ExecutableMethod<?, ?>, ObservedMethod> observedMethods = new IdentityHashMap<>();
 
     public ObservedInterceptor(ObservationRegistry observationRegistry, ConversionService conversionService) {

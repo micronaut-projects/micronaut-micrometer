@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 final class ObservedSubscriber<T> implements CoreSubscriber<T>, Subscription, Scannable {
 
     @SuppressWarnings("rawtypes")
-    private static final AtomicIntegerFieldUpdater<ObservedSubscriber> STOPPED =
+    private static final AtomicIntegerFieldUpdater<ObservedSubscriber> STOPPED_UPDATER =
         AtomicIntegerFieldUpdater.newUpdater(ObservedSubscriber.class, "stopped");
 
     private final CoreSubscriber<? super T> actual;
@@ -170,7 +170,7 @@ final class ObservedSubscriber<T> implements CoreSubscriber<T>, Subscription, Sc
     }
 
     private void stop(@Nullable Throwable error) {
-        if (STOPPED.compareAndSet(this, 0, 1)) {
+        if (STOPPED_UPDATER.compareAndSet(this, 0, 1)) {
             if (error != null) {
                 observation.error(ObservedInterceptor.unwrap(error));
             }
