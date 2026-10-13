@@ -33,6 +33,17 @@ public class ObservedLifecycleTarget {
         throw new IllegalStateException("sync");
     }
 
+    @Observed(name = "#{ 'observed.lifecycle.concurrent.' + ctx[T(io.micronaut.micrometer.observation.annotation.FirstCallBarrier)].arrive(#arg) }",
+        lowCardinalityKeyValues = {"arg", "#{ #arg }"})
+    String concurrentExpression(String arg) {
+        return arg;
+    }
+
+    @Observed(name = "observed.lifecycle.future.sync.error")
+    CompletableFuture<Integer> futureSyncError() {
+        throw new AssertionError("direct");
+    }
+
     @Observed(name = "observed.lifecycle.future.sync.throw")
     CompletableFuture<Integer> futureSyncThrow() {
         throw new IllegalStateException("sync");

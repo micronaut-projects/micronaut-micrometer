@@ -127,6 +127,11 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
             observation.error(e);
             observation.stop();
             return interceptedMethod.handleException(e);
+        } catch (Error e) {
+            // the observation was started
+            observation.error(e);
+            observation.stop();
+            throw e;
         }
         return interceptedMethod.handleResult(completionStage.whenComplete((o, throwable) -> {
             if (throwable != null) {
@@ -144,7 +149,12 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
             return cached.dynamic ? resolveObservedMethod(context) : cached;
         }
         final ObservedMethod resolved = resolveObservedMethod(context);
-        return resolved != null ? cache(method, resolved) : null;
+        if (resolved != null) {
+            // a concurrent first invocation may have cached its own: the evaluated values are those
+            // of this invocation
+            cache(method, resolved);
+        }
+        return resolved;
     }
 
     private synchronized ObservedMethod cache(ExecutableMethod<?, ?> method, ObservedMethod observedMethod) {

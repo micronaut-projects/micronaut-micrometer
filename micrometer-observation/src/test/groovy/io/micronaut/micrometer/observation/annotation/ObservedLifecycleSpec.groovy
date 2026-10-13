@@ -13,7 +13,11 @@ import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.ExecutionException
 
 class ObservedLifecycleSpec extends Specification {
@@ -139,6 +143,42 @@ class ObservedLifecycleSpec extends Specification {
         handler.events("observed.lifecycle.future.sync.throw") == ["start", "error:IllegalStateException", "stop"]
     }
 
+    void "a CompletionStage method that throws an Error before returning its stage stops the observation"() {
+        when:
+        target.futureSyncError()
+
+        then:
+        def e = thrown(AssertionError)
+        e.message == 'direct'
+        handler.events("observed.lifecycle.future.sync.error") == ["start", "error:AssertionError", "stop"]
+    }
+
+    void "concurrent first invocations of a method with expressions observe their own evaluated values"() {
+        given:
+        CyclicBarrier barrier = new CyclicBarrier(2)
+
+        when:
+        List<String> results = ['alpha', 'beta'].collect { String arg ->
+            CompletableFuture.supplyAsync {
+                FirstCallBarrier.arm(barrier)
+                target.concurrentExpression(arg)
+            }
+        }*.get(10, TimeUnit.SECONDS)
+
+        then:
+        results == ['alpha', 'beta']
+        handler.events("observed.lifecycle.concurrent.alpha") == ["start", "stop"]
+        handler.events("observed.lifecycle.concurrent.beta") == ["start", "stop"]
+        handler.keyValue("observed.lifecycle.concurrent.alpha", "arg") == "alpha"
+        handler.keyValue("observed.lifecycle.concurrent.beta", "arg") == "beta"
+
+        when: 'the cached method is invoked again'
+        target.concurrentExpression('gamma')
+
+        then:
+        handler.events("observed.lifecycle.concurrent.gamma") == ["start", "stop"]
+    }
+
     void "the cause of a CompletionException is recorded as the error"() {
         when:
         target.futureAsyncError().get()
@@ -165,6 +205,11 @@ class ObservedLifecycleSpec extends Specification {
     static class RecordingHandler implements ObservationHandler<Observation.Context> {
 
         private final Queue<List<String>> events = new ConcurrentLinkedQueue<>()
+        private final Map<String, Observation.Context> started = new ConcurrentHashMap<>()
+
+        String keyValue(String name, String key) {
+            started[name]?.getLowCardinalityKeyValue(key)?.value
+        }
 
         List<String> events(String name) {
             events.findAll { it[0] == name }.collect { it[1] }
@@ -172,6 +217,7 @@ class ObservedLifecycleSpec extends Specification {
 
         @Override
         void onStart(Observation.Context context) {
+            started[context.name] = context
             events.add([context.name, "start"])
         }
 
