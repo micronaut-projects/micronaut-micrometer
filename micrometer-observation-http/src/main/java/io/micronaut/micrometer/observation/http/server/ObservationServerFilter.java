@@ -144,6 +144,8 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
         private boolean deferred;
         // published by the volatile write of responded
         private PropagatedContext propagatedContext = PropagatedContext.empty();
+        // published by the volatile write of responded
+        private @Nullable Throwable error;
         private volatile boolean responded;
         private volatile boolean released;
         @SuppressWarnings("unused") // accessed through STOPPED_HANDLE
@@ -167,10 +169,13 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
             Throwable exception = RouteAttributes.getException(response).orElse(null);
             // an error route that answered successfully recovered from the exception, as in the
             // server metrics filter. The response of an exception handler keeps the exception
-            if (exception != null && (response.code() >= 400
-                || !(RouteAttributes.getRouteInfo(response).orElse(null) instanceof ErrorRouteInfo<?, ?>))) {
-                observation.error(exception);
+            if (exception != null && response.code() < 400
+                && RouteAttributes.getRouteInfo(response).orElse(null) instanceof ErrorRouteInfo<?, ?>) {
+                exception = null;
             }
+            // the error of the final response is reported when the observation is stopped: a
+            // response that replaces this one has its own
+            error = exception;
             context.setResponse(response);
             propagatedContext = PropagatedContext.getOrEmpty();
             responded = true;
@@ -205,6 +210,10 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
                 return;
             }
             try {
+                Throwable responseError = error;
+                if (responseError != null) {
+                    observation.error(responseError);
+                }
                 observation.stop();
             } catch (RuntimeException e) {
                 // the observation is stopped when the request is released, which must not fail

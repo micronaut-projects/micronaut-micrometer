@@ -16,6 +16,7 @@ import io.micronaut.http.filter.ServerFilterPhase
 import io.micronaut.micrometer.observation.http.server.ObservationServerFilter
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.body.MessageBodyWriter
@@ -24,6 +25,7 @@ import io.micronaut.http.client.StreamingHttpClient
 import io.micronaut.http.client.exceptions.HttpClientException
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.codec.CodecException
+import io.micronaut.http.server.exceptions.ExceptionHandler
 import io.micronaut.runtime.server.EmbeddedServer
 import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
@@ -86,6 +88,24 @@ class ObservationHttpLifecycleSpec extends Specification {
             assert server.size() == 1
             assert server[0].id.getTag('status') == '500'
             assert server[0].id.getTag('exception') == 'IllegalStateException'
+            assert server[0].count() == 1
+            assert activeTasks(SERVER) == 0
+        }
+    }
+
+    void 'a successful error route that replaces a response whose body cannot be written is not an error'() {
+        when: 'the exception handler response of the controller exception cannot be written and an error route recovers'
+        HttpResponse<String> response = client.toBlocking().exchange('/lifecycle/recovered-writer-error', String)
+
+        then:
+        response.code() == 200
+        response.body() == 'recovered'
+        conditions.eventually {
+            List<Timer> server = timers(SERVER, '/lifecycle/recovered-writer-error')
+            assert server.size() == 1
+            assert server[0].id.getTag('status') == '200'
+            assert server[0].id.getTag('exception') == 'none'
+            assert server[0].id.getTag('error') == 'none'
             assert server[0].count() == 1
             assert activeTasks(SERVER) == 0
         }
@@ -234,6 +254,11 @@ class ObservationHttpLifecycleSpec extends Specification {
             new FailingBody()
         }
 
+        @Get('/recovered-writer-error')
+        String recoveredWriterError() {
+            throw new BusinessException()
+        }
+
         @Get(value = '/stream', produces = MediaType.TEXT_PLAIN)
         Publisher<String> stream() {
             Flux.range(1, 3).delayElements(Duration.ofMillis(100)).map(i -> 'chunk-' + i + '\n')
@@ -251,6 +276,45 @@ class ObservationHttpLifecycleSpec extends Specification {
     }
 
     static class FailingBody {
+    }
+
+    static class RecoverableBody {
+    }
+
+    static class BusinessException extends RuntimeException {
+    }
+
+    static class RecoverableWriteException extends RuntimeException {
+    }
+
+    @Requires(property = 'spec.name', value = SPEC_NAME)
+    @Singleton
+    @Produces
+    static class BusinessExceptionHandler implements ExceptionHandler<BusinessException, HttpResponse<?>> {
+        @Override
+        HttpResponse<?> handle(HttpRequest request, BusinessException exception) {
+            HttpResponse.badRequest(new RecoverableBody()).contentType(MediaType.TEXT_PLAIN_TYPE)
+        }
+    }
+
+    @Requires(property = 'spec.name', value = SPEC_NAME)
+    @Singleton
+    @Produces(MediaType.TEXT_PLAIN)
+    static class RecoverableBodyWriter implements MessageBodyWriter<RecoverableBody> {
+        @Override
+        void writeTo(Argument<RecoverableBody> type, MediaType mediaType, RecoverableBody object, MutableHeaders outgoingHeaders, OutputStream outputStream) throws CodecException {
+            throw new RecoverableWriteException()
+        }
+    }
+
+    @Requires(property = 'spec.name', value = SPEC_NAME)
+    @Controller('/recovery')
+    static class RecoveryController {
+
+        @Error(global = true, exception = RecoverableWriteException)
+        HttpResponse<String> recover() {
+            HttpResponse.ok('recovered')
+        }
     }
 
     @Requires(property = 'spec.name', value = SPEC_NAME)
