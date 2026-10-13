@@ -2,6 +2,7 @@ package io.micronaut.configuration.metrics.binder.logging
 
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Meter
+import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics
 import io.micrometer.core.instrument.cumulative.CumulativeCounter
 import io.micrometer.core.instrument.simple.SimpleConfig
@@ -57,6 +58,28 @@ class LogbackMeterRegistryBinderFactorySpec extends Specification {
 
         cleanup:
         context.close()
+    }
+
+    void "closing the context removes the turbo filter and the reset listener"() {
+        given:
+        def loggerContext = LoggerFactory.getILoggerFactory()
+        def filtersBefore = loggerContext.turboFilterList.toList()
+        ApplicationContext context = ApplicationContext.run()
+        context.getBean(MeterRegistry)
+        MicronautLogbackMetrics logbackMetrics = (MicronautLogbackMetrics) context.getBean(LogbackMetrics)
+        def added = loggerContext.turboFilterList.findAll { !filtersBefore.contains(it) }
+
+        expect:
+        added.size() == 1
+        added[0] instanceof MicronautLogbackMetrics.MetricsTurboFilter
+        loggerContext.copyOfListenerList.contains(logbackMetrics.@resetListener)
+
+        when:
+        context.close()
+
+        then:
+        !loggerContext.turboFilterList.contains(added[0])
+        !loggerContext.copyOfListenerList.contains(logbackMetrics.@resetListener)
     }
 
     @Unroll

@@ -4,8 +4,13 @@ import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
+import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
+
+import javax.management.ListenerNotFoundException
+import javax.management.NotificationEmitter
+import java.lang.management.ManagementFactory
 import spock.lang.Unroll
 
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -37,6 +42,33 @@ class JvmMeterRegistryBinderFactorySpec extends Specification {
 
         cleanup:
         context.close()
+    }
+
+    void "closing the context removes the GC notification listener"() {
+        given:
+        ApplicationContext context = ApplicationContext.run()
+        context.getBean(MeterRegistry)
+        JvmGcMetrics gcMetrics = context.getBean(JvmGcMetrics)
+        def listener = gcMetrics.@gcNotificationListener
+        def emitters = ManagementFactory.garbageCollectorMXBeans.findAll { it instanceof NotificationEmitter }
+
+        expect:
+        listener != null
+        !emitters.isEmpty()
+
+        when:
+        context.close()
+        def stillRegistered = emitters.findAll { emitter ->
+            try {
+                ((NotificationEmitter) emitter).removeNotificationListener(listener)
+                true
+            } catch (ListenerNotFoundException ignored) {
+                false
+            }
+        }
+
+        then:
+        stillRegistered.isEmpty()
     }
 
     @Unroll
