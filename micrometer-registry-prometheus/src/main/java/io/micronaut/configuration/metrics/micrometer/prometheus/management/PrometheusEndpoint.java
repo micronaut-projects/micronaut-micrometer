@@ -21,6 +21,7 @@ import io.micronaut.configuration.metrics.micrometer.prometheus.PrometheusMeterR
 import io.micronaut.context.annotation.Property;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.management.endpoint.annotation.Endpoint;
@@ -41,6 +42,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +54,8 @@ import java.util.concurrent.ExecutorService;
  *
  * <p>The format of the scrape is negotiated from the {@code Accept} header: the Prometheus text format
  * ({@value #TEXT_FORMAT}), the OpenMetrics text format ({@value #OPENMETRICS_FORMAT}) or the Prometheus protobuf
- * format ({@value #PROTOBUF_FORMAT}). The text format is used when the header asks for none of them.</p>
+ * format ({@value #PROTOBUF_FORMAT}). The acceptable format with the highest quality is used, a format with
+ * {@code q=0} is never used, and the text format is used when the header accepts none of the others.</p>
  *
  * @author graemerocher
  * @since 1.1
@@ -165,12 +170,61 @@ public class PrometheusEndpoint {
         return HttpResponse.ok(buffer.toInputStream()).contentType(writer.getContentType());
     }
 
+    /**
+     * The writer of the acceptable media range with the highest quality that has a writer. The Prometheus writers
+     * match media types without their quality, so each acceptable range is matched on its own, and a range with
+     * {@code q=0} is never matched.
+     *
+     * @param accept The {@code Accept} header
+     * @return The writer, the Prometheus text format when no acceptable range has another writer
+     */
     private ExpositionFormatWriter findWriter(@Nullable String accept) {
-        ExpositionFormatWriter writer = expositionFormats.findWriter(accept);
-        if (!openMetricsEnabled && (writer instanceof OpenMetricsTextFormatWriter || writer instanceof OpenMetrics2TextFormatWriter)) {
-            return expositionFormats.getPrometheusTextFormatWriter();
+        ExpositionFormatWriter textWriter = expositionFormats.getPrometheusTextFormatWriter();
+        if (accept == null || accept.isBlank()) {
+            return textWriter;
         }
-        return writer;
+        for (AcceptedRange range : acceptedRanges(accept)) {
+            MediaType mediaType = range.mediaType();
+            if (mediaType.matches(MediaType.TEXT_PLAIN_TYPE)) {
+                // text/plain, text/* or */*
+                return textWriter;
+            }
+            ExpositionFormatWriter writer = expositionFormats.findWriter(range.value());
+            if (writer != textWriter && (openMetricsEnabled || !isOpenMetrics(writer))) {
+                return writer;
+            }
+        }
+        return textWriter;
+    }
+
+    private static boolean isOpenMetrics(ExpositionFormatWriter writer) {
+        return writer instanceof OpenMetricsTextFormatWriter || writer instanceof OpenMetrics2TextFormatWriter;
+    }
+
+    /**
+     * @param accept The {@code Accept} header
+     * @return The acceptable media ranges, with the highest quality first and in the order of the header for equal
+     * qualities
+     */
+    private static List<AcceptedRange> acceptedRanges(String accept) {
+        List<AcceptedRange> ranges = new ArrayList<>();
+        for (String value : accept.split(",")) {
+            String trimmed = value.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            try {
+                MediaType mediaType = MediaType.of(trimmed);
+                if (mediaType.getQualityAsNumber().signum() > 0) {
+                    ranges.add(new AcceptedRange(trimmed, mediaType));
+                }
+            } catch (IllegalArgumentException e) {
+                // an invalid range is not acceptable
+            }
+        }
+        // a stable sort keeps the order of the header for equal qualities
+        ranges.sort(Comparator.comparing((AcceptedRange range) -> range.mediaType().getQualityAsNumber()).reversed());
+        return ranges;
     }
 
     private static PrometheusProperties prometheusProperties(PrometheusConfig prometheusConfig) {
@@ -188,6 +242,15 @@ public class PrometheusEndpoint {
     static int initialBufferSize(int previousSize) {
         long size = (long) previousSize + (previousSize >> 3);
         return (int) Math.min(MAX_BUFFER_SIZE, Math.max(MIN_BUFFER_SIZE, size));
+    }
+
+    /**
+     * An acceptable media range of the {@code Accept} header.
+     *
+     * @param value     The range as it appears in the header
+     * @param mediaType The parsed range
+     */
+    private record AcceptedRange(String value, MediaType mediaType) {
     }
 
     /**

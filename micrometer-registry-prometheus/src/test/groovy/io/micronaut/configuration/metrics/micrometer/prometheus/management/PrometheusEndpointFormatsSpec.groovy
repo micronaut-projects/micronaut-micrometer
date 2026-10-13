@@ -67,6 +67,26 @@ class PrometheusEndpointFormatsSpec extends Specification {
         accept << ['application/openmetrics-text', PROMETHEUS_ACCEPT]
     }
 
+    void "the quality of the accepted formats selects #expected for #accept"() {
+        when:
+        HttpResponse<byte[]> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, accept), byte[])
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == expected
+
+        where:
+        accept                                                                                                      | expected
+        // a format with q=0 is not acceptable
+        'text/plain;q=1, application/openmetrics-text;q=0'                                                          | PrometheusEndpoint.TEXT_FORMAT
+        'application/openmetrics-text;q=0, text/plain'                                                              | PrometheusEndpoint.TEXT_FORMAT
+        'application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0, */*;q=0.1' | PrometheusEndpoint.TEXT_FORMAT
+        // the format with the highest quality wins, whatever its position in the header
+        'text/plain;q=1, application/openmetrics-text;q=0.1'                                                        | PrometheusEndpoint.TEXT_FORMAT
+        'text/plain;q=0.2, application/openmetrics-text;q=0.9'                                                      | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'application/openmetrics-text;q=1, text/plain;q=0.5'                                                        | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'text/plain;q=0.3, application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0.7' | PrometheusEndpoint.PROTOBUF_FORMAT
+    }
+
     void "the protobuf format is returned when it is asked for"() {
         when:
         HttpResponse<byte[]> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, PROTOBUF_ACCEPT), byte[])
