@@ -146,6 +146,38 @@ class PropertiesMeterFilterSpec extends Specification {
         ctx.close()
     }
 
+    void "fractions of a millisecond are kept for timers"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run([
+                'micronaut.metrics.distribution.slo.frac.timer'                  : ['0.5', '1.5'],
+                'micronaut.metrics.distribution.slo.frac.duration'               : ['PT0.0005S', 'PT0.0015S'],
+                'micronaut.metrics.distribution.minimum-expected-value.frac'     : '0.25',
+                'micronaut.metrics.distribution.maximum-expected-value.frac'     : '2.5'
+        ])
+        PropertiesMeterFilter filter = ctx.getBean(PropertiesMeterFilter)
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+
+        when:
+        DistributionStatisticConfig numbers = filter.configure(id('frac.timer', Meter.Type.TIMER), DistributionStatisticConfig.NONE)
+        DistributionStatisticConfig durations = filter.configure(id('frac.duration', Meter.Type.TIMER), DistributionStatisticConfig.NONE)
+
+        then: 'a plain number is the same value as the equivalent duration'
+        numbers.serviceLevelObjectiveBoundaries == [500_000d, 1_500_000d] as double[]
+        durations.serviceLevelObjectiveBoundaries == numbers.serviceLevelObjectiveBoundaries
+        numbers.minimumExpectedValueAsDouble == 250_000d
+        numbers.maximumExpectedValueAsDouble == 2_500_000d
+
+        when: 'a timer with a sub millisecond boundary is registered'
+        Timer timer = registry.timer('frac.timer')
+        timer.record(Duration.ofNanos(400_000))
+
+        then:
+        timer.takeSnapshot().histogramCounts()*.bucket() == [500_000d, 1_500_000d]
+
+        cleanup:
+        ctx.close()
+    }
+
     void "distribution summaries use plain numbers and ignore durations"() {
         given:
         ApplicationContext ctx = ApplicationContext.run([

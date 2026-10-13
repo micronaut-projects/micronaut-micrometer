@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 @Internal
 record MeterValue(@Nullable Double number, @Nullable Duration duration) {
 
+    private static final double NANOS_PER_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
+
     /**
      * Parse a configured value.
      *
@@ -70,7 +72,8 @@ record MeterValue(@Nullable Double number, @Nullable Duration duration) {
                 if (duration != null) {
                     yield (double) duration.toNanos();
                 }
-                yield number == null ? null : (double) TimeUnit.MILLISECONDS.toNanos(number.longValue());
+                // a fraction of a millisecond is kept, 0.5 is 500 microseconds
+                yield number == null ? null : number * NANOS_PER_MILLI;
             }
             case DISTRIBUTION_SUMMARY -> number;
             default -> null;
