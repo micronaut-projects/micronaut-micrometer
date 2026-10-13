@@ -39,7 +39,7 @@ def regexps = { String name -> csv(name).map { List<String> list -> list.size() 
 
 // Short runs by default: the numbers are indicative, see README.md.
 // Override with -Pjmh.includes=..., -Pjmh.fork=..., -Pjmh.iterations=..., -Pjmh.warmupIterations=...,
-// -Pjmh.warmup=2s, -Pjmh.timeOnIteration=2s, -Pjmh.profilers=gc, -Pjmh.params=name=v1|v2;other=v3
+// -Pjmh.warmup=2s, -Pjmh.timeOnIteration=2s, -Pjmh.threads=1, -Pjmh.profilers=gc, -Pjmh.params=name=v1|v2;other=v3
 jmh {
     includes = regexps('jmh.includes').getOrElse([])
     excludes = regexps('jmh.excludes').getOrElse([])
@@ -48,6 +48,7 @@ jmh {
     iterations = providers.gradleProperty('jmh.iterations').map { it as int }.getOrElse(5)
     warmup = providers.gradleProperty('jmh.warmup').getOrElse('2s')
     timeOnIteration = providers.gradleProperty('jmh.timeOnIteration').getOrElse('2s')
+    threads = providers.gradleProperty('jmh.threads').map { it as int }.getOrElse(1)
     profilers = csv('jmh.profilers').getOrElse([])
     jmhVersion = libs.versions.jmh.asProvider().get()
     resultFormat = 'JSON'

@@ -43,7 +43,8 @@ import java.util.concurrent.TimeUnit;
  * {@code OBSERVATION_NOOP} runs against a registry without handlers, {@code NOOP_HANDLER} with a handler
  * that does nothing, {@code OBSERVATION} with the {@code DefaultMeterObservationHandler} ({@code OBSERVATION_NO_LTT}
  * without its long task timer). The observation attributes are removed after each call, as the filter skips a
- * request it has already seen.
+ * request it has already seen. Each worker thread has its own request and response ({@link Exchange}), so the
+ * observation of one worker is never seen by another.
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -57,17 +58,15 @@ public class ObservationServerFilterBenchmark {
 
     private ApplicationContext context;
     private ObservationServerFilter filter;
-    private MutableHttpRequest<?> request;
-    private MutableHttpResponse<?> response;
 
     @Setup(Level.Trial)
     public void setup() {
         context = Contexts.start(mode);
         Contexts.assertServerFilters(context, mode);
         filter = context.getBean(ObservationServerFilter.class);
-        request = Contexts.routedRequest(context, "/bench/1");
-        response = HttpResponse.ok("Hello 1");
-        filter();
+        Exchange exchange = new Exchange();
+        exchange.setup(this);
+        filter(exchange);
         Contexts.assertMeter(context, "http.server.requests", mode);
     }
 
@@ -79,12 +78,29 @@ public class ObservationServerFilterBenchmark {
     }
 
     @Benchmark
-    public MutablePropagatedContext filter() {
+    public MutablePropagatedContext filter(Exchange exchange) {
+        MutableHttpRequest<?> request = exchange.request;
         MutablePropagatedContext propagatedContext = MutablePropagatedContext.of(PropagatedContext.empty());
         filter.request(request, propagatedContext);
-        filter.response(request, response);
+        filter.response(request, exchange.response);
         request.getAttributes().remove(SERVER_OBSERVATION_ATTRIBUTE);
         request.getAttributes().remove(AbstractObservationFilter.MICROMETER_OBSERVATION_ATTRIBUTE_KEY);
         return propagatedContext;
+    }
+
+    /**
+     * The request and response of a worker thread.
+     */
+    @State(Scope.Thread)
+    public static class Exchange {
+
+        private MutableHttpRequest<?> request;
+        private MutableHttpResponse<?> response;
+
+        @Setup(Level.Trial)
+        public void setup(ObservationServerFilterBenchmark benchmark) {
+            request = Contexts.routedRequest(benchmark.context, "/bench/1");
+            response = HttpResponse.ok("Hello 1");
+        }
     }
 }

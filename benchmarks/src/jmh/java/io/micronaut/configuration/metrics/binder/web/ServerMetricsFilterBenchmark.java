@@ -50,7 +50,8 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  * The request is a client {@code MutableHttpRequest} (not the server's Netty request), so the attribute
  * access may differ slightly from the server, and the timer is recorded in the response filter (there is
- * no request lifecycle to defer it to).
+ * no request lifecycle to defer it to). Each worker thread has its own request and response
+ * ({@link Exchange}), so the request state of one worker is never seen by another.
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -74,20 +75,18 @@ public class ServerMetricsFilterBenchmark {
 
     private ApplicationContext context;
     private ServerMetricsFilter filter;
-    private MutableHttpRequest<?> request;
-    private MutableHttpResponse<?> response;
 
     @Setup(Level.Trial)
     public void setup() {
         context = Contexts.start(mode);
         filter = context.getBean(ServerMetricsFilter.class);
-        request = Contexts.routedRequest(context, "/bench/1");
-        response = HttpResponse.ok("Hello 1");
-        String path = resolvePath();
+        Exchange exchange = new Exchange();
+        exchange.setup(this);
+        String path = resolvePath(exchange);
         if (!"/bench/{id}".equals(path)) {
             throw new IllegalStateException("Unexpected path " + path);
         }
-        filter();
+        filter(exchange);
         Contexts.assertMeter(context, "http.server.requests", mode);
     }
 
@@ -99,18 +98,34 @@ public class ServerMetricsFilterBenchmark {
     }
 
     @Benchmark
-    public String resolvePath() {
+    public String resolvePath(Exchange exchange) {
         try {
-            return (String) RESOLVE_PATH.invokeExact((HttpRequest<?>) request);
+            return (String) RESOLVE_PATH.invokeExact((HttpRequest<?>) exchange.request);
         } catch (Throwable e) {
             throw new IllegalStateException(e);
         }
     }
 
     @Benchmark
-    public void filter() {
-        filter.onRequest(request);
-        filter.onResponse(request, response);
-        request.getAttributes().remove(REQUEST_METRICS_ATTRIBUTE);
+    public void filter(Exchange exchange) {
+        filter.onRequest(exchange.request);
+        filter.onResponse(exchange.request, exchange.response);
+        exchange.request.getAttributes().remove(REQUEST_METRICS_ATTRIBUTE);
+    }
+
+    /**
+     * The request and response of a worker thread.
+     */
+    @State(Scope.Thread)
+    public static class Exchange {
+
+        private MutableHttpRequest<?> request;
+        private MutableHttpResponse<?> response;
+
+        @Setup(Level.Trial)
+        public void setup(ServerMetricsFilterBenchmark benchmark) {
+            request = Contexts.routedRequest(benchmark.context, "/bench/1");
+            response = HttpResponse.ok("Hello 1");
+        }
     }
 }

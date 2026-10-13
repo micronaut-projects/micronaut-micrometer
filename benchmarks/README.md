@@ -70,7 +70,8 @@ jfr view --width 200 allocation-by-site /tmp/jfr/*METRICS*/profile.jfr
 
 All the properties: `jmh.includes`, `jmh.excludes` (comma separated regular expressions), `jmh.params`
 (`name=v1|v2;other=v3`), `jmh.profilers` (comma separated, e.g. `gc`, `jfr`, `stack`), `jmh.fork`,
-`jmh.warmupIterations`, `jmh.iterations`, `jmh.warmup`, `jmh.timeOnIteration` and `jmh.resultsFile`.
+`jmh.warmupIterations`, `jmh.iterations`, `jmh.warmup`, `jmh.timeOnIteration`, `jmh.threads` (worker threads,
+1 by default) and `jmh.resultsFile`.
 
 Results are written to `benchmarks/build/results/jmh/results.json` (or `-Pjmh.resultsFile`). Compare
 `gc.alloc.rate.norm` (bytes allocated per operation, "B/op"): it is far more stable than throughput on a
