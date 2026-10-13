@@ -14,12 +14,16 @@ import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Sinks
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import java.security.KeyStore
 import java.time.Duration
 import java.time.Instant
 
 class SslCertificateMetricsBinderSpec extends Specification {
+
+    @TempDir
+    File tempDir
 
     void "the binder does not exist without certificate providers"() {
         given:
@@ -51,6 +55,29 @@ class SslCertificateMetricsBinderSpec extends Specification {
         Math.abs(gauge.value() - Duration.ofDays(10).toSeconds()) < 120
         // the trust store of the provider is its key store, so it is not reported twice
         registry.find('ssl.chain.expiry').tag('store', 'trust-store').gauges().empty
+
+        cleanup:
+        ctx.close()
+    }
+
+    void "the default trust store of a resource certificate provider is not reported twice"() {
+        given: 'a provider whose key store and trust store publishers are new publishers of the same store'
+        X509Bundle certificate = bundle('CN=resource', Duration.ofDays(15))
+        File file = new File(tempDir, 'resource.p12')
+        file.withOutputStream { certificate.toKeyStore('secret'.toCharArray()).store(it, 'secret'.toCharArray()) }
+        ApplicationContext ctx = ApplicationContext.run([
+                'micronaut.certificate.resource.res-cert.resource': file.toURI().toString(),
+                'micronaut.certificate.resource.res-cert.password': 'secret'
+        ])
+        MeterRegistry registry = ctx.getBean(MeterRegistry)
+        CertificateProvider provider = ctx.getBean(CertificateProvider, Qualifiers.byName('res-cert'))
+
+        expect:
+        !provider.keyStore.is(provider.trustStore)
+        List<Gauge> keyStoreGauges = registry.find('ssl.chain.expiry').tag('provider', 'res-cert').tag('store', 'key-store').gauges().toList()
+        !keyStoreGauges.empty
+        keyStoreGauges.every { Math.abs(it.value() - Duration.ofDays(15).toSeconds()) < 120 }
+        registry.find('ssl.chain.expiry').tag('provider', 'res-cert').tag('store', 'trust-store').gauges().empty
 
         cleanup:
         ctx.close()

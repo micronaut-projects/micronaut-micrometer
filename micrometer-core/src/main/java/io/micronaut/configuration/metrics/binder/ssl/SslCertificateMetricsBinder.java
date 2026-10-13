@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,7 @@ public class SslCertificateMetricsBinder implements MeterBinder, BeanCreatedEven
     private static final String TRUST_STORE = "trust-store";
 
     private final Map<String, List<ChainExpiry>> expiries = new LinkedHashMap<>();
+    private final Map<String, StoreExpiries> stores = new HashMap<>();
     private final List<RegistryGauge> gauges = new ArrayList<>(1);
     private final List<Disposable> subscriptions = new ArrayList<>();
 
@@ -99,7 +101,8 @@ public class SslCertificateMetricsBinder implements MeterBinder, BeanCreatedEven
         Publisher<KeyStore> keyStore = provider.getKeyStore();
         Publisher<KeyStore> trustStore = provider.getTrustStore();
         subscribe(provider.getName(), KEY_STORE, keyStore);
-        // by default the trust store is the key store
+        // by default the trust store is the key store. A provider can still return a new publisher of
+        // the same key store, which update recognizes by the store it emits
         if (trustStore != keyStore) {
             subscribe(provider.getName(), TRUST_STORE, trustStore);
         }
@@ -124,9 +127,8 @@ public class SslCertificateMetricsBinder implements MeterBinder, BeanCreatedEven
     }
 
     private void subscribe(String provider, String store, Publisher<KeyStore> publisher) {
-        String key = provider + '\u0000' + store;
         Disposable subscription = Flux.from(publisher).subscribe(
-            keyStore -> update(key, readExpiries(provider, store, keyStore)),
+            keyStore -> update(provider, store, keyStore, readExpiries(provider, store, keyStore)),
             error -> LOG.warn("Failed to read the {} of certificate provider '{}' for SSL certificate metrics", store, provider, error)
         );
         synchronized (this) {
@@ -134,11 +136,27 @@ public class SslCertificateMetricsBinder implements MeterBinder, BeanCreatedEven
         }
     }
 
-    private synchronized void update(String key, List<ChainExpiry> chains) {
-        expiries.put(key, chains);
+    private synchronized void update(String provider, String store, KeyStore keyStore, List<ChainExpiry> chains) {
+        stores.put(key(provider, store), new StoreExpiries(keyStore, chains));
+        StoreExpiries keyStoreExpiries = stores.get(key(provider, KEY_STORE));
+        StoreExpiries trustStoreExpiries = stores.get(key(provider, TRUST_STORE));
+        if (keyStoreExpiries != null) {
+            expiries.put(key(provider, KEY_STORE), keyStoreExpiries.chains());
+        }
+        // a trust store that is the key store is reported once, as the key store
+        if (trustStoreExpiries == null
+            || keyStoreExpiries != null && trustStoreExpiries.keyStore() == keyStoreExpiries.keyStore()) {
+            expiries.remove(key(provider, TRUST_STORE));
+        } else {
+            expiries.put(key(provider, TRUST_STORE), trustStoreExpiries.chains());
+        }
         for (RegistryGauge gauge : gauges) {
             gauge.update(expiries);
         }
+    }
+
+    private static String key(String provider, String store) {
+        return provider + '\u0000' + store;
     }
 
     private static List<ChainExpiry> readExpiries(String provider, String store, KeyStore keyStore) {
@@ -173,6 +191,15 @@ public class SslCertificateMetricsBinder implements MeterBinder, BeanCreatedEven
      * @param notAfter The expiry
      */
     private record ChainExpiry(Tags tags, Instant notAfter) {
+    }
+
+    /**
+     * The expiries of the latest key store a publisher of a provider emitted.
+     *
+     * @param keyStore The key store
+     * @param chains   The expiries of its chains
+     */
+    private record StoreExpiries(KeyStore keyStore, List<ChainExpiry> chains) {
     }
 
     /**
