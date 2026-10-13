@@ -174,7 +174,7 @@ final class HttpClientPoolMetricsCustomizer implements NettyClientCustomizer {
      */
     private static final class ActiveRequestHandler extends ChannelHandlerAdapter {
         private final HttpClientPoolMetrics metrics;
-        private boolean added;
+        private boolean counted;
 
         private ActiveRequestHandler(HttpClientPoolMetrics metrics) {
             this.metrics = metrics;
@@ -182,14 +182,14 @@ final class HttpClientPoolMetricsCustomizer implements NettyClientCustomizer {
 
         @Override
         public void handlerAdded(ChannelHandlerContext ctx) {
-            added = true;
+            counted = true;
             metrics.requestStarted();
         }
 
         @Override
         public void handlerRemoved(ChannelHandlerContext ctx) {
-            if (added) {
-                added = false;
+            if (counted) {
+                counted = false;
                 metrics.requestFinished();
             }
         }
