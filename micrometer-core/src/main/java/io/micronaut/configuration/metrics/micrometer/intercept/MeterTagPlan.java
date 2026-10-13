@@ -74,45 +74,35 @@ final class MeterTagPlan {
      * @return The plan, or {@code null} if the method has no {@link MeterTag} annotations
      */
     static @Nullable MeterTagPlan of(MethodInvocationContext<Object, Object> context, @Nullable BeanContext beanContext) {
-        List<TagSource> parameterTags = null;
+        List<TagSource> parameterTags = new ArrayList<>();
         Set<String> parameterKeys = new HashSet<>();
         Argument<?>[] arguments = context.getArguments();
         for (int i = 0; i < arguments.length; i++) {
-            AnnotationMetadata argumentMetadata = arguments[i].getAnnotationMetadata();
-            if (argumentMetadata.hasAnnotation(MeterTag.class) || argumentMetadata.hasAnnotation(MeterTags.class)) {
-                for (AnnotationValue<MeterTag> meterTag : argumentMetadata.getAnnotationValuesByType(MeterTag.class)) {
-                    TagSource source = TagSource.of(meterTag, i, beanContext);
-                    // the first tag with a key wins, as in Micrometer's MeterTagAnnotationHandler
-                    if (parameterKeys.add(source.key)) {
-                        if (parameterTags == null) {
-                            parameterTags = new ArrayList<>();
-                        }
-                        parameterTags.add(source);
-                    }
-                }
-            }
+            addSources(parameterTags, parameterKeys, arguments[i].getAnnotationMetadata(), i, beanContext);
         }
-        List<TagSource> resultTags = null;
-        AnnotationMetadata methodMetadata = context.getExecutableMethod().getAnnotationMetadata();
-        if (methodMetadata.hasAnnotation(MeterTag.class) || methodMetadata.hasAnnotation(MeterTags.class)) {
-            Set<String> resultKeys = new HashSet<>();
-            for (AnnotationValue<MeterTag> meterTag : methodMetadata.getAnnotationValuesByType(MeterTag.class)) {
-                TagSource source = TagSource.of(meterTag, RESULT, beanContext);
-                if (resultKeys.add(source.key)) {
-                    if (resultTags == null) {
-                        resultTags = new ArrayList<>();
-                    }
-                    resultTags.add(source);
-                }
-            }
-        }
-        if (parameterTags == null && resultTags == null) {
+        List<TagSource> resultTags = new ArrayList<>();
+        addSources(resultTags, new HashSet<>(), context.getExecutableMethod().getAnnotationMetadata(), RESULT, beanContext);
+        if (parameterTags.isEmpty() && resultTags.isEmpty()) {
             return null;
         }
-        return new MeterTagPlan(
-            parameterTags == null ? new TagSource[0] : parameterTags.toArray(new TagSource[0]),
-            resultTags == null ? new TagSource[0] : resultTags.toArray(new TagSource[0])
-        );
+        return new MeterTagPlan(parameterTags.toArray(new TagSource[0]), resultTags.toArray(new TagSource[0]));
+    }
+
+    private static void addSources(List<TagSource> sources,
+                                   Set<String> keys,
+                                   AnnotationMetadata metadata,
+                                   int argumentIndex,
+                                   @Nullable BeanContext beanContext) {
+        if (!metadata.hasAnnotation(MeterTag.class) && !metadata.hasAnnotation(MeterTags.class)) {
+            return;
+        }
+        for (AnnotationValue<MeterTag> meterTag : metadata.getAnnotationValuesByType(MeterTag.class)) {
+            TagSource source = TagSource.of(meterTag, argumentIndex, beanContext);
+            // the first tag with a key wins, as in Micrometer's MeterTagAnnotationHandler
+            if (keys.add(source.key)) {
+                sources.add(source);
+            }
+        }
     }
 
     /**
