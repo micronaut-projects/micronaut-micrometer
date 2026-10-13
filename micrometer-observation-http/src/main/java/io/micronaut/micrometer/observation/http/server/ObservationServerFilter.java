@@ -36,6 +36,7 @@ import io.micronaut.micrometer.observation.http.server.instrumentation.DefaultSe
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerHttpObservationDocumentation;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationContext;
 import io.micronaut.micrometer.observation.http.server.instrumentation.ServerRequestObservationConvention;
+import io.micronaut.web.router.ErrorRouteInfo;
 import io.micronaut.web.router.RouteAttributes;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -164,7 +165,10 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
                 return;
             }
             Throwable exception = RouteAttributes.getException(response).orElse(null);
-            if (exception != null) {
+            // an error route that answered successfully recovered from the exception, as in the
+            // server metrics filter. The response of an exception handler keeps the exception
+            if (exception != null && (response.code() >= 400
+                || !(RouteAttributes.getRouteInfo(response).orElse(null) instanceof ErrorRouteInfo<?, ?>))) {
                 observation.error(exception);
             }
             context.setResponse(response);

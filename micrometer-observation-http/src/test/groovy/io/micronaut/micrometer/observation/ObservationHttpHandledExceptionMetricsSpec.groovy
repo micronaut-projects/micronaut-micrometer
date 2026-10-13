@@ -10,6 +10,7 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Error
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -66,6 +67,27 @@ class ObservationHttpHandledExceptionMetricsSpec extends Specification {
             .isEmpty()
     }
 
+    void 'an error route that answers successfully is not an error of the observation'() {
+        when:
+        HttpResponse<String> response = httpClient.toBlocking().exchange(HttpRequest.GET('/metrics/recovered'), String)
+
+        then:
+        response.status == HttpStatus.OK
+        response.body() == 'recovered'
+
+        and:
+        new PollingConditions(timeout: 5).eventually {
+            assert meterRegistry.find('http.server.requests')
+                .tags('method', 'GET', 'uri', '/metrics/recovered', 'status', '200', 'exception', 'none', 'error', 'none')
+                .timers()
+                .size() == 1
+        }
+        meterRegistry.find('http.server.requests')
+            .tags('uri', '/metrics/recovered', 'error', 'IllegalStateException')
+            .timers()
+            .isEmpty()
+    }
+
     @Controller('/metrics')
     @Requires(property = 'spec.name', value = 'ObservationHttpHandledExceptionMetricsSpec')
     static class TestController {
@@ -73,6 +95,16 @@ class ObservationHttpHandledExceptionMetricsSpec extends Specification {
         @Get('/test')
         String test() {
             throw new GenericException('BAD REQUEST')
+        }
+
+        @Get('/recovered')
+        String recovered() {
+            throw new IllegalStateException('recovered by the error route')
+        }
+
+        @Error(exception = IllegalStateException)
+        HttpResponse<String> recover() {
+            HttpResponse.ok('recovered')
         }
     }
 
