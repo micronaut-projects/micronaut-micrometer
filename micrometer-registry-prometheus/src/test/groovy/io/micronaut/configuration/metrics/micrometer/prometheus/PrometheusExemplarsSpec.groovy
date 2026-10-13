@@ -182,6 +182,7 @@ class PrometheusExemplarsSpec extends Specification {
 
         @Override
         void markCurrentSpanAsExemplar() {
+            // the spec only reads the trace and span ids, it does not track exemplar spans
         }
     }
 
