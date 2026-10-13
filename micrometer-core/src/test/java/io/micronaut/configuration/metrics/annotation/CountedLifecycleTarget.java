@@ -38,6 +38,11 @@ class CountedLifecycleTarget {
         return 1;
     }
 
+    @Counted("counted.lifecycle.future.sync.error")
+    CompletableFuture<Integer> futureSyncError() {
+        throw new AssertionError("direct");
+    }
+
     @Counted("counted.lifecycle.future.async.error")
     CompletableFuture<Integer> futureAsyncError() {
         return CompletableFuture.<Integer>supplyAsync(() -> {

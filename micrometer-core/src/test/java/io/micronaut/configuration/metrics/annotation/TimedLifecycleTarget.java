@@ -72,6 +72,11 @@ class TimedLifecycleTarget {
         return source;
     }
 
+    @Timed(value = "timed.lifecycle.long.task.future.error", longTask = true)
+    CompletableFuture<Integer> longTaskFutureError() {
+        throw new AssertionError("direct");
+    }
+
     @Timed("timed.lifecycle.both.timer")
     @Timed(value = "timed.lifecycle.both.long.task", longTask = true)
     Integer timerAndLongTask() {

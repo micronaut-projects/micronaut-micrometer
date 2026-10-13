@@ -107,6 +107,16 @@ class TimedLifecycleSpec extends Specification {
         registry.get("timed.lifecycle.future.sync.throw").tags("exception", "IllegalStateException").timer().count() == 1
     }
 
+    void "a CompletionStage method that throws an Error before returning its stage stops the long task"() {
+        when:
+        target.longTaskFutureError()
+
+        then:
+        def e = thrown(AssertionError)
+        e.message == 'direct'
+        registry.get("timed.lifecycle.long.task.future.error").longTaskTimer().activeTasks() == 0
+    }
+
     void "the cause of a CompletionException is used for the exception tag"() {
         when:
         target.futureAsyncError().get()

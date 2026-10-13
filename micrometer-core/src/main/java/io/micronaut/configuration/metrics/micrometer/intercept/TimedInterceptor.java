@@ -174,6 +174,10 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         } catch (Exception e) {
             invocation.finish(MethodMetricsSupport.exceptionTag(e));
             return interceptedMethod.handleException(e);
+        } catch (Error e) {
+            // the long task sample was started
+            invocation.finish(MethodMetricsSupport.exceptionTag(e));
+            throw e;
         }
     }
 
@@ -183,7 +187,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             // annotation values containing expressions are evaluated against each invocation
             return cached.dynamic ? resolveTimedMethod(context) : cached;
         }
-        return timedMethods.put(context.getExecutableMethod(), resolveTimedMethod(context));
+        final TimedMethod resolved = resolveTimedMethod(context);
+        // a concurrent first invocation may have cached its own settings: the evaluated values are
+        // those of this invocation
+        timedMethods.put(context.getExecutableMethod(), resolved);
+        return resolved;
     }
 
     private TimedMethod resolveTimedMethod(MethodInvocationContext<Object, Object> context) {

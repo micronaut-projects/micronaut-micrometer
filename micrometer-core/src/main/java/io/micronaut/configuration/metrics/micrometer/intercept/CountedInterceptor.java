@@ -134,6 +134,10 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         } catch (Exception e) {
             doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
             return interceptedMethod.handleException(e);
+        } catch (Error e) {
+            // counted as for a synchronous method
+            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
+            throw e;
         }
         return interceptedMethod.handleResult(completionStage.whenComplete(new CountedInvocation(context, countedMethod)));
     }
@@ -144,7 +148,11 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
             // annotation values containing expressions are evaluated against each invocation
             return cached.dynamic ? resolveCountedMethod(context) : cached;
         }
-        return countedMethods.put(context.getExecutableMethod(), resolveCountedMethod(context));
+        final CountedMethod resolved = resolveCountedMethod(context);
+        // a concurrent first invocation may have cached its own settings: the evaluated values are
+        // those of this invocation
+        countedMethods.put(context.getExecutableMethod(), resolved);
+        return resolved;
     }
 
     private CountedMethod resolveCountedMethod(MethodInvocationContext<Object, Object> context) {

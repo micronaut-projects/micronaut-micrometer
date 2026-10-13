@@ -16,6 +16,16 @@ class CountedLifecycleSpec extends Specification {
     MeterRegistry registry = ctx.getBean(MeterRegistry)
     PollingConditions conditions = new PollingConditions(timeout: 5)
 
+    void "a CompletionStage method that throws an Error before returning its stage is counted"() {
+        when:
+        target.futureSyncError()
+
+        then:
+        def e = thrown(AssertionError)
+        e.message == 'direct'
+        registry.get("counted.lifecycle.future.sync.error").tags("exception", "AssertionError").counter().count() == 1
+    }
+
     void "recordFailuresOnly is honoured for a Mono"() {
         when:
         target.failuresOnlyMono(false).block()
