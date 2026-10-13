@@ -81,7 +81,7 @@ public class WebMetricsHelperBenchmark {
 
     @Benchmark
     public void record() {
-        WebMetricsHelper.record(meterRegistry, METRIC, System.nanoTime(), "GET", "/bench/{id}", null, true, 200, null, null);
+        WebMetricsHelper.recordTimer(meterRegistry, METRIC, System.nanoTime(), "GET", "/bench/{id}", null, true, 200, null, null);
     }
 
     @Benchmark
