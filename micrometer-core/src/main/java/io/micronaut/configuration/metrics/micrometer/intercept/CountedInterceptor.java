@@ -201,6 +201,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
      * @param recordFailuresOnly Whether only failures are counted
      * @param taggers The taggers that apply to the method
      */
+    @SuppressWarnings("java:S6218") // never compared, the method cache looks entries up by method identity
     private record CountedMethod(InterceptedMethod.ResultType resultType,
                                  boolean singleResult,
                                  boolean enabled,

@@ -264,16 +264,16 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     sample.stop();
                 }
             } else {
-                record(context, timedMethod, timer, duration, exception);
+                recordTimer(context, timedMethod, timer, duration, exception);
             }
         }
     }
 
-    private void record(MethodInvocationContext<Object, Object> context,
-                        TimedMethod timedMethod,
-                        TimerSettings timer,
-                        long duration,
-                        String exception) {
+    private void recordTimer(MethodInvocationContext<Object, Object> context,
+                             TimedMethod timedMethod,
+                             TimerSettings timer,
+                             long duration,
+                             String exception) {
         try {
             final Timer.Builder builder = Timer.builder(timer.name)
                 .description(timer.description)
@@ -304,6 +304,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param histogram Whether to publish a histogram
      * @param longTask Whether to use a long task timer
      */
+    @SuppressWarnings("java:S6218") // never compared, the method cache looks entries up by method identity
     private record TimerSettings(String name,
                                  @Nullable String description,
                                  String[] extraTags,
@@ -324,6 +325,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param timers The timers
      * @param taggers The taggers that apply to the method
      */
+    @SuppressWarnings("java:S6218") // never compared, the method cache looks entries up by method identity
     private record TimedMethod(InterceptedMethod.ResultType resultType,
                                boolean singleResult,
                                boolean hasCondition,
@@ -338,7 +340,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      */
     private final class TimedInvocation implements BiConsumer<Object, Throwable>, InstrumentedSubscriber.Factory {
 
-        private static final AtomicIntegerFieldUpdater<TimedInvocation> FINISHED =
+        private static final AtomicIntegerFieldUpdater<TimedInvocation> FINISHED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TimedInvocation.class, "finished");
 
         private final MethodInvocationContext<Object, Object> context;
@@ -358,7 +360,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         }
 
         void finish(String exception) {
-            if (FINISHED.compareAndSet(this, 0, 1)) {
+            if (FINISHED_UPDATER.compareAndSet(this, 0, 1)) {
                 stop(context, timedMethod, start, longTasks, exception);
             }
         }

@@ -35,6 +35,7 @@ final class MethodMetricsCache<V> {
      */
     private static final int MAX_ENTRIES = 10_000;
 
+    @SuppressWarnings("java:S3077") // copy-on-write: a published map is never mutated
     private volatile Map<ExecutableMethod<?, ?>, V> entries = new IdentityHashMap<>();
 
     /**

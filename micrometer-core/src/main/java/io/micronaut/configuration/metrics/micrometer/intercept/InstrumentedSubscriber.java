@@ -43,7 +43,7 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
     private static final Logger LOG = LoggerFactory.getLogger(InstrumentedSubscriber.class);
 
     @SuppressWarnings("rawtypes")
-    private static final AtomicIntegerFieldUpdater<InstrumentedSubscriber> FINISHED =
+    private static final AtomicIntegerFieldUpdater<InstrumentedSubscriber> FINISHED_UPDATER =
         AtomicIntegerFieldUpdater.newUpdater(InstrumentedSubscriber.class, "finished");
 
     private final CoreSubscriber<? super T> actual;
@@ -167,7 +167,7 @@ abstract class InstrumentedSubscriber<T> implements CoreSubscriber<T>, Subscript
     }
 
     private void finish(@Nullable Throwable error, boolean cancelled) {
-        if (FINISHED.compareAndSet(this, 0, 1)) {
+        if (FINISHED_UPDATER.compareAndSet(this, 0, 1)) {
             try {
                 onFinish(error, cancelled);
             } catch (Exception e) {
