@@ -121,11 +121,11 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
     private static final class ClientObservation extends CompletableFuture<HttpResponse<?>>
         implements BiConsumer<HttpResponse<?>, Throwable> {
 
-        private static final VarHandle STOPPED;
+        private static final VarHandle STOPPED_HANDLE;
 
         static {
             try {
-                STOPPED = MethodHandles.lookup().findVarHandle(ClientObservation.class, "stopped", boolean.class);
+                STOPPED_HANDLE = MethodHandles.lookup().findVarHandle(ClientObservation.class, "stopped", boolean.class);
             } catch (ReflectiveOperationException e) {
                 throw new ExceptionInInitializerError(e);
             }
@@ -136,7 +136,7 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
         private final PropagatedContext completionContext;
         @Nullable
         private CompletableFuture<HttpResponse<?>> downstream;
-        @SuppressWarnings("unused") // accessed through STOPPED
+        @SuppressWarnings("unused") // accessed through STOPPED_HANDLE
         private volatile boolean stopped;
 
         ClientObservation(Observation observation, ClientRequestObservationContext context, PropagatedContext completionContext) {
@@ -200,7 +200,7 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
          * @param failure  The failure, or {@code null}
          */
         private void stop(@Nullable HttpResponse<?> response, @Nullable Throwable failure) {
-            if (!STOPPED.compareAndSet(this, false, true)) {
+            if (!STOPPED_HANDLE.compareAndSet(this, false, true)) {
                 return;
             }
             try {

@@ -68,6 +68,7 @@ public abstract class AbstractObservationFilter {
      * @return The lifecycle of the request, or {@code null}
      */
     @Nullable
+    @SuppressWarnings("java:S1452") // the request body type is unknown here and callers only add disposal resources
     protected static LifecycleHttpRequest<?> lifecycle(HttpRequest<?> request) {
         HttpRequest<?> current = request;
         while (!(current instanceof LifecycleHttpRequest<?>)) {

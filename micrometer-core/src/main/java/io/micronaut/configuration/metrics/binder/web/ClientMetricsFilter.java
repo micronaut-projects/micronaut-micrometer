@@ -22,6 +22,7 @@ import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.core.util.SupplierUtil;
 import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
@@ -44,6 +45,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static io.micronaut.core.util.StringUtils.FALSE;
 
@@ -67,11 +69,10 @@ final class ClientMetricsFilter {
     private static final Logger LOG = LoggerFactory.getLogger(ClientMetricsFilter.class);
     private static final String EMBEDDED_SERVER = "embedded-server";
 
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    // resolved lazily: the registry may depend on beans that use the HTTP client or server
+    private final Supplier<MeterRegistry> meterRegistry;
     @Nullable
     private final Predicate<String> exclusions;
-    @Nullable
-    private volatile MeterRegistry meterRegistry;
 
     /**
      * @param meterRegistryProvider the meter registry provider
@@ -79,7 +80,7 @@ final class ClientMetricsFilter {
      */
     public ClientMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
                                @Property(name = "micronaut.metrics.http.client.exclusions") @Nullable List<String> exclusions) {
-        this.meterRegistryProvider = meterRegistryProvider;
+        this.meterRegistry = SupplierUtil.memoized(meterRegistryProvider::get);
         this.exclusions = HttpPathExclusions.of(exclusions);
     }
 
@@ -93,35 +94,11 @@ final class ClientMetricsFilter {
     @RequestFilter
     CompletionStage<HttpResponse<?>> filter(HttpRequest<?> request,
                                             FilterContinuation<CompletionStage<HttpResponse<?>>> continuation) {
-        Predicate<String> exclusions = this.exclusions;
-        if (exclusions != null && exclusions.test(request.getPath())) {
+        Predicate<String> pathExclusions = this.exclusions;
+        if (pathExclusions != null && pathExclusions.test(request.getPath())) {
             return continuation.proceed();
         }
         return new RequestMetrics(this, request).recordOnCompletion(continuation.proceed());
-    }
-
-    @Nullable
-    private static String resolvePath(HttpRequest<?> request) {
-        // only include templated paths
-        return BasicHttpAttributes.getUriTemplate(request).orElse(null);
-    }
-
-    private static String resolveServiceId(HttpRequest<?> request) {
-        String serviceId = BasicHttpAttributes.getServiceId(request).orElse(null);
-        if (serviceId != null && !serviceId.isEmpty()) {
-            return serviceId.charAt(0) == '/' ? EMBEDDED_SERVER : serviceId;
-        }
-        return WebMetricsHelper.NO_SERVICE_ID;
-    }
-
-    private MeterRegistry meterRegistry() {
-        MeterRegistry registry = meterRegistry;
-        if (registry == null) {
-            // resolved lazily, the registry may depend on beans that use the HTTP client
-            registry = meterRegistryProvider.get();
-            meterRegistry = registry;
-        }
-        return registry;
     }
 
     /**
@@ -131,11 +108,11 @@ final class ClientMetricsFilter {
     private static final class RequestMetrics extends CompletableFuture<HttpResponse<?>>
         implements BiConsumer<HttpResponse<?>, Throwable> {
 
-        private static final VarHandle RECORDED;
+        private static final VarHandle RECORDED_HANDLE;
 
         static {
             try {
-                RECORDED = MethodHandles.lookup().findVarHandle(RequestMetrics.class, "recorded", boolean.class);
+                RECORDED_HANDLE = MethodHandles.lookup().findVarHandle(RequestMetrics.class, "recorded", boolean.class);
             } catch (ReflectiveOperationException e) {
                 throw new ExceptionInInitializerError(e);
             }
@@ -146,7 +123,7 @@ final class ClientMetricsFilter {
         private final long start = System.nanoTime();
         @Nullable
         private CompletableFuture<HttpResponse<?>> downstream;
-        @SuppressWarnings("unused") // accessed through RECORDED
+        @SuppressWarnings("unused") // accessed through RECORDED_HANDLE
         private volatile boolean recorded;
 
         RequestMetrics(ClientMetricsFilter filter, HttpRequest<?> request) {
@@ -165,10 +142,10 @@ final class ClientMetricsFilter {
         public void accept(@Nullable HttpResponse<?> response, @Nullable Throwable error) {
             Throwable failure = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
             if (failure == null) {
-                record(response, null);
+                recordOnce(response, null);
                 complete(response);
             } else {
-                record(failure instanceof HttpResponseProvider provider ? provider.getResponse() : null, failure);
+                recordOnce(failure instanceof HttpResponseProvider provider ? provider.getResponse() : null, failure);
                 completeExceptionally(failure);
             }
         }
@@ -177,7 +154,7 @@ final class ClientMetricsFilter {
         public boolean cancel(boolean mayInterruptIfRunning) {
             boolean cancelled = super.cancel(mayInterruptIfRunning);
             if (cancelled) {
-                record(null, new CancellationException());
+                recordOnce(null, new CancellationException());
                 CompletableFuture<HttpResponse<?>> future = downstream;
                 if (future != null) {
                     future.cancel(mayInterruptIfRunning);
@@ -186,13 +163,27 @@ final class ClientMetricsFilter {
             return cancelled;
         }
 
-        private void record(@Nullable HttpResponse<?> response, @Nullable Throwable failure) {
-            if (!RECORDED.compareAndSet(this, false, true)) {
+        @Nullable
+        private static String resolvePath(HttpRequest<?> request) {
+            // only include templated paths
+            return BasicHttpAttributes.getUriTemplate(request).orElse(null);
+        }
+
+        private static String resolveServiceId(HttpRequest<?> request) {
+            String serviceId = BasicHttpAttributes.getServiceId(request).orElse(null);
+            if (serviceId != null && !serviceId.isEmpty()) {
+                return serviceId.charAt(0) == '/' ? EMBEDDED_SERVER : serviceId;
+            }
+            return WebMetricsHelper.NO_SERVICE_ID;
+        }
+
+        private void recordOnce(@Nullable HttpResponse<?> response, @Nullable Throwable failure) {
+            if (!RECORDED_HANDLE.compareAndSet(this, false, true)) {
                 return;
             }
             try {
-                WebMetricsHelper.record(
-                    filter.meterRegistry(),
+                WebMetricsHelper.recordTimer(
+                    filter.meterRegistry.get(),
                     HttpClientMeterConfig.REQUESTS_METRIC,
                     start,
                     request.getMethodName(),

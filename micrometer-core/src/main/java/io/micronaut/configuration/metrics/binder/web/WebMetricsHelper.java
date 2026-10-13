@@ -87,7 +87,8 @@ final class WebMetricsHelper {
      * @param status                The status of the response, or {@link #NO_STATUS} if there is none
      * @param exception             The exception to tag, or {@code null}
      */
-    static void record(MeterRegistry meterRegistry,
+    @SuppressWarnings("java:S107") // the tags of a request timer, without an intermediate object
+    static void recordTimer(MeterRegistry meterRegistry,
                        String metricName,
                        long start,
                        String httpMethod,

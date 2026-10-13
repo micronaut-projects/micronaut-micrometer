@@ -124,11 +124,11 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
      */
     private static final class ServerObservation implements Runnable, Supplier<Object> {
 
-        private static final VarHandle STOPPED;
+        private static final VarHandle STOPPED_HANDLE;
 
         static {
             try {
-                STOPPED = MethodHandles.lookup().findVarHandle(ServerObservation.class, "stopped", boolean.class);
+                STOPPED_HANDLE = MethodHandles.lookup().findVarHandle(ServerObservation.class, "stopped", boolean.class);
             } catch (ReflectiveOperationException e) {
                 throw new ExceptionInInitializerError(e);
             }
@@ -145,7 +145,7 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
         private PropagatedContext propagatedContext = PropagatedContext.empty();
         private volatile boolean responded;
         private volatile boolean released;
-        @SuppressWarnings("unused") // accessed through STOPPED
+        @SuppressWarnings("unused") // accessed through STOPPED_HANDLE
         private volatile boolean stopped;
 
         ServerObservation(Observation observation, ServerRequestObservationContext context) {
@@ -181,12 +181,12 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
         @Override
         public void run() {
             released = true;
-            PropagatedContext context = propagatedContext;
-            if (!responded || context.isEmpty()) {
+            PropagatedContext requestContext = propagatedContext;
+            if (!responded || requestContext.isEmpty()) {
                 stop();
             } else {
                 // the handlers see the context of the request, as in the response filter
-                context.propagate((Supplier<Object>) this);
+                requestContext.propagate((Supplier<Object>) this);
             }
         }
 
@@ -197,7 +197,7 @@ public final class ObservationServerFilter extends AbstractObservationFilter imp
         }
 
         private void stop() {
-            if (!STOPPED.compareAndSet(this, false, true)) {
+            if (!STOPPED_HANDLE.compareAndSet(this, false, true)) {
                 return;
             }
             try {

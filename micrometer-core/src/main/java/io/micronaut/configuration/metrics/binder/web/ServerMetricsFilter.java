@@ -24,6 +24,7 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.order.Ordered;
 import io.micronaut.core.propagation.PropagatedContext;
+import io.micronaut.core.util.SupplierUtil;
 import io.micronaut.http.BasicHttpAttributes;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpRequest;
@@ -79,12 +80,11 @@ final class ServerMetricsFilter implements Ordered {
     private static final String UNMATCHED_URI = "UNMATCHED_URI";
     private static final String WEBSOCKET = "websocket";
 
-    private final Provider<MeterRegistry> meterRegistryProvider;
+    // resolved lazily: the registry may depend on beans that use the HTTP client or server
+    private final Supplier<MeterRegistry> meterRegistry;
     private final boolean reportClientErrorURIs;
     @Nullable
     private final Predicate<String> exclusions;
-    @Nullable
-    private volatile MeterRegistry meterRegistry;
 
     /**
      * @param meterRegistryProvider  the meter registry provider
@@ -94,7 +94,7 @@ final class ServerMetricsFilter implements Ordered {
     public ServerMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
                                HttpMetricsConfig.ClientErrorsUrisConfig clientErrorsUrisConfig,
                                @Property(name = "micronaut.metrics.http.exclusions") @Nullable List<String> exclusions) {
-        this.meterRegistryProvider = meterRegistryProvider;
+        this.meterRegistry = SupplierUtil.memoized(meterRegistryProvider::get);
         this.reportClientErrorURIs = clientErrorsUrisConfig.enabled();
         this.exclusions = HttpPathExclusions.of(exclusions);
     }
@@ -106,8 +106,8 @@ final class ServerMetricsFilter implements Ordered {
 
     @RequestFilter
     void onRequest(HttpRequest<?> request) {
-        Predicate<String> exclusions = this.exclusions;
-        if (exclusions != null && exclusions.test(request.getPath())) {
+        Predicate<String> pathExclusions = this.exclusions;
+        if (pathExclusions != null && pathExclusions.test(request.getPath())) {
             return;
         }
         if (request.getAttribute(REQUEST_METRICS_ATTRIBUTE).isPresent()) {
@@ -163,16 +163,6 @@ final class ServerMetricsFilter implements Ordered {
         return BasicHttpAttributes.getUriTemplate(request).orElse(UNMATCHED_URI);
     }
 
-    private MeterRegistry meterRegistry() {
-        MeterRegistry registry = meterRegistry;
-        if (registry == null) {
-            // resolved lazily, the registry may depend on beans that depend on the HTTP server
-            registry = meterRegistryProvider.get();
-            meterRegistry = registry;
-        }
-        return registry;
-    }
-
     /**
      * The timer of a request: started by the request filter, tagged by the response filter, and
      * recorded exactly once, when the request is released after its response was written, or by
@@ -180,11 +170,11 @@ final class ServerMetricsFilter implements Ordered {
      */
     private static final class RequestMetrics implements Runnable, Supplier<Object> {
 
-        private static final VarHandle RECORDED;
+        private static final VarHandle RECORDED_HANDLE;
 
         static {
             try {
-                RECORDED = MethodHandles.lookup().findVarHandle(RequestMetrics.class, "recorded", boolean.class);
+                RECORDED_HANDLE = MethodHandles.lookup().findVarHandle(RequestMetrics.class, "recorded", boolean.class);
             } catch (ReflectiveOperationException e) {
                 throw new ExceptionInInitializerError(e);
             }
@@ -207,7 +197,7 @@ final class ServerMetricsFilter implements Ordered {
         private PropagatedContext propagatedContext = PropagatedContext.empty();
         private volatile boolean responded;
         private volatile boolean released;
-        @SuppressWarnings("unused") // accessed through RECORDED
+        @SuppressWarnings("unused") // accessed through RECORDED_HANDLE
         private volatile boolean recorded;
 
         RequestMetrics(ServerMetricsFilter filter, String method) {
@@ -224,20 +214,20 @@ final class ServerMetricsFilter implements Ordered {
          */
         void responded(String path, HttpResponse<?> response) {
             int code = response.code();
-            Throwable exception = RouteAttributes.getException(response).orElse(null);
-            if (exception != null && code < 400
+            Throwable error = RouteAttributes.getException(response).orElse(null);
+            if (error != null && code < 400
                 && RouteAttributes.getRouteInfo(response).orElse(null) instanceof ErrorRouteInfo<?, ?>) {
                 // an error route answered successfully: not an error. The response of an
                 // exception handler keeps the exception, see HttpResponseProvider
-                exception = null;
+                error = null;
             }
             this.path = path;
             this.status = code;
-            this.exception = exception;
+            this.exception = error;
             this.propagatedContext = PropagatedContext.getOrEmpty();
             responded = true;
             if (!deferred || released) {
-                record();
+                recordOnce();
             }
         }
 
@@ -253,7 +243,7 @@ final class ServerMetricsFilter implements Ordered {
             }
             PropagatedContext context = propagatedContext;
             if (context.isEmpty()) {
-                record();
+                recordOnce();
             } else {
                 // the meter filters see the context of the request, as in the response filter
                 context.propagate((Supplier<Object>) this);
@@ -262,17 +252,17 @@ final class ServerMetricsFilter implements Ordered {
 
         @Override
         public Object get() {
-            record();
+            recordOnce();
             return this;
         }
 
-        private void record() {
-            if (!RECORDED.compareAndSet(this, false, true)) {
+        private void recordOnce() {
+            if (!RECORDED_HANDLE.compareAndSet(this, false, true)) {
                 return;
             }
             try {
-                WebMetricsHelper.record(
-                    filter.meterRegistry(),
+                WebMetricsHelper.recordTimer(
+                    filter.meterRegistry.get(),
                     HttpServerMeterConfig.REQUESTS_METRIC,
                     start,
                     method,
