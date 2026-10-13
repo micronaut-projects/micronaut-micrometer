@@ -2,6 +2,7 @@ package io.micronaut.configuration.metrics.binder.web.client
 
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.util.CollectionUtils
@@ -11,6 +12,7 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.HttpVersionSelection
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientException
+import io.micronaut.http.client.netty.NettyClientCustomizer
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.scheduling.TaskExecutors
@@ -23,6 +25,12 @@ import io.micronaut.websocket.annotation.OnClose
 import io.micronaut.websocket.annotation.OnMessage
 import io.micronaut.websocket.annotation.OnOpen
 import io.micronaut.websocket.annotation.ServerWebSocket
+import io.netty.bootstrap.Bootstrap
+import io.netty.channel.ChannelInboundHandlerAdapter
+import io.netty.channel.EventLoopGroup
+import io.netty.channel.MultiThreadIoEventLoopGroup
+import io.netty.channel.nio.NioIoHandler
+import io.netty.channel.socket.nio.NioDatagramChannel
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -40,6 +48,7 @@ import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoo
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.ENABLED
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.HTTP_1_1
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.HTTP_2
+import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.HTTP_3
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.PROTOCOL_TAG
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.REQUESTS
 import static io.micronaut.configuration.metrics.binder.web.client.HttpClientPoolMetrics.STATE_ACTIVE
@@ -197,6 +206,32 @@ class HttpClientPoolMetricsSpec extends Specification {
 
         cleanup:
         embeddedServer.close()
+    }
+
+    void "test an HTTP/3 connection is counted as h3"() {
+        given: 'the customizer of a client, which the HTTP/3 initializer specializes for the UDP channel of the connection'
+        SimpleMeterRegistry registry = new SimpleMeterRegistry()
+        HttpClientPoolMetricsCustomizer customizer = new HttpClientPoolMetricsCustomizer(new HttpClientPoolMetrics(registry))
+        Bootstrap bootstrap = new Bootstrap().channel(NioDatagramChannel).handler(new ChannelInboundHandlerAdapter())
+        EventLoopGroup group = new MultiThreadIoEventLoopGroup(1, NioIoHandler.newFactory())
+        NioDatagramChannel udp = new NioDatagramChannel()
+        group.register(udp).sync()
+
+        when: 'the connection holder of the QUIC channel builds the stream pipeline of the connection'
+        NettyClientCustomizer connection = customizer.specializeForBootstrap(bootstrap)
+            .specializeForChannel(udp, NettyClientCustomizer.ChannelRole.CONNECTION)
+        connection.onStreamPipelineBuilt()
+
+        then:
+        registry.get(CONNECTIONS_CREATED).tag(PROTOCOL_TAG, HTTP_3).counter().count() == 1
+        registry.get(CONNECTIONS_CREATED).tag(PROTOCOL_TAG, HTTP_1_1).counter().count() == 0
+        registry.get(CONNECTIONS_CREATE_TIME).tag(PROTOCOL_TAG, HTTP_3).timer().count() == 1
+        gauge(registry, CONNECTIONS, STATE_OPEN) == 1
+        gauge(registry, CONNECTIONS, STATE_PENDING) == 0
+
+        cleanup:
+        udp?.close()
+        group?.shutdownGracefully()
     }
 
     void "test a connection that fails to connect is counted as failed"() {

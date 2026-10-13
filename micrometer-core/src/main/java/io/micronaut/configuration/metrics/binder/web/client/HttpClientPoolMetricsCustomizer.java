@@ -24,6 +24,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.codec.http2.Http2FrameCodec;
 
 /**
@@ -66,6 +67,11 @@ final class HttpClientPoolMetricsCustomizer implements NettyClientCustomizer {
     }
 
     static String protocol(Channel channel) {
+        if (channel instanceof DatagramChannel) {
+            // HTTP/3: the client specializes the customizer for the UDP channel of the connection,
+            // its QUIC channel, which has the HTTP/3 connection handler, is not passed to the customizer
+            return HttpClientPoolMetrics.HTTP_3;
+        }
         ChannelHandler connectionHandler = channel.pipeline().get(ChannelPipelineCustomizer.HANDLER_HTTP2_CONNECTION);
         if (connectionHandler == null) {
             return HttpClientPoolMetrics.HTTP_1_1;
