@@ -54,12 +54,12 @@ public class MetricsFilterProperties {
     /**
      * The prefix of the per meter enable flags.
      */
-    public static final String ENABLE = PREFIX + ".enable";
+    public static final String ENABLE_PREFIX = PREFIX + ".enable";
 
     /**
      * The prefix of the per meter distribution settings.
      */
-    public static final String DISTRIBUTION = PREFIX + ".distribution";
+    public static final String DISTRIBUTION_PREFIX = PREFIX + ".distribution";
 
     /**
      * The key that applies to all meters.

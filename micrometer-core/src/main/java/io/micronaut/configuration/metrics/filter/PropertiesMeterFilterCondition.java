@@ -31,7 +31,7 @@ public final class PropertiesMeterFilterCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context) {
-        return context.containsProperties(MetricsFilterProperties.ENABLE)
-            || context.containsProperties(MetricsFilterProperties.DISTRIBUTION);
+        return context.containsProperties(MetricsFilterProperties.ENABLE_PREFIX)
+            || context.containsProperties(MetricsFilterProperties.DISTRIBUTION_PREFIX);
     }
 }

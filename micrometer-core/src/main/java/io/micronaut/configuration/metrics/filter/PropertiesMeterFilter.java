@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 import static io.micronaut.configuration.metrics.filter.MetricsFilterProperties.ALL;
-import static io.micronaut.configuration.metrics.filter.MetricsFilterProperties.DISTRIBUTION;
+import static io.micronaut.configuration.metrics.filter.MetricsFilterProperties.DISTRIBUTION_PREFIX;
 
 /**
  * A {@link MeterFilter} that applies the {@code micronaut.metrics.enable.*} and
@@ -83,11 +83,11 @@ public class PropertiesMeterFilter implements MeterFilter, Ordered {
             .filter(Objects::nonNull)
             .mapToDouble(Double::doubleValue)
             .toArray());
-        this.slo = transform(distribution.getSlo(), (key, values) -> parseAll(DISTRIBUTION + ".slo." + key, values, conversionService));
+        this.slo = transform(distribution.getSlo(), (key, values) -> parseAll(DISTRIBUTION_PREFIX + ".slo." + key, values, conversionService));
         this.minimumExpectedValue = transform(distribution.getMinimumExpectedValue(),
-            (key, value) -> MeterValue.parse(DISTRIBUTION + ".minimum-expected-value." + key, value, conversionService));
+            (key, value) -> MeterValue.parse(DISTRIBUTION_PREFIX + ".minimum-expected-value." + key, value, conversionService));
         this.maximumExpectedValue = transform(distribution.getMaximumExpectedValue(),
-            (key, value) -> MeterValue.parse(DISTRIBUTION + ".maximum-expected-value." + key, value, conversionService));
+            (key, value) -> MeterValue.parse(DISTRIBUTION_PREFIX + ".maximum-expected-value." + key, value, conversionService));
         this.expiry = transform(distribution.getExpiry(), (key, value) -> value);
         this.bufferLength = transform(distribution.getBufferLength(), (key, value) -> value);
         this.hasDistribution = !percentilesHistogram.isEmpty() || !percentiles.isEmpty() || !slo.isEmpty()
@@ -184,7 +184,7 @@ public class PropertiesMeterFilter implements MeterFilter, Ordered {
         if (source == null || source.isEmpty()) {
             return Map.of();
         }
-        Map<String, T> result = new HashMap<>(source.size());
+        Map<String, T> result = HashMap.newHashMap(source.size());
         source.forEach((key, value) -> {
             if (key != null && value != null) {
                 result.put(key, function.apply(key, value));
