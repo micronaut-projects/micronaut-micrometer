@@ -85,6 +85,13 @@ class PrometheusEndpointFormatsSpec extends Specification {
         'text/plain;q=0.2, application/openmetrics-text;q=0.9'                                                      | PrometheusEndpoint.OPENMETRICS_FORMAT
         'application/openmetrics-text;q=1, text/plain;q=0.5'                                                        | PrometheusEndpoint.OPENMETRICS_FORMAT
         'text/plain;q=0.3, application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0.7' | PrometheusEndpoint.PROTOBUF_FORMAT
+        // the quality of a format is that of the most specific range that matches it
+        'text/plain;q=0, */*;q=1'                                                                                   | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'text/*;q=1, text/plain;q=0.1, application/openmetrics-text;q=0.8'                                          | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'text/plain;version=0.0.4;q=0.2, text/plain;q=0.9, application/openmetrics-text;q=0.5'                      | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'text/*;q=0.5, application/openmetrics-text;q=0.2'                                                          | PrometheusEndpoint.TEXT_FORMAT
+        'application/*;q=0.9, application/openmetrics-text;q=0, text/plain;q=0.5'                                   | PrometheusEndpoint.PROTOBUF_FORMAT
+        '*/*'                                                                                                       | PrometheusEndpoint.TEXT_FORMAT
     }
 
     void "the protobuf format is returned when it is asked for"() {

@@ -32,8 +32,6 @@ import io.prometheus.metrics.config.PrometheusProperties;
 import io.prometheus.metrics.config.PrometheusPropertiesLoader;
 import io.prometheus.metrics.expositionformats.ExpositionFormatWriter;
 import io.prometheus.metrics.expositionformats.ExpositionFormats;
-import io.prometheus.metrics.expositionformats.OpenMetrics2TextFormatWriter;
-import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
 import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
 
@@ -42,8 +40,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -54,8 +52,9 @@ import java.util.concurrent.ExecutorService;
  *
  * <p>The format of the scrape is negotiated from the {@code Accept} header: the Prometheus text format
  * ({@value #TEXT_FORMAT}), the OpenMetrics text format ({@value #OPENMETRICS_FORMAT}) or the Prometheus protobuf
- * format ({@value #PROTOBUF_FORMAT}). The acceptable format with the highest quality is used, a format with
- * {@code q=0} is never used, and the text format is used when the header accepts none of the others.</p>
+ * format ({@value #PROTOBUF_FORMAT}). The quality of each format is that of the most specific media range that
+ * matches it, the acceptable format with the highest quality is used, a format with {@code q=0} is never used, and
+ * the text format is used when the header accepts none of them.</p>
  *
  * @author graemerocher
  * @since 1.1
@@ -76,6 +75,11 @@ public class PrometheusEndpoint {
     static final String OPENMETRICS_FORMAT = "application/openmetrics-text; version=1.0.0; charset=utf-8";
     static final String PROTOBUF_FORMAT = "application/vnd.google.protobuf; proto=io.prometheus.client.MetricFamily; encoding=delimited";
 
+    private static final String WILDCARD = "*";
+    private static final String OPENMETRICS_TYPE = "application/openmetrics-text";
+    private static final String VERSION_PARAMETER = "version";
+    private static final String Q_PARAMETER = "q";
+    private static final String TEXT_VERSION = "0.0.4";
     private static final int MIN_BUFFER_SIZE = 8 * 1024;
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
@@ -171,40 +175,95 @@ public class PrometheusEndpoint {
     }
 
     /**
-     * The writer of the acceptable media range with the highest quality that has a writer. The Prometheus writers
-     * match media types without their quality, so each acceptable range is matched on its own, and a range with
-     * {@code q=0} is never matched.
+     * Negotiates the format as in RFC 9110 (section 12.5.1): the quality of each supported format is the quality of the
+     * most specific media range of the {@code Accept} header that matches it, a format whose quality is {@code 0} is
+     * not acceptable, and the acceptable format with the highest quality is used. For equal qualities the format whose
+     * range comes first in the header is used, then the text format before OpenMetrics before protobuf.
      *
      * @param accept The {@code Accept} header
-     * @return The writer, the Prometheus text format when no acceptable range has another writer
+     * @return The writer, the Prometheus text format when the header accepts none of the formats
      */
     private ExpositionFormatWriter findWriter(@Nullable String accept) {
         ExpositionFormatWriter textWriter = expositionFormats.getPrometheusTextFormatWriter();
         if (accept == null || accept.isBlank()) {
             return textWriter;
         }
-        for (AcceptedRange range : acceptedRanges(accept)) {
-            MediaType mediaType = range.mediaType();
-            if (mediaType.matches(MediaType.TEXT_PLAIN_TYPE)) {
-                // text/plain, text/* or */*
-                return textWriter;
+        List<AcceptedRange> ranges = acceptedRanges(accept);
+        Format bestFormat = null;
+        AcceptedRange bestRange = null;
+        for (Format format : Format.values()) {
+            if (format == Format.OPENMETRICS && !openMetricsEnabled) {
+                continue;
             }
-            ExpositionFormatWriter writer = expositionFormats.findWriter(range.value());
-            if (writer != textWriter && (openMetricsEnabled || !isOpenMetrics(writer))) {
-                return writer;
+            AcceptedRange range = mostSpecificRange(format, ranges);
+            if (range == null || range.quality().signum() <= 0) {
+                continue;
+            }
+            int comparison = bestRange == null ? 1 : range.quality().compareTo(bestRange.quality());
+            if (comparison > 0 || comparison == 0 && range.index() < bestRange.index()) {
+                bestFormat = format;
+                bestRange = range;
             }
         }
-        return textWriter;
+        if (bestFormat == null) {
+            return textWriter;
+        }
+        return switch (bestFormat) {
+            case TEXT -> textWriter;
+            // the version of an OpenMetrics range selects the version of the format
+            case OPENMETRICS -> expositionFormats.findWriter(bestRange.wildcard() ? OPENMETRICS_TYPE : bestRange.value());
+            case PROTOBUF -> expositionFormats.getPrometheusProtobufWriter();
+        };
     }
 
-    private static boolean isOpenMetrics(ExpositionFormatWriter writer) {
-        return writer instanceof OpenMetricsTextFormatWriter || writer instanceof OpenMetrics2TextFormatWriter;
+    private @Nullable AcceptedRange mostSpecificRange(Format format, List<AcceptedRange> ranges) {
+        AcceptedRange result = null;
+        int specificity = -1;
+        for (AcceptedRange range : ranges) {
+            int rangeSpecificity = specificity(format, range);
+            if (rangeSpecificity > specificity) {
+                result = range;
+                specificity = rangeSpecificity;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param format The format
+     * @param range  A media range
+     * @return The specificity of the range if it matches the format, otherwise {@code -1}: {@code 0} for
+     * {@code *}{@code /*}, {@code 1} for a type range such as {@code text/*}, {@code 2} for the media type and {@code 3}
+     * for the media type with parameters
+     */
+    private int specificity(Format format, AcceptedRange range) {
+        MediaType mediaType = range.mediaType();
+        if (WILDCARD.equals(mediaType.getType())) {
+            return 0;
+        }
+        if (!format.type.equalsIgnoreCase(mediaType.getType())) {
+            return -1;
+        }
+        if (WILDCARD.equals(mediaType.getSubtype())) {
+            return 1;
+        }
+        if (!format.subtype.equalsIgnoreCase(mediaType.getSubtype())) {
+            return -1;
+        }
+        boolean matches = switch (format) {
+            case TEXT -> range.parameter(VERSION_PARAMETER) == null || TEXT_VERSION.equals(range.parameter(VERSION_PARAMETER));
+            case OPENMETRICS -> true;
+            case PROTOBUF -> expositionFormats.getPrometheusProtobufWriter().accepts(range.value());
+        };
+        if (!matches) {
+            return -1;
+        }
+        return range.hasParameters() ? 3 : 2;
     }
 
     /**
      * @param accept The {@code Accept} header
-     * @return The acceptable media ranges, with the highest quality first and in the order of the header for equal
-     * qualities
+     * @return The valid media ranges, in the order of the header
      */
     private static List<AcceptedRange> acceptedRanges(String accept) {
         List<AcceptedRange> ranges = new ArrayList<>();
@@ -214,16 +273,11 @@ public class PrometheusEndpoint {
                 continue;
             }
             try {
-                MediaType mediaType = MediaType.of(trimmed);
-                if (mediaType.getQualityAsNumber().signum() > 0) {
-                    ranges.add(new AcceptedRange(trimmed, mediaType));
-                }
+                ranges.add(new AcceptedRange(trimmed, MediaType.of(trimmed), ranges.size()));
             } catch (IllegalArgumentException e) {
-                // an invalid range is not acceptable
+                // an invalid range matches no format
             }
         }
-        // a stable sort keeps the order of the header for equal qualities
-        ranges.sort(Comparator.comparing((AcceptedRange range) -> range.mediaType().getQualityAsNumber()).reversed());
         return ranges;
     }
 
@@ -245,12 +299,51 @@ public class PrometheusEndpoint {
     }
 
     /**
-     * An acceptable media range of the {@code Accept} header.
+     * The formats of the endpoint.
+     */
+    private enum Format {
+        TEXT("text", "plain"),
+        OPENMETRICS("application", "openmetrics-text"),
+        PROTOBUF("application", "vnd.google.protobuf");
+
+        private final String type;
+        private final String subtype;
+
+        Format(String type, String subtype) {
+            this.type = type;
+            this.subtype = subtype;
+        }
+    }
+
+    /**
+     * A media range of the {@code Accept} header.
      *
      * @param value     The range as it appears in the header
      * @param mediaType The parsed range
+     * @param index     The position of the range in the header
      */
-    private record AcceptedRange(String value, MediaType mediaType) {
+    private record AcceptedRange(String value, MediaType mediaType, int index) {
+
+        BigDecimal quality() {
+            return mediaType.getQualityAsNumber();
+        }
+
+        boolean wildcard() {
+            return WILDCARD.equals(mediaType.getSubtype());
+        }
+
+        @Nullable String parameter(String name) {
+            return mediaType.getParameters().get(name).orElse(null);
+        }
+
+        boolean hasParameters() {
+            for (CharSequence name : mediaType.getParametersMap().keySet()) {
+                if (!Q_PARAMETER.contentEquals(name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     /**
