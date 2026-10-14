@@ -5,7 +5,6 @@ import io.micronaut.context.annotation.Property
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 @MicronautTest
@@ -13,11 +12,6 @@ import org.junit.jupiter.api.Test
 @Property(name = "metric.expr.description", value = "description")
 @Property(name = "metric.expr.tag", value = "from-env")
 class MetricExpressionTest {
-
-    companion object {
-        // KSP does not compile expressions in array members such as extraTags, see KotlinAnnotationMetadataBuilder.readAnnotationValue in micronaut-core
-        const val ARRAY_EXPRESSIONS = "Expressions in array annotation members are not evaluated with KSP"
-    }
 
     @Inject
     lateinit var meterRegistry: MeterRegistry
@@ -34,7 +28,6 @@ class MetricExpressionTest {
     }
 
     @Test
-    @Disabled(ARRAY_EXPRESSIONS)
     fun timedEvaluatesExpressionsInExtraTags() {
         target.timedExtraTags()
         val timer = meterRegistry.get("kotlin.timed.expr.tags").timer()
@@ -44,7 +37,6 @@ class MetricExpressionTest {
     }
 
     @Test
-    @Disabled(ARRAY_EXPRESSIONS)
     fun timedEvaluatesExpressionsThatReferenceMethodArgumentsInExtraTags() {
         target.timedArgument("first")
         target.timedArgument("second")
@@ -70,7 +62,6 @@ class MetricExpressionTest {
     }
 
     @Test
-    @Disabled(ARRAY_EXPRESSIONS)
     fun countedEvaluatesExpressionsInExtraTags() {
         target.countedExtraTags()
         val counter = meterRegistry.get("kotlin.counted.expr.tags").counter()
