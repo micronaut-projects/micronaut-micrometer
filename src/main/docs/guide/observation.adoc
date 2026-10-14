@@ -43,6 +43,8 @@ Each HTTP observation is stopped exactly once:
 
 The server filter runs in the `ServerFilterPhase.METRICS` phase, like the web metrics filter: before the tracing, session and security filters. A filter that should run with the server observation as its current observation must have an order after `ServerFilterPhase.METRICS.order()`.
 
+The meters created from HTTP observations have the same names as those of the HTTP metrics filters (`http.server.requests` and `http.client.requests`), so the `micronaut.metrics.binders.web.server.max-uri-tags` and `micronaut.metrics.binders.web.client.max-uri-tags` limits described in the Web Metrics section apply to them too.
+
 === Micrometer Observation Kafka
 
 The Micronaut Observation Kafka module records an observation for each record that a Micronaut Kafka listener consumes. The observation spans the whole processing of the record: it starts when the record is first processed, is the current observation during each processing attempt (the first delivery and every blocking retry, but not the delay between them), and stops when the record is processed successfully or fails for good. A record that is handed off to a retry topic stops its observation with the error, and the retry record gets its own observation.

@@ -61,7 +61,7 @@ public class HttpMeterFilterFactory {
      */
     @Bean
     @Singleton
-    @Requires(property = HttpServerMeterConfig.PATH)
+    @Requires(condition = HttpMeterDistributionCondition.Server.class)
     MeterFilter addServerPercentileMeterFilter(HttpServerMeterConfig serverMeterConfig) {
         return getMeterFilter(serverMeterConfig, HttpServerMeterConfig.REQUESTS_METRIC);
     }
@@ -74,7 +74,7 @@ public class HttpMeterFilterFactory {
      */
     @Bean
     @Singleton
-    @Requires(property = HttpClientMeterConfig.PATH)
+    @Requires(condition = HttpMeterDistributionCondition.Client.class)
     MeterFilter addClientPercentileMeterFilter(HttpClientMeterConfig clientMeterConfig) {
         return getMeterFilter(clientMeterConfig, HttpClientMeterConfig.REQUESTS_METRIC);
     }

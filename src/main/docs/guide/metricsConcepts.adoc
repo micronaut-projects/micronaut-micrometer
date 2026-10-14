@@ -213,6 +213,33 @@ micronaut:
 | http.client.requests
 |=======
 
+.Limiting URI tags
+
+The `uri` tag of the HTTP meters uses the route template (for example `/books/{id}`), so its number of values is normally bounded by the number of routes.
+If requests are not matched to templates, for example when a client calls absolute URLs without a template, every distinct URI creates a new time series.
+To protect the meter registry and the monitoring backend, you can cap the number of distinct `uri` values. Once the limit is reached, meters with new `uri` values are not registered and a warning is logged once.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      web:
+        server:
+          max-uri-tags: 100
+        client:
+          max-uri-tags: 100
+----
+
+.URI tag limit properties
+|=======
+|*Property* |*Type* |*Default* |*Description*
+|`micronaut.metrics.binders.web.server.max-uri-tags` |integer |not set (disabled) |The maximum number of distinct `uri` tag values of the `http.server.requests` meters. Zero or a negative value disables the limit.
+|`micronaut.metrics.binders.web.client.max-uri-tags` |integer |not set (disabled) |The maximum number of distinct `uri` tag values of the `http.client.requests` meters. Zero or a negative value disables the limit.
+|=======
+
+The limits match meters by name, so they also apply to the meters of the <<observation, Micrometer Observation HTTP>> module, including the `http.server.requests.active` long task timers. They are implemented as meter filters, so they are only consulted when a meter is first registered.
+
 ===== System Metrics
 
 There are multiple metrics that can be separately toggled.
