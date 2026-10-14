@@ -27,6 +27,7 @@ final class NettyMetrics {
     static final String ALLOC = "alloc";
     static final String POOLED = "pooled";
     static final String UNPOOLED = "unpooled";
+    static final String ADAPTIVE = "adaptive";
     static final String QUEUE = "queue";
     static final String CHANNEL = "channel";
 

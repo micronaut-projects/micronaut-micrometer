@@ -5,11 +5,17 @@ import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.search.RequiredSearch
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.BeanProvider
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.runtime.server.EmbeddedServer
+import io.netty.buffer.AdaptiveByteBufAllocator
+import io.netty.buffer.ByteBufAllocator
+import io.netty.buffer.PooledByteBufAllocator
+import io.netty.buffer.UnpooledByteBufAllocator
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
@@ -17,6 +23,7 @@ import spock.util.concurrent.PollingConditions
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ADAPTIVE
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ARENA
@@ -27,6 +34,7 @@ import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.MEMOR
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.NETTY
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.POOLED
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.SIZE
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.UNPOOLED
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.USED
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.dot
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS
@@ -116,19 +124,21 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         then:
         context.containsBean(ByteBufAllocatorMetricsBinder)
 
-        when:
+        when: "Netty's default allocator is the adaptive allocator"
         MeterRegistry registry = context.getBean(MeterRegistry)
-        Tags pooled = Tags.of(ALLOC, POOLED)
         RequiredSearch search = registry.get(dot(NETTY, ALLOC, MEMORY, USED))
-        search.tags(pooled.and(MEMORY, DIRECT))
+        search.tags(Tags.of(ALLOC, ADAPTIVE).and(MEMORY, DIRECT))
         Gauge gauge = search.gauge()
 
         then:
+        ByteBufAllocator.DEFAULT instanceof AdaptiveByteBufAllocator
         gauge
         gauge.value() >= 0
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, UNPOOLED).gauges().size() == 2
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, POOLED).gauges().isEmpty()
+        registry.find(dot(NETTY, ALLOC, ARENA, COUNT)).gauges().isEmpty()
 
         when:
-        def initialValue = gauge.value()
         def server = context.getBean(EmbeddedServer)
         server.start()
         ByteBufAllocatorMetricTestDummyClient client = context.getBean(ByteBufAllocatorMetricTestDummyClient)
@@ -141,21 +151,69 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         client.root() == 'root'
         client.root() == 'root'
         new PollingConditions(timeout: 3, delay: 0.1).eventually {
-            gauge.value() >= initialValue
+            gauge.value() > 0
         }
 
         cleanup:
         context.close()
     }
 
+    void "test pooled allocator metrics when the pooled allocator is the default allocator"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+        PooledByteBufAllocator allocator = new PooledByteBufAllocator(true)
+
+        when:
+        binder(registry).configureNettyMetrics(allocator)
+        Gauge threadLocalCaches = registry.get('netty.alloc.thread.local.cache.count').tags(ALLOC, POOLED).gauge()
+
+        then:
+        allocator.metric().numDirectArenas() > 0
+        allocator.metric().numThreadLocalCaches() == 0
+        threadLocalCaches.value() == 0
+        threadLocalCaches.id.description == 'The number of thread local caches.'
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, POOLED).gauges().size() == 2
+        registry.get(dot(NETTY, ALLOC, ARENA, COUNT)).tags(ALLOC, POOLED, MEMORY, DIRECT).gauge().value() == allocator.metric().numDirectArenas()
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, ADAPTIVE).gauges().isEmpty()
+
+        when: 'a thread allocates from the pooled allocator'
+        def thread = new Thread({ allocator.directBuffer(16).release() })
+        thread.start()
+        thread.join()
+
+        then:
+        threadLocalCaches.value() == allocator.metric().numThreadLocalCaches()
+
+        cleanup:
+        registry.close()
+    }
+
+    void "test pooled allocator is not metered when it is not the default allocator"() {
+        given:
+        MeterRegistry registry = new SimpleMeterRegistry()
+
+        when:
+        binder(registry).configureNettyMetrics(allocator)
+
+        then:
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, POOLED).gauges().isEmpty()
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, UNPOOLED).gauges().size() == 2
+        registry.find(dot(NETTY, ALLOC, MEMORY, USED)).tag(ALLOC, ADAPTIVE).gauges().size() == adaptiveGauges
+
+        cleanup:
+        registry.close()
+
+        where:
+        allocator                         | adaptiveGauges
+        new AdaptiveByteBufAllocator()    | 2
+        UnpooledByteBufAllocator.DEFAULT  | 0
+    }
+
     @Unroll
     void "test ByteBufAllocator metrics pooled arena counter meters share consistent tag keys for #name"() {
         when:
-        ApplicationContext context = ApplicationContext.run(
-                [MICRONAUT_METRICS_ENABLED                                        : true,
-                 (MICRONAUT_METRICS_BINDERS + ".netty.bytebuf-allocators.enabled"): true]
-        )
-        MeterRegistry registry = context.getBean(MeterRegistry)
+        MeterRegistry registry = new SimpleMeterRegistry()
+        binder(registry).configureNettyMetrics(new PooledByteBufAllocator(true))
         Collection<Meter> meters = registry.find(name).meters()
         Set<Set<String>> distinctTagKeySets = meters.collect { Meter m -> m.id.tags.collect { it.key } as Set } as Set
         Set<String> sizeValues = meters.collect { Meter m -> m.id.getTag(SIZE) } as Set
@@ -166,12 +224,16 @@ class MicronautNettyByteBufAllocatorMetricsBinderSpec extends Specification {
         sizeValues == ['total', 'small', 'normal', 'huge'] as Set
 
         cleanup:
-        context.close()
+        registry.close()
 
         where:
         name << [dot(NETTY, ALLOC, ARENA, ALLOCATION, COUNT),
                  dot(NETTY, ALLOC, ARENA, DEALLOCATION, COUNT),
                  dot(NETTY, ALLOC, ARENA, ALLOCATION, ACTIVE, COUNT)]
+    }
+
+    private static ByteBufAllocatorMetricsBinder binder(MeterRegistry registry) {
+        new ByteBufAllocatorMetricsBinder({ registry } as BeanProvider<MeterRegistry>, new ByteBufAllocatorMetricsConfig())
     }
 
     @Client('/bytebufallocatortest')
