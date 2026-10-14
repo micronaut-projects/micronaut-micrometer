@@ -28,20 +28,16 @@ The value is computed in this order of precedence:
 . `expression` without `#{...}`: it is passed, with the argument or result, to the `io.micrometer.common.annotation.ValueExpressionResolver` bean. Micronaut does not provide one. Without such a bean the value is empty, and an error is logged.
 . Otherwise `toString()` of the argument or result. `null` becomes an empty string.
 
-[source,java]
-----
-@Timed("orders.lookup")
-@MeterTag("status")                                           // <1>
-@MeterTag(key = "items", expression = "#{ #order.items().size() }") // <2>
-OrderStatus lookup(@MeterTag("tenant") String tenant,        // <3>
-                   @MeterTag(key = "region", resolver = RegionResolver.class) Order order) { // <4>
-    ...
-}
-----
-<1> The `toString()` of the returned `OrderStatus`.
-<2> A compile-time checked expression evaluated against the arguments.
+.@MeterTag example
+snippet::io.micronaut.docs.metrics.annotation.OrderService[tags="imports,class"]
+
+<1> The `toString()` of the result.
+<2> An expression compiled with the application and evaluated against the arguments of each invocation.
 <3> The `toString()` of the argument.
-<4> The `RegionResolver` bean.
+<4> The value computed by the `RegionResolver` bean.
+
+.ValueResolver example
+snippet::io.micronaut.docs.metrics.annotation.RegionResolver[tags="imports,class"]
 
 When several `@MeterTag` annotations use the same key, the first one wins. The `exception` tag, and the `result` tag of `@Counted`, take precedence over a `@MeterTag` with the same key. Methods without `@MeterTag` do no extra work per invocation.
 
