@@ -19,6 +19,7 @@ class PrometheusEndpointFormatsSpec extends Specification {
 
     // the Accept header that Prometheus sends by default
     static final String PROMETHEUS_ACCEPT = 'application/openmetrics-text;version=1.0.0,application/openmetrics-text;version=0.0.1;q=0.75,text/plain;version=0.0.4;q=0.5,*/*;q=0.1'
+    static final String PROMETHEUS_3_ACCEPT = 'application/openmetrics-text;version=1.0.0;escaping=allow-utf-8;q=0.6,application/openmetrics-text;version=0.0.1;q=0.5,text/plain;version=1.0.0;escaping=allow-utf-8;q=0.4,text/plain;version=0.0.4;q=0.3,*/*;q=0.2'
     static final String PROTOBUF_ACCEPT = 'application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0.7,text/plain;version=0.0.4;q=0.3'
 
     @Shared
@@ -92,6 +93,14 @@ class PrometheusEndpointFormatsSpec extends Specification {
         'text/*;q=0.5, application/openmetrics-text;q=0.2'                                                          | PrometheusEndpoint.TEXT_FORMAT
         'application/*;q=0.9, application/openmetrics-text;q=0, text/plain;q=0.5'                                   | PrometheusEndpoint.PROTOBUF_FORMAT
         '*/*'                                                                                                       | PrometheusEndpoint.TEXT_FORMAT
+        // the parameters of a range must match those of the representation
+        'text/plain;charset=utf-16;q=1, application/openmetrics-text;q=0.5'                                        | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'text/plain;charset=UTF-8;q=1, application/openmetrics-text;q=0.5'                                         | PrometheusEndpoint.TEXT_FORMAT
+        // the name of the quality parameter is case-insensitive
+        'application/openmetrics-text;Q=0, text/plain;q=0.5'                                                       | PrometheusEndpoint.TEXT_FORMAT
+        'application/openmetrics-text;Q=0.1, Text/Plain;q=0.5'                                                     | PrometheusEndpoint.TEXT_FORMAT
+        // the Accept header of Prometheus 3: the escaping parameter does not select a representation
+        PROMETHEUS_3_ACCEPT                                                                                         | PrometheusEndpoint.OPENMETRICS_FORMAT
     }
 
     void "the protobuf format is returned when it is asked for"() {
@@ -141,6 +150,32 @@ class PrometheusEndpointFormatsSpec extends Specification {
         cleanup:
         client.close()
         server.close()
+    }
+
+    void "each OpenMetrics version is negotiated on its own when OpenMetrics 2 content negotiation is enabled"() {
+        given:
+        EmbeddedServer server = ApplicationContext.run(EmbeddedServer, [
+                'endpoints.prometheus.sensitive'                                                         : false,
+                'micronaut.metrics.export.prometheus.properties.io.prometheus.openmetrics2.enabled'            : true,
+                'micronaut.metrics.export.prometheus.properties.io.prometheus.openmetrics2.content_negotiation': true
+        ])
+        HttpClient client = server.applicationContext.createBean(HttpClient, server.URL)
+
+        when:
+        HttpResponse<String> response = client.toBlocking().exchange(HttpRequest.GET('/prometheus').header(HttpHeaders.ACCEPT, accept), String)
+
+        then:
+        response.header(HttpHeaders.CONTENT_TYPE) == expected
+
+        cleanup:
+        client.close()
+        server.close()
+
+        where:
+        accept                                                                                                           | expected
+        'application/openmetrics-text;version=1.0.0;q=0.1, application/openmetrics-text;version=2.0.0;q=0.9, text/plain;q=0.5' | 'application/openmetrics-text; version=2.0.0; charset=utf-8'
+        'application/openmetrics-text;version=2.0.0;q=0.1, application/openmetrics-text;version=1.0.0;q=0.9, text/plain;q=0.5' | PrometheusEndpoint.OPENMETRICS_FORMAT
+        'application/openmetrics-text;version=2.0.0;q=0, application/openmetrics-text;q=0.5'                             | PrometheusEndpoint.OPENMETRICS_FORMAT
     }
 
     void "Prometheus client properties are passed through with their keys unchanged"() {
