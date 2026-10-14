@@ -83,7 +83,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     @Override
     public @Nullable Object intercept(MethodInvocationContext<Object, Object> context) {
         final CountedMethod countedMethod = countedMethod(context);
-        if (!countedMethod.enabled || (countedMethod.hasCondition && !MetricOptionsUtil.evaluateCondition(context))) {
+        if (countedMethod == null || !countedMethod.enabled) {
             return context.proceed();
         }
         return switch (countedMethod.resultType) {
@@ -142,11 +142,24 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         return interceptedMethod.handleResult(completionStage.whenComplete(new CountedInvocation(context, countedMethod)));
     }
 
-    private CountedMethod countedMethod(MethodInvocationContext<Object, Object> context) {
+    /**
+     * @param context The invocation context
+     * @return The settings of the invocation, or {@code null} if the {@link MetricOptions#condition()} is false,
+     * which is evaluated before the other annotation values
+     */
+    private @Nullable CountedMethod countedMethod(MethodInvocationContext<Object, Object> context) {
         final CountedMethod cached = countedMethods.get(context.getExecutableMethod());
         if (cached != null) {
+            if (cached.hasCondition && !MetricOptionsUtil.evaluateCondition(context)) {
+                return null;
+            }
             // annotation values containing expressions are evaluated against each invocation
             return cached.dynamic ? resolveCountedMethod(context) : cached;
+        }
+        if (context.getAnnotationMetadata().isPresent(MetricOptions.class, MetricOptions.MEMBER_CONDITION)
+            && !MetricOptionsUtil.evaluateCondition(context)) {
+            // resolved and cached by the first invocation that is enabled
+            return null;
         }
         final CountedMethod resolved = resolveCountedMethod(context);
         // a concurrent first invocation may have cached its own settings: the evaluated values are

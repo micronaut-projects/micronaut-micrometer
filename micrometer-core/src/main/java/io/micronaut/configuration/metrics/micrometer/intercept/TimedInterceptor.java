@@ -119,7 +119,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     @Override
     public @Nullable Object intercept(MethodInvocationContext<Object, Object> context) {
         final TimedMethod timedMethod = timedMethod(context);
-        if (timedMethod.timers.length == 0 || (timedMethod.hasCondition && !MetricOptionsUtil.evaluateCondition(context))) {
+        if (timedMethod == null || timedMethod.timers.length == 0) {
             return context.proceed();
         }
         return switch (timedMethod.resultType) {
@@ -181,11 +181,24 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         }
     }
 
-    private TimedMethod timedMethod(MethodInvocationContext<Object, Object> context) {
+    /**
+     * @param context The invocation context
+     * @return The settings of the invocation, or {@code null} if the {@link MetricOptions#condition()} is false,
+     * which is evaluated before the other annotation values
+     */
+    private @Nullable TimedMethod timedMethod(MethodInvocationContext<Object, Object> context) {
         final TimedMethod cached = timedMethods.get(context.getExecutableMethod());
         if (cached != null) {
+            if (cached.hasCondition && !MetricOptionsUtil.evaluateCondition(context)) {
+                return null;
+            }
             // annotation values containing expressions are evaluated against each invocation
             return cached.dynamic ? resolveTimedMethod(context) : cached;
+        }
+        if (context.getAnnotationMetadata().isPresent(MetricOptions.class, MetricOptions.MEMBER_CONDITION)
+            && !MetricOptionsUtil.evaluateCondition(context)) {
+            // resolved and cached by the first invocation that is enabled
+            return null;
         }
         final TimedMethod resolved = resolveTimedMethod(context);
         // a concurrent first invocation may have cached its own settings: the evaluated values are
