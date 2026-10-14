@@ -205,6 +205,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         final AnnotationValue<Counted> counted = metadata.getAnnotation(Counted.class);
         final String metricName = metadata.stringValue(Counted.class).orElse(DEFAULT_METRIC_NAME);
         final String[] extraTags = metadata.stringValues(Counted.class, "extraTags");
+        final Tags parsedExtraTags = MethodMetricsSupport.parseTags(extraTags);
         return new CountedMethod(
             InterceptedMethod.of(context, conversionService).resultType(),
             context.getReturnType().isSingleResult(),
@@ -214,7 +215,10 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
             metricName,
             metadata.stringValue(Counted.class, "description").orElse(null),
             extraTags,
-            MethodMetricsSupport.parseTags(extraTags),
+            parsedExtraTags,
+            parsedExtraTags != null
+                ? parsedExtraTags.and(EXCEPTION_TAG, MethodMetricsSupport.NONE).and(RESULT_TAG, SUCCESS)
+                : null,
             metadata.isTrue(Counted.class, "recordFailuresOnly"),
             MethodMetricsSupport.resolveTaggers(methodTaggers, metadata),
             cached != null ? cached.meterTags : MeterTagPlan.of(context, beanContext)
@@ -227,19 +231,25 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                          @Nullable Object result) {
         try {
             final Counter.Builder builder = Counter.builder(countedMethod.name)
-                .tags(MethodMetricsSupport.taggerTags(countedMethod.taggers, context));
-            if (countedMethod.parsedExtraTags != null) {
-                builder.tags(countedMethod.parsedExtraTags);
+                .description(countedMethod.description);
+            if (exception == null && countedMethod.successTags != null && countedMethod.meterTags == null
+                && countedMethod.taggers.length == 0) {
+                // the common case: the tags are known in advance, no need to merge them for each invocation
+                builder.tags(countedMethod.successTags);
             } else {
-                builder.tags(countedMethod.extraTags);
+                builder.tags(MethodMetricsSupport.taggerTags(countedMethod.taggers, context));
+                if (countedMethod.parsedExtraTags != null) {
+                    builder.tags(countedMethod.parsedExtraTags);
+                } else {
+                    builder.tags(countedMethod.extraTags);
+                }
+                if (countedMethod.meterTags != null) {
+                    builder.tags(countedMethod.meterTags.tags(context, result));
+                }
+                builder.tag(EXCEPTION_TAG, exception != null ? exception : MethodMetricsSupport.NONE)
+                    .tag(RESULT_TAG, exception != null ? FAILURE : SUCCESS);
             }
-            if (countedMethod.meterTags != null) {
-                builder.tags(countedMethod.meterTags.tags(context, result));
-            }
-            builder.description(countedMethod.description)
-                .tag(EXCEPTION_TAG, exception != null ? exception : MethodMetricsSupport.NONE)
-                .tag(RESULT_TAG, exception != null ? FAILURE : SUCCESS)
-                .register(meterRegistry)
+            builder.register(meterRegistry)
                 .increment();
         } catch (Exception e) {
             LOGGER.error("Error registering counter in the registry", e);
@@ -258,6 +268,9 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
      * @param description The description
      * @param extraTags The extra tags as declared
      * @param parsedExtraTags The parsed extra tags or {@code null} if they are invalid
+     * @param successTags The parsed extra tags and the {@code exception=none} and {@code result=success} tags,
+     *                    i.e. all the tags of a successful invocation of a method without tagger or
+     *                    {@code @MeterTag}, or {@code null} if the extra tags are invalid
      * @param recordFailuresOnly Whether only failures are counted
      * @param taggers The taggers that apply to the method
      * @param meterTags The {@link MeterTag} annotations, or {@code null} if the method has none
@@ -272,6 +285,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                                  @Nullable String description,
                                  String[] extraTags,
                                  @Nullable Tags parsedExtraTags,
+                                 @Nullable Tags successTags,
                                  boolean recordFailuresOnly,
                                  AbstractMethodTagger[] taggers,
                                  @Nullable MeterTagPlan meterTags) {

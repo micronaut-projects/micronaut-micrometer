@@ -251,11 +251,13 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             final AnnotationValue<Timed> timed = timedAnnotations.get(i);
             final String[] extraTags = timed.stringValues("extraTags");
             final boolean longTask = timed.isTrue("longTask");
+            final Tags parsedExtraTags = MethodMetricsSupport.parseTags(extraTags);
             timers[i] = new TimerSettings(
                 timed.stringValue().orElse(DEFAULT_METRIC_NAME),
                 timed.stringValue("description").orElse(null),
                 extraTags,
-                MethodMetricsSupport.parseTags(extraTags),
+                parsedExtraTags,
+                parsedExtraTags != null ? parsedExtraTags.and(EXCEPTION_TAG, MethodMetricsSupport.NONE) : null,
                 timed.doubleValues("percentiles"),
                 timed.isTrue("histogram"),
                 longTask
@@ -339,18 +341,24 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                              @Nullable List<Tag> meterTags) {
         try {
             final Timer.Builder builder = Timer.builder(timer.name)
-                .description(timer.description)
-                .tags(MethodMetricsSupport.taggerTags(timedMethod.taggers, context));
-            if (timer.parsedExtraTags != null) {
-                builder.tags(timer.parsedExtraTags);
+                .description(timer.description);
+            if (timer.successTags != null && meterTags == null && timedMethod.taggers.length == 0
+                && MethodMetricsSupport.NONE.equals(exception)) {
+                // the common case: the tags are known in advance, no need to merge them for each invocation
+                builder.tags(timer.successTags);
             } else {
-                builder.tags(timer.extraTags);
+                builder.tags(MethodMetricsSupport.taggerTags(timedMethod.taggers, context));
+                if (timer.parsedExtraTags != null) {
+                    builder.tags(timer.parsedExtraTags);
+                } else {
+                    builder.tags(timer.extraTags);
+                }
+                if (meterTags != null) {
+                    builder.tags(meterTags);
+                }
+                builder.tags(EXCEPTION_TAG, exception);
             }
-            if (meterTags != null) {
-                builder.tags(meterTags);
-            }
-            builder.tags(EXCEPTION_TAG, exception)
-                .publishPercentileHistogram(timer.histogram)
+            builder.publishPercentileHistogram(timer.histogram)
                 .publishPercentiles(timer.percentiles)
                 .register(meterRegistry)
                 .record(duration, TimeUnit.NANOSECONDS);
@@ -375,6 +383,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param description The description
      * @param extraTags The extra tags as declared
      * @param parsedExtraTags The parsed extra tags or {@code null} if they are invalid
+     * @param successTags The parsed extra tags and the {@code exception=none} tag, i.e. all the tags of a
+     *                    successful invocation of a method without tagger or {@code @MeterTag}, or {@code null}
+     *                    if the extra tags are invalid
      * @param percentiles The percentiles
      * @param histogram Whether to publish a histogram
      * @param longTask Whether to use a long task timer
@@ -384,6 +395,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                                  @Nullable String description,
                                  String[] extraTags,
                                  @Nullable Tags parsedExtraTags,
+                                 @Nullable Tags successTags,
                                  double[] percentiles,
                                  boolean histogram,
                                  boolean longTask) {
