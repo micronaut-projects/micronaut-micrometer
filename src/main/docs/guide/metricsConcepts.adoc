@@ -436,6 +436,18 @@ The logging metrics bindings provide logging metrics if using https://logback.qo
 | logback.events
 |=======
 
+===== Log4j 2 Metrics
+
+The logging metrics bindings provide logging metrics if using https://logging.apache.org/log4j/2.x/[Log4j 2], that is when `org.apache.logging.log4j:log4j-core` is on the classpath and implements the Log4j API. They are not registered when the Log4j API is routed to another logging framework, for example with `log4j-to-slf4j`. The filter that the binder adds to the Log4j configuration is removed when the application shuts down.
+
+*Control Property*: `micronaut.metrics.binders.log4j2.enabled` (default `true`)
+
+.Metrics provided
+|=======
+|*Name*
+| log4j2.events
+|=======
+
 ===== Hibernate Metrics
 
 You can enable metrics for https://hibernate.org/orm/[Hibernate] by setting the `hibernate.generate_statistics` property to `true` in configuration. For example, for the default entity manager:

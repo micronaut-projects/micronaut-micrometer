@@ -15,6 +15,7 @@ This section documents breaking changes between Micronaut Micrometer versions:
 - The `application.started.time` and `application.ready.time` gauges are registered by default. Disable them with `micronaut.metrics.binders.startup.enabled`.
 - When `micronaut-micrometer-observation-grpc` is on the classpath, gRPC calls are recorded by observations (`grpc.server` and `grpc.client` meters) instead of the `MetricCollectingServerInterceptor` and `MetricCollectingClientInterceptor` meters (such as `grpc.server.processing.duration`). Set `micrometer.observation.grpc.server.enabled` or `micrometer.observation.grpc.client.enabled` to `false` to keep the previous meters.
 - The `ssl.chain.expiry` gauges are registered by default for the certificate providers (`micronaut.certificate.*`) that the application uses. Disable them with `micronaut.metrics.binders.ssl.enabled`.
+- The `log4j2.events` counters are registered by default when Log4j Core implements the Log4j API. Disable them with `micronaut.metrics.binders.log4j2.enabled`.
 
 === Micronaut Micrometer 6.0.0
 
