@@ -17,6 +17,7 @@ package io.micronaut.micrometer.observation.http.client;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.propagation.PropagatedContext;
@@ -63,6 +64,12 @@ import static io.micronaut.micrometer.observation.http.AbstractObservationFilter
 @Requires(property = "micrometer.observation.http.client.enabled", notEquals = FALSE, defaultValue = TRUE)
 public final class ObservationClientFilter extends AbstractObservationFilter {
 
+    /**
+     * The name of the HTTP client observations, {@code http.client.requests} by default. It
+     * applies to the default convention, not to a {@link ClientRequestObservationConvention} bean.
+     */
+    public static final String NAME_PROPERTY = "micrometer.observations.http.client.requests.name";
+
     private static final ClientRequestObservationConvention DEFAULT_OBSERVATION_CONVENTION = new DefaultClientRequestObservationConvention();
     private static final Logger LOG = LoggerFactory.getLogger(ObservationClientFilter.class);
 
@@ -70,14 +77,24 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
 
     private final ClientRequestObservationConvention observationConvention;
 
+    private final ClientRequestObservationConvention defaultObservationConvention;
+
+    /**
+     * @param observationRegistry   The observation registry
+     * @param observationConvention The convention bean, which replaces the default convention
+     * @param exclusionsConfig      The paths to exclude
+     * @param name                  The name of the observations of the default convention, see {@link #NAME_PROPERTY}
+     */
     public ObservationClientFilter(
         ObservationRegistry observationRegistry,
         @Nullable ClientRequestObservationConvention observationConvention,
-        @Nullable ObservationHttpExclusionsConfiguration exclusionsConfig
+        @Nullable ObservationHttpExclusionsConfiguration exclusionsConfig,
+        @Property(name = NAME_PROPERTY) @Nullable String name
     ) {
         super(exclusionsConfig == null ? null : exclusionsConfig.exclusionTest());
         this.observationRegistry = observationRegistry;
         this.observationConvention = observationConvention;
+        this.defaultObservationConvention = name == null ? DEFAULT_OBSERVATION_CONVENTION : new DefaultClientRequestObservationConvention(name);
     }
 
     /**
@@ -96,7 +113,7 @@ public final class ObservationClientFilter extends AbstractObservationFilter {
         }
         ClientRequestObservationContext observationContext = new ClientRequestObservationContext(request);
         Observation observation = ClientHttpObservationDocumentation.HTTP_CLIENT_EXCHANGES.observation(this.observationConvention,
-            DEFAULT_OBSERVATION_CONVENTION, () -> observationContext, this.observationRegistry).start();
+            defaultObservationConvention, () -> observationContext, this.observationRegistry).start();
         if (observation.isNoop()) {
             // e.g. disabled by an ObservationPredicate: there is nothing to stop
             return continuation.proceed();

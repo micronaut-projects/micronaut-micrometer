@@ -16,7 +16,27 @@ dependency:micronaut-micrometer-core[groupId="io.micronaut.micrometer", scope="i
 
 It's worth noting that at present, the creation of a singleton instance for Trace requires manual configuration and is not automated by default.
 
-You can also specify key-value pairs inside the `micrometer.observations.common-key-value` configuration, which will be added as low-cardinality key-values to all your observations.
+The observations can be configured under `micrometer.observations`:
+
+- `micrometer.observations.common-key-value.<key>`: low-cardinality key-values added to all your observations. The `ObservationFilter` that adds them is only registered when key-values are configured.
+- `micrometer.observations.enable.<prefix>`: `true` or `false` to enable or disable the observations whose name starts with the prefix, matched on the dot-separated segments of the name: `http.server` matches `http.server.requests` but not `http.serverless`. The longest matching prefix wins, `all` matches every observation, and an observation without a matching prefix is enabled. A disabled observation is a no-op: it records nothing, and the HTTP filters skip it. The `ObservationPredicate` that applies these settings is only registered when they are configured.
+- `micrometer.observations.long-task-timer.enabled`: whether the observations recorded as meters also start a `<name>.active` long task timer (the default is `true`). Disabling it removes the start and stop of one `LongTaskTimer` per observation, for example per HTTP request; in a single-threaded micro-benchmark with a `SimpleMeterRegistry`, it brought the cost of the meter handler for an observation from about 240 ns and 980 bytes allocated to about 135 ns and 750 bytes.
+
+[configuration]
+----
+micrometer:
+  observations:
+    common-key-value:
+      region: eu-west-1
+    enable:
+      all: true
+      jdbc: false
+      http.client: false
+    long-task-timer:
+      enabled: false
+----
+
+The `@Observed` annotation can be placed on a method or on a class. On a class, it observes every public method of the bean, and the annotation of a method takes precedence over the annotation of its class.
 
 
 === Micrometer Observation HTTP
@@ -35,6 +55,9 @@ You can configure the behavior of this module by modifying the following propert
 - To disable HTTP server instrumentation, set the `micrometer.observation.http.server.enabled` property to `false` (the default value is `true`).
 - To disable HTTP client instrumentation, set the `micrometer.observation.http.client.enabled` property to `false` (the default value is `true`).
 - To exclude paths from the server and client observations, set `micrometer.observation.http.exclusions` to a list of regular expressions. A request is not observed when its path matches one of the expressions entirely.
+- To rename the HTTP observations, and so the timers they record, set `micrometer.observations.http.server.requests.name` (the default is `http.server.requests`) and `micrometer.observations.http.client.requests.name` (the default is `http.client.requests`). The names apply to the default conventions; a `ServerRequestObservationConvention` or `ClientRequestObservationConvention` bean replaces them.
+
+When the observation registry has no handler (for example with `micronaut.metrics.enabled` set to `false` and no tracer), or an HTTP observation is disabled, the HTTP filters do nothing for the request.
 
 Each HTTP observation is stopped exactly once:
 
@@ -43,7 +66,7 @@ Each HTTP observation is stopped exactly once:
 
 The server filter runs in the `ServerFilterPhase.METRICS` phase, like the web metrics filter: before the tracing, session and security filters. A filter that should run with the server observation as its current observation must have an order after `ServerFilterPhase.METRICS.order()`.
 
-The meters created from HTTP observations have the same names as those of the HTTP metrics filters (`http.server.requests` and `http.client.requests`), so the `micronaut.metrics.binders.web.server.max-uri-tags` and `micronaut.metrics.binders.web.client.max-uri-tags` limits described in the Web Metrics section apply to them too.
+The meters created from HTTP observations have the same names as those of the HTTP metrics filters (`http.server.requests` and `http.client.requests`), so the `micronaut.metrics.binders.web.server.max-uri-tags` and `micronaut.metrics.binders.web.client.max-uri-tags` limits described in the Web Metrics section apply to them too, as long as the observations keep their default names.
 
 === Micrometer Observation Kafka
 
