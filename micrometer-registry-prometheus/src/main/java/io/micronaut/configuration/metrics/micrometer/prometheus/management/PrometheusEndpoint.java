@@ -192,15 +192,8 @@ public class PrometheusEndpoint {
         Format bestFormat = null;
         AcceptedRange bestRange = null;
         for (Format format : Format.values()) {
-            if (format == Format.OPENMETRICS && !openMetricsEnabled) {
-                continue;
-            }
-            AcceptedRange range = mostSpecificRange(format, ranges);
-            if (range == null || range.quality().signum() <= 0) {
-                continue;
-            }
-            int comparison = bestRange == null ? 1 : range.quality().compareTo(bestRange.quality());
-            if (comparison > 0 || comparison == 0 && range.index() < bestRange.index()) {
+            AcceptedRange range = format != Format.OPENMETRICS || openMetricsEnabled ? mostSpecificRange(format, ranges) : null;
+            if (isPreferred(range, bestRange)) {
                 bestFormat = format;
                 bestRange = range;
             }
@@ -214,6 +207,23 @@ public class PrometheusEndpoint {
             case OPENMETRICS -> expositionFormats.findWriter(bestRange.wildcard() ? OPENMETRICS_TYPE : bestRange.value());
             case PROTOBUF -> expositionFormats.getPrometheusProtobufWriter();
         };
+    }
+
+    /**
+     * @param range The most specific range of a format, or {@code null} if no range matches it
+     * @param best  The range of the format selected so far, or {@code null}
+     * @return Whether the format is acceptable and preferred to the format selected so far: its quality is higher, or
+     * equal and its range comes first in the header
+     */
+    private static boolean isPreferred(@Nullable AcceptedRange range, @Nullable AcceptedRange best) {
+        if (range == null || range.quality().signum() <= 0) {
+            return false;
+        }
+        if (best == null) {
+            return true;
+        }
+        int comparison = range.quality().compareTo(best.quality());
+        return comparison > 0 || comparison == 0 && range.index() < best.index();
     }
 
     private @Nullable AcceptedRange mostSpecificRange(Format format, List<AcceptedRange> ranges) {
