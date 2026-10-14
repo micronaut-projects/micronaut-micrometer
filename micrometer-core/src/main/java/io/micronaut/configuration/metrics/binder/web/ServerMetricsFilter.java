@@ -276,7 +276,8 @@ final class ServerMetricsFilter implements Ordered {
                 HttpMetricsTagProvider[] tagProviders = filter.tagProviders;
                 Tags providedTags = tagProviders.length == 0
                     ? null
-                    : WebMetricsHelper.providedTags(tagProviders, request, response, RouteAttributes.getException(response).orElse(null));
+                    // the failure of the final response, none for an error route that answered successfully
+                    : WebMetricsHelper.providedTags(tagProviders, request, response, exception);
                 WebMetricsHelper.recordTimer(
                     filter.meterRegistry.get(),
                     HttpServerMeterConfig.REQUESTS_METRIC,
