@@ -28,7 +28,6 @@ import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
-import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
@@ -85,7 +84,6 @@ class HttpMetricsLifecycleSpec extends Specification {
         }
     }
 
-    @PendingFeature(reason = 'Core 5.3 answers a CodecException of a body writer with the default error response, without running the response filters again')
     void "a response whose body writer fails with a CodecException is recorded with the replacing 500 response"() {
         given:
         start()
