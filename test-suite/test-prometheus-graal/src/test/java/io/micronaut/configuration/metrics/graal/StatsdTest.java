@@ -28,6 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StatsdTest implements TestPropertyProvider {
 
+    // the registry sends to the address the socket is bound to: the loopback address of the JVM
+    // can be ::1, which does not receive IPv4 datagrams
+    private static final String LOOPBACK = "127.0.0.1";
+
     private final DatagramSocket socket = createSocket();
 
     @Inject
@@ -40,7 +44,7 @@ class StatsdTest implements TestPropertyProvider {
     public Map<String, String> getProperties() {
         return Map.of(
             "micronaut.metrics.export.statsd.enabled", "true",
-            "micronaut.metrics.export.statsd.host", "127.0.0.1",
+            "micronaut.metrics.export.statsd.host", LOOPBACK,
             "micronaut.metrics.export.statsd.port", String.valueOf(socket.getLocalPort()),
             "micronaut.metrics.export.statsd.buffered", "false"
         );
@@ -75,7 +79,7 @@ class StatsdTest implements TestPropertyProvider {
 
     private static DatagramSocket createSocket() {
         try {
-            DatagramSocket socket = new DatagramSocket(0, InetAddress.getLoopbackAddress());
+            DatagramSocket socket = new DatagramSocket(0, InetAddress.getByName(LOOPBACK));
             socket.setSoTimeout(1000);
             return socket;
         } catch (IOException e) {
