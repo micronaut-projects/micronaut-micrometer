@@ -8,4 +8,6 @@ dependencies {
     kspTest mnValidation.micronaut.validation.processor
     // creates the AOP proxies for @Timed / @Counted
     kspTest projects.micronautMicrometerAnnotation
+
+    testImplementation mn.kotlinx.coroutines.core
 }
