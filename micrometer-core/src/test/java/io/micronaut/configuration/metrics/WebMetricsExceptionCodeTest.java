@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @MicronautTest
@@ -36,7 +37,7 @@ class WebMetricsExceptionCodeTest {
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () ->  client.exchange( "/metrics/test"));
         Assertions.assertEquals(HttpStatus.GATEWAY_TIMEOUT, e.getStatus());
         Assertions.assertEquals("Client '/': Gateway Timeout", e.getMessage());
-        long count = meterRegistry.timer("http.server.requests", List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "504"), Tag.of("exception", "GatewayTimeoutException"))).count();
+        long count = awaitServerTimer(meterRegistry, List.of(Tag.of("method", "GET"), Tag.of("uri", "/metrics/test"), Tag.of("status", "504"), Tag.of("exception", "GatewayTimeoutException"))).count();
         Assertions.assertEquals(1, count);
     }
 
@@ -45,7 +46,7 @@ class WebMetricsExceptionCodeTest {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpClientResponseException e = Assertions.assertThrows(HttpClientResponseException.class, () -> client.exchange("/metrics/bad-request"));
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-        long count = meterRegistry.timer("http.server.requests", List.of(
+        long count = awaitServerTimer(meterRegistry, List.of(
             Tag.of("method", "GET"),
             Tag.of("uri", "/metrics/bad-request"),
             Tag.of("status", "400"),
@@ -63,6 +64,20 @@ class WebMetricsExceptionCodeTest {
             ))
             .timer();
         Assertions.assertTrue(fallbackTimer == null || fallbackTimer.count() == 0);
+    }
+
+    /**
+     * The server timer is recorded once the response was written, which may happen after the
+     * client received the response.
+     */
+    private static Timer awaitServerTimer(MeterRegistry meterRegistry, List<Tag> tags) {
+        // the meter filters of the test registry rename the method tag, so search by the others
+        List<Tag> searchTags = tags.stream().filter(tag -> !tag.getKey().equals("method")).toList();
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (meterRegistry.find("http.server.requests").tags(searchTags).timer() == null && System.nanoTime() < deadline) {
+            Thread.onSpinWait();
+        }
+        return meterRegistry.timer("http.server.requests", tags);
     }
 
     @Controller("/metrics")

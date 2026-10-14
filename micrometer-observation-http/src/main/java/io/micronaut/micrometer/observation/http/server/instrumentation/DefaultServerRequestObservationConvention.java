@@ -103,7 +103,7 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
 
     private KeyValue status(ServerRequestObservationContext context) {
         return (context.getResponse() != null) ?
-            KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, Integer.toString(context.getResponse().getStatus().getCode())) :
+            KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, Integer.toString(context.getResponse().code())) :
             STATUS_UNKNOWN;
     }
 
