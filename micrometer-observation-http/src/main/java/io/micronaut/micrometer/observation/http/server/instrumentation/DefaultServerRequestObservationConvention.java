@@ -25,14 +25,21 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.uri.UriMatchTemplate;
 import io.micronaut.web.router.RouteAttributes;
 import io.micronaut.web.router.UriRouteInfo;
+import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default {@link ServerRequestObservationConvention}.
  */
 @Internal
 public final class DefaultServerRequestObservationConvention implements ServerRequestObservationConvention {
+    /**
+     * The maximum number of cached route paths.
+     */
+    static final int MAX_ROUTE_PATHS = 1024;
+
     private static final String DEFAULT_NAME = "http.server.requests";
 
     private static final KeyValue STATUS_UNKNOWN = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.STATUS, "UNKNOWN");
@@ -46,6 +53,11 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
     private static final KeyValue EXCEPTION_NONE = KeyValue.of(ServerHttpObservationDocumentation.LowCardinalityKeyNames.EXCEPTION, KeyValue.NONE_VALUE);
 
     private final String name;
+
+    // UriMatchTemplate#toPathString computes the path on every call. Equal templates of different routes share
+    // an entry, the default convention is shared by the contexts of the JVM (the cache holds no route or bean) and
+    // the cache stops growing at MAX_ROUTE_PATHS entries, the routes of an application being a fixed set.
+    private final Map<UriMatchTemplate, String> routePaths = new ConcurrentHashMap<>();
 
     /**
      * Create a convention with the default name {@code "http.server.requests"}.
@@ -78,13 +90,33 @@ public final class DefaultServerRequestObservationConvention implements ServerRe
         return "http " + httpMethod;
     }
 
-    private String getRoute(HttpRequest<?> request) {
-        Optional<String> routeInfo = RouteAttributes.getRouteInfo(request)
-            .filter(UriRouteInfo.class::isInstance)
-            .map(ri -> (UriRouteInfo<?, ?>) ri)
-            .map(UriRouteInfo::getUriMatchTemplate)
-            .map(UriMatchTemplate::toPathString);
-        return routeInfo.orElseGet(() -> BasicHttpAttributes.getUriTemplate(request).orElse(null));
+    private @Nullable String getRoute(HttpRequest<?> request) {
+        if (RouteAttributes.getRouteInfo(request).orElse(null) instanceof UriRouteInfo<?, ?> uriRouteInfo) {
+            return routePath(uriRouteInfo.getUriMatchTemplate());
+        }
+        return BasicHttpAttributes.getUriTemplate(request).orElse(null);
+    }
+
+    /**
+     * @param template The route template
+     * @return The path of the template, see {@link UriMatchTemplate#toPathString()}
+     */
+    String routePath(UriMatchTemplate template) {
+        String path = routePaths.get(template);
+        if (path == null) {
+            path = template.toPathString();
+            if (routePaths.size() < MAX_ROUTE_PATHS) {
+                routePaths.putIfAbsent(template, path);
+            }
+        }
+        return path;
+    }
+
+    /**
+     * @return The number of cached route paths
+     */
+    int routePathCount() {
+        return routePaths.size();
     }
 
     @Override
