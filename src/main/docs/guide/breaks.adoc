@@ -14,6 +14,7 @@ This section documents breaking changes between Micronaut Micrometer versions:
 - New JVM and system meters are registered by default: `jvm.info`, `jvm.compilation.time`, `jvm.gc.overhead`, `jvm.memory.usage.after.gc`, `disk.free` and `disk.total`, plus the `jvm.threads.virtual.*` meters when `io.micrometer:micrometer-java21` is on the classpath. Disable them with `micronaut.metrics.binders.jvm.info.enabled`, `micronaut.metrics.binders.jvm.compilation.enabled`, `micronaut.metrics.binders.jvm.heap-pressure.enabled`, `micronaut.metrics.binders.disk-space.enabled` and `micronaut.metrics.binders.virtual-threads.enabled`.
 - The `application.started.time` and `application.ready.time` gauges are registered by default. Disable them with `micronaut.metrics.binders.startup.enabled`.
 - When `micronaut-micrometer-observation-grpc` is on the classpath, gRPC calls are recorded by observations (`grpc.server` and `grpc.client` meters) instead of the `MetricCollectingServerInterceptor` and `MetricCollectingClientInterceptor` meters (such as `grpc.server.processing.duration`). Set `micrometer.observation.grpc.server.enabled` or `micrometer.observation.grpc.client.enabled` to `false` to keep the previous meters.
+- The `ssl.chain.expiry` gauges are registered by default for the certificate providers (`micronaut.certificate.*`) that the application uses. Disable them with `micronaut.metrics.binders.ssl.enabled`.
 
 === Micronaut Micrometer 6.0.0
 
