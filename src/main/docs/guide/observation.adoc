@@ -6,6 +6,8 @@ dependency:micronaut-micrometer-observation[groupId="io.micronaut.micrometer", s
 
 This module enables you to leverage the https://micrometer.io/docs/observation#_using_annotations_with_observed[`@Observed`] annotation in your code, making it easier to monitor your application. Additionally, it allows you to create custom Observations.
 
+An `@Observed` method that returns a `CompletionStage` is observed until the stage completes. The error recorded is the cause of a `CompletionException` or `ExecutionException`. A reactive method (for example one returning a `Mono` or `Flux`) is observed once for each subscription, from subscription until the publisher completes, errors or is cancelled. A publisher that is never subscribed creates no observation. The observation is added to the Reactor context of the subscription. Observations created while the method assembles its publisher are not children of it.
+
 When your application registers a singleton instance of the `MeterRegistry` class, the Observation API will export metrics. Similarly, registering a singleton instance of the `Trace` class will enable the export of traces.
 
 To effortlessly establish a singleton instance of MeterRegistry, you can include the following dependency, which takes care of the registration process for you:
