@@ -48,6 +48,9 @@ import java.util.concurrent.ExecutionException;
  * <p>Synchronous methods are observed until they return or throw and {@link CompletionStage} methods until the
  * stage completes. Reactive methods are observed for each subscription, from subscription until the publisher
  * completes, errors or is cancelled. The observation is added to the Reactor context of the subscription.</p>
+ *
+ * <p>When the {@link ObservationRegistry} is a no-op (it has no handler), every observation would be the no-op
+ * one, so the methods proceed without one and the results are returned as they are.</p>
  */
 @Internal
 @Singleton
@@ -74,6 +77,10 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
         if (observedMethod == null) {
             return context.proceed();
         }
+        if (observationRegistry.isNoop()) {
+            // nothing observes (e.g. no handler): every observation would be the no-op one
+            return proceedUnobserved(context, observedMethod);
+        }
         try (PropagatedContext.Scope ignore = PropagatedContext.getOrEmpty().propagate()) {
             return switch (observedMethod.resultType) {
                 case SYNCHRONOUS -> interceptSynchronous(context, observedMethod);
@@ -81,6 +88,35 @@ final class ObservedInterceptor implements MethodInterceptor<Object, Object> {
                 case COMPLETION_STAGE -> interceptCompletionStage(context, observedMethod);
             };
         }
+    }
+
+    /**
+     * Proceeds without an observation, keeping how the observed paths report a failure: a reactive or
+     * {@link CompletionStage} method that throws returns a failed publisher or stage.
+     *
+     * @param context        The invocation
+     * @param observedMethod The settings of the method
+     * @return The result of the method
+     */
+    private @Nullable Object proceedUnobserved(MethodInvocationContext<Object, Object> context, ObservedMethod observedMethod) {
+        return switch (observedMethod.resultType) {
+            case SYNCHRONOUS -> context.proceed();
+            case PUBLISHER -> {
+                try {
+                    yield context.proceed();
+                } catch (Exception e) {
+                    yield InterceptedMethod.of(context, conversionService).handleException(e);
+                }
+            }
+            case COMPLETION_STAGE -> {
+                final InterceptedMethod interceptedMethod = InterceptedMethod.of(context, conversionService);
+                try {
+                    yield interceptedMethod.handleResult(interceptedMethod.interceptResultAsCompletionStage());
+                } catch (Exception e) {
+                    yield interceptedMethod.handleException(e);
+                }
+            }
+        };
     }
 
     private @Nullable Object interceptSynchronous(MethodInvocationContext<Object, Object> context, ObservedMethod observedMethod) {
