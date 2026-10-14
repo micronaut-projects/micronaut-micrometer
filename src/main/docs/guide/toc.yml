@@ -27,10 +27,10 @@ metricsAndReporters:
   metricsAndReportersSignalFx: SignalFx Registry
   metricsAndReportersStackdriver: Stackdriver Registry
   metricsAndReportersStatsD: StatsD Registry
-  metricsAndReportersWavefront: Wavefront Registry
 observation:
   title: Observation
   datasourceObservation: Datasource Observation
+  grpcObservation: gRPC Observation
 devmode: Development Mode Reloading
 metricsGuides: Guides
 breaks: Breaking Changes

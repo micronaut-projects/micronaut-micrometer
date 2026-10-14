@@ -1,0 +1,24 @@
+== Micrometer gRPC Observation
+
+The Micronaut Micrometer Observation gRPC module instruments https://micronaut-projects.github.io/micronaut-grpc/latest/guide/[Micronaut gRPC] servers and clients with the Micrometer Observation API. Every call received by the server and every call made through a managed channel creates an observation. Depending on the configured handlers, observations produce metrics (when a `MeterRegistry` bean exists) and trace spans (when a `Tracer` bean exists).
+
+To include this module in your project, add the following dependency:
+
+dependency:micronaut-micrometer-observation-grpc[groupId="io.micronaut.micrometer", scope="implementation"]
+
+The module registers Micrometer's `ObservationGrpcServerInterceptor` as a `ServerInterceptor` bean and `ObservationGrpcClientInterceptor` as a `ClientInterceptor` bean. Micronaut gRPC applies these beans to the gRPC server and to the managed channels it creates. Observations are named `grpc.server` and `grpc.client` and have the low-cardinality keys `rpc.service`, `rpc.method`, `grpc.status_code` and `rpc.type`.
+
+.gRPC observation properties
+|=======
+|*Property* |*Type* |*Default* |*Description*
+|`micrometer.observation.grpc.server.enabled` |boolean |`true` |Whether gRPC server calls are observed.
+|`micrometer.observation.grpc.client.enabled` |boolean |`true` |Whether gRPC client calls are observed.
+|=======
+
+To customize the observation names or key-values, register a bean of type `GrpcServerObservationConvention` or `GrpcClientObservationConvention`. It replaces the default convention.
+
+=== Relation to gRPC metrics
+
+Without this module, `micronaut-micrometer-core` records gRPC calls with Micrometer's `MetricCollectingServerInterceptor` and `MetricCollectingClientInterceptor` (meters such as `grpc.server.processing.duration`), controlled by `micronaut.metrics.binders.grpc.enabled`, `micronaut.metrics.binders.grpc.server.enabled` and `micronaut.metrics.binders.grpc.client.enabled`.
+
+When this module is on the classpath and server or client observations are enabled, the corresponding metric collecting interceptor is not created, so calls are not measured twice. Set `micrometer.observation.grpc.server.enabled` or `micrometer.observation.grpc.client.enabled` to `false` to go back to the metric collecting interceptor for that side.
