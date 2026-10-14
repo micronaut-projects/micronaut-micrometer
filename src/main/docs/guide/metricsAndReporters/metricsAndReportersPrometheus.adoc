@@ -29,6 +29,39 @@ micronaut:
 
 *IMPORTANT NOTE*: Once configured, the Prometheus-compatible metrics can be accessed from the path `/prometheus`. By default, Prometheus looks for `/metrics`, but that path serves the core Micronaut metrics, hence the need to point to `/prometheus`.
 
+=== Prometheus Endpoint Formats
+
+The `/prometheus` endpoint selects the format of the scrape from the `Accept` header of the request:
+
+|=======
+|*Accept* |*Format*
+|`application/openmetrics-text` |OpenMetrics text format (`application/openmetrics-text; version=1.0.0`)
+|`application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited` |Prometheus protobuf format, which Prometheus asks for to scrape native histograms
+|anything else |Prometheus text format (`text/plain; version=0.0.4`)
+|=======
+
+Prometheus asks for the OpenMetrics format by default. To always return the Prometheus text format instead of OpenMetrics, for example for a scraper that does not support OpenMetrics, set `micronaut.metrics.export.prometheus.endpoint.openmetrics.enabled` to `false`.
+
+The `includedNames` query parameter restricts the scrape to the given metric names, for example `/prometheus?includedNames=jvm_memory_used_bytes,http_server_requests_seconds`. The names are the names of the metric families, so a counter is given without its `_total` suffix.
+
+=== Prometheus Client Properties
+
+The Prometheus client is configured with `io.prometheus.*` properties, for example to enable native histograms or to change how exemplars are sampled. Set them under `micronaut.metrics.export.prometheus.properties`; their keys are passed to the client unchanged.
+
+.Example Prometheus Client Properties
+[configuration]
+----
+micronaut:
+  metrics:
+    export:
+      prometheus:
+        properties:
+          io.prometheus.metrics.histogram_native_only: true
+          io.prometheus.exemplars.sample_interval_milliseconds: 200
+----
+
+See the https://prometheus.github.io/client_java/config/config/[Prometheus client configuration] for the available properties.
+
 === Prometheus Default Metrics
 
 By default, there is a set of metrics that are exposed by the different binders. If you include the Prometheus reporter, those metrics will be available in Prometheus format as well.

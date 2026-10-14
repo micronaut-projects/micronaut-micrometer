@@ -12,6 +12,8 @@ managed-datasource-micrometer = '2.3.0'
 reflections = '0.10.2'
 
 hdr-histogram = '2.2.2'
+# the Prometheus client version that micrometer-registry-prometheus uses, only compiled against
+prometheus-metrics = '1.7.0'
 rabbitmq = '5.33.1'
 httpclient5 = '5.6.5'
 
@@ -52,6 +54,7 @@ groovy-json = { module = "org.apache.groovy:groovy-json" }
 boms-micrometer = { module = 'io.micrometer:micrometer-bom', version.ref = 'managed-micrometer' }
 grpc-api = { module = 'io.grpc:grpc-api' }
 hdr-histogram = { module = 'org.hdrhistogram:HdrHistogram', version.ref = 'hdr-histogram' }
+prometheus-metrics-exposition-textformats = { module = 'io.prometheus:prometheus-metrics-exposition-textformats', version.ref = 'prometheus-metrics' }
 httpclient5 = { module = 'org.apache.httpcomponents.client5:httpclient5', version.ref = 'httpclient5' }
 jackson2-core = { module = 'com.fasterxml.jackson.core:jackson-core', version.ref = 'jackson2' }
 jackson2-databind = { module = 'com.fasterxml.jackson.core:jackson-databind', version.ref = 'jackson2' }
