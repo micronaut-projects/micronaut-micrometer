@@ -29,6 +29,7 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 import io.micronaut.management.endpoint.annotation.Selector;
+import jakarta.inject.Inject;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -79,11 +80,22 @@ public class MetricsEndpoint {
 
     /**
      * @param meterRegistry The meter registry
-     * @param dataSources   To ensure data sources are loaded
+     * @since 6.2.0
      */
+    @Inject
+    public MetricsEndpoint(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param dataSources   Not used. The data source metrics binders are bound when the meter registry is created.
+     * @deprecated Use {@link #MetricsEndpoint(MeterRegistry)} instead.
+     */
+    @Deprecated(since = "6.2.0", forRemoval = true)
     public MetricsEndpoint(MeterRegistry meterRegistry,
                            DataSource[] dataSources) {
-        this.meterRegistry = meterRegistry;
+        this(meterRegistry);
     }
 
     /**
@@ -133,11 +145,10 @@ public class MetricsEndpoint {
      */
     private MetricDetails getMetricDetailsResponse(String name, List<String> tagNames) {
         List<Tag> tags = tagNames == null ? Collections.emptyList() : tagNames.stream().map(s -> {
-            if (s.contains(":")) {
-                String[] tv = s.split(":");
-                if (tv.length == 2) {
-                    return Tag.of(tv[0], tv[1]);
-                }
+            // split on the first colon only, tag values such as URIs can contain colons
+            int separator = s.indexOf(':');
+            if (separator > 0 && separator < s.length() - 1) {
+                return Tag.of(s.substring(0, separator), s.substring(separator + 1));
             }
             throw new UnsatisfiedArgumentException(Argument.of(List.class, "tags"), "Tags must be in the form key:value");
         }).collect(Collectors.toList());

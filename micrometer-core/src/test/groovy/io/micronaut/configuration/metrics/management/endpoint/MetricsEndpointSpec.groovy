@@ -3,13 +3,16 @@ package io.micronaut.configuration.metrics.management.endpoint
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
+import jakarta.inject.Inject
 import org.reflections.Reflections
 import spock.lang.IgnoreIf
 import spock.lang.Specification
@@ -183,6 +186,50 @@ class MetricsEndpointSpec extends Specification {
         then:
         HttpClientResponseException e = thrown()
         e.status == NOT_FOUND
+    }
+
+    void "test metrics endpoint tag filter with a value that contains a colon"() {
+        given:
+        run('endpoints.metrics.sensitive': false,
+            (MICRONAUT_METRICS_ENABLED)  : true)
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        registry.counter("test.colon.tag", "serviceId", "http://localhost:8080", "other", "a").increment()
+        registry.counter("test.colon.tag", "serviceId", "http://localhost:9090", "other", "b").increment(2)
+
+        when:
+        def response = client.exchange(HttpRequest.GET("/metrics/test.colon.tag?tag=" + URLEncoder.encode("serviceId:http://localhost:8080", "UTF-8")), Map)
+        Map result = response.body() as Map
+
+        then:
+        response.status == OK
+        result.name == "test.colon.tag"
+        result.measurements == [[statistic: "COUNT", value: 1.0d]]
+        result.availableTags.find { it.tag == "other" } == [tag: "other", values: ["a"]]
+        !result.availableTags.any { it.tag == "serviceId" }
+    }
+
+    @Unroll
+    void "test metrics endpoint rejects the malformed tag filter #tag"() {
+        given:
+        run('endpoints.metrics.sensitive': false,
+            (MICRONAUT_METRICS_ENABLED)  : true)
+        context.getBean(MeterRegistry).counter("test.malformed.tag", "key", "value").increment()
+
+        when:
+        client.exchange(HttpRequest.GET("/metrics/test.malformed.tag?tag=" + URLEncoder.encode(tag, "UTF-8")), Map)
+
+        then:
+        HttpClientResponseException e = thrown()
+        e.status == HttpStatus.BAD_REQUEST
+
+        where:
+        tag << ["key", ":value", "key:"]
+    }
+
+    void "test metrics endpoint is created without data sources"() {
+        expect:
+        MetricsEndpoint.getConstructor(MeterRegistry).getAnnotation(Inject) != null
+        new MetricsEndpoint(new SimpleMeterRegistry()).listNames().names.isEmpty()
     }
 
     @Unroll
