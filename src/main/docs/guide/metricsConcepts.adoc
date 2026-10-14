@@ -45,6 +45,47 @@ You can create custom filters similar to the following inside your application. 
 .Example
 snippet::io.micronaut.docs.metrics.filter.MeterFilterFactory[tags="imports,class"]
 
+==== Configuring Meters with Properties
+
+Common filters can be declared in configuration instead of code. Every key below ends with a meter name prefix: a key applies to meters whose name equals the prefix or starts with the prefix followed by a dot. When several prefixes match, the most specific (longest) one wins. Where noted, the special key `all` applies to every meter that no other key matches.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    enable:
+      jvm.gc: false
+      http.client: false
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        all: 0.5,0.95,0.99
+      slo:
+        http.server.requests: 100ms,500ms,1s
+      minimum-expected-value:
+        http.server.requests: 5ms
+      maximum-expected-value:
+        http.server.requests: 10s
+----
+
+.Meter filter properties
+|=======
+|*Property* |*Type* |*`all` key* |*Description*
+|`micronaut.metrics.enable.<prefix>` |boolean |yes |Set to `false` to deny meters whose names start with the prefix.
+|`micronaut.metrics.distribution.percentiles-histogram.<prefix>` |boolean |yes |Whether to publish a histogram suitable for computing aggregable percentile approximations.
+|`micronaut.metrics.distribution.percentiles.<prefix>` |list of doubles |yes |Client-side computed percentiles to publish, for example `0.5,0.95,0.99`. They cannot be aggregated across dimensions.
+|`micronaut.metrics.distribution.slo.<prefix>` |list of values |no |Service level objective boundaries.
+|`micronaut.metrics.distribution.minimum-expected-value.<prefix>` |value |no |The minimum value the meter is expected to observe. It bounds the histogram buckets that are published.
+|`micronaut.metrics.distribution.maximum-expected-value.<prefix>` |value |no |The maximum value the meter is expected to observe. It bounds the histogram buckets that are published.
+|`micronaut.metrics.distribution.expiry.<prefix>` |duration |yes |How long samples are accumulated in decaying distribution statistics before they are reset and rotated.
+|`micronaut.metrics.distribution.buffer-length.<prefix>` |integer |yes |The number of histograms to keep in the ring buffer.
+|=======
+
+Values for timers are durations such as `100ms` or `PT1S`; a plain number is read as milliseconds. Values for distribution summaries are plain numbers. Because the unit depends on the meter type, `slo`, `minimum-expected-value` and `maximum-expected-value` do not support the `all` key.
+
+The filter only exists when at least one of these properties is set. Like any `MeterFilter`, it is consulted when a meter is first registered and not when values are recorded. It is applied after the other filters, so its distribution settings take precedence over the `micronaut.metrics.binders.web.server` and `micronaut.metrics.binders.web.client` settings, which remain available as shortcuts for the `http.server.requests` and `http.client.requests` meters.
+
 === Meter Binder
 
 Meter Binders get applied to Meter Registry to _mix in_ metrics producers. Micrometer defines several of these for cross-cutting metrics related to JVM metrics, caches, classloaders, etc. These implement `MeterBinder`, but they are not autowired as beans; manual wiring is required given how Micrometer is currently implemented.
