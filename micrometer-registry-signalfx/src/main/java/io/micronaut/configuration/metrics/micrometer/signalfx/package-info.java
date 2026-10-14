@@ -21,8 +21,10 @@
  */
 @Configuration
 @Requires(property = SignalFxMeterRegistryFactory.SIGNALFX_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(SignalFxMeterRegistryFactory.SIGNALFX_ENABLED)
 package io.micronaut.configuration.metrics.micrometer.signalfx;
 
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

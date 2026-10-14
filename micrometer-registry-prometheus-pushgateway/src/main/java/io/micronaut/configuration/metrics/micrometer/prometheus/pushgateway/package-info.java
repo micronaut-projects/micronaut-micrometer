@@ -18,10 +18,12 @@
  */
 @Configuration
 @Requires(property = PrometheusPushGatewayFactory.PROMETHEUS_PUSHGATEWAY_ENABLED, notEquals = StringUtils.FALSE)
+@RequiresMetricsExport(PrometheusPushGatewayFactory.PROMETHEUS_PUSHGATEWAY_ENABLED)
 @Requires(property = PrometheusMeterRegistryFactory.PROMETHEUS_ENABLED, notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.metrics.micrometer.prometheus.pushgateway;
 
 import io.micronaut.configuration.metrics.micrometer.prometheus.PrometheusMeterRegistryFactory;
+import io.micronaut.configuration.metrics.annotation.RequiresMetricsExport;
 import io.micronaut.context.annotation.Configuration;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;

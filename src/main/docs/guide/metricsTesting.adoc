@@ -1,0 +1,21 @@
+== Testing
+
+The Micronaut Micrometer test module helps test applications that record metrics and observations. Add it to the test classpath:
+
+dependency:micronaut-micrometer-test[groupId="io.micronaut.micrometer", scope="testImplementation"]
+
+The module does the following:
+
+* In the `test` environment, it disables the registries that export metrics, so that tests do not publish metrics to monitoring systems. Meters are recorded in a `SimpleMeterRegistry` that tests can inspect. It does this by setting `micronaut.metrics.export.defaults.enabled` to `false` with a lower precedence than the configuration files of the application, so a registry is still enabled when `micronaut.metrics.export.<name>.enabled` is `true`, and setting `micronaut.metrics.export.defaults.enabled: true` in `application-test.yml` restores the default.
+* When `micronaut-micrometer-observation` is on the classpath, it replaces the `ObservationRegistry` with Micrometer's `TestObservationRegistry`. The registry has the same handlers, predicates, filters and conventions as the default one, so observations still produce meters and spans. Inject `TestObservationRegistry` and verify observations with `TestObservationRegistryAssert`. Set `micrometer.observations.test-registry.enabled` to `false` to keep the default registry.
+* It provides `MeterRegistryAssert`, a set of https://assertj.github.io/doc/[AssertJ] assertions for a `MeterRegistry`.
+
+.Test example
+snippet::io.micronaut.docs.metrics.testing.BookServiceTest[tags="imports,class"]
+
+.Test support properties
+|=======
+|*Property* |*Type* |*Default* |*Description*
+|`micronaut.metrics.export.defaults.enabled` |boolean |`false` in the `test` environment |Whether registries that export metrics are enabled when their own `enabled` property is not set.
+|`micrometer.observations.test-registry.enabled` |boolean |`true` |Whether the observation registry is replaced with a `TestObservationRegistry`.
+|=======

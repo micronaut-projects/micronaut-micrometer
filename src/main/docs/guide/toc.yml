@@ -32,6 +32,7 @@ observation:
   datasourceObservation: Datasource Observation
   grpcObservation: gRPC Observation
 devmode: Development Mode Reloading
+metricsTesting: Testing
 metricsGuides: Guides
 breaks: Breaking Changes
 repository: Repository

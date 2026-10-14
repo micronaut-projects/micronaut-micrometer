@@ -1,0 +1,22 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    api projects.micronautMicrometerCore
+    api(libs.managed.micrometer.observation.test) {
+        exclude group: 'org.junit.jupiter'
+        exclude group: 'org.mockito'
+    }
+    compileOnly projects.micronautMicrometerObservation
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testImplementation projects.micronautMicrometerObservation
+    testImplementation projects.micronautMicrometerRegistryPrometheus
+}
+
+micronautBuild {
+    binaryCompatibility {
+        enabledAfter '6.2.0'
+    }
+}
