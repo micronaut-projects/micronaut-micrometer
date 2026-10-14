@@ -68,21 +68,23 @@ public class MeterRegistryFactory {
 
         CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
         for (MeterRegistry registry : registries) {
+            // Let configurers configure individual registries
+            configure(registry, configurers);
             compositeMeterRegistry.add(registry);
-            for (MeterRegistryConfigurer<MeterRegistry> configurer : configurers) {
-                // Let configurers configure the composite registry
-                if (configurer.getType().isAssignableFrom(CompositeMeterRegistry.class) && configurer.supports(compositeMeterRegistry)) {
-                    configurer.configure(compositeMeterRegistry);
-                }
-
-                //Let configurers configure individual registries
-                if (configurer.getType().isAssignableFrom(registry.getClass()) && configurer.supports(registry)) {
-                    configurer.configure(registry);
-                }
-            }
         }
+        // Configure the composite registry once, after all the registries are added, so that its filters
+        // and binders are applied once rather than once per registry
+        configure(compositeMeterRegistry, configurers);
 
         return compositeMeterRegistry;
+    }
+
+    private static void configure(MeterRegistry registry, List<MeterRegistryConfigurer<MeterRegistry>> configurers) {
+        for (MeterRegistryConfigurer<MeterRegistry> configurer : configurers) {
+            if (configurer.getType().isAssignableFrom(registry.getClass()) && configurer.supports(registry)) {
+                configurer.configure(registry);
+            }
+        }
     }
 
     /**
