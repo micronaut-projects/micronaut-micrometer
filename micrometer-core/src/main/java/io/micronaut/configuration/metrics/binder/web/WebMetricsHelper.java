@@ -19,11 +19,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micronaut.core.annotation.Internal;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.CancellationException;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -62,6 +65,7 @@ final class WebMetricsHelper {
     private static final Tag URI_BAD_REQUEST = Tag.of(URI, "BAD_REQUEST");
     private static final Tag EXCEPTION_NONE = Tag.of(EXCEPTION, "none");
     private static final Tag STATUS_CLIENT_ERROR = Tag.of(STATUS, "CLIENT_ERROR");
+    private static final HttpMetricsTagProvider[] NO_TAG_PROVIDERS = new HttpMetricsTagProvider[0];
     private static final int MIN_CACHED_STATUS = 100;
     private static final Tag[] STATUS_TAGS = new Tag[500];
 
@@ -86,6 +90,7 @@ final class WebMetricsHelper {
      * @param reportClientErrorURIs Whether client errors provide uris or not
      * @param status                The status of the response, or {@link #NO_STATUS} if there is none
      * @param exception             The exception to tag, or {@code null}
+     * @param providedTags          The tags of the {@link HttpMetricsTagProvider}s, or {@code null}
      */
     @SuppressWarnings("java:S107") // the tags of a request timer, without an intermediate object
     static void recordTimer(MeterRegistry meterRegistry,
@@ -96,7 +101,8 @@ final class WebMetricsHelper {
                        @Nullable String serviceId,
                        boolean reportClientErrorURIs,
                        int status,
-                       @Nullable Throwable exception) {
+                       @Nullable Throwable exception,
+                       @Nullable Tags providedTags) {
         Tag method = Tag.of(METHOD, httpMethod);
         Tag statusTag = status == NO_STATUS ? status(exception) : status(status);
         Tag uri = uri(status, requestPath, reportClientErrorURIs);
@@ -104,7 +110,43 @@ final class WebMetricsHelper {
         Tags tags = serviceId == null
             ? Tags.of(method, statusTag, uri, exceptionTag)
             : Tags.of(method, statusTag, uri, exceptionTag, Tag.of(SERVICE_ID, serviceId));
+        if (providedTags != null) {
+            tags = tags.and(providedTags);
+        }
         meterRegistry.timer(metricName, tags).record(System.nanoTime() - start, NANOSECONDS);
+    }
+
+    /**
+     * @param tagProviders The tag providers
+     * @return The providers as an array, empty if there are none
+     */
+    static HttpMetricsTagProvider[] tagProviders(@Nullable List<HttpMetricsTagProvider> tagProviders) {
+        return tagProviders == null || tagProviders.isEmpty()
+            ? NO_TAG_PROVIDERS
+            : tagProviders.toArray(NO_TAG_PROVIDERS);
+    }
+
+    /**
+     * Collects the tags of the providers.
+     *
+     * @param tagProviders The tag providers, not empty
+     * @param request      The request
+     * @param response     The response, or {@code null} if there is none
+     * @param throwable    The failure of the request, or {@code null}
+     * @return The tags
+     */
+    static Tags providedTags(HttpMetricsTagProvider[] tagProviders,
+                             HttpRequest<?> request,
+                             @Nullable HttpResponse<?> response,
+                             @Nullable Throwable throwable) {
+        Tags tags = Tags.empty();
+        for (HttpMetricsTagProvider tagProvider : tagProviders) {
+            Iterable<Tag> provided = tagProvider.getTags(request, response, throwable);
+            if (provided != null) {
+                tags = tags.and(provided);
+            }
+        }
+        return tags;
     }
 
     /**

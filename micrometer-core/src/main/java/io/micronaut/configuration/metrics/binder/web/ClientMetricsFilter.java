@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.web.config.HttpClientMeterConfig;
 import io.micronaut.configuration.metrics.binder.web.config.HttpMetricsConfig;
@@ -73,15 +74,19 @@ final class ClientMetricsFilter {
     private final Supplier<MeterRegistry> meterRegistry;
     @Nullable
     private final Predicate<String> exclusions;
+    private final HttpMetricsTagProvider[] tagProviders;
 
     /**
      * @param meterRegistryProvider the meter registry provider
      * @param exclusions            the regular expressions of the paths not to record
+     * @param tagProviders          the providers of custom tags
      */
     public ClientMetricsFilter(Provider<MeterRegistry> meterRegistryProvider,
-                               @Property(name = "micronaut.metrics.http.client.exclusions") @Nullable List<String> exclusions) {
+                               @Property(name = "micronaut.metrics.http.client.exclusions") @Nullable List<String> exclusions,
+                               List<HttpMetricsTagProvider> tagProviders) {
         this.meterRegistry = SupplierUtil.memoized(meterRegistryProvider::get);
         this.exclusions = HttpPathExclusions.of(exclusions);
+        this.tagProviders = WebMetricsHelper.tagProviders(tagProviders);
     }
 
     /**
@@ -182,6 +187,10 @@ final class ClientMetricsFilter {
                 return;
             }
             try {
+                HttpMetricsTagProvider[] tagProviders = filter.tagProviders;
+                Tags providedTags = tagProviders.length == 0
+                    ? null
+                    : WebMetricsHelper.providedTags(tagProviders, request, response, failure);
                 WebMetricsHelper.recordTimer(
                     filter.meterRegistry.get(),
                     HttpClientMeterConfig.REQUESTS_METRIC,
@@ -191,7 +200,8 @@ final class ClientMetricsFilter {
                     resolveServiceId(request),
                     true,
                     response == null ? WebMetricsHelper.NO_STATUS : response.code(),
-                    failure
+                    failure,
+                    providedTags
                 );
             } catch (RuntimeException e) {
                 LOG.warn("Failed to record the {} timer: {}", HttpClientMeterConfig.REQUESTS_METRIC, e.getMessage(), e);
