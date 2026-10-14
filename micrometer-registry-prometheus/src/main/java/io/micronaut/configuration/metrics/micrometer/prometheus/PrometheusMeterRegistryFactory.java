@@ -15,17 +15,27 @@
  */
 package io.micronaut.configuration.metrics.micrometer.prometheus;
 
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import io.micrometer.tracing.Tracer;
 import io.micronaut.configuration.metrics.micrometer.ExportConfigurationProperties;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Secondary;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.naming.conventions.StringConvention;
+import io.micronaut.core.util.StringUtils;
+import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import io.prometheus.metrics.tracer.common.SpanContext;
 import jakarta.inject.Singleton;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Properties;
 
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS;
 import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_EXPORT;
 
 /**
@@ -46,16 +56,55 @@ public class PrometheusMeterRegistryFactory {
     public static final String PROMETHEUS_PROPERTIES = PROMETHEUS_CONFIG + ".properties";
 
     /**
+     * Whether exemplars are recorded from the current Micrometer Tracing span when a {@link Tracer} bean exists.
+     * Default {@code true}.
+     *
+     * @since 6.2.0
+     */
+    public static final String EXEMPLARS_ENABLED = MICRONAUT_METRICS + "exemplars.enabled";
+
+    /**
+     * Which spans exemplars are recorded for: {@code sampled-traces} (the default) for sampled spans only, or {@code all}
+     * for every span.
+     *
+     * @since 6.2.0
+     */
+    public static final String EXEMPLARS_INCLUDE = MICRONAUT_METRICS + "exemplars.include";
+
+    /**
      * Create a PrometheusMeterRegistry bean if global metrics are enabled
      * and Prometheus is enabled. Will be true by default when this
      * configuration is included in project.
      *
      * @param prometheusConfig The Prometheus configuration
+     * @param clock The clock, or {@code null} to use the system clock
+     * @param spanContext The span context that exemplars are sampled from, or {@code null} for no exemplars
      * @return PrometheusMeterRegistry
      */
     @Singleton
-    PrometheusMeterRegistry prometheusConfig(PrometheusConfig prometheusConfig) {
-        return new PrometheusMeterRegistry(prometheusConfig);
+    PrometheusMeterRegistry prometheusConfig(PrometheusConfig prometheusConfig,
+                                             @Nullable Clock clock,
+                                             @Nullable SpanContext spanContext) {
+        return new PrometheusMeterRegistry(prometheusConfig, new PrometheusRegistry(),
+            clock != null ? clock : Clock.SYSTEM, spanContext);
+    }
+
+    /**
+     * Creates the span context that exemplars are sampled from, from the current Micrometer Tracing span.
+     *
+     * @param tracer The tracer
+     * @param include Which spans exemplars are recorded for, {@code sampled-traces} or {@code all}
+     * @return The span context
+     * @since 6.2.0
+     */
+    @Singleton
+    @Secondary
+    @Requires(classes = Tracer.class)
+    @Requires(beans = Tracer.class)
+    @Requires(property = EXEMPLARS_ENABLED, notEquals = StringUtils.FALSE)
+    SpanContext micrometerTracingSpanContext(Tracer tracer,
+                                             @Property(name = EXEMPLARS_INCLUDE, defaultValue = "sampled-traces") String include) {
+        return new MicrometerTracingSpanContext(tracer, "all".equalsIgnoreCase(include));
     }
 
     /**
