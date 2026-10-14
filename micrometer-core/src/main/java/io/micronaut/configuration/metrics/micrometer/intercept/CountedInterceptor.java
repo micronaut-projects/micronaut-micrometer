@@ -16,6 +16,7 @@
 package io.micronaut.configuration.metrics.micrometer.intercept;
 
 import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.aop.MeterTag;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -27,11 +28,13 @@ import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
+import io.micronaut.context.BeanContext;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Inject;
 import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -72,12 +75,41 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
     private final MeterRegistry meterRegistry;
     private final ConversionService conversionService;
     private final List<AbstractMethodTagger> methodTaggers;
+    private final @Nullable BeanContext beanContext;
     private final MethodMetricsCache<CountedMethod> countedMethods = new MethodMetricsCache<>();
 
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
+     * @param beanContext The bean context used to look up the resolvers of {@link MeterTag} annotations
+     * @since 6.2.0
+     */
+    @Inject
+    public CountedInterceptor(MeterRegistry meterRegistry,
+                              ConversionService conversionService,
+                              List<AbstractMethodTagger> methodTaggers,
+                              BeanContext beanContext) {
+        this.meterRegistry = meterRegistry;
+        this.conversionService = conversionService;
+        this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
+        this.beanContext = beanContext;
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
+     * @deprecated Use {@link #CountedInterceptor(MeterRegistry, ConversionService, List, BeanContext)} instead.
+     * Without the bean context, a {@link MeterTag#resolver()} must have a public no-argument constructor and
+     * {@link MeterTag#expression()} only supports {@code #{...}} expressions.
+     */
+    @Deprecated(since = "6.2.0", forRemoval = true)
     public CountedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
+        this.beanContext = null;
     }
 
     @Override
@@ -98,11 +130,11 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             result = context.proceed();
         } catch (Throwable e) {
-            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
+            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e), null);
             throw e;
         }
         if (!countedMethod.recordFailuresOnly) {
-            doCount(context, countedMethod, null);
+            doCount(context, countedMethod, null, result);
         }
         return result;
     }
@@ -112,7 +144,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             result = context.proceed();
         } catch (Exception e) {
-            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
+            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e), null);
             return InterceptedMethod.of(context, conversionService).handleException(e);
         }
         if (result == null) {
@@ -132,11 +164,11 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
         try {
             completionStage = interceptedMethod.interceptResultAsCompletionStage();
         } catch (Exception e) {
-            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
+            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e), null);
             return interceptedMethod.handleException(e);
         } catch (Error e) {
             // counted as for a synchronous method
-            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e));
+            doCount(context, countedMethod, MethodMetricsSupport.exceptionTag(e), null);
             throw e;
         }
         return interceptedMethod.handleResult(completionStage.whenComplete(new CountedInvocation(context, countedMethod)));
@@ -154,21 +186,21 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                 return null;
             }
             // annotation values containing expressions are evaluated against each invocation
-            return cached.dynamic ? resolveCountedMethod(context) : cached;
+            return cached.dynamic ? resolveCountedMethod(context, cached) : cached;
         }
         if (context.getAnnotationMetadata().isPresent(MetricOptions.class, MetricOptions.MEMBER_CONDITION)
             && !MetricOptionsUtil.evaluateCondition(context)) {
             // resolved and cached by the first invocation that is enabled
             return null;
         }
-        final CountedMethod resolved = resolveCountedMethod(context);
+        final CountedMethod resolved = resolveCountedMethod(context, null);
         // a concurrent first invocation may have cached its own settings: the evaluated values are
         // those of this invocation
         countedMethods.put(context.getExecutableMethod(), resolved);
         return resolved;
     }
 
-    private CountedMethod resolveCountedMethod(MethodInvocationContext<Object, Object> context) {
+    private CountedMethod resolveCountedMethod(MethodInvocationContext<Object, Object> context, @Nullable CountedMethod cached) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final AnnotationValue<Counted> counted = metadata.getAnnotation(Counted.class);
         final String metricName = metadata.stringValue(Counted.class).orElse(DEFAULT_METRIC_NAME);
@@ -184,11 +216,15 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
             extraTags,
             MethodMetricsSupport.parseTags(extraTags),
             metadata.isTrue(Counted.class, "recordFailuresOnly"),
-            MethodMetricsSupport.resolveTaggers(methodTaggers, metadata)
+            MethodMetricsSupport.resolveTaggers(methodTaggers, metadata),
+            cached != null ? cached.meterTags : MeterTagPlan.of(context, beanContext)
         );
     }
 
-    private void doCount(MethodInvocationContext<Object, Object> context, CountedMethod countedMethod, @Nullable String exception) {
+    private void doCount(MethodInvocationContext<Object, Object> context,
+                         CountedMethod countedMethod,
+                         @Nullable String exception,
+                         @Nullable Object result) {
         try {
             final Counter.Builder builder = Counter.builder(countedMethod.name)
                 .tags(MethodMetricsSupport.taggerTags(countedMethod.taggers, context));
@@ -196,6 +232,9 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                 builder.tags(countedMethod.parsedExtraTags);
             } else {
                 builder.tags(countedMethod.extraTags);
+            }
+            if (countedMethod.meterTags != null) {
+                builder.tags(countedMethod.meterTags.tags(context, result));
             }
             builder.description(countedMethod.description)
                 .tag(EXCEPTION_TAG, exception != null ? exception : MethodMetricsSupport.NONE)
@@ -221,6 +260,7 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
      * @param parsedExtraTags The parsed extra tags or {@code null} if they are invalid
      * @param recordFailuresOnly Whether only failures are counted
      * @param taggers The taggers that apply to the method
+     * @param meterTags The {@link MeterTag} annotations, or {@code null} if the method has none
      */
     @SuppressWarnings("java:S6218") // never compared, the method cache looks entries up by method identity
     private record CountedMethod(InterceptedMethod.ResultType resultType,
@@ -233,7 +273,8 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                                  String[] extraTags,
                                  @Nullable Tags parsedExtraTags,
                                  boolean recordFailuresOnly,
-                                 AbstractMethodTagger[] taggers) {
+                                 AbstractMethodTagger[] taggers,
+                                 @Nullable MeterTagPlan meterTags) {
     }
 
     /**
@@ -249,17 +290,17 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
             this.countedMethod = countedMethod;
         }
 
-        void onResult(@Nullable Throwable throwable) {
+        void onResult(@Nullable Object result, @Nullable Throwable throwable) {
             if (throwable != null) {
-                doCount(context, countedMethod, MethodMetricsSupport.asyncExceptionTag(throwable));
+                doCount(context, countedMethod, MethodMetricsSupport.asyncExceptionTag(throwable), null);
             } else if (!countedMethod.recordFailuresOnly) {
-                doCount(context, countedMethod, null);
+                doCount(context, countedMethod, null, result);
             }
         }
 
         @Override
-        public void accept(Object result, @Nullable Throwable throwable) {
-            onResult(throwable);
+        public void accept(@Nullable Object result, @Nullable Throwable throwable) {
+            onResult(result, throwable);
         }
 
         @Override
@@ -271,9 +312,9 @@ public class CountedInterceptor implements MethodInterceptor<Object, Object> {
                 }
 
                 @Override
-                protected void onFinish(@Nullable Throwable error, boolean cancelled) {
+                protected void onFinish(@Nullable Object value, @Nullable Throwable error, boolean cancelled) {
                     if (!cancelled) {
-                        onResult(error);
+                        onResult(value, error);
                     }
                 }
             };

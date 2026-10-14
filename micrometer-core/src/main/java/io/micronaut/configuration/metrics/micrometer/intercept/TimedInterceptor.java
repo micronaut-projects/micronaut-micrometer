@@ -17,10 +17,12 @@ package io.micronaut.configuration.metrics.micrometer.intercept;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.annotation.TimedSet;
+import io.micrometer.core.aop.MeterTag;
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micronaut.aop.InterceptPhase;
@@ -32,11 +34,13 @@ import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.util.MetricOptionsUtil;
+import io.micronaut.context.BeanContext;
 import io.micronaut.core.annotation.AnnotationMetadata;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.TypeHint;
 import io.micronaut.core.async.publisher.Publishers;
 import io.micronaut.core.convert.ConversionService;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
@@ -97,18 +101,43 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
     private final ConversionService conversionService;
     private final List<AbstractMethodTagger> methodTaggers;
     private final Clock clock;
+    private final @Nullable BeanContext beanContext;
     private final MethodMetricsCache<TimedMethod> timedMethods = new MethodMetricsCache<>();
 
     /**
      * @param meterRegistry The meter registry
      * @param conversionService The conversion service
      * @param methodTaggers Additional tag builders
+     * @param beanContext The bean context used to look up the resolvers of {@link MeterTag} annotations
+     * @since 6.2.0
      */
+    @Inject
+    protected TimedInterceptor(MeterRegistry meterRegistry,
+                               ConversionService conversionService,
+                               List<AbstractMethodTagger> methodTaggers,
+                               BeanContext beanContext) {
+        this.meterRegistry = meterRegistry;
+        this.conversionService = conversionService;
+        this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
+        this.clock = meterRegistry.config().clock();
+        this.beanContext = beanContext;
+    }
+
+    /**
+     * @param meterRegistry The meter registry
+     * @param conversionService The conversion service
+     * @param methodTaggers Additional tag builders
+     * @deprecated Use {@link #TimedInterceptor(MeterRegistry, ConversionService, List, BeanContext)} instead. Without
+     * the bean context, a {@link MeterTag#resolver()} must have a public no-argument constructor and
+     * {@link MeterTag#expression()} only supports {@code #{...}} expressions.
+     */
+    @Deprecated(since = "6.2.0", forRemoval = true)
     protected TimedInterceptor(MeterRegistry meterRegistry, ConversionService conversionService, List<AbstractMethodTagger> methodTaggers) {
         this.meterRegistry = meterRegistry;
         this.conversionService = conversionService;
         this.methodTaggers = Objects.requireNonNullElse(methodTaggers, Collections.emptyList());
         this.clock = meterRegistry.config().clock();
+        this.beanContext = null;
     }
 
     @Override
@@ -133,13 +162,15 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         final long start = clock.monotonicTime();
         final LongTaskTimer.@Nullable Sample[] longTasks = startLongTasks(context, timedMethod);
         String exception = MethodMetricsSupport.NONE;
+        Object result = null;
         try {
-            return context.proceed();
+            result = context.proceed();
+            return result;
         } catch (Throwable e) {
             exception = MethodMetricsSupport.exceptionTag(e);
             throw e;
         } finally {
-            stop(context, timedMethod, start, longTasks, exception);
+            stop(context, timedMethod, start, longTasks, exception, result);
         }
     }
 
@@ -150,7 +181,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             result = context.proceed();
         } catch (Exception e) {
             // nothing was subscribed, so record the synchronous failure of the method itself
-            stop(context, timedMethod, start, null, MethodMetricsSupport.exceptionTag(e));
+            stop(context, timedMethod, start, null, MethodMetricsSupport.exceptionTag(e), null);
             return InterceptedMethod.of(context, conversionService).handleException(e);
         }
         if (result == null) {
@@ -172,11 +203,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             final CompletionStage<?> completionStage = interceptedMethod.interceptResultAsCompletionStage();
             return interceptedMethod.handleResult(completionStage.whenComplete(invocation));
         } catch (Exception e) {
-            invocation.finish(MethodMetricsSupport.exceptionTag(e));
+            invocation.finish(MethodMetricsSupport.exceptionTag(e), null);
             return interceptedMethod.handleException(e);
         } catch (Error e) {
             // the long task sample was started
-            invocation.finish(MethodMetricsSupport.exceptionTag(e));
+            invocation.finish(MethodMetricsSupport.exceptionTag(e), null);
             throw e;
         }
     }
@@ -193,21 +224,21 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                 return null;
             }
             // annotation values containing expressions are evaluated against each invocation
-            return cached.dynamic ? resolveTimedMethod(context) : cached;
+            return cached.dynamic ? resolveTimedMethod(context, cached) : cached;
         }
         if (context.getAnnotationMetadata().isPresent(MetricOptions.class, MetricOptions.MEMBER_CONDITION)
             && !MetricOptionsUtil.evaluateCondition(context)) {
             // resolved and cached by the first invocation that is enabled
             return null;
         }
-        final TimedMethod resolved = resolveTimedMethod(context);
+        final TimedMethod resolved = resolveTimedMethod(context, null);
         // a concurrent first invocation may have cached its own settings: the evaluated values are
         // those of this invocation
         timedMethods.put(context.getExecutableMethod(), resolved);
         return resolved;
     }
 
-    private TimedMethod resolveTimedMethod(MethodInvocationContext<Object, Object> context) {
+    private TimedMethod resolveTimedMethod(MethodInvocationContext<Object, Object> context, @Nullable TimedMethod cached) {
         final AnnotationMetadata metadata = context.getAnnotationMetadata();
         final AnnotationValue<TimedSet> timedSet = metadata.getAnnotation(TimedSet.class);
         final List<AnnotationValue<Timed>> timedAnnotations = timedSet != null
@@ -239,7 +270,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             dynamic,
             hasLongTask,
             timers,
-            MethodMetricsSupport.resolveTaggers(methodTaggers, metadata)
+            MethodMetricsSupport.resolveTaggers(methodTaggers, metadata),
+            cached != null ? cached.meterTags : MeterTagPlan.of(context, beanContext)
         );
     }
 
@@ -261,6 +293,10 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     } else {
                         builder.tags(timer.extraTags);
                     }
+                    if (timedMethod.meterTags != null) {
+                        // the result is not known yet, only the parameter tags apply
+                        builder.tags(timedMethod.meterTags.parameterTags(context));
+                    }
                     samples[i] = builder.register(meterRegistry).start();
                 } catch (Exception e) {
                     LOGGER.error("Error registering long task timer in the registry", e);
@@ -274,9 +310,11 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                       TimedMethod timedMethod,
                       long start,
                       LongTaskTimer.@Nullable Sample @Nullable [] longTasks,
-                      String exception) {
+                      String exception,
+                      @Nullable Object result) {
         final long duration = clock.monotonicTime() - start;
         final TimerSettings[] timers = timedMethod.timers;
+        List<Tag> meterTags = null;
         for (int i = 0; i < timers.length; i++) {
             final TimerSettings timer = timers[i];
             if (timer.longTask) {
@@ -285,7 +323,10 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                     sample.stop();
                 }
             } else {
-                recordTimer(context, timedMethod, timer, duration, exception);
+                if (meterTags == null && timedMethod.meterTags != null) {
+                    meterTags = meterTags(context, timedMethod.meterTags, result);
+                }
+                recordTimer(context, timedMethod, timer, duration, exception, meterTags);
             }
         }
     }
@@ -294,7 +335,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                              TimedMethod timedMethod,
                              TimerSettings timer,
                              long duration,
-                             String exception) {
+                             String exception,
+                             @Nullable List<Tag> meterTags) {
         try {
             final Timer.Builder builder = Timer.builder(timer.name)
                 .description(timer.description)
@@ -304,6 +346,9 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             } else {
                 builder.tags(timer.extraTags);
             }
+            if (meterTags != null) {
+                builder.tags(meterTags);
+            }
             builder.tags(EXCEPTION_TAG, exception)
                 .publishPercentileHistogram(timer.histogram)
                 .publishPercentiles(timer.percentiles)
@@ -311,6 +356,15 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                 .record(duration, TimeUnit.NANOSECONDS);
         } catch (Exception e) {
             LOGGER.error("Error registering timer in the registry", e);
+        }
+    }
+
+    private static List<Tag> meterTags(MethodInvocationContext<Object, Object> context, MeterTagPlan plan, @Nullable Object result) {
+        try {
+            return plan.tags(context, result);
+        } catch (Exception e) {
+            LOGGER.error("Error resolving the @MeterTag values", e);
+            return Collections.emptyList();
         }
     }
 
@@ -345,6 +399,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
      * @param hasLongTask Whether any of the timers is a long task timer
      * @param timers The timers
      * @param taggers The taggers that apply to the method
+     * @param meterTags The {@link MeterTag} annotations, or {@code null} if the method has none
      */
     @SuppressWarnings("java:S6218") // never compared, the method cache looks entries up by method identity
     private record TimedMethod(InterceptedMethod.ResultType resultType,
@@ -353,7 +408,8 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
                                boolean dynamic,
                                boolean hasLongTask,
                                TimerSettings[] timers,
-                               AbstractMethodTagger[] taggers) {
+                               AbstractMethodTagger[] taggers,
+                               @Nullable MeterTagPlan meterTags) {
     }
 
     /**
@@ -380,15 +436,15 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             longTasks = startLongTasks(context, timedMethod);
         }
 
-        void finish(String exception) {
+        void finish(String exception, @Nullable Object result) {
             if (FINISHED_UPDATER.compareAndSet(this, 0, 1)) {
-                stop(context, timedMethod, start, longTasks, exception);
+                stop(context, timedMethod, start, longTasks, exception, result);
             }
         }
 
         @Override
-        public void accept(Object result, @Nullable Throwable throwable) {
-            finish(throwable == null ? MethodMetricsSupport.NONE : MethodMetricsSupport.asyncExceptionTag(throwable));
+        public void accept(@Nullable Object result, @Nullable Throwable throwable) {
+            finish(throwable == null ? MethodMetricsSupport.NONE : MethodMetricsSupport.asyncExceptionTag(throwable), result);
         }
 
         @Override
@@ -425,7 +481,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
         }
 
         @Override
-        protected void onFinish(@Nullable Throwable error, boolean cancelled) {
+        protected void onFinish(@Nullable Object value, @Nullable Throwable error, boolean cancelled) {
             final String exception;
             if (error != null) {
                 exception = MethodMetricsSupport.asyncExceptionTag(error);
@@ -434,7 +490,7 @@ public class TimedInterceptor implements MethodInterceptor<Object, Object> {
             } else {
                 exception = MethodMetricsSupport.NONE;
             }
-            stop(context, timedMethod, start, longTasks, exception);
+            stop(context, timedMethod, start, longTasks, exception, value);
         }
     }
 }

@@ -14,6 +14,33 @@ How the result of an invocation is measured depends on the return type of the me
 
 `@Counted(recordFailuresOnly = true)` only counts failures, whatever the return type. `@Timed(longTask = true)` records a `LongTaskTimer` that tracks in-flight invocations instead of a `Timer`.
 
+=== Tags from arguments and results
+
+Micrometer's `@MeterTag` annotation (`io.micrometer.core.aop.MeterTag`, repeatable with `@MeterTags`) adds tags to the meters of `@Timed` and `@Counted` methods:
+
+* On a parameter, the tag value is computed from the argument. Annotations on the parameters of an implemented interface method are also applied.
+* On the method, the tag value is computed from the result: the return value, the completed value of a `CompletionStage` or Kotlin `suspend` function, or the value of a single result publisher such as a `Mono`. The value is empty when the invocation fails, and for publishers that can emit several values. A `@Timed(longTask = true)` long task timer only has the parameter tags, because the result is not known when it starts.
+
+The value is computed in this order of precedence:
+
+. `resolver`: a `io.micrometer.common.annotation.ValueResolver`. The bean of that type is used, or the class is instantiated when it is not a bean.
+. `expression`: a Micronaut evaluated expression (`#{...}`). It is compiled with your application and evaluated for each invocation, without reflection. On the method, the arguments are available by name. On a parameter, Micronaut only gives the expression `this`, the environment and the beans, not the arguments. Use a method-level tag to compute a value from an argument.
+. `expression` without `#{...}`: it is passed, with the argument or result, to the `io.micrometer.common.annotation.ValueExpressionResolver` bean. Micronaut does not provide one. Without such a bean the value is empty, and an error is logged.
+. Otherwise `toString()` of the argument or result. `null` becomes an empty string.
+
+.@MeterTag example
+snippet::io.micronaut.docs.metrics.annotation.OrderService[tags="imports,class"]
+
+<1> The `toString()` of the result.
+<2> An expression compiled with the application and evaluated against the arguments of each invocation.
+<3> The `toString()` of the argument.
+<4> The value computed by the `RegionResolver` bean.
+
+.ValueResolver example
+snippet::io.micronaut.docs.metrics.annotation.RegionResolver[tags="imports,class"]
+
+When several `@MeterTag` annotations use the same key, the first one wins. The `exception` tag, and the `result` tag of `@Counted`, take precedence over a `@MeterTag` with the same key. Methods without `@MeterTag` do no extra work per invocation.
+
 In order to support adding additional tags programmatically similar to Micrometer's `TimedAspect` / `CountedAspect` ability using a `ProceedingJoinPoint`, create beans of type `AbstractMethodTagger`
 
 .MetricsTagger example
