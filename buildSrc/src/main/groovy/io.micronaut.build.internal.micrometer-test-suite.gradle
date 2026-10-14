@@ -12,6 +12,8 @@ group "io.micronaut.micrometer.example"
 
 dependencies {
     testImplementation projects.micronautMicrometerCore
+    testImplementation projects.micronautMicrometerObservation
+    testImplementation projects.micronautMicrometerTest
     testImplementation mn.micronaut.inject
     testImplementation mn.micronaut.context
     testImplementation mn.micronaut.http.client

@@ -10,28 +10,8 @@ The module does the following:
 * When `micronaut-micrometer-observation` is on the classpath, it replaces the `ObservationRegistry` with Micrometer's `TestObservationRegistry`. The registry has the same handlers, predicates, filters and conventions as the default one, so observations still produce meters and spans. Inject `TestObservationRegistry` and verify observations with `TestObservationRegistryAssert`. Set `micrometer.observations.test-registry.enabled` to `false` to keep the default registry.
 * It provides `MeterRegistryAssert`, a set of https://assertj.github.io/doc/[AssertJ] assertions for a `MeterRegistry`.
 
-[source,java]
-----
-@MicronautTest
-class BookControllerTest {
-
-    @Inject
-    MeterRegistry meterRegistry;
-
-    @Inject
-    TestObservationRegistry observationRegistry;
-
-    @Test
-    void recordsMetrics(@Client("/") HttpClient client) {
-        client.toBlocking().retrieve("/books");
-
-        MeterRegistryAssert.assertThat(meterRegistry)
-            .hasTimerWithNameAndTags("http.server.requests", Tags.of("uri", "/books"), 1);
-        TestObservationRegistryAssert.assertThat(observationRegistry)
-            .hasObservationWithNameEqualTo("http.server.requests");
-    }
-}
-----
+.Test example
+snippet::io.micronaut.docs.metrics.testing.BookServiceTest[tags="imports,class"]
 
 .Test support properties
 |=======
