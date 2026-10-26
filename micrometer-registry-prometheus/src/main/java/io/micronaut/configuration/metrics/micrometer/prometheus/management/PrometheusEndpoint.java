@@ -19,20 +19,15 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.micronaut.management.endpoint.annotation.Endpoint;
 import io.micronaut.management.endpoint.annotation.Read;
 import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 
-import java.io.FilterInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.UncheckedIOException;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * Adds a management endpoint for Prometheus.
@@ -43,27 +38,30 @@ import java.util.concurrent.ForkJoinPool;
 @Endpoint(PrometheusEndpoint.ID)
 public class PrometheusEndpoint {
     public static final String ID = "prometheus";
-    private static final int PIPE_BUFFER_SIZE = 64 * 1024;
+    private static final int MIN_BUFFER_SIZE = 8 * 1024;
+    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
     private final PrometheusMeterRegistry prometheusMeterRegistry;
-    private final ExecutorService scrapeExecutor;
+    // Size of the previous scrape, used to size the next buffer so large registries do not grow it repeatedly
+    private volatile int lastScrapeSize;
 
     /**
      * @param prometheusMeterRegistry The meter registry
      */
+    @Inject
     public PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry) {
-        this(prometheusMeterRegistry, ForkJoinPool.commonPool());
+        this.prometheusMeterRegistry = prometheusMeterRegistry;
     }
 
     /**
      * @param prometheusMeterRegistry The meter registry
-     * @param scrapeExecutor The executor used to stream the scrape
+     * @param scrapeExecutor Not used. The scrape is written on the thread that handles the request.
+     * @deprecated The scrape no longer runs on a separate executor. Use {@link #PrometheusEndpoint(PrometheusMeterRegistry)}.
      */
-    @Inject
+    @Deprecated(since = "6.1.1", forRemoval = true)
     public PrometheusEndpoint(PrometheusMeterRegistry prometheusMeterRegistry,
-                              @Named(TaskExecutors.BLOCKING) ExecutorService scrapeExecutor) {
-        this.prometheusMeterRegistry = prometheusMeterRegistry;
-        this.scrapeExecutor = scrapeExecutor;
+                              ExecutorService scrapeExecutor) {
+        this(prometheusMeterRegistry);
     }
 
     /**
@@ -80,114 +78,46 @@ public class PrometheusEndpoint {
     /**
      * Scrapes the data.
      *
+     * <p>The scrape is written to an in-memory buffer on the calling thread, and the returned stream reads from
+     * that buffer. The endpoint runs on the {@link TaskExecutors#BLOCKING} executor so that large scrapes do not
+     * block the event loop.</p>
+     *
      * @return the data
      */
     @Read(produces = "text/plain; version=0.0.4")
+    @ExecuteOn(TaskExecutors.BLOCKING)
     public InputStream scrapeStream() {
-        ProducerAwareInputStream inputStream = ProducerAwareInputStream.create();
-        inputStream.start(scrapeExecutor, prometheusMeterRegistry);
-        return inputStream;
+        ScrapeBuffer buffer = new ScrapeBuffer(initialBufferSize(lastScrapeSize));
+        try {
+            prometheusMeterRegistry.scrape(buffer);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to scrape Prometheus meter registry", e);
+        }
+        lastScrapeSize = buffer.size();
+        return buffer.toInputStream();
     }
 
-    private static final class ProducerAwareInputStream extends FilterInputStream {
-        private final PipedOutputStream outputStream;
-        private Future<?> writeFuture;
+    /**
+     * Sizes the buffer for the next scrape from the size of the previous one, with some headroom for new meters.
+     *
+     * @param previousSize The size of the previous scrape
+     * @return The initial buffer size
+     */
+    static int initialBufferSize(int previousSize) {
+        long size = (long) previousSize + (previousSize >> 3);
+        return (int) Math.min(MAX_BUFFER_SIZE, Math.max(MIN_BUFFER_SIZE, size));
+    }
 
-        ProducerAwareInputStream(PipedInputStream inputStream) throws IOException {
-            super(inputStream);
-            this.outputStream = new PipedOutputStream(inputStream);
+    /**
+     * A {@link ByteArrayOutputStream} that exposes its content as an {@link InputStream} without copying it.
+     */
+    private static final class ScrapeBuffer extends ByteArrayOutputStream {
+        ScrapeBuffer(int size) {
+            super(size);
         }
 
-        static ProducerAwareInputStream create() {
-            PipedInputStream inputStream = new PipedInputStream(PIPE_BUFFER_SIZE);
-            try {
-                return new ProducerAwareInputStream(inputStream);
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to create Prometheus scrape stream", e);
-            }
-        }
-
-        void start(ExecutorService scrapeExecutor, PrometheusMeterRegistry prometheusMeterRegistry) {
-            try {
-                writeFuture = scrapeExecutor.submit(() -> writeScrape(prometheusMeterRegistry));
-            } catch (RuntimeException e) {
-                try {
-                    close();
-                } catch (IOException closeException) {
-                    e.addSuppressed(closeException);
-                }
-                throw e;
-            }
-        }
-
-        private void writeScrape(PrometheusMeterRegistry prometheusMeterRegistry) {
-            try (PipedOutputStream stream = outputStream) {
-                prometheusMeterRegistry.scrape(stream);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-
-        @Override
-        public int read() throws IOException {
-            int read = super.read();
-            verifyProducer(read);
-            return read;
-        }
-
-        @Override
-        public int read(byte[] b, int off, int len) throws IOException {
-            int read = super.read(b, off, len);
-            verifyProducer(read);
-            return read;
-        }
-
-        @Override
-        public void close() throws IOException {
-            IOException closeException = null;
-            try {
-                super.close();
-            } catch (IOException e) {
-                closeException = e;
-            }
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                if (closeException == null) {
-                    closeException = e;
-                } else {
-                    closeException.addSuppressed(e);
-                }
-            }
-            if (writeFuture != null) {
-                writeFuture.cancel(true);
-            }
-            if (closeException != null) {
-                throw closeException;
-            }
-        }
-
-        private void verifyProducer(int read) throws IOException {
-            if (read == -1) {
-                awaitProducer();
-            }
-        }
-
-        private void awaitProducer() throws IOException {
-            try {
-                writeFuture.get();
-            } catch (CancellationException ignored) {
-                // The consumer closed the stream early.
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Interrupted while streaming Prometheus scrape", e);
-            } catch (ExecutionException e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof UncheckedIOException uncheckedIOException) {
-                    throw uncheckedIOException.getCause();
-                }
-                throw new IOException("Failed to stream Prometheus scrape", cause);
-            }
+        InputStream toInputStream() {
+            return new ByteArrayInputStream(buf, 0, count);
         }
     }
 }
