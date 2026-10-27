@@ -386,6 +386,44 @@ NOTE: Key stores configured directly with `micronaut.ssl.key-store.*` or `micron
 | ssl.chain.expiry
 |=======
 
+===== Health Status Metrics
+
+The `health.status` gauge reports the current health status of the application, so that you can alert on it from your monitoring system.
+
+.Values of `health.status`
+|=======
+|*Value* |*Status*
+|`3` |`UP`
+|`2` |`OUT_OF_SERVICE`
+|`1` |`DOWN`, or any other status that is not operational
+|`0` |`UNKNOWN`, or any other status
+|=======
+
+The gauge reads the `CurrentHealthStatus` bean and does not run the health indicators when it is read. The health monitor of the `micronaut-management` module updates that status periodically, so enable it, otherwise the gauge only reflects the last status set by the application:
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      health:
+        enabled: true
+  health:
+    monitor:
+      enabled: true
+      interval: 30s
+----
+
+NOTE: The health monitor runs when an embedded server is present and `micronaut.application.name` is set.
+
+*Control Property*: `micronaut.metrics.binders.health.enabled` (default `false`)
+
+.Metrics provided
+|=======
+|*Name*
+| health.status
+|=======
+
 ===== Logback Metrics
 
 The logging metrics bindings provide logging metrics if using https://logback.qos.ch/[Logback].
