@@ -1,5 +1,7 @@
 package io.micronaut.configuration.metrics.micrometer.prometheus.management
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -14,18 +16,12 @@ import spock.lang.Specification
 
 import java.io.IOException
 import java.io.OutputStream
+import java.io.UncheckedIOException
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.CancellationException
-import java.util.concurrent.CountDownLatch
+import java.util.Locale
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.RejectedExecutionException
-import java.util.concurrent.TimeUnit
 
 class PrometheusEndpointSpec extends Specification {
-    @AutoCleanup('shutdownNow')
-    ExecutorService scrapeExecutor = Executors.newSingleThreadExecutor()
 
     def setupSpec() {
         def registry = embeddedServer.applicationContext.getBean(MeterRegistry)
@@ -50,10 +46,105 @@ class PrometheusEndpointSpec extends Specification {
         client.toBlocking().retrieve('/prometheus').contains('jvm_memory_used')
     }
 
+    void "test prometheus scrape runs off the event loop"() {
+        given:
+        def registry = embeddedServer.applicationContext.getBean(MeterRegistry)
+        String scrapeThread = null
+        Gauge.builder('test.scrape.thread', { ->
+            scrapeThread = Thread.currentThread().toString()
+            1d
+        }).register(registry)
+
+        when:
+        client.toBlocking().retrieve('/prometheus')
+
+        then:
+        scrapeThread != null
+        !scrapeThread.toLowerCase(Locale.ROOT).contains('eventloop')
+    }
+
+    void "test large prometheus scrape with a thread per task blocking executor"() {
+        given: 'a scrape larger than the 64KB pipe buffer the endpoint used to stream through'
+        def server = ApplicationContext.run(EmbeddedServer, [
+                'endpoints.prometheus.sensitive'                  : false,
+                'micronaut.metrics.export.prometheus.descriptions': false,
+                'micronaut.executors.blocking.type'               : 'thread_per_task',
+                'micronaut.executors.blocking.virtual'            : true
+        ])
+        def httpClient = server.applicationContext.createBean(HttpClient, server.URL)
+        def registry = server.applicationContext.getBean(MeterRegistry)
+        int meterCount = 2000
+        meterCount.times { i ->
+            Counter.builder("test.large.scrape.meter.with.a.long.name.$i")
+                    .tag('index', String.valueOf(i))
+                    .register(registry)
+                    .increment()
+        }
+
+        when:
+        List<String> bodies = (1..50).collect { httpClient.toBlocking().retrieve('/prometheus') }
+
+        then:
+        bodies.every { body ->
+            body.getBytes(StandardCharsets.UTF_8).length > 64 * 1024 &&
+                    body.readLines().count { it.startsWith('test_large_scrape_meter_with_a_long_name_') } == meterCount &&
+                    body.contains("test_large_scrape_meter_with_a_long_name_${meterCount - 1}_total{index=\"${meterCount - 1}\"} 1.0")
+        }
+
+        cleanup:
+        httpClient?.close()
+        server?.close()
+    }
+
+    void "test large prometheus scrape read by short lived threads with a slow consumer"() {
+        given: 'a scrape larger than 64KB, read in chunks by threads that terminate between reads'
+        def registry = new PrometheusMeterRegistry(io.micrometer.prometheusmetrics.PrometheusConfig.DEFAULT)
+        2000.times { i ->
+            Counter.builder("test.large.scrape.meter.with.a.long.name.$i").register(registry).increment()
+        }
+        def endpoint = new PrometheusEndpoint(registry)
+        def expected = registry.scrape()
+
+        when:
+        def inputStream = endpoint.scrapeStream()
+        def output = new ByteArrayOutputStream()
+        IOException failure = null
+        int chunks = 0
+        boolean done = false
+        while (!done && failure == null) {
+            Thread.ofVirtual().start {
+                try {
+                    byte[] chunk = new byte[8192]
+                    int read = inputStream.read(chunk)
+                    if (read == -1) {
+                        done = true
+                    } else {
+                        output.write(chunk, 0, read)
+                    }
+                } catch (IOException e) {
+                    failure = e
+                }
+            }.join()
+            if (++chunks == 1) {
+                // a stalled consumer: the reading thread is gone while the scrape is still being produced
+                Thread.sleep(1500)
+            }
+        }
+        inputStream.close()
+
+        then:
+        expected.getBytes(StandardCharsets.UTF_8).length > 64 * 1024
+        failure == null
+        output.toString(StandardCharsets.UTF_8) == expected
+
+        cleanup:
+        registry.close()
+    }
+
     void "test prometheus scrape streams output"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+        def endpoint = new PrometheusEndpoint(registry)
 
         when:
         String result
@@ -83,20 +174,18 @@ class PrometheusEndpointSpec extends Specification {
         0 * registry.scrape(_ as OutputStream)
     }
 
-    void "test prometheus scrape stream propagates producer io failure"() {
+    void "test prometheus scrape stream propagates io failure"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+        def endpoint = new PrometheusEndpoint(registry)
         def failure = new IOException('boom')
 
         when:
-        endpoint.scrapeStream().withCloseable { inputStream ->
-            inputStream.getText(StandardCharsets.UTF_8.name())
-        }
+        endpoint.scrapeStream()
 
         then:
-        def exception = thrown(IOException)
-        exception.is(failure)
+        def exception = thrown(UncheckedIOException)
+        exception.cause.is(failure)
         1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
             throw failure
         }
@@ -106,7 +195,7 @@ class PrometheusEndpointSpec extends Specification {
     void "test prometheus scrape stream supports single byte reads"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
+        def endpoint = new PrometheusEndpoint(registry)
 
         when:
         def bytes = []
@@ -125,125 +214,34 @@ class PrometheusEndpointSpec extends Specification {
         0 * registry.scrape()
     }
 
-    void "test prometheus scrape stream cancels producer when consumer closes early"() {
-        given:
-        def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
-        def started = new CountDownLatch(1)
-        def interrupted = new CountDownLatch(1)
-
-        when:
-        def inputStream = endpoint.scrapeStream()
-        assert started.await(5, TimeUnit.SECONDS)
-        inputStream.close()
-
-        then:
-        interrupted.await(5, TimeUnit.SECONDS)
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
-            started.countDown()
-            try {
-                Thread.sleep(30_000)
-            } catch (InterruptedException ignored) {
-                interrupted.countDown()
-                Thread.currentThread().interrupt()
-            }
-        }
-        0 * registry.scrape()
-    }
-
-    void "test prometheus scrape stream wraps non io producer failure"() {
-        given:
-        def registry = Mock(PrometheusMeterRegistry)
-        def endpoint = new PrometheusEndpoint(registry, scrapeExecutor)
-        def failure = new IllegalStateException('boom')
-
-        when:
-        endpoint.scrapeStream().withCloseable { inputStream ->
-            inputStream.getText(StandardCharsets.UTF_8.name())
-        }
-
-        then:
-        def exception = thrown(IOException)
-        exception.message == 'Failed to stream Prometheus scrape'
-        exception.cause.is(failure)
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
-            throw failure
-        }
-        0 * registry.scrape()
-    }
-
-    void "test prometheus scrape stream ignores producer cancellation when awaiting completion"() {
-        given:
-        def registry = Mock(PrometheusMeterRegistry)
-        def executor = Mock(ExecutorService)
-        Future<?> future = Mock()
-        def endpoint = new PrometheusEndpoint(registry, executor)
-
-        when:
-        String result
-        endpoint.scrapeStream().withCloseable { inputStream ->
-            result = inputStream.getText(StandardCharsets.UTF_8.name())
-        }
-
-        then:
-        result == 'jvm_memory_used 1.0\n'
-        1 * executor.submit(_ as Runnable) >> { Runnable task ->
-            task.run()
-            future
-        }
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
-            outputStream.write('jvm_memory_used 1.0\n'.getBytes(StandardCharsets.UTF_8))
-        }
-        1 * future.get() >> { throw new CancellationException('cancelled') }
-        0 * registry.scrape()
-    }
-
-    void "test prometheus scrape stream restores interrupt when awaiting producer completion"() {
-        given:
-        def registry = Mock(PrometheusMeterRegistry)
-        def executor = Mock(ExecutorService)
-        Future<?> future = Mock()
-        def endpoint = new PrometheusEndpoint(registry, executor)
-
-        when:
-        endpoint.scrapeStream().withCloseable { inputStream ->
-            inputStream.getText(StandardCharsets.UTF_8.name())
-        }
-
-        then:
-        def exception = thrown(IOException)
-        exception.message == 'Interrupted while streaming Prometheus scrape'
-        exception.cause instanceof InterruptedException
-        Thread.currentThread().isInterrupted()
-        1 * executor.submit(_ as Runnable) >> { Runnable task ->
-            task.run()
-            future
-        }
-        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
-            outputStream.write('jvm_memory_used 1.0\n'.getBytes(StandardCharsets.UTF_8))
-        }
-        1 * future.get() >> { throw new InterruptedException('boom') }
-        0 * registry.scrape()
-
-        cleanup:
-        Thread.interrupted()
-    }
-
-    void "test prometheus scrape stream propagates scheduling failures"() {
+    void "test prometheus scrape stream does not use the deprecated executor"() {
         given:
         def registry = Mock(PrometheusMeterRegistry)
         def executor = Mock(ExecutorService)
         def endpoint = new PrometheusEndpoint(registry, executor)
-        def failure = new RejectedExecutionException('boom')
 
         when:
-        endpoint.scrapeStream()
+        String result = endpoint.scrapeStream().getText(StandardCharsets.UTF_8.name())
 
         then:
-        def exception = thrown(RejectedExecutionException)
-        exception.is(failure)
-        1 * executor.submit(_ as Runnable) >> { throw failure }
-        0 * registry._
+        result == 'abc'
+        1 * registry.scrape(_ as OutputStream) >> { OutputStream outputStream ->
+            outputStream.write('abc'.getBytes(StandardCharsets.UTF_8))
+        }
+        0 * executor._
+    }
+
+    void "test prometheus scrape buffer is sized from the previous scrape"(int previousSize, int expected) {
+        expect:
+        PrometheusEndpoint.initialBufferSize(previousSize) == expected
+
+        where:
+        previousSize      | expected
+        0                 | 8 * 1024
+        1024              | 8 * 1024
+        64 * 1024         | 72 * 1024
+        1024 * 1024       | 1152 * 1024
+        Integer.MAX_VALUE | Integer.MAX_VALUE - 8
     }
 
     @PendingFeature
