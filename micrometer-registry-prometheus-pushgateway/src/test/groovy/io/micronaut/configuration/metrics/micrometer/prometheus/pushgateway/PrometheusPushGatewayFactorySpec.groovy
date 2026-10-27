@@ -1,6 +1,8 @@
 package io.micronaut.configuration.metrics.micrometer.prometheus.pushgateway
 
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.prometheus.metrics.exporter.pushgateway.PushGateway
 import spock.lang.Specification
@@ -16,8 +18,10 @@ class PrometheusPushGatewayFactorySpec extends Specification {
         ApplicationContext context = ApplicationContext.run()
 
         then:
-        context.getBeansOfType(MeterRegistry).size() == 1
-        context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['PrometheusMeterRegistry'])
+        // getBeansOfType(MeterRegistry) can omit the composite, depending on the order of startup listeners
+        context.getBeansOfType(PrometheusMeterRegistry).size() == 1
+        context.getBean(MeterRegistry) instanceof CompositeMeterRegistry
+        context.getBean(CompositeMeterRegistry).registries*.class*.simpleName == ['PrometheusMeterRegistry']
         context.getBeansOfType(PushGateway)
 
         cleanup:
