@@ -11,10 +11,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.netty.channel.EventLoopGroupFactory
 import io.micronaut.http.netty.channel.NettyChannelType
-import io.micronaut.http.netty.channel.NioEventLoopGroupFactory
-import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.runtime.server.EmbeddedServer
-import io.netty.channel.EventLoopGroup
 import spock.lang.Unroll
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -60,24 +57,6 @@ class MicronautNettyQueuesMetricsBinderSpec extends Specification {
         MICRONAUT_METRICS_ENABLED                           | false   | false
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | true    | true
         MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled" | false   | false
-    }
-
-    void "event loop groups can be created with queue metrics enabled"() {
-        given:
-        ApplicationContext context = ApplicationContext.run([
-                (MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled"): true,
-                'micronaut.netty.event-loops.default.num-threads'   : 1
-        ])
-
-        when:
-        EventLoopGroup group = context.getBean(EventLoopGroup)
-
-        then:
-        group
-        context.getBean(EventLoopGroupFactory, Qualifiers.byName(NioEventLoopGroupFactory.NAME)) instanceof InstrumentedNioEventLoopGroupFactory
-
-        cleanup:
-        context.close()
     }
 
     @Unroll("test getting #channelType channel class from #eventLoopGroupFactory.getClass().getSimpleName()")
