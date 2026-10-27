@@ -5,6 +5,15 @@ dependency:micronaut-micrometer-annotation[groupId="io.micronaut.micrometer", sc
 The annotation processor dependency is required so Micronaut can create the AOP proxy for `@Timed` and `@Counted`.
 Without it, the annotations remain on the method, but no interceptor runs and no meter is recorded.
 
+How the result of an invocation is measured depends on the return type of the method:
+
+* Synchronous methods are timed and counted when the method returns or throws.
+* Methods returning a `CompletionStage`, and Kotlin `suspend` functions, are timed and counted when the stage completes. The `exception` tag uses the cause of a `CompletionException` or `ExecutionException`.
+* Reactive methods (for example `Mono`, `Flux` or `Publisher`) are timed from subscription until the publisher completes, errors or is cancelled, once for each subscription. `@Timed` records a cancelled subscription with the tag `exception=CancellationException`. `@Counted` does not count it. A publisher that is never subscribed records nothing.
+* A method that throws before returning its `CompletionStage` or publisher is recorded as a failure.
+
+`@Counted(recordFailuresOnly = true)` only counts failures, whatever the return type. `@Timed(longTask = true)` records a `LongTaskTimer` that tracks in-flight invocations instead of a `Timer`.
+
 In order to support adding additional tags programmatically similar to Micrometer's `TimedAspect` / `CountedAspect` ability using a `ProceedingJoinPoint`, create beans of type `AbstractMethodTagger`
 
 .MetricsTagger example
