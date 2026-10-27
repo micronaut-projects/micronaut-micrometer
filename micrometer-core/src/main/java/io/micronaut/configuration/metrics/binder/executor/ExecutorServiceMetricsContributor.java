@@ -17,6 +17,7 @@ package io.micronaut.configuration.metrics.binder.executor;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.core.annotation.Internal;
 
 import java.util.List;
@@ -35,6 +36,23 @@ public interface ExecutorServiceMetricsContributor {
      * @return Whether this contributor handles the executor service
      */
     boolean supports(ExecutorService executorService);
+
+    /**
+     * Bind metrics, resolving the registry only when the contributor needs it.
+     * Contributors may override this method to defer registration while application
+     * infrastructure is being initialized.
+     *
+     * @param meterRegistryProvider The meter registry provider
+     * @param executorService The executor service
+     * @param name The bean name
+     * @param tags The tags
+     * @return The executor service bean to keep
+     * @since 6.0.3
+     */
+    default ExecutorService bindTo(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                   ExecutorService executorService, String name, List<Tag> tags) {
+        return bindTo(meterRegistryProvider.get(), executorService, name, tags);
+    }
 
     /**
      * Bind metrics for the executor service.

@@ -19,30 +19,97 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.configuration.metrics.binder.executor.ExecutorServiceMetricsContributor;
+import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.event.ApplicationEventListener;
+import io.micronaut.context.event.StartupEvent;
 import io.micronaut.core.annotation.Internal;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.concurrent.EventExecutor;
 import io.netty.util.concurrent.SingleThreadEventExecutor;
 import jakarta.inject.Singleton;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import static io.micronaut.configuration.metrics.micrometer.MeterRegistryFactory.MICRONAUT_METRICS_BINDERS;
+import static io.micronaut.core.util.StringUtils.FALSE;
+
 /**
  * Binds executor-style gauges for Netty event loop groups.
+ * Initializes the meter registry at startup, even when no groups have been created,
+ * so later clients do not initialize it from inside HTTP client construction.
+ * Groups created during context initialization are bound after the registry is ready.
  *
  * @since 6.0.0
  */
 @Singleton
+@RequiresMetrics
 @Requires(classes = EventLoopGroup.class)
+@Requires(property = MICRONAUT_METRICS_BINDERS + ".executor.enabled", notEquals = FALSE)
 @Internal
-final class NettyEventLoopGroupMetricsContributor implements ExecutorServiceMetricsContributor {
+final class NettyEventLoopGroupMetricsContributor implements ExecutorServiceMetricsContributor, ApplicationEventListener<StartupEvent> {
+
+    private final List<PendingBinding> pendingBindings = new ArrayList<>();
+    private boolean started;
+    private boolean starting;
 
     @Override
     public boolean supports(ExecutorService executorService) {
         return executorService instanceof EventLoopGroup;
+    }
+
+    @Override
+    public ExecutorService bindTo(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                  ExecutorService executorService, String name, List<Tag> tags) {
+        synchronized (pendingBindings) {
+            if (!started) {
+                pendingBindings.add(new PendingBinding(meterRegistryProvider, executorService, name, List.copyOf(tags)));
+                return executorService;
+            }
+        }
+        return bindTo(meterRegistryProvider.get(), executorService, name, tags);
+    }
+
+    @Override
+    public void onApplicationEvent(StartupEvent event) {
+        synchronized (pendingBindings) {
+            if (started || starting) {
+                return;
+            }
+            starting = true;
+        }
+        try {
+            // Initialize even with an empty queue, before a later client can resolve
+            // the registry from inside the HTTP client cache's computeIfAbsent.
+            // Resolve the full collection to include both the composite and its backing registries.
+            event.getSource().getBeansOfType(MeterRegistry.class);
+            while (true) {
+                List<PendingBinding> bindings;
+                synchronized (pendingBindings) {
+                    if (pendingBindings.isEmpty()) {
+                        started = true;
+                        return;
+                    }
+                    bindings = List.copyOf(pendingBindings);
+                    pendingBindings.clear();
+                }
+                // Resolving the registry may create more event loop groups. Keep collecting
+                // them until binding finishes, and never resolve beans while holding the lock.
+                for (PendingBinding binding : bindings) {
+                    if (!binding.executorService().isShutdown()) {
+                        bindTo(binding.meterRegistryProvider().get(), binding.executorService(), binding.name(), binding.tags());
+                    }
+                }
+            }
+        } finally {
+            synchronized (pendingBindings) {
+                starting = false;
+            }
+        }
     }
 
     @Override
@@ -77,5 +144,9 @@ final class NettyEventLoopGroupMetricsContributor implements ExecutorServiceMetr
             poolSize++;
         }
         return poolSize;
+    }
+
+    private record PendingBinding(BeanProvider<MeterRegistry> meterRegistryProvider,
+                                  ExecutorService executorService, String name, List<Tag> tags) {
     }
 }
