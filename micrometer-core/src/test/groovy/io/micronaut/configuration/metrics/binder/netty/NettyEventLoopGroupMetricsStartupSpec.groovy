@@ -24,8 +24,13 @@ import java.util.concurrent.TimeUnit
 class NettyEventLoopGroupMetricsStartupSpec extends Specification {
 
     private static final String SPEC_NAME = 'NettyEventLoopGroupMetricsStartupSpec'
+    // Only client construction is needed; the test sends no HTTP requests.
     private static final String CLIENT_ID = 'http://localhost:1'
 
+    // Eager HTTP client creation also creates its Netty event loop. If binding its metrics
+    // resolves the registry here, ClientDependentMeterBinder requests the same client
+    // while its cache entry is still being computed, causing "Recursive update".
+    // Deferring Netty metrics until StartupEvent lets client construction finish first.
     void "meter binder can resolve the HTTP client whose event loop is being created"() {
         given:
         ApplicationContext context = ApplicationContext.builder([
@@ -134,6 +139,7 @@ class NettyEventLoopGroupMetricsStartupSpec extends Specification {
         BeanProvider<MeterRegistry> provider
         provider = Stub(BeanProvider) {
             get() >> {
+                // Registry initialization can create another group while pending bindings are drained.
                 if (lookups++ == 0) {
                     contributor.bindTo(provider, second, 'during-binding', [])
                 }
