@@ -87,6 +87,7 @@ final class ServerMetricsFilter implements Ordered {
     @Nullable
     private final Predicate<String> exclusions;
     private final HttpMetricsTagProvider[] tagProviders;
+    private final RoutePaths routePaths = new RoutePaths();
 
     /**
      * @param meterRegistryProvider  the meter registry provider
@@ -160,10 +161,10 @@ final class ServerMetricsFilter implements Ordered {
         return (LifecycleHttpRequest<?>) current;
     }
 
-    private static String resolvePath(HttpRequest<?> request) {
+    private String resolvePath(HttpRequest<?> request) {
         RouteMatch<?> routeMatch = RouteAttributes.getRouteMatch(request).orElse(null);
         if (routeMatch instanceof UriRouteMatch<?, ?> uriRouteMatch) {
-            return uriRouteMatch.getRouteInfo().getUriMatchTemplate().toPathString();
+            return routePaths.pathString(uriRouteMatch.getRouteInfo().getUriMatchTemplate());
         }
         return BasicHttpAttributes.getUriTemplate(request).orElse(UNMATCHED_URI);
     }
