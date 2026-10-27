@@ -78,18 +78,18 @@ public class ExecutorServiceMetricsBinder implements BeanCreatedEventListener<Ex
             return executorService;
         }
 
-        MeterRegistry meterRegistry = meterRegistryProvider.get();
         BeanIdentifier beanIdentifier = event.getBeanIdentifier();
 
         List<Tag> tags = Collections.emptyList(); // allow tags?
 
         for (ExecutorServiceMetricsContributor metricsContributor : metricsContributors) {
             if (metricsContributor.supports(unwrapped)) {
-                return metricsContributor.bindTo(meterRegistry, unwrapped, beanIdentifier.getName(), tags);
+                return metricsContributor.bindTo(meterRegistryProvider, unwrapped, beanIdentifier.getName(), tags);
             }
         }
 
         // bind the service metrics
+        MeterRegistry meterRegistry = meterRegistryProvider.get();
         new ExecutorServiceMetrics(unwrapped, beanIdentifier.getName(), tags).bindTo(meterRegistry);
 
         // allow timing
