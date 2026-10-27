@@ -132,16 +132,17 @@ class ObservationHttpSpec extends Specification {
                     .hasBeenStarted()
                     .hasBeenStopped()
 
+            // the observation of a reactive method starts on subscribe, after the observations created while the
+            // method assembled its result (privateMethodTest)
             TestObservationRegistryAssert.assertThat(testObservationRegistry)
                     .doesNotHaveAnyRemainingCurrentObservation()
-                    .hasObservationWithNameEqualTo("method.observed")
-                    .that()
-                    .hasContextualNameEqualTo("TestController#test")
-                    .hasLowCardinalityKeyValue("class", "TestController")
-                    .hasLowCardinalityKeyValue("method", "test")
-                    .hasParentObservation()
-                    .hasBeenStarted()
-                    .hasBeenStopped()
+                    .hasAnObservation {
+                        it.hasNameEqualTo("method.observed")
+                                .hasContextualNameEqualTo("TestController#test")
+                                .hasLowCardinalityKeyValue("class", "TestController")
+                                .hasLowCardinalityKeyValue("method", "test")
+                                .hasParentObservation()
+                    }
 
             TestObservationRegistryAssert.assertThat(testObservationRegistry)
                     .doesNotHaveAnyRemainingCurrentObservation()
