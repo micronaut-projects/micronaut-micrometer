@@ -361,6 +361,31 @@ Both gauges have a `main.application.class` tag when the JVM reports the main cl
 | application.ready.time
 |=======
 
+===== SSL Certificate Metrics
+
+When certificates are configured through certificate providers (`micronaut.certificate.*`, for example `micronaut.certificate.file.<name>` or `micronaut.certificate.self-signed.<name>`), the `ssl.chain.expiry` gauge reports, for each certificate chain, the number of seconds until the certificate that expires first in the chain expires. The value is negative once the certificate has expired, so you can alert before certificates expire.
+
+.Tags of `ssl.chain.expiry`
+|=======
+|*Tag* |*Description*
+|`provider` |The name of the certificate provider.
+|`store` |`key-store` or `trust-store`. The trust store is only reported when the provider has a trust store that is separate from its key store.
+|`chain` |The alias of the entry in the store.
+|`certificate` |The serial number, in hexadecimal, of the certificate that expires first in the chain.
+|=======
+
+A provider is reported once the application has created it, for example because the HTTP server uses it (`micronaut.server.ssl.key-name`). Reloaded certificates are picked up when the provider publishes them, and the gauges of replaced certificates are removed. Only the expiry dates are kept, so reading the gauge does not read the key store.
+
+NOTE: Key stores configured directly with `micronaut.ssl.key-store.*` or `micronaut.server.ssl.key-store.*` are not reported; configure them as a certificate provider to get expiry metrics.
+
+*Control Property*: `micronaut.metrics.binders.ssl.enabled` (default `true` when a certificate provider is configured)
+
+.Metrics provided
+|=======
+|*Name*
+| ssl.chain.expiry
+|=======
+
 ===== Logback Metrics
 
 The logging metrics bindings provide logging metrics if using https://logback.qos.ch/[Logback].
