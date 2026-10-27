@@ -1,0 +1,32 @@
+plugins {
+    id("io.micronaut.application")
+}
+
+version = "0.1"
+group = "example"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(mn.micronaut.management)
+    implementation(projects.micronautMicrometerRegistryPrometheus)
+    implementation(projects.micronautMicrometerRegistryStatsd)
+    implementation(mnSerde.micronaut.serde.jackson)
+
+    runtimeOnly(mnLogging.logback.classic)
+    testImplementation(mnTest.junit.platform.suite)
+    testImplementation(mn.micronaut.http.client)
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    version.set(libs.versions.micronaut.platform)
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("io.micronaut.configuration.metrics.graal.*")
+    }
+}
