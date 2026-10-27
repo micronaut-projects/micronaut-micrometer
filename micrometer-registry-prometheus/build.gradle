@@ -6,5 +6,8 @@ dependencies {
     api libs.micrometer.registry.prometheus
     // a runtime dependency of micrometer-registry-prometheus, used by the endpoint to select the format
     compileOnly libs.prometheus.metrics.exposition.textformats
+    // exemplars are sampled from the current Micrometer Tracing span when a Tracer bean exists
+    compileOnly libs.managed.micrometer.tracing
+    testImplementation libs.managed.micrometer.tracing
     testImplementation(mnSerde.micronaut.serde.jackson)
 }
