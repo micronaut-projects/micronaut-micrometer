@@ -25,6 +25,7 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.http.server.netty.NettyServerCustomizer;
 import io.micronaut.runtime.server.EmbeddedServer;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 import jakarta.inject.Singleton;
 
 import static io.micronaut.configuration.metrics.binder.netty.ChannelMetricsHandler.CHANNEL_METRICS;
@@ -58,26 +59,29 @@ final class NettyMetricsPipelineBinder implements BeanCreatedEventListener<Netty
     @Override
     public NettyServerCustomizer.Registry onCreated(BeanCreatedEvent<NettyServerCustomizer.Registry> event) {
         NettyServerCustomizer.Registry registry = event.getBean();
-        registry.register(new MetricsCustomizer(null, metricsHandler));
+        registry.register(new MetricsCustomizer(metricsHandler));
         return registry;
     }
 
-    private record MetricsCustomizer(Channel channel,
-                                     ChannelMetricsHandler metricsHandler) implements NettyServerCustomizer {
+    /**
+     * Installs the channel metrics handler on each connection channel when the channel is initialized, which happens
+     * while it is registered for every protocol (HTTP/1.1, h2c, TLS with ALPN and HTTP/3). The pipeline built hooks
+     * are not used because for HTTP/2 they run late or not at all for the connection, and they run once per stream
+     * for HTTP/2 and HTTP/3 streams.
+     *
+     * @param metricsHandler The handler
+     */
+    private record MetricsCustomizer(ChannelMetricsHandler metricsHandler) implements NettyServerCustomizer {
 
         @Override
         public NettyServerCustomizer specializeForChannel(Channel channel, ChannelRole role) {
             if (role == ChannelRole.CONNECTION) {
-                return new MetricsCustomizer(channel, metricsHandler);
+                ChannelPipeline pipeline = channel.pipeline();
+                if (pipeline.get(CHANNEL_METRICS) == null) {
+                    pipeline.addFirst(CHANNEL_METRICS, metricsHandler);
+                }
             }
             return this;
-        }
-
-        @Override
-        public void onStreamPipelineBuilt() {
-            if (channel != null) {
-                channel.pipeline().addFirst(CHANNEL_METRICS, metricsHandler);
-            }
         }
     }
 }

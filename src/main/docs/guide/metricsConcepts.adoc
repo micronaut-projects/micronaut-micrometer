@@ -301,7 +301,7 @@ You can customize what metrics are exposed using `micronaut.metrics.binders.nett
 ** `POOLED_ARENAS_SUBPAGES`: expose `PooledByteBufAllocator` pooled arenas sub pages metrics (requires `POOLED_ARENAS`),
 ** `POOLED_ARENAS_CHUNKLISTS`: expose `PooledByteBufAllocator` pooled arenas chunk lists metrics (requires `POOLED_ARENAS`),
 ** `POOLED_ARENAS_CHUNKS`: expose `PooledByteBufAllocator` pooled arenas chunks metrics (requires `POOLED_ARENAS_CHUNKLISTS`).
-* *NettyMetricsPipelineBinder*: Instrument Netty's channel, use `micronaut.metrics.binders.netty.channels.enabled` to toggle. Default is *false*.
+* *NettyMetricsPipelineBinder*: Instrument Netty's connection channels (HTTP/1.1, h2c and HTTP/2 over TLS; for HTTP/3 the UDP channel of the listener), use `micronaut.metrics.binders.netty.channels.enabled` to toggle. Default is *false*.
 The provided metrics include the channel count, current active channel count, channel error count, bytes read and written.
 
 ===== HTTP Client Pool Metrics
