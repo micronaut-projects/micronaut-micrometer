@@ -9,6 +9,7 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Inject
 import spock.lang.Specification
+import spock.util.concurrent.PollingConditions
 
 @Property(name = "spec.name", value = "OutOfStockExceptionSpec")
 @MicronautTest
@@ -29,12 +30,11 @@ class OutOfStockExceptionSpec extends Specification {
         response.status() == HttpStatus.OK
         response.body() == 0
 
-        when:
-        def timer = meterRegistry.get("http.server.requests")
-                .tags("uri", "/stock/{name}", "exception", "OutOfStockException", "status", "200")
-                .timer()
-
-        then:
-        timer.count() == 1
+        and: 'the server timer is recorded once the response was written'
+        new PollingConditions(timeout: 5).eventually {
+            assert meterRegistry.find("http.server.requests")
+                    .tags("uri", "/stock/{name}", "exception", "OutOfStockException", "status", "200")
+                    .timer()?.count() == 1
+        }
     }
 }

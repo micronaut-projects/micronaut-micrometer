@@ -32,6 +32,7 @@ import io.micronaut.http.annotation.Filter
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.RequestFilter
 import io.micronaut.http.annotation.ServerFilter
+import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -50,7 +51,10 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.slf4j.MDC
 import reactor.core.publisher.Flux
+
+import java.time.Duration
 import spock.lang.Specification
+import spock.util.concurrent.PollingConditions
 
 import jakarta.inject.Provider
 import jakarta.inject.Singleton
@@ -75,7 +79,7 @@ class HttpMetricsSpec extends Specification {
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
 
-        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
+        Timer serverTimer = awaitServerTimer(registry, 'uri', '/test-http-metrics')
         Timer clientTimer = registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
         HistogramSnapshot serverSnapshot = serverTimer.takeSnapshot()
         HistogramSnapshot clientSnapshot = clientTimer.takeSnapshot()
@@ -106,7 +110,7 @@ class HttpMetricsSpec extends Specification {
         then:
         client.root() == 'root'
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', 'root').timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', 'root').timer().count() == 1
+        awaitServerTimer(registry, 'uri', 'root').count() == 1
 
         when: "A request is sent with a uri template"
         String result = client.template("foo")
@@ -114,7 +118,7 @@ class HttpMetricsSpec extends Specification {
         then:
         result == 'ok foo'
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/{id}').timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics/{id}').timer().count() == 1
+        awaitServerTimer(registry, 'uri', '/test-http-metrics/{id}').count() == 1
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('serviceId', 'embedded-server').timer().count() == 1
 
         when:
@@ -129,7 +133,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
+        awaitServerTimer(registry, "status", "409").count() == 1
 
         when: "A request is made that throws an exception"
         client.throwable()
@@ -137,7 +141,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
+        awaitServerTimer(registry, "status", "500").count() == 1
 
         when: "A request is made that throws an exception that is handled"
         client.exceptionHandling()
@@ -145,7 +149,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
+        awaitServerTimer(registry, "status", "400", "uri", "/test-http-metrics/exception-handling").count() == 1
 
         when: "A request is made that does not match a route"
         HttpResponse response = client.notFound()
@@ -154,7 +158,7 @@ class HttpMetricsSpec extends Specification {
         noExceptionThrown()
         response.status() == NOT_FOUND
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
+        awaitServerTimer(registry, "status", "404").count() == 1
 
         cleanup:
         embeddedServer.close()
@@ -177,6 +181,32 @@ class HttpMetricsSpec extends Specification {
         MICRONAUT_METRICS_BINDERS + ".web.client.slos"        | "0.1,0.2,0.5" | 0                      | 0                      | null            | 3               | null            | false           | 1000000d  | 3.0E10    | 1000000d  | 3.0E10
     }
 
+
+    void "test server metrics track streaming response duration until completion"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        MeterRegistry registry = context.getBean(MeterRegistry)
+        HttpClient rawClient = context.createBean(HttpClient, embeddedServer.URL)
+        long start = System.nanoTime()
+
+        then:
+        rawClient.toBlocking().retrieve('/test-http-metrics/streaming') == 'chunk-1\nchunk-2\nchunk-3\n'
+
+        when:
+        long elapsedNanos = System.nanoTime() - start
+        Timer serverTimer = awaitServerTimer(registry, 'uri', '/test-http-metrics/streaming')
+
+        then:
+        serverTimer.count() == 1
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) >= Duration.ofMillis(250).toNanos()
+        serverTimer.totalTime(java.util.concurrent.TimeUnit.NANOSECONDS) <= elapsedNanos
+
+        cleanup:
+        rawClient.close()
+        embeddedServer.close()
+    }
+
     void "test client / server metrics ignored uris for client errors"() {
         when:
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, [
@@ -192,7 +222,7 @@ class HttpMetricsSpec extends Specification {
         when:
         MeterRegistry registry = context.getBean(MeterRegistry)
 
-        Timer serverTimer = registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
+        Timer serverTimer = awaitServerTimer(registry, 'uri', '/test-http-metrics')
         Timer clientTimer = registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags('uri', '/test-http-metrics').timer()
 
         then:
@@ -211,7 +241,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "409",).timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "409").timer().count() == 1
+        awaitServerTimer(registry, "status", "409").count() == 1
 
         when: "A request is made that throws an exception"
         client.throwable()
@@ -219,7 +249,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "500").timer().count() == 1
+        awaitServerTimer(registry, "status", "500").count() == 1
 
         when: "A request is made that throws an exception that is handled"
         client.exceptionHandling()
@@ -227,7 +257,7 @@ class HttpMetricsSpec extends Specification {
         then:
         thrown(HttpClientResponseException)
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "/test-http-metrics/exception-handling").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "400", "uri", "BAD_REQUEST").timer().count() == 1
+        awaitServerTimer(registry, "status", "400", "uri", "BAD_REQUEST").count() == 1
 
         when: "A request is made that does not match a route"
         HttpResponse response = client.notFound()
@@ -236,7 +266,7 @@ class HttpMetricsSpec extends Specification {
         noExceptionThrown()
         response.status() == NOT_FOUND
         registry.get(HttpClientMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "404").timer().count() == 1
+        awaitServerTimer(registry, "status", "404").count() == 1
 
         cleanup:
         embeddedServer.close()
@@ -285,14 +315,14 @@ class HttpMetricsSpec extends Specification {
 
         then:
         thrown(HttpClientResponseException)
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "401", "uri", "/test-http-metrics/unauthorized").timer().count() == 1
+        awaitServerTimer(registry, "status", "401", "uri", "/test-http-metrics/unauthorized").count() == 1
 
         when:
         client.forbidden()
 
         then:
         thrown(HttpClientResponseException)
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags("status", "403", "uri", "/test-http-metrics/forbidden").timer().count() == 1
+        awaitServerTimer(registry, "status", "403", "uri", "/test-http-metrics/forbidden").count() == 1
 
         cleanup:
         embeddedServer.close()
@@ -375,10 +405,7 @@ class HttpMetricsSpec extends Specification {
 
         then:
         registry.get('custom.metric').tag('traceId', 'rxjava3').counter().count() == 1
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
-            .tags('uri', '/test-http-metrics/rxjava3', 'traceId', 'rxjava3')
-            .timer()
-            .count() == 1
+        awaitServerTimer(registry, 'uri', '/test-http-metrics/rxjava3', 'traceId', 'rxjava3').count() == 1
 
         cleanup:
         embeddedServer?.close()
@@ -405,10 +432,21 @@ class HttpMetricsSpec extends Specification {
         createWebSocketClient(embeddedServer.getApplicationContext(), embeddedServer.getPort(), "Travolta")
 
         then:
-        registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags('uri', '/ws/{username}').timer()
+        awaitServerTimer(registry, 'uri', '/ws/{username}')
 
         cleanup:
         embeddedServer.close()
+    }
+
+    /**
+     * The server timer is recorded once the response was written, which may happen after the
+     * client received the response.
+     */
+    static Timer awaitServerTimer(MeterRegistry registry, String... tags) {
+        new PollingConditions(timeout: 5).eventually {
+            assert registry.find(HttpServerMeterConfig.REQUESTS_METRIC).tags(tags).timer() != null
+        }
+        return registry.get(HttpServerMeterConfig.REQUESTS_METRIC).tags(tags).timer()
     }
 
     @Requires(property = "spec.name", value = "HttpMetricsSpec")
@@ -457,6 +495,8 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/forbidden")
         HttpResponse forbidden()
+        @Get(value = "/test-http-metrics/streaming", processes = MediaType.TEXT_PLAIN)
+        String streaming()
 
         @Get("/test-http-metrics-not-found")
         HttpResponse notFound()
@@ -512,6 +552,11 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/forbidden")
         String forbidden() { "forbidden" }
+
+        @Get(value = "/test-http-metrics/streaming", produces = MediaType.TEXT_PLAIN)
+        Publisher<String> streaming() {
+            return Flux.range(1, 3).delayElements(Duration.ofMillis(100)).map(i -> 'chunk-' + i + '\n')
+        }
 
         @Error(exception = MyException)
         HttpResponse<?> myExceptionHandler() {

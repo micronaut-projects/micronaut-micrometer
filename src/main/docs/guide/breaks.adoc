@@ -1,5 +1,13 @@
 This section documents breaking changes between Micronaut Micrometer versions:
 
+=== Micronaut Micrometer 6.2.0
+
+- The `http.server.requests` timers and the HTTP server observations are recorded once the response has been completely written, instead of when the response filters run. Streamed responses are now timed until their last byte, and a response that fails to be written is recorded once, with the error response that replaced it. The timer can be recorded slightly after the client received the response.
+- The `http.client.requests` timers of the web metrics always have the `serviceId` tag. It is `none` for a client without a service ID; before, the tag was missing.
+- A client request that is cancelled before its response is received is recorded with the status `CLIENT_ERROR`.
+- The HTTP client observations are now also stopped for error statuses and for failures without a response, which leaked them before.
+- `ObservationServerFilter` runs in the `ServerFilterPhase.METRICS` phase. It had the default order `0` before.
+
 === Micronaut Micrometer 6.0.0
 
 - The Wavefront registry module `io.micronaut.micrometer:micronaut-micrometer-registry-wavefront` has been removed. https://support.broadcom.com/web/ecx/support-content-notification/-/external/content/release-announcements/0/25153[Broadcom announced the end of life of Tanzu Observability (Wavefront)], and the Wavefront service has not been available since October 31, 2025. The module also depends on Jackson 2 through the upstream Wavefront SDK and is not compatible with Micronaut 5's Jackson 3 baseline. Micrometer deprecated the Wavefront registry in https://github.com/micrometer-metrics/micrometer/issues/6328[micrometer-metrics/micrometer#6328].

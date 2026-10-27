@@ -88,8 +88,37 @@ There is a default web filter provided for web metrics. All routes, status codes
 NOTE: CORS preflight requests that are handled before application route matching are not recorded as normal server request metrics.
 This avoids creating `http.server.requests` metrics with high-cardinality URI tags when no route template is available for the `OPTIONS` request.
 
+.When requests are recorded
+Each request is recorded exactly once.
+
+* A server request is timed from the moment it enters the filter chain until its response has been completely written, including a streamed body (for example a `Publisher` or `Flux` returned by a controller). If the client disconnects while the body is streamed, the request is recorded when the connection closes, with the status of the response. If writing the body fails before anything was sent, the request is recorded with the error response that replaced it. WebSocket upgrade requests are recorded when the response filters run.
+* A client request is recorded when its response or failure is received, or when the request is cancelled before that. A cancelled request is recorded with the status `CLIENT_ERROR` and the exception `CancellationException`.
+
+NOTE: Because the server timer is recorded once the response has been written, it can be recorded slightly after the client received the response. Tests that check `http.server.requests` right after a call returns should poll, for example with `PollingConditions` or Awaitility.
+
 .Filter Path
 If enabled, by default the path `/**` is intercepted. To change which paths are run through the filter for the server, set `micronaut.metrics.http.path`. For the client, set `micronaut.metrics.http.client.path`.
+
+.Excluding paths
+To avoid recording some requests, for example health checks or scrapes of the Prometheus endpoint, list regular expressions of the paths to exclude. A request is not recorded when its path matches one of the expressions entirely. Set `micronaut.metrics.http.exclusions` for the server and `micronaut.metrics.http.client.exclusions` for the client:
+
+[configuration]
+----
+micronaut:
+  metrics:
+    http:
+      exclusions:
+        - /health.*
+        - /prometheus
+      client:
+        exclusions:
+          - /internal/.*
+----
+
+Alternatively, a `MeterFilter` bean can deny the meters of some URIs, for example `MeterFilter.deny(id -> id.getName().startsWith("http.server.requests") && "/health".equals(id.getTag("uri")))`.
+
+.Client service ID tag
+The `http.client.requests` timers always have the `serviceId` tag, so that all the client timers have the same tag keys, which some registries such as Prometheus require. It is the ID of the service of a declarative client (`embedded-server` for a client of the application's own server), and `none` for a client without a service ID, for example one created with `HttpClient.create(url)`.
 
 .Client error URI reporting
 

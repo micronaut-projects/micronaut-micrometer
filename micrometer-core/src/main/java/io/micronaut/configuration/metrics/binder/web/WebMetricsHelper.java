@@ -17,24 +17,19 @@ package io.micronaut.configuration.metrics.binder.web;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micronaut.core.annotation.Internal;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import io.micronaut.http.HttpAttributes;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpResponseProvider;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
-import io.micronaut.web.router.ErrorRouteInfo;
-import io.micronaut.web.router.RouteMatch;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CancellationException;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
- * Deals with the web filter metrics for success and error conditions.
+ * Records the web filter timers for success and error conditions.
  *
  * @author Christian Oestreich
  * @author graemerocher
@@ -43,130 +38,120 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 @Internal
 final class WebMetricsHelper {
 
-    private static final String UNKNOWN = "UNKNOWN";
+    /**
+     * The status of a request that has no response, e.g. because the client failed to connect.
+     */
+    static final int NO_STATUS = -1;
 
-    private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
-    private static final Tag URI_REDIRECTION = Tag.of("uri", "REDIRECTION");
-    private static final Tag URI_UNAUTHORIZED = Tag.of("uri", "UNAUTHORIZED");
-    private static final Tag URI_BAD_REQUEST = Tag.of("uri", "BAD_REQUEST");
+    /**
+     * The {@code serviceId} tag value of a client request without a service id, so that the
+     * client timers always have the same tag keys.
+     */
+    static final String NO_SERVICE_ID = "none";
+
+    private static final String UNKNOWN = "UNKNOWN";
     private static final String METHOD = "method";
     private static final String STATUS = "status";
     private static final String URI = "uri";
     private static final String EXCEPTION = "exception";
     private static final String SERVICE_ID = "serviceId";
 
-    private final MeterRegistry meterRegistry;
-    private final String requestPath;
-    private final long start;
-    private final String httpMethod;
-    private final String metricName;
-    private final String serviceID;
-    private final boolean reportClientErrorURIs;
+    private static final Tag URI_NOT_FOUND = Tag.of(URI, "NOT_FOUND");
+    private static final Tag URI_REDIRECTION = Tag.of(URI, "REDIRECTION");
+    private static final Tag URI_UNAUTHORIZED = Tag.of(URI, "UNAUTHORIZED");
+    private static final Tag URI_BAD_REQUEST = Tag.of(URI, "BAD_REQUEST");
+    private static final Tag EXCEPTION_NONE = Tag.of(EXCEPTION, "none");
+    private static final Tag STATUS_CLIENT_ERROR = Tag.of(STATUS, "CLIENT_ERROR");
+    private static final int MIN_CACHED_STATUS = 100;
+    private static final Tag[] STATUS_TAGS = new Tag[500];
+
+    static {
+        for (int i = 0; i < STATUS_TAGS.length; i++) {
+            STATUS_TAGS[i] = Tag.of(STATUS, String.valueOf(MIN_CACHED_STATUS + i));
+        }
+    }
+
+    private WebMetricsHelper() {
+    }
 
     /**
-     * @param meterRegistry         MeterRegistry bean
-     * @param requestPath           The request path
-     * @param start                 The start time of the request
-     * @param httpMethod            The HTTP method name used
+     * Records the timer of a request.
+     *
+     * @param meterRegistry         The meter registry
      * @param metricName            The metric name
-     * @param serviceID             The ID of the service called in the request
+     * @param start                 The start of the request, see {@link System#nanoTime()}
+     * @param httpMethod            The HTTP method name
+     * @param requestPath           The request path template, or {@code null} if it is unknown
+     * @param serviceId             The ID of the service called in the request, or {@code null} for no tag
      * @param reportClientErrorURIs Whether client errors provide uris or not
+     * @param status                The status of the response, or {@link #NO_STATUS} if there is none
+     * @param exception             The exception to tag, or {@code null}
      */
-    WebMetricsHelper(MeterRegistry meterRegistry,
-                     String requestPath,
-                     long start,
-                     String httpMethod,
-                     String metricName,
-                     String serviceID,
-                     boolean reportClientErrorURIs) {
-        this.meterRegistry = meterRegistry;
-        this.requestPath = requestPath;
-        this.start = start;
-        this.httpMethod = httpMethod;
-        this.metricName = metricName;
-        this.serviceID = serviceID;
-        this.reportClientErrorURIs = reportClientErrorURIs;
+    @SuppressWarnings("java:S107") // the tags of a request timer, without an intermediate object
+    static void recordTimer(MeterRegistry meterRegistry,
+                       String metricName,
+                       long start,
+                       String httpMethod,
+                       @Nullable String requestPath,
+                       @Nullable String serviceId,
+                       boolean reportClientErrorURIs,
+                       int status,
+                       @Nullable Throwable exception) {
+        Tag method = Tag.of(METHOD, httpMethod);
+        Tag statusTag = status == NO_STATUS ? status(exception) : status(status);
+        Tag uri = uri(status, requestPath, reportClientErrorURIs);
+        Tag exceptionTag = exception(exception);
+        Tags tags = serviceId == null
+            ? Tags.of(method, statusTag, uri, exceptionTag)
+            : Tags.of(method, statusTag, uri, exceptionTag, Tag.of(SERVICE_ID, serviceId));
+        meterRegistry.timer(metricName, tags).record(System.nanoTime() - start, NANOSECONDS);
     }
 
     /**
-     * Get the tags for the metrics based on request shape.
-     *
-     * @param httpResponse The HTTP response
-     * @param httpMethod   The name of the HTTP method (GET, POST, etc)
-     * @param requestPath  The request path (/foo, /foo/bar, etc)
-     * @param throwable    The throwable (optional)
-     * @param serviceId         the service ID
-     * @return A list of Tag objects
+     * @param status The HTTP status code
+     * @return The status tag
      */
-    private static List<Tag> getTags(HttpResponse<?> httpResponse,
-                                     String httpMethod,
-                                     String requestPath,
-                                     Throwable throwable,
-                                     String serviceId,
-                                     boolean reportClientErrorURIs) {
-        List<@NonNull Tag> tags = new ArrayList<>(5);
-        Tag t1 = method(httpMethod);
-        if (t1 != null) {
-            tags.add(t1);
+    private static Tag status(int status) {
+        int index = status - MIN_CACHED_STATUS;
+        if (index >= 0 && index < STATUS_TAGS.length) {
+            return STATUS_TAGS[index];
         }
-        tags.add(status(httpResponse, throwable));
-        tags.add(uri(httpResponse, requestPath, reportClientErrorURIs));
-        tags.add(exception(throwable));
-        Tag t5 = serviceId(serviceId);
-        if (t5 != null) {
-            tags.add(t5);
-        }
-        return tags;
+        return Tag.of(STATUS, String.valueOf(status));
     }
 
     /**
-     * Get a tag with the HTTP method name.
-     *
-     * @param httpMethod The name of the HTTP method.
-     * @return Tag of method
+     * @param throwable The failure of a request without a response
+     * @return The status tag
      */
-    @Nullable
-    private static Tag method(@Nullable String httpMethod) {
-        return httpMethod == null ? null : Tag.of(METHOD, httpMethod);
-    }
-
-    /**
-     * Get a tag with the HTTP status value.
-     *
-     * @param httpResponse the HTTP response
-     * @return Tag of status
-     */
-    private static Tag status(@Nullable HttpResponse<?> httpResponse, @Nullable Throwable throwable) {
-        if (httpResponse == null) {
-            if (throwable instanceof HttpStatusException httpStatusException) {
-                return Tag.of(STATUS, String.valueOf(httpStatusException.getStatus().getCode()));
-            }
-            return Tag.of(STATUS, "500");
+    private static Tag status(@Nullable Throwable throwable) {
+        if (throwable instanceof HttpStatusException httpStatusException) {
+            return status(httpStatusException.getStatus().getCode());
         }
-        return Tag.of(STATUS, String.valueOf(httpResponse.code()));
+        if (throwable instanceof CancellationException) {
+            return STATUS_CLIENT_ERROR;
+        }
+        return status(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
     }
 
     /**
-     * Get a tag with the URI.
-     *
-     * @param httpResponse the HTTP response
-     * @param path         the path of the request
-     * @return Tag of URI
+     * @param status                The status of the response, or {@link #NO_STATUS}
+     * @param path                  The path of the request
+     * @param reportClientErrorURIs Whether client errors provide uris or not
+     * @return The URI tag
      */
     @NonNull
-    private static Tag uri(HttpResponse<?> httpResponse, String path, boolean reportClientErrorURIs) {
-        if (httpResponse != null) {
-            int code = httpResponse.code();
-            if (code >= 300 && code < 400) {
+    private static Tag uri(int status, @Nullable String path, boolean reportClientErrorURIs) {
+        if (status != NO_STATUS) {
+            if (status >= 300 && status < 400) {
                 return URI_REDIRECTION;
             }
-            if (!reportClientErrorURIs && code >= 400 && code < 500) {
-                if (code == HttpStatus.UNAUTHORIZED.getCode()) {
+            if (!reportClientErrorURIs && status >= 400 && status < 500) {
+                if (status == HttpStatus.UNAUTHORIZED.getCode()) {
                     return URI_UNAUTHORIZED;
                 }
                 return URI_BAD_REQUEST;
             }
-            if (code == HttpStatus.NOT_FOUND.getCode()) {
+            if (status == HttpStatus.NOT_FOUND.getCode()) {
                 return URI_NOT_FOUND;
             }
         }
@@ -174,27 +159,14 @@ final class WebMetricsHelper {
     }
 
     /**
-     * Get a tag with the throwable.
-     *
-     * @param throwable a throwable exception
-     * @return Tag of exception class name
+     * @param throwable The exception, or {@code null}
+     * @return The tag of the exception class name
      */
-    private static Tag exception(Throwable throwable) {
+    private static Tag exception(@Nullable Throwable throwable) {
         if (throwable == null) {
-            return Tag.of(EXCEPTION, "none");
+            return EXCEPTION_NONE;
         }
         return Tag.of(EXCEPTION, throwable.getClass().getSimpleName());
-    }
-
-    /**
-     * Get a tag with the serviceId used in the call.
-     *
-     * @param serviceId The serviceId used in the call.
-     * @return Tag of serviceId
-     */
-    @Nullable
-    private static Tag serviceId(@Nullable String serviceId) {
-        return serviceId == null ? null : Tag.of(SERVICE_ID, serviceId);
     }
 
     /**
@@ -242,53 +214,5 @@ final class WebMetricsHelper {
             return "root";
         }
         return path;
-    }
-
-    /**
-     * Registers the success timer for a web request.
-     *
-     * @param httpResponse the HTTP response
-     */
-    public void onResponse(HttpResponse<?> httpResponse) {
-        // Avoid using the conversion service for exceptions
-        Object exception = httpResponse.getAttribute(HttpAttributes.EXCEPTION).orElse(null);
-        if (exception instanceof Throwable throwable) {
-            RouteMatch<?> routeMatch = httpResponse.getAttribute(HttpAttributes.ROUTE_MATCH, RouteMatch.class).orElse(null);
-            if (routeMatch != null && routeMatch.getRouteInfo() instanceof ErrorRouteInfo<?, ?>) {
-                // Avoid publishing an error on error route
-                // Should this be configurable?
-                success(httpResponse, throwable);
-            } else {
-                error(httpResponse, throwable);
-            }
-        } else {
-            success(httpResponse, null);
-        }
-    }
-
-    /**
-     * Registers the success timer for a web request.
-     *
-     * @param httpResponse the HTTP response
-     */
-    public void success(HttpResponse<?> httpResponse, @Nullable Throwable throwable) {
-        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, httpResponse.code() >= 400 ? throwable : null, serviceID, reportClientErrorURIs);
-        meterRegistry.timer(metricName, tags)
-            .record(System.nanoTime() - start, NANOSECONDS);
-    }
-
-    /**
-     * Registers the error timer for a web request when an exception occurs.
-     *
-     * @param httpResponse existing response object.
-     * @param throwable    exception that occurred
-     */
-    public void error(HttpResponse<?> httpResponse, Throwable throwable) {
-        if (httpResponse == null && throwable instanceof HttpResponseProvider httpResponseProvider) {
-            httpResponse = httpResponseProvider.getResponse();
-        }
-        List<Tag> tags = getTags(httpResponse, httpMethod, requestPath, throwable, serviceID, reportClientErrorURIs);
-        meterRegistry.timer(metricName, tags)
-            .record(System.nanoTime() - start, NANOSECONDS);
     }
 }
