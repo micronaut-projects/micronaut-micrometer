@@ -764,9 +764,9 @@ class ObservationHttpSpec extends Specification {
 
         @Singleton
         @Primary
-        ObservationRegistry observationRegistry(ObservationFilter observationFilter) {
+        ObservationRegistry observationRegistry(List<ObservationFilter> observationFilters) {
             def registry = TestObservationRegistry.create()
-            registry.observationConfig().observationFilter {observationFilter(it) }
+            observationFilters.each { registry.observationConfig().observationFilter(it) }
             return registry
         }
 

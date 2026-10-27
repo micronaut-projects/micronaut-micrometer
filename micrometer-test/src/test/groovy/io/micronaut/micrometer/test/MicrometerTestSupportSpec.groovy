@@ -89,6 +89,43 @@ class MicrometerTestSupportSpec extends Specification {
         ctx.close()
     }
 
+    void "the test observation registry applies the micrometer.observations configuration"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.builder()
+                .environments(Environment.TEST)
+                .properties([
+                        'micrometer.observations.common-key-value.region': 'eu',
+                        'micrometer.observations.enable.disabled'        : false,
+                        'micrometer.observations.long-task-timer.enabled': false
+                ])
+                .start()
+        TestObservationRegistry observationRegistry = ctx.getBean(TestObservationRegistry)
+        MeterRegistry meterRegistry = ctx.getBean(MeterRegistry)
+
+        when:
+        Observation.createNotStarted('test.configured', observationRegistry).observe {}
+        Observation disabled = Observation.createNotStarted('disabled.observation', observationRegistry)
+        disabled.observe {}
+
+        then: 'the common key values are added'
+        TestObservationRegistryAssert.assertThat(observationRegistry)
+                .hasObservationWithNameEqualTo('test.configured')
+                .that()
+                .hasLowCardinalityKeyValue('region', 'eu')
+        MeterRegistryAssert.assertThat(meterRegistry)
+                .hasTimerWithNameAndTags('test.configured', Tags.of('region', 'eu'), 1)
+
+        and: 'the disabled observation is a no-op'
+        disabled.isNoop()
+        meterRegistry.find('disabled.observation').timers().isEmpty()
+
+        and: 'no long task timer is started'
+        meterRegistry.find('test.configured.active').longTaskTimers().isEmpty()
+
+        cleanup:
+        ctx.close()
+    }
+
     void "the test observation registry can be disabled"() {
         given:
         ApplicationContext ctx = ApplicationContext.builder()

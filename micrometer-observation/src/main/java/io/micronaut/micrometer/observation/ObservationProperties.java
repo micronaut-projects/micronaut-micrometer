@@ -17,6 +17,8 @@ package io.micronaut.micrometer.observation;
 
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.core.convert.format.MapFormat;
+import io.micronaut.core.naming.conventions.StringConvention;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
@@ -25,6 +27,15 @@ import java.util.Map;
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Micrometer
  * observations.
  * @param commonKeyValue common key values that will be added to every observation.
+ * @param enable whether the observations whose name starts with a prefix are enabled, by prefix.
+ *               The longest matching prefix wins, {@code all} matches every observation, and an
+ *               observation without a matching prefix is enabled.
  */
-@ConfigurationProperties("micrometer.observations")
-record ObservationProperties(@Nullable Map<String, String> commonKeyValue) { }
+@ConfigurationProperties(ObservationProperties.PREFIX)
+record ObservationProperties(@Nullable Map<String, String> commonKeyValue,
+                             @Nullable
+                             @MapFormat(transformation = MapFormat.MapTransformation.FLAT, keyFormat = StringConvention.RAW)
+                             Map<String, Boolean> enable) {
+
+    static final String PREFIX = "micrometer.observations";
+}

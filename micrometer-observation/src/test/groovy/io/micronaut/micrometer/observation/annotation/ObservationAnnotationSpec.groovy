@@ -95,6 +95,47 @@ class ObservationAnnotationSpec extends Specification {
         ctx.close()
     }
 
+    void "test observation annotation on a class"() {
+        given:
+        ApplicationContext ctx = ApplicationContext.run(ApplicationContext, [
+                'spec.name': 'ObservationAnnotationSpec'
+        ])
+        ObservedClassTarget target = ctx.getBean(ObservedClassTarget)
+        TestObservationRegistry registry = ctx.getBean(ObservationRegistry) as TestObservationRegistry
+
+        when: 'a method without its own annotation is called'
+        assert target.hello('Fred') == 'Hello Fred'
+        assert target.helloAsync('Bob').get() == 'Hello Bob'
+
+        then: 'it is observed with the annotation of the class'
+        TestObservationRegistryAssert.assertThat(registry)
+                .doesNotHaveAnyRemainingCurrentObservation()
+                .hasNumberOfObservationsWithNameEqualTo("observed.class", 2)
+        TestObservationRegistryAssert.assertThat(registry)
+                .hasObservationWithNameEqualTo("observed.class")
+                .that()
+                .hasContextualNameEqualTo("ObservedClassTarget#hello")
+                .hasLowCardinalityKeyValue("class", "ObservedClassTarget")
+                .hasLowCardinalityKeyValue("method", "hello")
+                .hasLowCardinalityKeyValue("layer", "service")
+                .hasBeenStarted()
+                .hasBeenStopped()
+
+        when: 'a method with its own annotation is called'
+        target.overridden()
+
+        then: 'the annotation of the method wins'
+        TestObservationRegistryAssert.assertThat(registry)
+                .hasObservationWithNameEqualTo("observed.method")
+                .that()
+                .hasContextualNameEqualTo("methodLevel")
+                .hasLowCardinalityKeyValue("method", "overridden")
+                .hasBeenStopped()
+
+        cleanup:
+        ctx.close()
+    }
+
     @Factory
     @Requires(property = "spec.name", value = "ObservationAnnotationSpec")
     static class DefaultFactory {
