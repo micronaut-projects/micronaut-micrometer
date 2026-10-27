@@ -16,8 +16,8 @@ class PrometheusPushGatewayFactorySpec extends Specification {
         ApplicationContext context = ApplicationContext.run()
 
         then:
-        context.getBeansOfType(MeterRegistry).size() == 1
-        context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['PrometheusMeterRegistry'])
+        context.getBeansOfType(MeterRegistry).size() == 2
+        context.getBeansOfType(MeterRegistry)*.class*.simpleName.containsAll(['CompositeMeterRegistry', 'PrometheusMeterRegistry'])
         context.getBeansOfType(PushGateway)
 
         cleanup:
