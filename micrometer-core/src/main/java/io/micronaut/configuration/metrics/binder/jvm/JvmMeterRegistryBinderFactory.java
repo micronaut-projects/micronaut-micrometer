@@ -41,11 +41,13 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 public class JvmMeterRegistryBinderFactory {
 
     /**
-     * JVM GC metrics bean.
+     * JVM GC metrics bean. It is closed with the context, which removes the notification listeners it registers on
+     * the JVM's garbage collector beans: they would otherwise keep the meter registry it was bound to, and record
+     * into it, after the context is closed.
      *
      * @return jvmGcMetrics
      */
-    @Bean
+    @Bean(preDestroy = "close")
     @Primary
     @Singleton
     public JvmGcMetrics jvmGcMetrics() {
