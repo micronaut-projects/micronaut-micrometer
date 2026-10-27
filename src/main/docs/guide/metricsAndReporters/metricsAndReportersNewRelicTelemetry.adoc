@@ -27,3 +27,7 @@ micronaut:
         serviceName: My Micronaut Service
         step: PT1M
 ----
+
+Every metric is reported with a `host` attribute set to the local host name. When the local host name cannot be resolved, for example in some containers, the `HOSTNAME` or `COMPUTERNAME` environment variable is used instead, and the attribute is omitted when neither is set.
+
+NOTE: Before Micronaut Micrometer 6.2.0, this registry dropped every meter whose name starts with `jvm.threads` and removed any `plz_ignore_me` tag. These filters were copied from New Relic's sample code and have been removed, so the `jvm.threads.*` meters are now reported. To keep excluding them, register a `MeterFilter` bean such as `MeterFilter.denyNameStartsWith("jvm.threads")`.

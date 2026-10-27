@@ -1,8 +1,10 @@
 package io.micronaut.configuration.metrics.micrometer.newrelic
 
 import com.newrelic.telemetry.micrometer.NewRelicRegistry
+import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry
+import io.micronaut.configuration.metrics.micrometer.newrelictelemetry.NewRelicTelemetryMeterRegistryFactory
 import io.micronaut.configuration.metrics.micrometer.newrelictelemetry.NewRelicTelemetryMicronautConfig
 import io.micronaut.context.ApplicationContext
 import spock.lang.Specification
@@ -118,4 +120,48 @@ class NewRelicTelemetryMeterRegistryFactorySpec extends Specification {
         context.stop()
     }
 
+    void "jvm.threads meters and all tags are exported"() {
+        given:
+        ApplicationContext context = ApplicationContext.run(noPublishConfig())
+        // the binders are bound when the composite registry is created
+        context.getBean(CompositeMeterRegistry)
+        NewRelicRegistry registry = context.getBean(NewRelicRegistry)
+
+        when:
+        Counter counter = Counter.builder("test.counter").tag("plz_ignore_me", "value").register(registry)
+
+        then:
+        registry.find("jvm.threads.live").gauge() != null
+        registry.find("jvm.threads.daemon").gauge() != null
+        counter.id.getTag("plz_ignore_me") == "value"
+
+        cleanup:
+        context.stop()
+    }
+
+    void "the host attribute uses the local host name when it can be resolved"() {
+        expect:
+        NewRelicTelemetryMeterRegistryFactory.commonAttributes({ -> "my-host" }, { String name -> null }).asMap() == [host: "my-host"]
+    }
+
+    @Unroll
+    void "the host attribute falls back to the environment #env when the local host name cannot be resolved"() {
+        expect:
+        NewRelicTelemetryMeterRegistryFactory.commonAttributes({ -> throw new UnknownHostException("no dns") }, env.&get).asMap() == expected
+
+        where:
+        env                         | expected
+        [HOSTNAME: "pod-1"]         | [host: "pod-1"]
+        [COMPUTERNAME: "WINDOWS-1"] | [host: "WINDOWS-1"]
+        [:]                         | [:]
+    }
+
+    private static Map<String, Object> noPublishConfig() {
+        [
+                (NEWRELIC_CONFIG + ".apiKey"): MOCK_NEWRELIC_API_KEY,
+                // never publish to New Relic from the test
+                (NEWRELIC_CONFIG + ".uri")   : 'http://localhost:1',
+                (NEWRELIC_CONFIG + ".step")  : '1h',
+        ]
+    }
 }
