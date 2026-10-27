@@ -120,6 +120,35 @@ The JVM metrics bindings provide several JVM metrics.
 | jvm.threads.peak
 |=======
 
+The following JVM binders can be toggled individually. They are also disabled when `micronaut.metrics.binders.jvm.enabled` is `false`.
+
+.Additional JVM binders
+|=======
+|*Property* |*Default* |*Metrics provided* |*Notes*
+|`micronaut.metrics.binders.jvm.info.enabled` |`true` |`jvm.info` |The JVM version, vendor and runtime as tags.
+|`micronaut.metrics.binders.jvm.compilation.enabled` |`true` |`jvm.compilation.time` |Nothing is registered when the JVM does not report JIT compilation time, for example in a native image.
+|`micronaut.metrics.binders.jvm.heap-pressure.enabled` |`true` |`jvm.gc.overhead`, `jvm.memory.usage.after.gc` |Listens to garbage collection notifications and is stopped when the application shuts down. Not available in a native image.
+|`micronaut.metrics.binders.jvm.deadlock.enabled` |`false` |`jvm.threads.deadlocked`, `jvm.threads.deadlocked.monitor` |Each read of the gauges searches the JVM for deadlocked threads, which can be expensive, so the binder is disabled by default.
+|=======
+
+===== Virtual Thread Metrics
+
+When `io.micrometer:micrometer-java21` is on the classpath, metrics about virtual threads are registered. They are read from JDK Flight Recorder events through a recording stream that is closed when the application shuts down. They are not available in a native image.
+
+dependency:micrometer-java21[groupId="io.micrometer"]
+
+*Control Property*: `micronaut.metrics.binders.virtual-threads.enabled` (default `true` when the dependency is present)
+
+.Metrics provided
+|=======
+|*Name*
+| jvm.threads.virtual.pinned
+| jvm.threads.virtual.submit.failed
+| jvm.threads.virtual.live
+| jvm.threads.virtual.parallelism
+| jvm.threads.virtual.pool.size
+|=======
+
 ===== Web Metrics
 
 There is a default web filter provided for web metrics. All routes, status codes, methods, and exceptions are timed and counted.
@@ -283,6 +312,35 @@ The file descriptor metrics bindings provide system file descriptor metrics.
 |*Name*
 | process.files.open
 | process.files.max
+|=======
+
+===== Disk Space Metrics
+
+The disk space metrics bindings report the free and total space of the file system of each configured path. Each meter has a `path` tag with the absolute path.
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      disk-space:
+        paths:
+          - .
+          - /var/data
+----
+
+.Disk space properties
+|=======
+|*Property* |*Type* |*Default* |*Description*
+|`micronaut.metrics.binders.disk-space.enabled` |boolean |`true` |Whether disk space metrics are enabled.
+|`micronaut.metrics.binders.disk-space.paths` |list of paths |`.` (the working directory) |The paths whose file system is reported.
+|=======
+
+.Metrics provided
+|=======
+|*Name*
+| disk.free
+| disk.total
 |=======
 
 ===== Logback Metrics

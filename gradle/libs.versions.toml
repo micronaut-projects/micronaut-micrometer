@@ -71,6 +71,7 @@ managed-micrometer-observation-test = { module = 'io.micrometer:micrometer-obser
 
 managed-datasource-micrometer = { module = 'net.ttddyy.observation:datasource-micrometer', version.ref = 'managed-datasource-micrometer' }
 
+micrometer-java21 = { module = 'io.micrometer:micrometer-java21', version.ref = 'managed-micrometer' }
 micrometer-registry-appoptics = { module = 'io.micrometer:micrometer-registry-appoptics', version.ref = 'managed-micrometer' }
 micrometer-registry-atlas = { module = 'io.micrometer:micrometer-registry-atlas', version.ref = 'managed-micrometer' }
 micrometer-registry-azure-monitor = { module = 'io.micrometer:micrometer-registry-azure-monitor', version.ref = 'managed-micrometer' }
