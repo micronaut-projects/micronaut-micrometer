@@ -24,7 +24,7 @@
         }
     </script>
     <style type="text/css">
-        .lang-java { display: block }; .lang-python { display: block }; .lang-kotlin { display: block }; .lang-groovy { display: block }; .lang-scala { display: block }; 
+        .lang-java { display: block }; .lang-python { display: block }; .lang-kotlin { display: block }; .lang-groovy { display: block }; 
     </style>
 </head>
 
@@ -171,13 +171,13 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 6.1.2-SNAPSHOT </p>
+        <p><strong>Version:</strong> 6.0.3-SNAPSHOT </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/introduction.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/introduction.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -190,7 +190,7 @@
 <h1 id="releaseHistory"><a class="anchor" href="#releaseHistory"></a>2 Release History</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/releaseHistory.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/releaseHistory.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -206,7 +206,7 @@
 <h1 id="metricsEndpoint"><a class="anchor" href="#metricsEndpoint"></a>3 Metrics Endpoint</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsEndpoint.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsEndpoint.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -337,8 +337,9 @@
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -374,89 +375,41 @@ enabled = true</code></pre>
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
+<div class="listingblock">
+<div class="title">Gradle</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core")</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    implementation "io.micronaut.micrometer:micronaut-micrometer-core"
+    // micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example
+    implementation "io.micronaut.micrometer:micronaut-micrometer-registry-statsd"
+    // Also required to enable endpoint
+    implementation "io.micronaut:micronaut-management"
+    ...
+}</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
+<div class="title">Maven</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- micrometer-registry-statsd also pulls in micrometer-core so included above to verbose example --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- Also required to enable endpoint --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+  &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
+  &lt;version&gt;${micronaut.version}&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core"</span>,
-]</code></pre>
-</div>
-</div>
-</p>
-</div>
-<div class="paragraph">
-<p><code>micronaut-micrometer-registry-statsd</code> (or any other registry) also pulls in <code>micronaut-micrometer-core</code>, so the explicit <code>micronaut-micrometer-core</code> dependency above is only included to make the example verbose:</p>
-</div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd")</span></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd"</span>,
-]</code></pre>
-</div>
-</div>
-</p>
-</div>
-<div class="paragraph">
-<p>The <code>micronaut-management</code> dependency is also required to enable the endpoint:</p>
-</div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut:micronaut-management")</span></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-management&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut:micronaut-management"</span>,
-]</code></pre>
-</div>
-</div>
-</p>
 </div>
 <div class="paragraph">
 <p>To configure the metrics endpoint, supply configuration through <code>endpoints.metrics</code>.</p>
@@ -480,9 +433,10 @@ endpoints.metrics.sensitive=Boolean</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.metrics]
-enabled = "Boolean"
-sensitive = "Boolean"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.metrics]
+    enabled="Boolean"
+    sensitive="Boolean"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -527,7 +481,7 @@ sensitive = "Boolean"</code></pre>
 <h1 id="metricsConcepts"><a class="anchor" href="#metricsConcepts"></a>4 Metrics Concepts</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsConcepts.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsConcepts.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -628,10 +582,27 @@ public interface MeterRegistryConfigurer&lt;T extends MeterRegistry&gt; extends 
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/*
+ * Copyright 2017-2019 original authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.micronaut.docs;
+
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.core.annotation.Order;
@@ -654,144 +625,6 @@ public class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument.simple import SimpleMeterRegistry
-from jakarta.inject import Singleton
-from micronaut.configuration.metrics.aggregator import MeterRegistryConfigurer
-from micronaut.configuration.metrics.annotation import RequiresMetrics
-from micronaut.core.annotation import Order
-
-@Order(2147483647)
-@Singleton
-@RequiresMetrics
-class SimpleMeterRegistryConfigurer(MeterRegistryConfigurer[SimpleMeterRegistry]):
-
-    def configure(self, meterRegistry: SimpleMeterRegistry) -&gt; None:
-        meterRegistry.config().commonTags("key", "value")
-
-    def getType(self) -&gt; type[SimpleMeterRegistry]:
-        return SimpleMeterRegistry</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
-import io.micronaut.configuration.metrics.annotation.RequiresMetrics
-import io.micronaut.core.annotation.Order
-import jakarta.inject.Singleton
-
-@Order(Int.MAX_VALUE)
-@Singleton
-@RequiresMetrics
-class SimpleMeterRegistryConfigurer : MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt; {
-
-    override fun configure(meterRegistry: SimpleMeterRegistry) {
-        meterRegistry.config().commonTags("key", "value")
-    }
-
-    override fun getType(): Class&lt;SimpleMeterRegistry&gt; = SimpleMeterRegistry::class.java
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.simple.SimpleMeterRegistry
-import io.micronaut.configuration.metrics.aggregator.MeterRegistryConfigurer
-import io.micronaut.configuration.metrics.annotation.RequiresMetrics
-import io.micronaut.core.annotation.Order
-import jakarta.inject.Singleton
-
-@Order(Integer.MAX_VALUE)
-@Singleton
-@RequiresMetrics
-class SimpleMeterRegistryConfigurer implements MeterRegistryConfigurer&lt;SimpleMeterRegistry&gt; {
-
-    @Override
-    void configure(SimpleMeterRegistry meterRegistry) {
-        meterRegistry.config().commonTags("key", "value")
-    }
-
-    @Override
-    Class&lt;SimpleMeterRegistry&gt; getType() {
-        SimpleMeterRegistry
-    }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Micronaut can also add common tags to every meter via configuration. The legacy <code>micronaut.metrics.tags.<strong></code> prefix remains supported, and <code>micronaut.metrics.common-tags.</strong></code> is available as a clearer alias.</p>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.common-tags.application=${micronaut.application.name}
-micronaut.metrics.common-tags.region=us-east-1</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
-  metrics:
-    common-tags:
-      application: ${micronaut.application.name}
-      region: us-east-1</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics.common-tags]
-application = "${micronaut.application.name}"
-region = "us-east-1"</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
-  metrics {
-    commonTags {
-      application = "${micronaut.application.name}"
-      region = "us-east-1"
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
-  micronaut {
-    metrics {
-      common-tags {
-        application = "${micronaut.application.name}"
-        region = "us-east-1"
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
-  "micronaut": {
-    "metrics": {
-      "common-tags": {
-        "application": "${micronaut.application.name}",
-        "region": "us-east-1"
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_meter_filter">Meter Filter</h3>
@@ -808,10 +641,12 @@ region = "us-east-1"</code></pre>
 <div class="paragraph">
 <p>You can create custom filters similar to the following inside your application. <code>MeterFilter</code> provides several convenience methods to help with the creation of these filters.</p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.Tag;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
@@ -847,116 +682,6 @@ public class MeterFilterFactory {
     @Singleton
     MeterFilter renameFilter() {
         return MeterFilter.renameTag("http.server.requests", "method", "httpmethod");
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import Tag
-from io.micrometer.core.instrument.config import MeterFilter
-from jakarta.inject import Singleton
-from micronaut.context.annotation import Bean, Factory
-
-@Factory
-class MeterFilterFactory:
-
-    @Bean
-    @Singleton
-    def add_common_tag_filter(self) -&gt; MeterFilter:
-        """Add global tags to all metrics."""
-        return MeterFilter.commonTags([Tag.of("scope", "demo")])
-
-    @Bean
-    @Singleton
-    def rename_filter(self) -&gt; MeterFilter:
-        """Rename a tag key for every metric beginning with a given prefix.
-
-        This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
-
-        OLD: http.server.requests ['method':'GET", ...]
-        NEW: http.server.requests ['httpmethod':'GET", ...]
-        """
-        return MeterFilter.renameTag("http.server.requests", "method", "httpmethod")</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.Tag
-import io.micrometer.core.instrument.config.MeterFilter
-import io.micronaut.context.annotation.Bean
-import io.micronaut.context.annotation.Factory
-import jakarta.inject.Singleton
-
-@Factory
-class MeterFilterFactory {
-
-    /**
-     * Add global tags to all metrics.
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    fun addCommonTagFilter(): MeterFilter =
-        MeterFilter.commonTags(listOf(Tag.of("scope", "demo")))
-
-    /**
-     * Rename a tag key for every metric beginning with a given prefix.
-     *
-     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
-     *
-     * OLD: http.server.requests ['method':'GET", ...]
-     * NEW: http.server.requests ['httpmethod':'GET", ...]
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    fun renameFilter(): MeterFilter =
-        MeterFilter.renameTag("http.server.requests", "method", "httpmethod")
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.Tag
-import io.micrometer.core.instrument.config.MeterFilter
-import io.micronaut.context.annotation.Bean
-import io.micronaut.context.annotation.Factory
-import jakarta.inject.Singleton
-
-@Factory
-class MeterFilterFactory {
-
-    /**
-     * Add global tags to all metrics.
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    MeterFilter addCommonTagFilter() {
-        MeterFilter.commonTags([Tag.of("scope", "demo")])
-    }
-
-    /**
-     * Rename a tag key for every metric beginning with a given prefix.
-     * &lt;p&gt;
-     * This will rename the metric name http.server.requests tag value called `method` to `httpmethod`
-     * &lt;p&gt;
-     * OLD: http.server.requests ['method':'GET", ...]
-     * NEW: http.server.requests ['httpmethod':'GET", ...]
-     *
-     * @return meter filter
-     */
-    @Bean
-    @Singleton
-    MeterFilter renameFilter() {
-        MeterFilter.renameTag("http.server.requests", "method", "httpmethod")
     }
 }</code></pre>
 </div>
@@ -1114,19 +839,22 @@ micronaut.metrics.binders.web.client.max=60</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics.binders.web.server]
-percentiles = "0.95,0.99"
-histogram = true
-slos = "0.1,0.4,0.5,2"
-min = 0.1
-max = 60
-
-[micronaut.metrics.binders.web.client]
-percentiles = "0.95,0.99"
-histogram = true
-slos = "0.1,0.4,0.5,2"
-min = 0.1
-max = 60</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    [micronaut.metrics.binders]
+      [micronaut.metrics.binders.web]
+        [micronaut.metrics.binders.web.server]
+          percentiles="0.95,0.99"
+          histogram=true
+          slos="0.1,0.4,0.5,2"
+          min=0.1
+          max=60
+        [micronaut.metrics.binders.web.client]
+          percentiles="0.95,0.99"
+          histogram=true
+          slos="0.1,0.4,0.5,2"
+          min=0.1
+          max=60</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1370,8 +1098,11 @@ max = 60</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[jpa.default.properties.hibernate]
-generate_statistics = true</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[jpa]
+  [jpa.default]
+    [jpa.default.properties]
+      [jpa.default.properties.hibernate]
+        generate_statistics=true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -1422,31 +1153,15 @@ generate_statistics = true</code></pre>
 <div class="paragraph">
 <p><a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> needs to be on the classpath, so <a href="https://mvnrepository.com/artifact/org.hibernate/hibernate-micrometer">hibernate-micrometer</a> should be downloaded:</p>
 </div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
+<div class="listingblock">
+<div class="title">Gradle</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"org.hibernate:hibernate-micrometer")</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">dependencies {
+    ...
+    implementation("org.hibernate:hibernate-micrometer")
+    ...
+}</code></pre>
 </div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
-    &lt;artifactId&gt;hibernate-micrometer&lt;/artifactId&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"org.hibernate:hibernate-micrometer"</span>,
-]</code></pre>
-</div>
-</div>
-</p>
 </div>
 <div class="paragraph">
 <p>Micrometer automatically exposes Hibernate statistics. See the source code for <a href="https://github.com/hibernate/hibernate-orm/blob/main/hibernate-micrometer/src/main/java/org/hibernate/stat/HibernateMetrics.java">HibernateMetrics</a> for the available metrics.</p>
@@ -1544,17 +1259,14 @@ There is a different set of pool metric names for HikariCP and other pool provid
 </table>
 </div>
 <div class="sect4">
-<h5 id="_netty_metrics">Netty Metrics</h5>
+<h5 id="_netty_server_metrics">Netty Server Metrics</h5>
 <div class="paragraph">
-<p>Currently, the following binders are provided to instrument Netty event loops and server channels:</p>
+<p>Currently, the following binders are provided to instrument Netty server:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Executor binder</strong>: When <code>micronaut.metrics.binders.executor.enabled</code> is enabled, configured Netty event loop groups also expose <code>executor.queued</code> and <code>executor.pool.size</code> metrics tagged with the event loop group name.</p>
-</li>
-<li>
-<p><strong>Netty queue binder</strong>: Instrument and expose Netty event loop queue metrics for event loop groups used by the server and HTTP clients; use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
+<p><strong>EventLoopGroupFactoryBinder</strong>: Instrument and expose event loop group queues metrics; use <code>micronaut.metrics.binders.netty.queues.enabled</code> to toggle. Default is <strong>false</strong>. The queues' size and tasks wait and execution time are exposed.</p>
 </li>
 <li>
 <p><strong>ByteBufAllocatorMetricsBinder</strong>: Expose <code>ByteBuf</code> default allocators (<a href="https://netty.io/4.1/api/io/netty/buffer/ByteBufAllocatorMetric.html">UnpooledByteBufAllocator</a>, <a href="https://netty.io/4.1/api/io/netty/buffer/PooledByteBufAllocatorMetric.html">PooledByteBufAllocator</a>) metrics; use <code>micronaut.metrics.binders.netty.bytebuf-allocators.enabled</code> to toggle. Default is <strong>false</strong>.
@@ -1602,10 +1314,12 @@ The provided metrics include the channel count, current active channel count, ch
 <div class="paragraph">
 <p>See the <a href="https://micrometer.io/docs">Micrometer docs</a> for more information.</p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">Custom Metrics Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.MeterRegistry;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import jakarta.validation.constraints.NotBlank;
@@ -1630,78 +1344,6 @@ class IndexController {
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">Custom Metrics Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import MeterRegistry
-from jakarta.validation.constraints import NotBlank
-from micronaut.http.annotation import Controller, Get
-from reactor.core.publisher import Mono
-
-@Controller
-class IndexController:
-
-    def __init__(self, meterRegistry: MeterRegistry):
-        self.meterRegistry = meterRegistry
-
-    @Get("/hello/{name}")
-    def hello(self, name: Annotated[str, NotBlank]) -&gt; Mono[str]:
-        self.meterRegistry \
-            .counter("web.access", "controller", "index", "action", "hello") \
-            .increment()
-        return Mono.just("Hello " + name)</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Custom Metrics Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.MeterRegistry
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import jakarta.validation.constraints.NotBlank
-import reactor.core.publisher.Mono
-
-@Controller
-open class IndexController(private val meterRegistry: MeterRegistry) {
-
-    @Get("/hello/{name}")
-    open fun hello(@NotBlank name: String): Mono&lt;String&gt; {
-        meterRegistry
-            .counter("web.access", "controller", "index", "action", "hello")
-            .increment()
-        return Mono.just("Hello $name")
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">Custom Metrics Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.MeterRegistry
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import jakarta.validation.constraints.NotBlank
-import reactor.core.publisher.Mono
-
-@Controller
-class IndexController {
-
-    private final MeterRegistry meterRegistry
-
-    IndexController(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry
-    }
-
-    @Get("/hello/{name}")
-    Mono&lt;String&gt; hello(@NotBlank String name) {
-        meterRegistry
-                .counter("web.access", "controller", "index", "action", "hello")
-                .increment()
-        Mono.just("Hello " + name)
-    }
-}</code></pre>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1714,10 +1356,12 @@ The default value reported for an <code>ExceptionHandler</code> is 500.</p>
 <div class="paragraph">
 <p>See the <a href="https://docs.micronaut.io/latest/guide/">Micronaut docs</a> for more information on <code>ExceptionHandler</code>.</p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">ExceptionHandler Reporting Example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.http.HttpResponse;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpResponseProvider;
 
 public class OutOfStockException extends RuntimeException implements HttpResponseProvider {
@@ -1729,52 +1373,13 @@ public class OutOfStockException extends RuntimeException implements HttpRespons
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">ExceptionHandler Reporting Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from java.lang import RuntimeException
-from micronaut.http import HttpResponse, HttpResponseProvider
-
-class OutOfStockException(RuntimeException, HttpResponseProvider):
-
-    def getResponse(self) -&gt; HttpResponse:
-        return HttpResponse.ok(0)</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">ExceptionHandler Reporting Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpResponseProvider
-
-class OutOfStockException : RuntimeException(), HttpResponseProvider {
-
-    override fun getResponse(): HttpResponse&lt;*&gt; = HttpResponse.ok(0)
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">ExceptionHandler Reporting Example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micronaut.http.HttpResponse
-import io.micronaut.http.HttpResponseProvider
-
-class OutOfStockException extends RuntimeException implements HttpResponseProvider {
-
-    @Override
-    HttpResponse&lt;?&gt; getResponse() {
-        HttpResponse.ok(0)
-    }
-}</code></pre>
-</div>
-</div>
 </div>
 </div>
 
 <h1 id="metricsAnnotations"><a class="anchor" href="#metricsAnnotations"></a>5 Metrics Annotations</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAnnotations.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAnnotations.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -1801,15 +1406,6 @@ class OutOfStockException extends RuntimeException implements HttpResponseProvid
 &lt;/annotationProcessorPaths&gt;</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-build = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-annotation"</span>,
-]</code></pre>
-</div>
-</div>
 </p>
 </div>
 <div class="paragraph">
@@ -1819,10 +1415,12 @@ Without it, the annotations remain on the method, but no interceptor runs and no
 <div class="paragraph">
 <p>In order to support adding additional tags programmatically similar to Micrometer&#8217;s <code>TimedAspect</code> / <code>CountedAspect</code> ability using a <code>ProceedingJoinPoint</code>, create beans of type <code>AbstractMethodTagger</code></p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">MetricsTagger example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.instrument.Tag;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.instrument.Tag;
 import io.micronaut.aop.MethodInvocationContext;
 import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger;
 import jakarta.inject.Singleton;
@@ -1839,59 +1437,15 @@ public class MethodNameTagger extends AbstractMethodTagger {
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricsTagger example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.instrument import Tag
-from jakarta.inject import Singleton
-from micronaut.aop import MethodInvocationContext
-from micronaut.configuration.metrics.aggregator import AbstractMethodTagger
-
-@Singleton
-class MethodNameTagger(AbstractMethodTagger):
-    def buildTags(self, context: MethodInvocationContext) -&gt; list[Tag]:
-        return [Tag.of("method", context.getMethodName())]</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricsTagger example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.instrument.Tag
-import io.micronaut.aop.MethodInvocationContext
-import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger
-import jakarta.inject.Singleton
-
-@Singleton
-class MethodNameTagger : AbstractMethodTagger() {
-    override fun buildTags(context: MethodInvocationContext&lt;Any, Any&gt;): List&lt;Tag&gt; =
-        listOf(Tag.of("method", context.methodName))
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricsTagger example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.instrument.Tag
-import io.micronaut.aop.MethodInvocationContext
-import io.micronaut.configuration.metrics.aggregator.AbstractMethodTagger
-import jakarta.inject.Singleton
-
-@Singleton
-class MethodNameTagger extends AbstractMethodTagger {
-    @Override
-    List&lt;Tag&gt; buildTags(MethodInvocationContext&lt;Object, Object&gt; context) {
-        [Tag.of("method", context.methodName)]
-    }
-}</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>You can filter these taggers by utilizing the <code>MetricOptions</code> annotation</p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">MetricOptions filtering taggers example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.annotation.Timed;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.annotation.Timed;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import jakarta.inject.Singleton;
 
@@ -1909,76 +1463,15 @@ public class MetricOptionsFilterTaggersExample {
 }</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions filtering taggers example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.annotation import Timed
-from jakarta.inject import Singleton
-from micronaut.configuration.metrics.annotation import MetricOptions
-
-from .MethodNameTagger import MethodNameTagger
-
-@Singleton
-class MetricOptionsFilterTaggersExample:
-
-    @MetricOptions(
-        filterTaggers=True,  # Specify that not all taggers should be applied
-        taggers=[MethodNameTagger]  # Specific taggers to apply
-    )
-    @Timed(value="do_something")
-    def do_something(self) -&gt; None:
-        pass</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions filtering taggers example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.annotation.Timed
-import io.micronaut.configuration.metrics.annotation.MetricOptions
-import jakarta.inject.Singleton
-
-@Singleton
-open class MetricOptionsFilterTaggersExample {
-
-    @MetricOptions(
-        filterTaggers = true, // Specify that not all taggers should be applied
-        taggers = [MethodNameTagger::class] // Specific taggers to apply
-    )
-    @Timed(value = "do_something")
-    open fun doSomething() {
-        // ...
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions filtering taggers example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.annotation.Timed
-import io.micronaut.configuration.metrics.annotation.MetricOptions
-import jakarta.inject.Singleton
-
-@Singleton
-class MetricOptionsFilterTaggersExample {
-
-    @MetricOptions(
-        filterTaggers = true, // Specify that not all taggers should be applied
-        taggers = [MethodNameTagger] // Specific taggers to apply
-    )
-    @Timed(value = "do_something")
-    void doSomething() {
-        // ...
-    }
-}</code></pre>
-</div>
-</div>
 <div class="paragraph">
 <p>The <code>MetricOptions</code> annotation also provides a means of only processing / publishing a metric based on an <code>EvaluatedExpression</code></p>
 </div>
-<div class="listingblock multi-language-sample">
+<div class="listingblock">
 <div class="title">MetricOptions condition example</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micrometer.core.annotation.Timed;
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package io.micronaut.docs;
+
+import io.micrometer.core.annotation.Timed;
 import io.micronaut.configuration.metrics.annotation.MetricOptions;
 import jakarta.inject.Singleton;
 
@@ -1987,71 +1480,10 @@ public class MetricOptionsConditionExample {
 
     @MetricOptions(
         // If condition is set, the metric will only be processed and published when it evaluates to true
-        condition = "#{ env['property'] == 'true' }"
+        condition = " #{ env['property'] == true }"
     )
-    @Timed(value = "do_something_conditionally")
+    @Timed(value = "do_something")
     public void doSomething() {
-        // ...
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions condition example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-python hljs" data-lang="python">from io.micrometer.core.annotation import Timed
-from jakarta.inject import Singleton
-from micronaut.configuration.metrics.annotation import MetricOptions
-
-@Singleton
-class MetricOptionsConditionExample:
-
-    @MetricOptions(
-        # If condition is set, the metric will only be processed and published when it evaluates to true
-        condition="#{ env['property'] == 'true' }"
-    )
-    @Timed(value="do_something_conditionally")
-    def do_something(self) -&gt; None:
-        pass</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions condition example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">import io.micrometer.core.annotation.Timed
-import io.micronaut.configuration.metrics.annotation.MetricOptions
-import jakarta.inject.Singleton
-
-@Singleton
-open class MetricOptionsConditionExample {
-
-    @MetricOptions(
-        // If condition is set, the metric will only be processed and published when it evaluates to true
-        condition = "#{ env['property'] == 'true' }"
-    )
-    @Timed(value = "do_something_conditionally")
-    open fun doSomething() {
-        // ...
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title">MetricOptions condition example</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">import io.micrometer.core.annotation.Timed
-import io.micronaut.configuration.metrics.annotation.MetricOptions
-import jakarta.inject.Singleton
-
-@Singleton
-class MetricOptionsConditionExample {
-
-    @MetricOptions(
-        // If condition is set, the metric will only be processed and published when it evaluates to true
-        condition = "#{ env['property'] == 'true' }"
-    )
-    @Timed(value = "do_something_conditionally")
-    void doSomething() {
         // ...
     }
 }</code></pre>
@@ -2061,7 +1493,7 @@ class MetricOptionsConditionExample {
 <h1 id="metricsAndReporters"><a class="anchor" href="#metricsAndReporters"></a>6 Metrics Registries & Reporters</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2079,7 +1511,7 @@ class MetricOptionsConditionExample {
 <h2 id="metricsAndReportersAppOptics"><a class="anchor" href="#metricsAndReportersAppOptics"></a>6.1 AppOptics Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAppOptics.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2101,15 +1533,6 @@ class MetricOptionsConditionExample {
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-appoptics&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-appoptics"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -2172,14 +1595,15 @@ micronaut.metrics.export.appoptics.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.appoptics]
-enabled = true
-apiToken = "${APPOPTICS_API_TOKEN}"
-uri = "https://api.appoptics.com/v1/measurements"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.appoptics]
+        enabled=true
+        apiToken="${APPOPTICS_API_TOKEN}"
+        uri="https://api.appoptics.com/v1/measurements"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2243,7 +1667,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersAtlas"><a class="anchor" href="#metricsAndReportersAtlas"></a>6.2 Atlas Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAtlas.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2265,15 +1689,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-atlas&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-atlas"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -2330,13 +1745,14 @@ micronaut.metrics.export.atlas.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.atlas]
-enabled = true
-uri = "http://localhost:7101/api/v1/publish"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.atlas]
+        enabled=true
+        uri="http://localhost:7101/api/v1/publish"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2397,7 +1813,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersAzureMonitor"><a class="anchor" href="#metricsAndReportersAzureMonitor"></a>6.3 Azure Monitor Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersAzureMonitor.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2419,15 +1835,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-azure-monitor&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-azure-monitor"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -2484,13 +1891,14 @@ micronaut.metrics.export.azuremonitor.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.azuremonitor]
-enabled = true
-instrumentationKey = "${AZUREMONITOR_INSTRUMENTATION_KEY}"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.azuremonitor]
+        enabled=true
+        instrumentationKey="${AZUREMONITOR_INSTRUMENTATION_KEY}"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2551,7 +1959,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersCloudWatch"><a class="anchor" href="#metricsAndReportersCloudWatch"></a>6.4 CloudWatch Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersCloudWatch.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2575,19 +1983,7 @@ step = "PT1M"</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-cloudwatch"</span>,
-]</code></pre>
-</div>
-</div>
 </p>
-</div>
-<div class="paragraph">
-<p>You will also need the <a href="https://micronaut-projects.github.io/micronaut-aws/latest/guide/#sdkHttpClient">AWS SDK HTTP Client</a> dependency in your classpath.</p>
 </div>
 <div class="paragraph">
 <p>You can configure this reporter using <code>micronaut.metrics.export.cloudwatch</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-cloudwatch/src/main/java/io/micrometer/cloudwatch/CloudWatchConfig.java">CloudWatchConfig</a> for more options.</p>
@@ -2641,13 +2037,14 @@ micronaut.metrics.export.cloudwatch.batchSize=10</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.cloudwatch]
-enabled = true
-namespace = "myAwesomeAppMetrics"
-batchSize = 10</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.cloudwatch]
+        enabled=true
+        namespace="myAwesomeAppMetrics"
+        batchSize=10</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2720,7 +2117,7 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 <h2 id="metricsAndReportersDatadog"><a class="anchor" href="#metricsAndReportersDatadog"></a>6.5 Datadog Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDatadog.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2742,15 +2139,6 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-datadog&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-datadog"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -2811,13 +2199,14 @@ micronaut.metrics.export.datadog.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.datadog]
-apiKey = "${DATADOG_APIKEY}"
-enabled = true
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.datadog]
+        apiKey="${DATADOG_APIKEY}"
+        enabled=true
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -2878,7 +2267,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersDynatrace"><a class="anchor" href="#metricsAndReportersDynatrace"></a>6.6 Dynatrace Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersDynatrace.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -2900,15 +2289,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-dynatrace&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-dynatrace"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -2985,18 +2365,19 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
-sensitive = false
-
-[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.dynatrace]
-enabled = true
-apiToken = "${DYNATRACE_DEVICE_API_TOKEN}"
-uri = "${DYNATRACE_DEVICE_URI}"
-deviceId = "${DYNATRACE_DEVICE_ID}"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.dynatrace]
+        enabled=true
+        apiToken="${DYNATRACE_DEVICE_API_TOKEN}"
+        uri="${DYNATRACE_DEVICE_URI}"
+        deviceId="${DYNATRACE_DEVICE_ID}"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3078,7 +2459,7 @@ micronaut {
 <h2 id="metricsAndReportersElastic"><a class="anchor" href="#metricsAndReportersElastic"></a>6.7 Elasticsearch Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersElastic.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3100,15 +2481,6 @@ micronaut {
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-elastic&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-elastic"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3159,12 +2531,13 @@ micronaut.metrics.export.elastic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.elastic]
-enabled = true
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.elastic]
+        enabled=true
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3222,7 +2595,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersGanglia"><a class="anchor" href="#metricsAndReportersGanglia"></a>6.8 Ganglia Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGanglia.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3244,15 +2617,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-ganglia&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-ganglia"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3309,13 +2673,14 @@ micronaut.metrics.export.ganglia.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.ganglia]
-enabled = true
-protocolVersion = 3.1
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.ganglia]
+        enabled=true
+        protocolVersion=3.1
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3376,7 +2741,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersGraphite"><a class="anchor" href="#metricsAndReportersGraphite"></a>6.9 Graphite Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersGraphite.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3398,15 +2763,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-graphite&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-graphite"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3469,14 +2825,15 @@ micronaut.metrics.export.graphite.port=2004</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.graphite]
-enabled = true
-step = "PT1M"
-host = "localhost"
-port = 2004</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.graphite]
+        enabled=true
+        step="PT1M"
+        host="localhost"
+        port=2004</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3540,7 +2897,7 @@ port = 2004</code></pre>
 <h2 id="metricsAndReportersHumio"><a class="anchor" href="#metricsAndReportersHumio"></a>6.10 Humio Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersHumio.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3562,15 +2919,6 @@ port = 2004</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-humio&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-humio"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3621,12 +2969,13 @@ micronaut.metrics.export.humio.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.humio]
-enabled = true
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.humio]
+        enabled=true
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3684,7 +3033,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersInflux"><a class="anchor" href="#metricsAndReportersInflux"></a>6.11 Influx Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersInflux.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3706,15 +3055,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-influx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-influx"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3769,12 +3109,13 @@ micronaut.metrics.export.influx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.influx]
-enabled = true
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.influx]
+        enabled=true
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3832,7 +3173,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersJmx"><a class="anchor" href="#metricsAndReportersJmx"></a>6.12 JMX Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersJmx.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3854,15 +3195,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-jmx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-jmx"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -3913,12 +3245,13 @@ micronaut.metrics.export.jmx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.jmx]
-enabled = true
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.jmx]
+        enabled=true
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -3976,7 +3309,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersKairos"><a class="anchor" href="#metricsAndReportersKairos"></a>6.13 Kairos Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersKairos.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -3998,15 +3331,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-kairos&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-kairos"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4067,13 +3391,14 @@ micronaut.metrics.export.kairos.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.kairos]
-enabled = true
-uri = "http://localhost:8080/api/v1/datapoints"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.kairos]
+        enabled=true
+        uri="http://localhost:8080/api/v1/datapoints"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4134,7 +3459,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersNewRelic"><a class="anchor" href="#metricsAndReportersNewRelic"></a>6.14 New Relic Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelic.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4156,15 +3481,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4231,14 +3547,15 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.newrelic]
-enabled = true
-apiKey = "${NEWRELIC_API_KEY}"
-accountId = "${NEWRELIC_ACCOUNT_ID}"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.newrelic]
+        enabled=true
+        apiKey="${NEWRELIC_API_KEY}"
+        accountId="${NEWRELIC_ACCOUNT_ID}"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4302,7 +3619,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersNewRelicTelemetry"><a class="anchor" href="#metricsAndReportersNewRelicTelemetry"></a>6.15 New Relic Telemetry Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersNewRelicTelemetry.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4327,15 +3644,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-new-relic-telemetry&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-new-relic-telemetry"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4398,14 +3706,15 @@ micronaut.metrics.export.newrelic.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.newrelic]
-enabled = true
-apiKey = "${NEWRELIC_API_KEY}"
-serviceName = "My Micronaut Service"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.newrelic]
+        enabled=true
+        apiKey="${NEWRELIC_API_KEY}"
+        serviceName="My Micronaut Service"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4469,7 +3778,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersOracleCloud"><a class="anchor" href="#metricsAndReportersOracleCloud"></a>6.16 Oracle Cloud Monitoring Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOracleCloud.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOracleCloud.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4497,7 +3806,7 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
 <h2 id="metricsAndReportersOtlp"><a class="anchor" href="#metricsAndReportersOtlp"></a>6.17 OTLP Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOtlp.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersOtlp.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4519,15 +3828,6 @@ See the guide for <a href="https://guides.micronaut.io/latest/micronaut-metrics-
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-otlp&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-otlp"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4578,12 +3878,13 @@ micronaut.metrics.export.otlp.url=http://otel-collector:4318/v1/metrics</code></
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.otlp]
-enabled = true
-url = "http://otel-collector:4318/v1/metrics"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.otlp]
+        enabled=true
+        url="http://otel-collector:4318/v1/metrics"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4641,7 +3942,7 @@ url = "http://otel-collector:4318/v1/metrics"</code></pre>
 <h2 id="metricsAndReportersPrometheus"><a class="anchor" href="#metricsAndReportersPrometheus"></a>6.18 Prometheus Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheus.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4663,15 +3964,6 @@ url = "http://otel-collector:4318/v1/metrics"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-prometheus&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4732,16 +4024,17 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
-sensitive = false
-
-[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.prometheus]
-enabled = true
-step = "PT1M"
-descriptions = true</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.prometheus]
+        enabled=true
+        step="PT1M"
+        descriptions=true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -4869,7 +4162,7 @@ micronaut {
 <h2 id="metricsAndReportersPrometheusPushGateway"><a class="anchor" href="#metricsAndReportersPrometheusPushGateway"></a>6.19 Prometheus PushGateway</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheusPushGateway.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersPrometheusPushGateway.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -4891,15 +4184,6 @@ micronaut {
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-prometheus-pushgateway&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-prometheus-pushgateway"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -4991,21 +4275,21 @@ micronaut:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints.prometheus]
-sensitive = false
-
-[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.prometheus]
-enabled = true
-step = "PT1M"
-descriptions = true
-
-[micronaut.metrics.export.prometheus.pushgateway]
-enabled = true
-address = "localhost:9091"
-interval = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[endpoints]
+  [endpoints.prometheus]
+    sensitive=false
+[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.prometheus]
+        enabled=true
+        step="PT1M"
+        descriptions=true
+        [micronaut.metrics.export.prometheus.pushgateway]
+          enabled=true
+          address="localhost:9091"
+          interval="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5096,7 +4380,7 @@ micronaut {
 <h2 id="metricsAndReportersSignalFx"><a class="anchor" href="#metricsAndReportersSignalFx"></a>6.20 SignalFx Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersSignalFx.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5118,15 +4402,6 @@ micronaut {
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-signalfx&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-signalfx"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -5187,13 +4462,14 @@ micronaut.metrics.export.signalfx.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.signalfx]
-enabled = true
-accessToken = "${SIGNALFX_API_TOKEN}"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.signalfx]
+        enabled=true
+        accessToken="${SIGNALFX_API_TOKEN}"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5254,7 +4530,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersStackdriver"><a class="anchor" href="#metricsAndReportersStackdriver"></a>6.21 Stackdriver Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStackdriver.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5278,20 +4554,10 @@ step = "PT1M"</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-stackdriver"</span>,
-]</code></pre>
-</div>
-</div>
 </p>
 </div>
 <div class="paragraph">
-<p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a> for more options.
-If <code>projectId</code> is not configured explicitly, Micronaut falls back to Google Cloud&#8217;s default project ID discovery.</p>
+<p>You can configure this reporter using <code>micronaut.metrics.export.stackdriver</code>. The most commonly changed configuration properties are listed below, but see <a href="https://github.com/micrometer-metrics/micrometer/blob/main/implementations/micrometer-registry-stackdriver/src/main/java/io/micrometer/stackdriver/StackdriverConfig.java">StackdriverConfig</a> for more options.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -5309,7 +4575,7 @@ If <code>projectId</code> is not configured explicitly, Micronaut falls back to 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">projectId</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stackdriver Project ID. If omitted, Micronaut falls back to Google Cloud default project ID discovery.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stackdriver Project ID. Required.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">step</p></td>
@@ -5346,13 +4612,14 @@ micronaut.metrics.export.stackdriver.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.stackdriver]
-enabled = true
-projectId = "${STACKDRIVER_PROJECT_ID}"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.stackdriver]
+        enabled=true
+        projectId="${STACKDRIVER_PROJECT_ID}"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5413,7 +4680,7 @@ step = "PT1M"</code></pre>
 <h2 id="metricsAndReportersStatsD"><a class="anchor" href="#metricsAndReportersStatsD"></a>6.22 StatsD Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersStatsD.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5435,15 +4702,6 @@ step = "PT1M"</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-statsd&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-statsd"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -5512,15 +4770,16 @@ micronaut.metrics.export.statsd.port=8125</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.statsd]
-enabled = true
-flavor = "datadog"
-step = "PT1M"
-host = "localhost"
-port = 8125</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.statsd]
+        enabled=true
+        flavor="datadog"
+        step="PT1M"
+        host="localhost"
+        port=8125</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5587,7 +4846,7 @@ port = 8125</code></pre>
 <h2 id="metricsAndReportersWavefront"><a class="anchor" href="#metricsAndReportersWavefront"></a>6.23 Wavefront Registry</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsAndReporters/metricsAndReportersWavefront.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5609,15 +4868,6 @@ port = 8125</code></pre>
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-registry-wavefront&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-registry-wavefront"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -5684,14 +4934,15 @@ micronaut.metrics.export.wavefront.step=PT1M</code></pre>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
-enabled = true
-
-[micronaut.metrics.export.wavefront]
-enabled = true
-apiToken = "${WAVEFRONT_API_TOKEN}"
-uri = "https://longboard.wavefront.com"
-step = "PT1M"</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+    [micronaut.metrics.export]
+      [micronaut.metrics.export.wavefront]
+        enabled=true
+        apiToken="${WAVEFRONT_API_TOKEN}"
+        uri="https://longboard.wavefront.com"
+        step="PT1M"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -5755,7 +5006,7 @@ step = "PT1M"</code></pre>
 <h1 id="observation"><a class="anchor" href="#observation"></a>7 Observation</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/observation.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/observation.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5782,15 +5033,6 @@ step = "PT1M"</code></pre>
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation"</span>,
-]</code></pre>
-</div>
-</div>
 </p>
 </div>
 <div class="paragraph">
@@ -5815,15 +5057,6 @@ runtime = [
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -5870,15 +5103,6 @@ This avoids creating observations or exported metrics with high-cardinality URI 
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-http"</span>,
-]</code></pre>
-</div>
-</div>
 </p>
 </div>
 <div class="paragraph">
@@ -5901,7 +5125,7 @@ runtime = [
 <h2 id="datasourceObservation"><a class="anchor" href="#datasourceObservation"></a>7.1 Datasource Observation</h2>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/datasourceObservation.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/datasourceObservation.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -5926,15 +5150,6 @@ runtime = [
     &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-micrometer-observation-datasource&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
-runtime = [
-    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-datasource"</span>,
-]</code></pre>
 </div>
 </div>
 </p>
@@ -5962,8 +5177,10 @@ runtime = [
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micrometer.observation.datasource]
-enabled = true</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micrometer]
+  [micrometer.observation]
+    [micrometer.observation.datasource]
+      enabled=true</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -6023,7 +5240,7 @@ To trace query parameter values, this property <code>micrometer.observation.data
 <h1 id="metricsGuides"><a class="anchor" href="#metricsGuides"></a>8 Guides</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/metricsGuides.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/metricsGuides.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -6039,7 +5256,7 @@ To trace query parameter values, this property <code>micrometer.observation.data
 <h1 id="breaks"><a class="anchor" href="#breaks"></a>9 Breaking Changes</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/breaks.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/breaks.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
@@ -6082,7 +5299,7 @@ To trace query parameter values, this property <code>micrometer.observation.data
 <h1 id="repository"><a class="anchor" href="#repository"></a>10 Repository</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/repository.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.0.x/src/main/docs/guide/repository.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
