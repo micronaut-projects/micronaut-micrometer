@@ -34,6 +34,7 @@ import io.micronaut.http.annotation.RequestFilter
 import io.micronaut.http.annotation.ServerFilter
 import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
+import io.micronaut.http.annotation.Header
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.filter.ServerFilterChain
@@ -66,6 +67,32 @@ import static io.micronaut.http.HttpStatus.CONFLICT
 import static io.micronaut.http.HttpStatus.NOT_FOUND
 
 class HttpMetricsSpec extends Specification {
+
+    void "test client and server metrics include custom tags"() {
+        when:
+        EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer, ['spec.name': getClass().getSimpleName()])
+        def context = embeddedServer.applicationContext
+        TestClient client = context.getBean(TestClient)
+
+        then:
+        client.tagged("custom-value") == 'ok custom-value'
+
+        when:
+        MeterRegistry registry = context.getBean(MeterRegistry)
+
+        then:
+        registry.get(HttpServerMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/test-http-metrics/tagged', 'custom', 'custom-value')
+            .timer()
+            .count() == 1
+        registry.get(HttpClientMeterConfig.REQUESTS_METRIC)
+            .tags('uri', '/test-http-metrics/tagged', 'custom', 'custom-value')
+            .timer()
+            .count() == 1
+
+        cleanup:
+        embeddedServer.close()
+    }
 
     void "test client / server metrics with #cfg #setting"() {
         when:
@@ -481,6 +508,9 @@ class HttpMetricsSpec extends Specification {
         @Get("/test-http-metrics/{id}")
         String template(String id)
 
+        @Get("/test-http-metrics/tagged")
+        String tagged(@Header("X-Custom-Tag") String customTag)
+
         @Get("/test-http-metrics/error")
         HttpResponse error()
 
@@ -523,6 +553,9 @@ class HttpMetricsSpec extends Specification {
 
         @Get("/test-http-metrics/{id}")
         String template(String id) { "ok " + id }
+
+        @Get("/test-http-metrics/tagged")
+        String tagged(@Header("X-Custom-Tag") String customTag) { "ok " + customTag }
 
         @Get("/test-http-metrics/error")
         HttpResponse error() {
@@ -675,6 +708,16 @@ class HttpMetricsSpec extends Specification {
             return broadcaster.broadcast(String.format("Leaving %s!", username))
         }
 
+    }
+
+    @Requires(property = "spec.name", value = "HttpMetricsSpec")
+    @Singleton
+    static class TestHttpMetricsTagProvider implements HttpMetricsTagProvider {
+
+        @Override
+        Iterable<Tag> getTags(HttpRequest<?> request, HttpResponse<?> response, Throwable throwable) {
+            return [Tag.of("custom", request.headers.get("X-Custom-Tag") ?: "none")]
+        }
     }
 
     @InheritConstructors
