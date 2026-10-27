@@ -1,0 +1,14 @@
+# CVE-2026-106123: AMQP URI with credentials included in ConnectionFactoryConfigurator.load() exception messages.
+[[IgnoredVulns]]
+id = "GHSA-h6w7-qmcm-q6xr"
+reason = "Retain AMQP client 5.34.x for the Micrometer 6.0.x patch release; the fix needs the 5.35.0+ minor upgrade, already used on 6.1.x. The Graphite registry only creates plaintext, UDP and pickle senders and never uses the AMQP client."
+
+# CVE-2026-106122: malformed UTF-8 in shortstr properties disables RPC consumers.
+[[IgnoredVulns]]
+id = "GHSA-7822-rcf6-97fx"
+reason = "Retain AMQP client 5.34.x for the Micrometer 6.0.x patch release; the fix needs the 5.36.0+ minor upgrade, already used on 6.1.x. The Graphite registry only creates plaintext, UDP and pickle senders and never uses the AMQP client."
+
+# CVE-2026-106121: JSONReader in the default JSON-RPC mapper never terminates on truncated input.
+[[IgnoredVulns]]
+id = "GHSA-cqgh-8p3p-mx4m"
+reason = "Retain AMQP client 5.34.x for the Micrometer 6.0.x patch release; the fix needs the 5.37.0 minor upgrade, already used on 6.1.x. The Graphite registry only creates plaintext, UDP and pickle senders and never uses the AMQP client."
