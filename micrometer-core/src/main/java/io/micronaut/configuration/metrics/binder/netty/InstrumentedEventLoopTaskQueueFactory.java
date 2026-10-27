@@ -19,6 +19,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Requires;
@@ -29,6 +30,7 @@ import io.netty.util.internal.PlatformDependent;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,6 +50,8 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 
 /**
  * Instrumented Event Loop Queue factory.
+ * The global meters are registered when the meter registry is created, so building the
+ * event loop group factory does not initialize the registry from inside HTTP client construction.
  *
  * @author Christophe Roudet
  * @since 2.0
@@ -58,63 +62,64 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(property = MICRONAUT_METRICS_BINDERS + ".netty.queues.enabled", defaultValue = FALSE, notEquals = FALSE)
 @Requires(classes = EventLoopTaskQueueFactory.class)
 @Internal
-final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory {
+final class InstrumentedEventLoopTaskQueueFactory implements EventLoopTaskQueueFactory, MeterBinder {
 
     private static final AtomicInteger PARENT_COUNTER = new AtomicInteger(-1);
     private static final AtomicInteger WORKER_COUNTER = new AtomicInteger(-1);
 
     private final BeanProvider<MeterRegistry> meterRegistryProvider;
-    private final Counter parentTaskCounter;
-    private final Counter workerTaskCounter;
-    private final Timer globalParentWaitTimeTimer;
-    private final Timer globalParentExecutionTimer;
-    private final Timer globalWorkerWaitTimeTimer;
-    private final Timer globalWorkerExecutionTimer;
 
     /**
      * @param meterRegistryProvider the metric registry provider
      */
     public InstrumentedEventLoopTaskQueueFactory(BeanProvider<MeterRegistry> meterRegistryProvider) {
         this.meterRegistryProvider = meterRegistryProvider;
-        globalParentWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-                .description("Global wait time spent in the parent Queues.")
-                .tag(GROUP, PARENT)
-                .publishPercentileHistogram()
-                .register(meterRegistryProvider.get());
-        globalParentExecutionTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-                .description("Global parent runnable execution time.")
-                .tag(GROUP, PARENT)
-                .publishPercentileHistogram()
-                .register(meterRegistryProvider.get());
-        globalWorkerWaitTimeTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
-                .description("Global wait time spent in the worker Queues.")
-                .tag(GROUP, WORKER)
-                .publishPercentileHistogram()
-                .register(meterRegistryProvider.get());
-        globalWorkerExecutionTimer = Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
-                .description("Global worker runnable execution time.")
-                .tag(GROUP, WORKER)
-                .publishPercentileHistogram()
-                .register(meterRegistryProvider.get());
-        parentTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                .tag(GROUP, PARENT)
-                .register(meterRegistryProvider.get());
-        workerTaskCounter = Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
-                .tag(GROUP, WORKER)
-                .register(meterRegistryProvider.get());
+    }
+
+    @Override
+    public void bindTo(MeterRegistry meterRegistry) {
+        for (String group : List.of(PARENT, WORKER)) {
+            globalWaitTimeTimer(meterRegistry, group);
+            globalExecutionTimer(meterRegistry, group);
+            globalTaskCounter(meterRegistry, group);
+        }
     }
 
     @Override
     public Queue<Runnable> newTaskQueue(int maxCapacity) {
         final String kind = findOrigin();
         final boolean parent = PARENT.equals(kind);
+        final MeterRegistry meterRegistry = meterRegistryProvider.get();
         return new MonitoredQueue(parent ? PARENT_COUNTER.incrementAndGet() : WORKER_COUNTER.incrementAndGet(),
-                meterRegistryProvider.get(),
+                meterRegistry,
                 Tag.of(GROUP, kind),
-                parent ? parentTaskCounter : workerTaskCounter,
-                parent ? globalParentWaitTimeTimer : globalWorkerWaitTimeTimer,
-                parent ? globalParentExecutionTimer : globalWorkerExecutionTimer,
+                globalTaskCounter(meterRegistry, kind),
+                globalWaitTimeTimer(meterRegistry, kind),
+                globalExecutionTimer(meterRegistry, kind),
                 maxCapacity == Integer.MAX_VALUE ? PlatformDependent.<Runnable>newMpscQueue() : PlatformDependent.<Runnable>newMpscQueue(maxCapacity));
+    }
+
+    // Registering an existing meter id returns the meter that is already registered.
+    private static Timer globalWaitTimeTimer(MeterRegistry meterRegistry, String group) {
+        return Timer.builder(dot(NETTY, QUEUE, GLOBAL, WAIT_TIME))
+                .description("Global wait time spent in the " + group + " Queues.")
+                .tag(GROUP, group)
+                .publishPercentileHistogram()
+                .register(meterRegistry);
+    }
+
+    private static Timer globalExecutionTimer(MeterRegistry meterRegistry, String group) {
+        return Timer.builder(dot(NETTY, QUEUE, GLOBAL, EXECUTION_TIME))
+                .description("Global " + group + " runnable execution time.")
+                .tag(GROUP, group)
+                .publishPercentileHistogram()
+                .register(meterRegistry);
+    }
+
+    private static Counter globalTaskCounter(MeterRegistry meterRegistry, String group) {
+        return Counter.builder(dot(NETTY, QUEUE, GLOBAL, ELEMENT, COUNT))
+                .tag(GROUP, group)
+                .register(meterRegistry);
     }
 
     private String findOrigin() {
