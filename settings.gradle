@@ -57,10 +57,14 @@ if (providers.gradleProperty("kafkaObservation").present) {
     include 'micrometer-observation-kafka'
 }
 
+// JMH benchmarks: not published, not part of the BOM
+include 'benchmarks'
+
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 
 micronautBuild {
     useStandardizedProjectNames = true
+    nonStandardProjectNamePrefixes.add('benchmarks')
     importMicronautCatalog()
     importMicronautCatalog("micronaut-aws")
     importMicronautCatalog("micronaut-cache")

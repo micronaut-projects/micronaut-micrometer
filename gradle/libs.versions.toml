@@ -33,6 +33,10 @@ micronaut-data = "5.2.2"
 micronaut-validation = "5.2.1"
 micronaut-logging = "2.1.0"
 
+# Benchmarks only (not published)
+jmh = "1.37"
+jmh-gradle-plugin = "0.7.3"
+
 [libraries]
 # Core
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
@@ -96,3 +100,10 @@ r2dbc-pool = { module = 'io.r2dbc:r2dbc-pool' }
 reflections = { module = 'org.reflections:reflections', version.ref = 'reflections' }
 
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
+
+# Benchmarks only (not published)
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-generator-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
+
+[plugins]
+jmh = { id = 'me.champeau.jmh', version.ref = 'jmh-gradle-plugin' }
