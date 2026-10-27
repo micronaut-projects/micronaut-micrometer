@@ -8,13 +8,18 @@ You can configure this reporter using `micronaut.metrics.export.prometheus.pushg
 |*Name* |*Description*
 |enabled |Whether to enable the reporter, for example per-environment or for local development. Default: `true`
 |interval |How frequently to push metrics data. Default: `PT1M` (1 min). See `java.time.Duration#parse(CharSequence)`
+|initial-delay |How long to wait before the first push. Default: `PT1M` (1 min).
 |address | Address of the Pushgateway in format host:port. Default is `localhost:9091`
-|format | Default is `Format.PROMETHEUS_PROTOBUF`.
-|scheme | Specify if metrics should be pushed using HTTP or HTTPS. Default is HTTP.
+|format | The format the metrics are pushed in, `PROMETHEUS_PROTOBUF` or `PROMETHEUS_TEXT`. Default is `PROMETHEUS_PROTOBUF`.
+|scheme | Specify if metrics should be pushed using `HTTP` or `HTTPS`. Default is `HTTP`.
 |job | The job label to be used when pushing metrics.
 |basic-auth-username | Username for basic auth
 |basic-auth-password | Password for basic auth
+|bearer-token | Bearer token sent in the `Authorization` header, instead of basic auth
+|connection-timeout | Connection timeout of the push requests
+|read-timeout | Read timeout of the push requests
 |grouping-keys | Grouping keys to be used when pushing/deleting metrics.
+|shutdown-operation | What is done with the metrics in the Pushgateway when the application shuts down: `NONE` leaves them, `PUSH` pushes them a last time and `DELETE` deletes them. Default is `NONE`.
 |=======
 
 .Example Prometheus Pushgateway Config

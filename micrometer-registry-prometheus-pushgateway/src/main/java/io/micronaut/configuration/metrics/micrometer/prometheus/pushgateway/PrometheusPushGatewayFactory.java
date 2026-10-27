@@ -34,6 +34,7 @@ class PrometheusPushGatewayFactory {
 
     public static final String PROMETHEUS_PUSHGATEWAY_CONFIG = MICRONAUT_METRICS_EXPORT + ".prometheus.pushgateway";
     public static final String PROMETHEUS_PUSHGATEWAY_ENABLED = PROMETHEUS_PUSHGATEWAY_CONFIG + ".enabled";
+    public static final String PROMETHEUS_PUSHGATEWAY_SHUTDOWN_OPERATION = PROMETHEUS_PUSHGATEWAY_CONFIG + ".shutdown-operation";
 
     /**
      * Create a PushGateway bean if global metrics are enabled
