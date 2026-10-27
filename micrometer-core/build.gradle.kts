@@ -9,6 +9,7 @@ dependencies {
     compileOnly(mnCache.jcache)
     compileOnly(libs.grpc.api)
     compileOnly(mnLogging.logback.classic)
+    compileOnly(mnLogging.log4j)
     compileOnly(mnCache.micronaut.cache.core)
     compileOnly(mn.micronaut.http.client)
     compileOnly(mn.micronaut.http.server.netty)
@@ -48,6 +49,7 @@ dependencies {
     testImplementation(libs.reflections)
     testImplementation(libs.micrometer.java21)
     testImplementation(mn.netty.pkitesting)
+    testImplementation(mnLogging.log4j)
     testRuntimeOnly(mn.micronaut.http.server.netty)
 
     testImplementation(mnTest.micronaut.test.junit5)
