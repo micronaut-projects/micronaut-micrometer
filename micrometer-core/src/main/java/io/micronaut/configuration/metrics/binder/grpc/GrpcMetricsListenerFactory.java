@@ -44,6 +44,7 @@ class GrpcMetricsListenerFactory {
     @Singleton
     @Requires(classes = ServerInterceptor.class)
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.server.enabled", notEquals = FALSE)
+    @Requires(condition = GrpcMetricsServerCondition.class)
     MetricCollectingServerInterceptor grpcServerMetrics(MeterRegistry meterRegistry) {
         return new MetricCollectingServerInterceptor(meterRegistry);
     }
@@ -51,6 +52,7 @@ class GrpcMetricsListenerFactory {
     @Singleton
     @Requires(classes = ClientInterceptor.class)
     @Requires(property = MICRONAUT_METRICS_BINDERS + ".grpc.client.enabled", notEquals = FALSE)
+    @Requires(condition = GrpcMetricsClientCondition.class)
     MetricCollectingClientInterceptor grpcClientMetrics(MeterRegistry meterRegistry) {
         return new MetricCollectingClientInterceptor(meterRegistry);
     }

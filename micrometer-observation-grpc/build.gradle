@@ -1,0 +1,27 @@
+plugins {
+    id 'io.micronaut.build.internal.micrometer-module'
+}
+
+dependencies {
+    annotationProcessor mn.micronaut.graal
+
+    api projects.micronautMicrometerObservation
+    implementation libs.managed.micrometer.observation
+    implementation(platform(mnGrpc.boms.grpc))
+    compileOnly libs.grpc.api
+
+    testAnnotationProcessor mn.micronaut.inject.java
+    testImplementation projects.micronautMicrometerCore
+    testImplementation libs.grpc.api
+    testImplementation mnGrpc.grpc.inprocess
+    testImplementation mnGrpc.grpc.stub
+    testImplementation(libs.managed.micrometer.observation.test) {
+        exclude group: 'org.junit.jupiter', module: 'junit-jupiter'
+    }
+}
+
+micronautBuild {
+    binaryCompatibility {
+        enabledAfter '6.2.0'
+    }
+}
