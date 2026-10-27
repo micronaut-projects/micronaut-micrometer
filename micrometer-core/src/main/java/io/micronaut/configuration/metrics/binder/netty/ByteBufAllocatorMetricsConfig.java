@@ -49,7 +49,7 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
      */
     public enum ByteBufAllocatorMetricKind {
         /**
-         * Metrics for the pooled ByteBuf allocator.
+         * Metrics for the pooled ByteBuf allocator, when it is Netty's default allocator.
          */
         POOLED_ALLOCATOR,
         /**
@@ -71,7 +71,13 @@ public final class ByteBufAllocatorMetricsConfig implements Toggleable {
         /**
          * Metrics for pooled allocator arena chunks.
          */
-        POOLED_ARENAS_CHUNKS
+        POOLED_ARENAS_CHUNKS,
+        /**
+         * Metrics for the adaptive ByteBuf allocator, when it is Netty's default allocator.
+         *
+         * @since 6.2.0
+         */
+        ADAPTIVE_ALLOCATOR
     }
 
     @Override

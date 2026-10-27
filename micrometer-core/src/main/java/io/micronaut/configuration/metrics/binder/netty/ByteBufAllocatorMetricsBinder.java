@@ -24,6 +24,7 @@ import io.micronaut.context.BeanProvider;
 import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.Internal;
+import io.netty.buffer.AdaptiveByteBufAllocator;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufAllocatorMetric;
 import io.netty.buffer.PoolArenaMetric;
@@ -38,6 +39,7 @@ import jakarta.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.Set;
 
+import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.ADAPTIVE_ALLOCATOR;
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ALLOCATOR;
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS;
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS_CHUNKLISTS;
@@ -45,6 +47,7 @@ import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMe
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.POOLED_ARENAS_SUBPAGES;
 import static io.micronaut.configuration.metrics.binder.netty.ByteBufAllocatorMetricsConfig.ByteBufAllocatorMetricKind.UNPOOLED_ALLOCATOR;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ACTIVE;
+import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ADAPTIVE;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOC;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ALLOCATION;
 import static io.micronaut.configuration.metrics.binder.netty.NettyMetrics.ARENA;
@@ -112,15 +115,25 @@ final class ByteBufAllocatorMetricsBinder {
      */
     @PostConstruct
     public void configureNettyMetrics() {
+        configureNettyMetrics(ByteBufAllocator.DEFAULT);
+    }
+
+    /**
+     * Adds metrics for the given default allocator, and for the unpooled allocator.
+     *
+     * <p>The server and the HTTP clients use Netty's default allocator, {@link ByteBufAllocator#DEFAULT}, which
+     * {@code io.netty.allocator.type} selects. The pooled allocator is only metered when it is the default
+     * allocator, so that the binder does not initialize a pooled allocator that nothing uses.</p>
+     *
+     * @param defaultAllocator Netty's default allocator
+     */
+    void configureNettyMetrics(ByteBufAllocator defaultAllocator) {
         MeterRegistry meterRegistry = meterRegistryProvider.get();
-        if (kinds.contains(POOLED_ALLOCATOR)) {
-            PooledByteBufAllocatorMetric pooledMetric = PooledByteBufAllocator.DEFAULT.metric();
+        if (kinds.contains(POOLED_ALLOCATOR) && defaultAllocator instanceof PooledByteBufAllocator pooledAllocator) {
+            PooledByteBufAllocatorMetric pooledMetric = pooledAllocator.metric();
 
             Tags pooled = Tags.of(ALLOC, POOLED);
-            Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), pooledMetric, ByteBufAllocatorMetric::usedHeapMemory)
-                    .description("The number of the bytes of the heap memory.").tags(pooled.and(MEMORY, HEAP)).register(meterRegistry);
-            Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), pooledMetric, ByteBufAllocatorMetric::usedDirectMemory)
-                    .description("The number of the bytes of the directy memory.").tags(pooled.and(MEMORY, DIRECT)).register(meterRegistry);
+            meterMemoryUsed(meterRegistry, pooled, pooledMetric);
 
             Gauge.builder(dot(NETTY, ALLOC, ARENA, COUNT), pooledMetric, PooledByteBufAllocatorMetric::numHeapArenas)
                     .description("The number of heap arenas.")
@@ -130,8 +143,8 @@ final class ByteBufAllocatorMetricsBinder {
                     .description("The number of direct arenas.")
                     .tags(pooled.and(MEMORY, DIRECT))
                     .register(meterRegistry);
-            Gauge.builder(dot(NETTY, ALLOC, THREAD, LOCAL, CACHE, COUNT), pooledMetric, PooledByteBufAllocatorMetric::numDirectArenas)
-                    .description("The number of direct arenas.")
+            Gauge.builder(dot(NETTY, ALLOC, THREAD, LOCAL, CACHE, COUNT), pooledMetric, PooledByteBufAllocatorMetric::numThreadLocalCaches)
+                    .description("The number of thread local caches.")
                     .tags(pooled)
                     .register(meterRegistry);
             Gauge.builder(dot(NETTY, ALLOC, CACHE, SIZE), pooledMetric, PooledByteBufAllocatorMetric::smallCacheSize)
@@ -139,7 +152,7 @@ final class ByteBufAllocatorMetricsBinder {
                     .tags(pooled.and(CACHE, SMALL))
                     .register(meterRegistry);
             Gauge.builder(dot(NETTY, ALLOC, CACHE, SIZE), pooledMetric, PooledByteBufAllocatorMetric::normalCacheSize)
-                    .description("The size of the normat cache.")
+                    .description("The size of the normal cache.")
                     .tags(pooled.and(CACHE, NORMAL))
                     .register(meterRegistry);
             Gauge.builder(dot(NETTY, ALLOC, CHUNK, SIZE), pooledMetric, PooledByteBufAllocatorMetric::chunkSize)
@@ -164,15 +177,20 @@ final class ByteBufAllocatorMetricsBinder {
             }
         }
 
-        if (kinds.contains(UNPOOLED_ALLOCATOR)) {
-            ByteBufAllocatorMetric unpooledMetric = UnpooledByteBufAllocator.DEFAULT.metric();
-            Tags unpooled = Tags.of(ALLOC, UNPOOLED);
-
-            Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), unpooledMetric, ByteBufAllocatorMetric::usedHeapMemory)
-                    .description("The number of the bytes of the heap memory.").tags(unpooled.and(MEMORY, HEAP)).register(meterRegistry);
-            Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), unpooledMetric, ByteBufAllocatorMetric::usedDirectMemory)
-                    .description("The number of the bytes of the directy memory.").tags(unpooled.and(MEMORY, DIRECT)).register(meterRegistry);
+        if (kinds.contains(ADAPTIVE_ALLOCATOR) && defaultAllocator instanceof AdaptiveByteBufAllocator adaptiveAllocator) {
+            meterMemoryUsed(meterRegistry, Tags.of(ALLOC, ADAPTIVE), adaptiveAllocator.metric());
         }
+
+        if (kinds.contains(UNPOOLED_ALLOCATOR)) {
+            meterMemoryUsed(meterRegistry, Tags.of(ALLOC, UNPOOLED), UnpooledByteBufAllocator.DEFAULT.metric());
+        }
+    }
+
+    private static void meterMemoryUsed(MeterRegistry meterRegistry, Tags tags, ByteBufAllocatorMetric metric) {
+        Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), metric, ByteBufAllocatorMetric::usedHeapMemory)
+                .description("The number of the bytes of the heap memory.").tags(tags.and(MEMORY, HEAP)).register(meterRegistry);
+        Gauge.builder(dot(NETTY, ALLOC, MEMORY, USED), metric, ByteBufAllocatorMetric::usedDirectMemory)
+                .description("The number of the bytes of the direct memory.").tags(tags.and(MEMORY, DIRECT)).register(meterRegistry);
     }
 
     private void meterPoolArena(Tags tags, PoolArenaMetric pam) {
