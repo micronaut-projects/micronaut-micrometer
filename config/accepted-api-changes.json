@@ -1,5 +1,10 @@
 [
   {
+    "type": "io.micronaut.configuration.metrics.binder.datasource.$DataSourcePoolMetricsBinderFactory$DataSourceMeterBinder0$Definition",
+    "member": "Implemented interface io.micronaut.inject.ParametrizedInstantiatableBeanDefinition",
+    "reason": "Generated bean definition now creates one deferred JDBC binder instead of parameterized per-datasource binders. The public dataSourceMeterBinder(String, DataSourcePoolMetadata) method is unchanged."
+  },
+  {
     "type": "io.micronaut.configuration.metrics.binder.cache.$MicronautCaffeineCacheMetricsBinder$Definition$Reference",
     "member": "Field $ANNOTATION_METADATA",
     "reason": "removed deprecated class for Micronaut 4.0.x"

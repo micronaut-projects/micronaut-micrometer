@@ -2,6 +2,16 @@ plugins {
     id("io.micronaut.build.internal.micrometer-module")
 }
 
+tasks.withType<me.champeau.gradle.japicmp.JapicmpTask>().configureEach {
+    // shortcut: use an absolute path until the build plugin fixes acceptance file resolution.
+    richReport {
+        addViolationTransformer(
+            io.micronaut.build.compat.AcceptedApiChangesRule::class.java,
+            mapOf("changesFile" to rootProject.file("config/accepted-api-changes.json").absolutePath)
+        )
+    }
+}
+
 dependencies {
     annotationProcessor(mn.micronaut.graal)
     implementation(platform(mnGrpc.boms.grpc))

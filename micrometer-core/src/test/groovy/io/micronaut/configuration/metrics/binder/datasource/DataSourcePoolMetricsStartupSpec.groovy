@@ -63,6 +63,13 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         state.metadataCreated == (disabledBinder == 'jdbc' ? 0 : 2)
         !httpRequest || registry.get('http.client.requests').timer().count() == 2
 
+        when:
+        String postStartupResponse = requestMetadata(context)
+
+        then:
+        postStartupResponse == 'ready'
+        registry.get('http.client.requests').timer().count() == (httpRequest ? 3 : 1)
+
         cleanup:
         context?.close()
         server?.stop(0)
@@ -73,6 +80,15 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         'make an HTTP request'                                      | true        | null
         'make an HTTP request with JDBC metrics disabled'           | true        | 'jdbc'
         'make an HTTP request without the Netty executor listener'  | true        | 'executor'
+    }
+
+    private static String requestMetadata(ApplicationContext context) {
+        HttpClient client = context.getBean(HttpClientRegistry).getClient(
+                HttpVersionSelection.forClientConfiguration(new DefaultHttpClientConfiguration()),
+                context.environment.getProperty('spec.server.url', String).get(), null)
+        def request = HttpRequest.GET('/metadata').setAttribute(HttpAttributes.URI_TEMPLATE, '/metadata')
+        // Bound the wait so the broken response-filter cycle fails instead of hanging the suite.
+        Mono.from(client.retrieve(request)).block(Duration.ofSeconds(5))
     }
 
     static class PoolState {
@@ -95,12 +111,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         @EachBean(PoolConfiguration)
         DataSource dataSource(PoolConfiguration configuration, ApplicationContext context, PoolState state) {
             if (context.environment.getProperty('spec.http-request', Boolean).orElse(false)) {
-                HttpClient client = context.getBean(HttpClientRegistry).getClient(
-                        HttpVersionSelection.forClientConfiguration(new DefaultHttpClientConfiguration()),
-                        context.environment.getProperty('spec.server.url', String).get(), null)
-                // Bound the wait so the broken response-filter cycle fails instead of hanging the suite.
-                def request = HttpRequest.GET('/metadata').setAttribute(HttpAttributes.URI_TEMPLATE, '/metadata')
-                assert Mono.from(client.retrieve(request)).block(Duration.ofSeconds(5)) == 'ready'
+                assert requestMetadata(context) == 'ready'
             } else {
                 context.getBean(MeterRegistry)
             }
