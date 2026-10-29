@@ -216,6 +216,8 @@ The `DataSource` metrics bindings provide data source pool metrics.
 
 *Control Property*: `micronaut.metrics.binders.jdbc.enabled`
 
+The generic pool binder waits for `StartupEvent` before resolving pool metadata. This lets datasource initialization make instrumented HTTP calls without requiring the datasource again while the meter registry is being created.
+
 NOTE: There is a different set of pool metric names for HikariCP and other pool providers.
 
 If you use `io.micronaut.sql:micronaut-jdbc-hikari` you will get additional pool metrics, as HikariCP has built-in support for meter registries.

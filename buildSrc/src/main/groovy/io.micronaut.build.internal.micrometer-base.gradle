@@ -2,6 +2,13 @@ plugins {
     id 'io.micronaut.build.internal.base'
 }
 
+plugins.withId('io.micronaut.build.internal.binary-compatibility-check') {
+    if (providers.gradleProperty('projectVersion').get().startsWith('6.0.')) {
+        // The bundled build plugin can select a baseline from a newer minor line.
+        micronautBuild.binaryCompatibility.baselineVersion.set('6.0.+')
+    }
+}
+
 repositories {
     mavenCentral()
 }
