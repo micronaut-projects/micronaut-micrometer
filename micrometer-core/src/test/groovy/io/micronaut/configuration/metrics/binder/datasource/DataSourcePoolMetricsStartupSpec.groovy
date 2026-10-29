@@ -9,6 +9,7 @@ import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.EachBean
 import io.micronaut.context.annotation.EachProperty
 import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Parameter
 import io.micronaut.context.annotation.Requires
 import io.micronaut.http.HttpAttributes
 import io.micronaut.http.HttpRequest
@@ -19,6 +20,7 @@ import io.micronaut.http.client.HttpVersionSelection
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata
 import io.micronaut.inject.qualifiers.Qualifiers
 import jakarta.inject.Singleton
+import org.jspecify.annotations.Nullable
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -40,7 +42,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
             exchange.responseBody.withCloseable { it.write(response) }
         }
         server.start()
-        PoolState state = new PoolState(dataSource: Stub(PoolDataSource))
+        PoolState state = new PoolState(dataSource: Stub(PoolDataSource), skipBetaMetadata: skipBetaMetadata)
         Map<String, Object> properties = [
                 'spec.name': SPEC_NAME,
                 'spec.http-request': httpRequest,
@@ -51,7 +53,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
                 'spec.server.url': "http://localhost:${server.address.port}"
         ]
         if (disabledBinder) {
-            properties["micronaut.metrics.binders.${disabledBinder}.enabled"] = false
+            properties["micronaut.metrics.binders.${disabledBinder}.enabled".toString()] = false
         }
         ApplicationContext context = ApplicationContext.builder(properties).singletons(state).build()
         SimpleMeterRegistry lateRegistry = new SimpleMeterRegistry()
@@ -63,8 +65,8 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         state.initialized == 2
         MeterRegistry registry = context.getBean(MeterRegistry)
         registry.find('jdbc.connections.active').tag('name', 'alpha').gauge()?.value() == (disabledBinder == 'jdbc' ? null : 1)
-        registry.find('jdbc.connections.active').tag('name', 'beta').gauge()?.value() == (disabledBinder == 'jdbc' ? null : 1)
-        state.metadataCreated == (disabledBinder == 'jdbc' ? 0 : 2)
+        registry.find('jdbc.connections.active').tag('name', 'beta').gauge()?.value() == (disabledBinder == 'jdbc' || skipBetaMetadata ? null : 1)
+        state.metadataCreated == (disabledBinder == 'jdbc' ? 0 : skipBetaMetadata ? 1 : 2)
         !httpRequest || registry.get('http.client.requests').timer().count() == 2
 
         when:
@@ -89,11 +91,12 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         server?.stop(0)
 
         where:
-        operation                                                   | httpRequest | disabledBinder
-        'resolve the registry'                                      | false       | null
-        'make an HTTP request'                                      | true        | null
-        'make an HTTP request with JDBC metrics disabled'           | true        | 'jdbc'
-        'make an HTTP request without the Netty executor listener'  | true        | 'executor'
+        operation                                                   | httpRequest | disabledBinder | skipBetaMetadata
+        'resolve the registry'                                      | false       | null           | false
+        'make an HTTP request'                                      | true        | null           | false
+        'make an HTTP request with JDBC metrics disabled'           | true        | 'jdbc'         | false
+        'make an HTTP request without the Netty executor listener'  | true        | 'executor'     | false
+        'make an HTTP request with unsupported pool metadata'       | true        | null           | true
     }
 
     private static String requestMetadata(ApplicationContext context) {
@@ -109,6 +112,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         DataSource dataSource
         int initialized
         int metadataCreated
+        boolean skipBetaMetadata
     }
 
     @EachProperty('spec.pools')
@@ -136,7 +140,11 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
 
         @Singleton
         @EachBean(DataSource)
-        PoolMetadata metadata(DataSource dataSource, PoolState state) {
+        @Nullable
+        PoolMetadata metadata(@Parameter String dataSourceName, DataSource dataSource, PoolState state) {
+            if (state.skipBetaMetadata && dataSourceName == 'beta') {
+                return null
+            }
             state.metadataCreated++
             new PoolMetadata(dataSource: dataSource)
         }

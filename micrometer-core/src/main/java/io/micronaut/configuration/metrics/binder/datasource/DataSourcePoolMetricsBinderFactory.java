@@ -54,7 +54,8 @@ public class DataSourcePoolMetricsBinderFactory {
     final MeterBinder dataSourceMeterBinder(@Parameter String dataSourceName,
                                            BeanProvider<DataSourcePoolMetadata<?>> metadataProvider) {
         return registry -> {
-            Runnable binding = () -> dataSourceMeterBinder(dataSourceName, metadataProvider.get()).bindTo(registry);
+            Runnable binding = () -> metadataProvider.find(null)
+                .ifPresent(metadata -> dataSourceMeterBinder(dataSourceName, metadata).bindTo(registry));
             synchronized (pendingBindings) {
                 if (!started) {
                     pendingBindings.add(binding);
