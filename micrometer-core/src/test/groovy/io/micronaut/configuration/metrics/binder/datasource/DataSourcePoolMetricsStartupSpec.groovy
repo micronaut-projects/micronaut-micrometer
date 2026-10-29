@@ -2,6 +2,8 @@ package io.micronaut.configuration.metrics.binder.datasource
 
 import com.sun.net.httpserver.HttpServer
 import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.binder.MeterBinder
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.Context
 import io.micronaut.context.annotation.EachBean
@@ -15,6 +17,7 @@ import io.micronaut.http.client.HttpClientRegistry
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpVersionSelection
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata
+import io.micronaut.inject.qualifiers.Qualifiers
 import jakarta.inject.Singleton
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -37,7 +40,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
             exchange.responseBody.withCloseable { it.write(response) }
         }
         server.start()
-        PoolState state = new PoolState(dataSource: Stub(DataSource))
+        PoolState state = new PoolState(dataSource: Stub(PoolDataSource))
         Map<String, Object> properties = [
                 'spec.name': SPEC_NAME,
                 'spec.http-request': httpRequest,
@@ -51,6 +54,7 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
             properties["micronaut.metrics.binders.${disabledBinder}.enabled"] = false
         }
         ApplicationContext context = ApplicationContext.builder(properties).singletons(state).build()
+        SimpleMeterRegistry lateRegistry = new SimpleMeterRegistry()
 
         when:
         context.start()
@@ -70,7 +74,17 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
         postStartupResponse == 'ready'
         registry.get('http.client.requests').timer().count() == (httpRequest ? 3 : 1)
 
+        when:
+        if (disabledBinder != 'jdbc') {
+            context.getBean(MeterBinder, Qualifiers.byName('alpha')).bindTo(lateRegistry)
+        }
+
+        then:
+        lateRegistry.find('jdbc.connections.active').tag('name', 'alpha').gauge()?.value() == (disabledBinder == 'jdbc' ? null : 1)
+        !lateRegistry.find('jdbc.connections.active').tag('name', 'beta').gauge()
+
         cleanup:
+        lateRegistry.close()
         context?.close()
         server?.stop(0)
 
@@ -122,14 +136,17 @@ class DataSourcePoolMetricsStartupSpec extends Specification {
 
         @Singleton
         @EachBean(DataSource)
-        DataSourcePoolMetadata metadata(DataSource dataSource, PoolState state) {
+        PoolMetadata metadata(DataSource dataSource, PoolState state) {
             state.metadataCreated++
             new PoolMetadata(dataSource: dataSource)
         }
     }
 
-    static class PoolMetadata implements DataSourcePoolMetadata {
-        DataSource dataSource
+    interface PoolDataSource extends DataSource {
+    }
+
+    static class PoolMetadata implements DataSourcePoolMetadata<PoolDataSource> {
+        PoolDataSource dataSource
         Integer getIdle() { 0 }
         Float getUsage() { 0.5f }
         Integer getActive() { 1 }

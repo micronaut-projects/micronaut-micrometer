@@ -19,13 +19,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micronaut.configuration.metrics.annotation.RequiresMetrics;
 import io.micronaut.context.BeanContext;
-import io.micronaut.context.BeanRegistration;
+import io.micronaut.context.BeanProvider;
+import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Parameter;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.jdbc.metadata.DataSourcePoolMetadata;
 import io.micronaut.runtime.event.annotation.EventListener;
-import jakarta.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,19 +47,21 @@ import static io.micronaut.core.util.StringUtils.FALSE;
 @Requires(beans = DataSourcePoolMetadata.class)
 public class DataSourcePoolMetricsBinderFactory {
 
-    private final List<MeterRegistry> pendingRegistries = new ArrayList<>();
+    private final List<Runnable> pendingBindings = new ArrayList<>();
     private boolean started;
 
-    @Singleton
-    final MeterBinder dataSourceMeterBinder(BeanContext context) {
+    @EachBean(DataSourcePoolMetadata.class)
+    final MeterBinder dataSourceMeterBinder(@Parameter String dataSourceName,
+                                           BeanProvider<DataSourcePoolMetadata<?>> metadataProvider) {
         return registry -> {
-            synchronized (pendingRegistries) {
+            Runnable binding = () -> dataSourceMeterBinder(dataSourceName, metadataProvider.get()).bindTo(registry);
+            synchronized (pendingBindings) {
                 if (!started) {
-                    pendingRegistries.add(registry);
+                    pendingBindings.add(binding);
                     return;
                 }
             }
-            bind(context, registry);
+            binding.run();
         };
     }
 
@@ -67,20 +70,14 @@ public class DataSourcePoolMetricsBinderFactory {
         BeanContext context = event.getSource();
         // Finish registry creation before pool initialization can make measured HTTP calls.
         context.getBeansOfType(MeterRegistry.class);
-        List<MeterRegistry> registries;
-        synchronized (pendingRegistries) {
+        List<Runnable> bindings;
+        synchronized (pendingBindings) {
             started = true;
-            registries = List.copyOf(pendingRegistries);
-            pendingRegistries.clear();
+            bindings = List.copyOf(pendingBindings);
+            pendingBindings.clear();
         }
-        for (MeterRegistry registry : registries) {
-            bind(context, registry);
-        }
-    }
-
-    private void bind(BeanContext context, MeterRegistry registry) {
-        for (BeanRegistration<DataSourcePoolMetadata> registration : context.getBeanRegistrations(DataSourcePoolMetadata.class)) {
-            dataSourceMeterBinder(registration.getIdentifier().getName(), registration.getBean()).bindTo(registry);
+        for (Runnable binding : bindings) {
+            binding.run();
         }
     }
 
