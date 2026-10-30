@@ -171,7 +171,7 @@
         <h1>Micronaut Micrometer</h1>
         <p></p>
         <p>Provides integration between Micronaut and Micrometer</p>
-        <p><strong>Version:</strong> 6.1.1 </p>
+        <p><strong>Version:</strong> 6.1.2 </p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -1459,6 +1459,9 @@ runtime = [
 </div>
 <div class="paragraph">
 <p><strong>Control Property</strong>: <code>micronaut.metrics.binders.jdbc.enabled</code></p>
+</div>
+<div class="paragraph">
+<p>The generic pool binder waits for <code>StartupEvent</code> before resolving pool metadata. This lets datasource initialization make instrumented HTTP calls without requiring the datasource again while the meter registry is being created.</p>
 </div>
 <div class="admonitionblock note">
 <table>
