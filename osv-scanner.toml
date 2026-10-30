@@ -1,0 +1,4 @@
+# CVE-2026-102554: CompactHashMap/CompactHashSet/MapMakerInternalMap Java deserialization allocates unbounded memory.
+[[IgnoredVulns]]
+id = "GHSA-xxph-c9ww-hj94"
+reason = "Retain Guava 33.5.x for the Micrometer 6.1.x patch release; the only fixed release is the 33.7.2 minor upgrade. Guava comes in only through Google Cloud Monitoring and Google Auth for the Stackdriver registry, and the issue needs the application to deserialize untrusted data with Java serialization (ObjectInputStream), which Micronaut Micrometer never does."
