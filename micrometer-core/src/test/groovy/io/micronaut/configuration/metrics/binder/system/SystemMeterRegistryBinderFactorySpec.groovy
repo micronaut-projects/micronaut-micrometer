@@ -44,9 +44,9 @@ class SystemMeterRegistryBinderFactorySpec extends Specification {
         then:
         context.findBean(SystemMeterRegistryBinderFactoryFactory).isPresent() == binderPresent
         if (binderPresent) {
-            context.findBean(UptimeMetrics).isPresent() == uptimePresent
-            context.findBean(ProcessorMetrics).isPresent() == processorPresent
-            context.findBean(FileDescriptorMetrics).isPresent() == filePresent
+            assert context.findBean(UptimeMetrics).isPresent() == uptimePresent
+            assert context.findBean(ProcessorMetrics).isPresent() == processorPresent
+            assert context.findBean(FileDescriptorMetrics).isPresent() == filePresent
         }
 
         cleanup:
