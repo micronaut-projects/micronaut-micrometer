@@ -157,6 +157,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-datasourceObservation"><a href="#datasourceObservation"><strong>7.1</strong><span>Datasource Observation</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-grpcObservation"><a href="#grpcObservation"><strong>7.2</strong><span>gRPC Observation</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-metricsGuides"><a href="#metricsGuides"><strong>8</strong><span>Guides</span></a></div>
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-breaks"><a href="#breaks"><strong>9</strong><span>Breaking Changes</span></a></div>
@@ -6019,6 +6021,163 @@ To trace query parameter values, this property <code>micrometer.observation.data
 </div>
 <div class="paragraph">
 <p>To see more available properties, please see <code>Configuration Reference</code> section related to the Micrometer DataSource Observation section.</p>
+</div>
+</div>
+</div>
+
+<h2 id="grpcObservation"><a class="anchor" href="#grpcObservation"></a>7.2 gRPC Observation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-micrometer/edit/6.1.x/src/main/docs/guide/grpcObservation.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="sect1">
+<h2 id="_micrometer_grpc_observation">Micrometer gRPC Observation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Micronaut Micrometer Observation gRPC module instruments the <a href="https://micronaut-projects.github.io/micronaut-grpc/latest/guide/">Micronaut gRPC</a> server and clients with the Observation API. Every call received by the server creates a <code>grpc.server</code> observation, and every call made through a channel creates a <code>grpc.client</code> observation. Depending on your application&#8217;s configuration, the observations are exported as metrics (if a <code>MeterRegistry</code> bean is registered) and as trace spans (if Micrometer Tracing is configured).</p>
+</div>
+<div class="paragraph">
+<p>To include this module in your project, add the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-grpc")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-observation-grpc&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-observation-grpc"</span>,
+]</code></pre>
+</div>
+</div>
+</p>
+</div>
+<div class="paragraph">
+<p>The module registers Micrometer&#8217;s <code>ObservationGrpcServerInterceptor</code> and <code>ObservationGrpcClientInterceptor</code> as <code>ServerInterceptor</code> and <code>ClientInterceptor</code> beans, which Micronaut gRPC installs on the server and on every channel. The interceptors run ahead of interceptors with the default order, so calls that another interceptor rejects or fails are observed too.</p>
+</div>
+<div class="paragraph">
+<p>With Micrometer&#8217;s default conventions, the resulting timers are tagged with <code>rpc.service</code>, <code>rpc.method</code>, <code>rpc.type</code> and <code>grpc.status_code</code>. Client timers are additionally tagged with <code>net.peer.name</code> and <code>net.peer.port</code>; on the server these two are high-cardinality key-values that only appear on spans. Micrometer&#8217;s <code>GrpcObservationDocumentation</code> also defines an <code>rpc.error_code</code> key, which the default conventions do not set.</p>
+</div>
+<div class="paragraph">
+<p>You can configure the behavior of this module by modifying the following properties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>To disable gRPC server instrumentation, set the <code>micrometer.observation.grpc.server.enabled</code> property to <code>false</code> (the default value is <code>true</code>).</p>
+</li>
+<li>
+<p>To disable gRPC client instrumentation, set the <code>micrometer.observation.grpc.client.enabled</code> property to <code>false</code> (the default value is <code>true</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To customize the observation names or key-values, declare a bean of type <code>GrpcServerObservationConvention</code> or <code>GrpcClientObservationConvention</code>, for example by extending <code>DefaultGrpcServerObservationConvention</code>. The bean is used instead of the default convention. Declare at most one bean of each convention type: declaring two beans of the same type fails startup with a <code>NonUniqueBeanException</code>, unless one of them is annotated with <code>@Primary</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If another gRPC tracing interceptor is also installed, for example the one from Micronaut Tracing, each call is traced twice and produces duplicate spans. Use only one of them.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_relationship_with_the_grpc_metrics_binder">Relationship with the gRPC metrics binder</h3>
+<div class="paragraph">
+<p>The <code>micronaut-micrometer-core</code> module also contains a gRPC metrics binder, configured with <code>micronaut.metrics.binders.grpc.*</code>, which registers Micrometer&#8217;s <code>MetricCollectingServerInterceptor</code> and <code>MetricCollectingClientInterceptor</code>. The binder only produces metrics (<code>grpc.server.processing.duration</code>, <code>grpc.client.processing.duration</code> and call and message counters), while this module produces observations that can also become spans.</p>
+</div>
+<div class="paragraph">
+<p>When you use this module together with <code>micronaut-micrometer-core</code>, disable the binder so that each call is not measured twice:</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.binders.grpc.enabled=false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    binders:
+      grpc:
+        enabled: false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics.binders.grpc]
+enabled = false</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    binders {
+      grpc {
+        enabled = false
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      binders {
+        grpc {
+          enabled = false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "binders": {
+        "grpc": {
+          "enabled": false
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>

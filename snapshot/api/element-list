@@ -42,6 +42,7 @@ io.micronaut.micrometer.annotation.processing
 io.micronaut.micrometer.info
 io.micronaut.micrometer.observation
 io.micronaut.micrometer.observation.datasource
+io.micronaut.micrometer.observation.grpc
 io.micronaut.micrometer.observation.http
 io.micronaut.micrometer.observation.http.client
 io.micronaut.micrometer.observation.http.client.instrumentation

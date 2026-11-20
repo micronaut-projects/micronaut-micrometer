@@ -146,6 +146,10 @@ arbitrary transports.</div>
 <dd>
 <div class="block">JVM Class loader metrics bean.</div>
 </dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#CLIENT_ENABLED" class="member-name-link">CLIENT_ENABLED</a> - Static variable in class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>
+<div class="block">Enables observations of gRPC client calls.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/binder/web/WebMetricsPublisher.html#CLIENT_ERROR_URIS_ENABLED" class="member-name-link">CLIENT_ERROR_URIS_ENABLED</a> - Static variable in class io.micronaut.configuration.metrics.binder.web.<a href="io/micronaut/configuration/metrics/binder/web/WebMetricsPublisher.html" title="class in io.micronaut.configuration.metrics.binder.web">WebMetricsPublisher</a></dt>
 <dd>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
@@ -571,6 +575,21 @@ to the micrometer meter registry.</div>
 </dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/graphite/GraphiteMeterRegistryFactory.html#%3Cinit%3E()" class="member-name-link">GraphiteMeterRegistryFactory()</a> - Constructor for class io.micronaut.configuration.metrics.micrometer.graphite.<a href="io/micronaut/configuration/metrics/micrometer/graphite/GraphiteMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.graphite">GraphiteMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#grpcClientObservationInterceptor(io.micrometer.observation.ObservationRegistry,io.micrometer.core.instrument.binder.grpc.GrpcClientObservationConvention)" class="member-name-link">grpcClientObservationInterceptor(ObservationRegistry, GrpcClientObservationConvention)</a> - Method in class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>
+<div class="block">Creates the client observation interceptor.</div>
+</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" class="type-name-link" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a> - Class in <a href="io/micronaut/micrometer/observation/grpc/package-summary.html">io.micronaut.micrometer.observation.grpc</a></dt>
+<dd>
+<div class="block">Registers Micrometer's gRPC observation interceptors as beans, so that micronaut-grpc installs them on the server and
+on every channel.</div>
+</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#%3Cinit%3E()" class="member-name-link">GrpcObservationFactory()</a> - Constructor for class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#grpcServerObservationInterceptor(io.micrometer.observation.ObservationRegistry,io.micrometer.core.instrument.binder.grpc.GrpcServerObservationConvention)" class="member-name-link">grpcServerObservationInterceptor(ObservationRegistry, GrpcServerObservationConvention)</a> - Method in class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>
+<div class="block">Creates the server observation interceptor.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:H">H</h2>
 <dl class="index">
@@ -821,6 +840,10 @@ to the micrometer meter registry.</div>
 <dd>
 <div class="block">Contains configuration that provide integration with Datasource Micrometer.</div>
 </dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/package-summary.html">io.micronaut.micrometer.observation.grpc</a> - package io.micronaut.micrometer.observation.grpc</dt>
+<dd>
+<div class="block">Micrometer observations (metrics and tracing) for gRPC servers and clients.</div>
+</dd>
 <dt><a href="io/micronaut/micrometer/observation/http/package-summary.html">io.micronaut.micrometer.observation.http</a> - package io.micronaut.micrometer.observation.http</dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/micrometer/observation/http/client/package-summary.html">io.micronaut.micrometer.observation.http.client</a> - package io.micronaut.micrometer.observation.http.client</dt>
@@ -1037,6 +1060,10 @@ to the micrometer meter registry.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/micrometer/info/MicronautMicrometerObservationDatasourceModuleInfo.html#%3Cinit%3E()" class="member-name-link">MicronautMicrometerObservationDatasourceModuleInfo()</a> - Constructor for class io.micronaut.micrometer.info.<a href="io/micronaut/micrometer/info/MicronautMicrometerObservationDatasourceModuleInfo.html" title="class in io.micronaut.micrometer.info">MicronautMicrometerObservationDatasourceModuleInfo</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/micrometer/info/MicronautMicrometerObservationGrpcModuleInfo.html" class="type-name-link" title="class in io.micronaut.micrometer.info">MicronautMicrometerObservationGrpcModuleInfo</a> - Class in <a href="io/micronaut/micrometer/info/package-summary.html">io.micronaut.micrometer.info</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="io/micronaut/micrometer/info/MicronautMicrometerObservationGrpcModuleInfo.html#%3Cinit%3E()" class="member-name-link">MicronautMicrometerObservationGrpcModuleInfo()</a> - Constructor for class io.micronaut.micrometer.info.<a href="io/micronaut/micrometer/info/MicronautMicrometerObservationGrpcModuleInfo.html" title="class in io.micronaut.micrometer.info">MicronautMicrometerObservationGrpcModuleInfo</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="io/micronaut/micrometer/info/MicronautMicrometerObservationHttpModuleInfo.html" class="type-name-link" title="class in io.micronaut.micrometer.info">MicronautMicrometerObservationHttpModuleInfo</a> - Class in <a href="io/micronaut/micrometer/info/package-summary.html">io.micronaut.micrometer.info</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/micrometer/info/MicronautMicrometerObservationHttpModuleInfo.html#%3Cinit%3E()" class="member-name-link">MicronautMicrometerObservationHttpModuleInfo()</a> - Constructor for class io.micronaut.micrometer.info.<a href="io/micronaut/micrometer/info/MicronautMicrometerObservationHttpModuleInfo.html" title="class in io.micronaut.micrometer.info">MicronautMicrometerObservationHttpModuleInfo</a></dt>
@@ -1210,6 +1237,11 @@ the Micronaut Micrometer New Relic configuration.</div>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html#onCreated(io.micronaut.context.event.BeanCreatedEvent)" class="member-name-link">onCreated(BeanCreatedEvent)</a> - Method in class io.micronaut.configuration.metrics.binder.cache.<a href="io/micronaut/configuration/metrics/binder/cache/JCacheMetricsBinder.html" title="class in io.micronaut.configuration.metrics.binder.cache">JCacheMetricsBinder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#ORDER" class="member-name-link">ORDER</a> - Static variable in class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>
+<div class="block">The order of the observation interceptors: ahead of interceptors with the default order, so that calls they
+reject or fail are observed too.</div>
+</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/otlp/OtlpMeterRegistryFactory.html#OTLP_CONFIG" class="member-name-link">OTLP_CONFIG</a> - Static variable in class io.micronaut.configuration.metrics.micrometer.otlp.<a href="io/micronaut/configuration/metrics/micrometer/otlp/OtlpMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.otlp">OtlpMeterRegistryFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/configuration/metrics/micrometer/otlp/OtlpMeterRegistryFactory.html#OTLP_ENABLED" class="member-name-link">OTLP_ENABLED</a> - Static variable in class io.micronaut.configuration.metrics.micrometer.otlp.<a href="io/micronaut/configuration/metrics/micrometer/otlp/OtlpMeterRegistryFactory.html" title="class in io.micronaut.configuration.metrics.micrometer.otlp">OtlpMeterRegistryFactory</a></dt>
@@ -1370,6 +1402,10 @@ the Micronaut Micrometer New Relic configuration.</div>
 <dd>
 <div class="block"><code>@Order</code> value of
 <a href="io/micronaut/micrometer/observation/DefaultObservedFactory.html#propagatingSenderTracingObservationHandler(io.micrometer.tracing.Tracer,io.micrometer.tracing.propagation.Propagator)"><code>DefaultObservedFactory.propagatingSenderTracingObservationHandler(Tracer, Propagator)</code></a>.</div>
+</dd>
+<dt><a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html#SERVER_ENABLED" class="member-name-link">SERVER_ENABLED</a> - Static variable in class io.micronaut.micrometer.observation.grpc.<a href="io/micronaut/micrometer/observation/grpc/GrpcObservationFactory.html" title="class in io.micronaut.micrometer.observation.grpc">GrpcObservationFactory</a></dt>
+<dd>
+<div class="block">Enables observations of gRPC server calls.</div>
 </dd>
 <dt><a href="io/micronaut/micrometer/observation/http/AbstractObservationFilter.html#SERVER_PATH" class="member-name-link">SERVER_PATH</a> - Static variable in class io.micronaut.micrometer.observation.http.<a href="io/micronaut/micrometer/observation/http/AbstractObservationFilter.html" title="class in io.micronaut.micrometer.observation.http">AbstractObservationFilter</a></dt>
 <dd>&nbsp;</dd>
