@@ -281,18 +281,22 @@ class GrpcObservationSpec extends Specification {
 
         @Override
         void request(int numMessages) {
+            // The call is already closed when it starts, so there is nothing to do.
         }
 
         @Override
         void cancel(String message, Throwable cause) {
+            // The call is already closed when it starts, so there is nothing to do.
         }
 
         @Override
         void halfClose() {
+            // The call is already closed when it starts, so there is nothing to do.
         }
 
         @Override
         void sendMessage(ReqT message) {
+            // The call is already closed when it starts, so there is nothing to do.
         }
     }
 
