@@ -1,0 +1,35 @@
+== Micrometer gRPC Observation
+
+The Micronaut Micrometer Observation gRPC module instruments the https://micronaut-projects.github.io/micronaut-grpc/latest/guide/[Micronaut gRPC] server and clients with the Observation API. Every call received by the server creates a `grpc.server` observation, and every call made through a channel creates a `grpc.client` observation. Depending on your application's configuration, the observations are exported as metrics (if a `MeterRegistry` bean is registered) and as trace spans (if Micrometer Tracing is configured).
+
+To include this module in your project, add the following dependency:
+
+dependency:micronaut-micrometer-observation-grpc[groupId="io.micronaut.micrometer", scope="implementation"]
+
+The module registers Micrometer's `ObservationGrpcServerInterceptor` and `ObservationGrpcClientInterceptor` as `ServerInterceptor` and `ClientInterceptor` beans, which Micronaut gRPC installs on the server and on every channel. The interceptors run ahead of interceptors with the default order, so calls that another interceptor rejects or fails are observed too.
+
+With Micrometer's default conventions, the resulting timers are tagged with `rpc.service`, `rpc.method`, `rpc.type` and `grpc.status_code`. Client timers are additionally tagged with `net.peer.name` and `net.peer.port`; on the server these two are high-cardinality key-values that only appear on spans. Micrometer's `GrpcObservationDocumentation` also defines an `rpc.error_code` key, which the default conventions do not set.
+
+You can configure the behavior of this module by modifying the following properties:
+
+- To disable gRPC server instrumentation, set the `micrometer.observation.grpc.server.enabled` property to `false` (the default value is `true`).
+- To disable gRPC client instrumentation, set the `micrometer.observation.grpc.client.enabled` property to `false` (the default value is `true`).
+
+To customize the observation names or key-values, declare a bean of type `GrpcServerObservationConvention` or `GrpcClientObservationConvention`, for example by extending `DefaultGrpcServerObservationConvention`. The bean is used instead of the default convention. Declare at most one bean of each convention type: declaring two beans of the same type fails startup with a `NonUniqueBeanException`, unless one of them is annotated with `@Primary`.
+
+NOTE: If another gRPC tracing interceptor is also installed, for example the one from Micronaut Tracing, each call is traced twice and produces duplicate spans. Use only one of them.
+
+=== Relationship with the gRPC metrics binder
+
+The `micronaut-micrometer-core` module also contains a gRPC metrics binder, configured with `micronaut.metrics.binders.grpc.*`, which registers Micrometer's `MetricCollectingServerInterceptor` and `MetricCollectingClientInterceptor`. The binder only produces metrics (`grpc.server.processing.duration`, `grpc.client.processing.duration` and call and message counters), while this module produces observations that can also become spans.
+
+When you use this module together with `micronaut-micrometer-core`, disable the binder so that each call is not measured twice:
+
+[configuration]
+----
+micronaut:
+  metrics:
+    binders:
+      grpc:
+        enabled: false
+----
