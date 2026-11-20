@@ -80,38 +80,34 @@ class MetricsEndpointSpec extends Specification {
 
         then:
         response.code() == OK.code
-        if (jvmEnabled || logbackEnabled || uptimeEnabled || processorEnabled || filesEnabled) {
-            result.names.contains("jvm.buffer.count") == jvmEnabled
-            result.names.contains("jvm.buffer.memory.used") == jvmEnabled
-            result.names.contains("jvm.buffer.total.capacity") == jvmEnabled
-            result.names.contains("jvm.classes.loaded") == jvmEnabled
-            result.names.contains("jvm.classes.unloaded") == jvmEnabled
-            result.names.contains("jvm.gc.live.data.size") == jvmEnabled
-            result.names.contains("jvm.gc.max.data.size") == jvmEnabled
-            result.names.contains("jvm.gc.memory.allocated") == jvmEnabled
-            result.names.contains("jvm.gc.memory.promoted") == jvmEnabled
-            result.names.contains("jvm.memory.committed") == jvmEnabled
-            result.names.contains("jvm.memory.max") == jvmEnabled
-            result.names.contains("jvm.memory.used") == jvmEnabled
-            result.names.contains("jvm.threads.daemon") == jvmEnabled
-            result.names.contains("jvm.threads.live") == jvmEnabled
-            result.names.contains("jvm.threads.peak") == jvmEnabled
+        result.names.contains("jvm.buffer.count") == jvmEnabled
+        result.names.contains("jvm.buffer.memory.used") == jvmEnabled
+        result.names.contains("jvm.buffer.total.capacity") == jvmEnabled
+        result.names.contains("jvm.classes.loaded") == jvmEnabled
+        result.names.contains("jvm.classes.unloaded") == jvmEnabled
+        result.names.contains("jvm.gc.live.data.size") == jvmEnabled
+        result.names.contains("jvm.gc.max.data.size") == jvmEnabled
+        result.names.contains("jvm.gc.memory.allocated") == jvmEnabled
+        result.names.contains("jvm.gc.memory.promoted") == jvmEnabled
+        result.names.contains("jvm.memory.committed") == jvmEnabled
+        result.names.contains("jvm.memory.max") == jvmEnabled
+        result.names.contains("jvm.memory.used") == jvmEnabled
+        result.names.contains("jvm.threads.daemon") == jvmEnabled
+        result.names.contains("jvm.threads.live") == jvmEnabled
+        result.names.contains("jvm.threads.peak") == jvmEnabled
 
-            result.names.contains("logback.events") == logbackEnabled
+        result.names.contains("logback.events") == logbackEnabled
 
-            result.names.contains("process.files.max") == filesEnabled
-            result.names.contains("process.files.open") == filesEnabled
+        result.names.contains("process.files.max") == filesEnabled
+        result.names.contains("process.files.open") == filesEnabled
 
-            result.names.contains("process.start.time") == uptimeEnabled
-            result.names.contains("process.uptime") == uptimeEnabled
+        result.names.contains("process.start.time") == uptimeEnabled
+        result.names.contains("process.uptime") == uptimeEnabled
 
-            result.names.contains("process.cpu.usage") == processorEnabled
-            result.names.contains("system.cpu.count") == processorEnabled
-            result.names.contains("system.cpu.usage") == processorEnabled
-            result.names.contains("system.load.average.1m") == processorEnabled
-        } else {
-            result == [:]
-        }
+        result.names.contains("process.cpu.usage") == processorEnabled
+        result.names.contains("system.cpu.count") == processorEnabled
+        result.names.contains("system.cpu.usage") == processorEnabled
+        result.names.contains("system.load.average.1m") == processorEnabled
 
         where:
         jvmEnabled | logbackEnabled | uptimeEnabled | processorEnabled | filesEnabled
