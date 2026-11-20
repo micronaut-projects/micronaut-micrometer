@@ -38,9 +38,9 @@ final class OrderedObservationServerInterceptor implements ServerInterceptor, Or
     }
 
     @Override
-    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call,
-                                                                 Metadata headers,
-                                                                 ServerCallHandler<ReqT, RespT> next) {
+    public <I, O> ServerCall.Listener<I> interceptCall(ServerCall<I, O> call,
+                                                       Metadata headers,
+                                                       ServerCallHandler<I, O> next) {
         return delegate.interceptCall(call, headers, next);
     }
 

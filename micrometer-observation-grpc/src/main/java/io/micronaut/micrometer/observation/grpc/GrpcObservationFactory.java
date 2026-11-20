@@ -36,6 +36,11 @@ import org.jspecify.annotations.Nullable;
  * on every channel. Each call becomes a {@code grpc.server} or {@code grpc.client} observation, which the observation
  * handlers turn into timers and, with Micrometer Tracing, spans.
  *
+ * <p>The gRPC metrics binder of micronaut-micrometer-core ({@code micronaut.metrics.binders.grpc.*}, enabled by
+ * default) registers Micrometer's {@code MetricCollectingServerInterceptor} and
+ * {@code MetricCollectingClientInterceptor}, which also record metrics for every call. When both are present, disable
+ * the binder with {@code micronaut.metrics.binders.grpc.enabled=false} so that calls are not measured twice.</p>
+ *
  * @since 6.1.3
  */
 @Factory

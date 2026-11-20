@@ -39,9 +39,9 @@ final class OrderedObservationClientInterceptor implements ClientInterceptor, Or
     }
 
     @Override
-    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
-                                                               CallOptions callOptions,
-                                                               Channel next) {
+    public <I, O> ClientCall<I, O> interceptCall(MethodDescriptor<I, O> method,
+                                                 CallOptions callOptions,
+                                                 Channel next) {
         return delegate.interceptCall(method, callOptions, next);
     }
 

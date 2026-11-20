@@ -2,6 +2,7 @@ package io.micronaut.micrometer.observation.grpc
 
 import io.grpc.CallOptions
 import io.grpc.Channel
+import io.grpc.ClientCall
 import io.grpc.ClientInterceptor
 import io.grpc.Metadata
 import io.grpc.MethodDescriptor
@@ -85,7 +86,6 @@ class GrpcObservationSpec extends Specification {
         then:
         (serverInterceptor as Ordered).order == GrpcObservationFactory.ORDER
         (clientInterceptor as Ordered).order == GrpcObservationFactory.ORDER
-        GrpcObservationFactory.ORDER < Ordered.LOWEST_PRECEDENCE
         GrpcObservationFactory.ORDER < 0
 
         cleanup:
@@ -111,6 +111,31 @@ class GrpcObservationSpec extends Specification {
             assert count(registry, 'grpc.server', 'PERMISSION_DENIED') == 1
             assert count(registry, 'grpc.client', 'PERMISSION_DENIED') == 1
         }
+
+        cleanup:
+        server?.close()
+    }
+
+    void "calls short-circuited on the client by an interceptor with the default order are observed"() {
+        given:
+        EmbeddedServer server = start(['spec.client-reject': true])
+        def context = server.applicationContext
+        Channel channel = context.getBean(Client).channel
+        MeterRegistry registry = context.getBean(SimpleMeterRegistry)
+
+        when:
+        ClientCalls.blockingUnaryCall(channel, ECHO, options(), 'hello')
+
+        then:
+        StatusRuntimeException e = thrown()
+        e.status.code == Status.Code.UNAUTHENTICATED
+        e.status.description == 'rejected on the client'
+
+        and: 'the client observation wraps the rejecting interceptor, and the call never reaches the server'
+        new PollingConditions(timeout: 5).eventually {
+            assert count(registry, 'grpc.client', 'UNAUTHENTICATED') == 1
+        }
+        registry.find('grpc.server').timer() == null
 
         cleanup:
         server?.close()
@@ -230,6 +255,44 @@ class GrpcObservationSpec extends Specification {
                                                               ServerCallHandler<ReqT, RespT> next) {
             call.close(Status.PERMISSION_DENIED.withDescription('rejected on purpose'), new Metadata())
             new ServerCall.Listener<ReqT>() {}
+        }
+    }
+
+    @Singleton
+    @Requires(property = 'spec.name', value = 'GrpcObservationSpec')
+    @Requires(property = 'spec.client-reject', value = 'true')
+    static class RejectingClientInterceptor implements ClientInterceptor {
+        @Override
+        <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
+                                                            CallOptions callOptions,
+                                                            Channel next) {
+            new RejectedCall<ReqT, RespT>()
+        }
+    }
+
+    /**
+     * A call that fails with UNAUTHENTICATED as soon as it starts, without reaching the next channel.
+     */
+    static class RejectedCall<ReqT, RespT> extends ClientCall<ReqT, RespT> {
+        @Override
+        void start(ClientCall.Listener<RespT> listener, Metadata headers) {
+            listener.onClose(Status.UNAUTHENTICATED.withDescription('rejected on the client'), new Metadata())
+        }
+
+        @Override
+        void request(int numMessages) {
+        }
+
+        @Override
+        void cancel(String message, Throwable cause) {
+        }
+
+        @Override
+        void halfClose() {
+        }
+
+        @Override
+        void sendMessage(ReqT message) {
         }
     }
 
